@@ -1,0 +1,13 @@
+*.pyc
+*/*.pyc
+*/*/*.pyc
+/__pycache__
+media/*
+logs/*
+ucp/settings.py
+shapefiles/*
+docs/*
+oldtemplates/*
+*csv
+templates/index.html
+static/js/*
