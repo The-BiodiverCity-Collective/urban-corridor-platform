@@ -112,6 +112,9 @@ def index(request):
     }
     return render(request, "index.html", context)
 
+def design(request):
+    return render(request, "design.html")
+
 def map(request, id):
     info = get_object_or_404(Document, pk=id)
     spaces = info.spaces.all()

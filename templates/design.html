@@ -1,0 +1,445 @@
+{% extends "_base.html" %}
+
+{% block css %}
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+  <style type="text/css">
+    footer,nav{display:none}
+  </style>
+{% endblock %}
+
+{% block content %}
+
+<h1 class="text-3xl">Design parameters</h1>
+
+<h2 class="text-2xl mt-5">Primary color</h2>
+
+<div class="flex space-x-3 mt-3">
+  <span class="w-24 h-12 bg-sky-800 rounded shadow-inner"></span>
+  <span class="w-24 h-12 bg-sky-700 rounded shadow-inner"></span>
+  <span class="w-24 h-12 bg-sky-600 rounded shadow-inner"></span>
+  <span class="w-24 h-12 bg-sky-500 rounded shadow-inner"></span>
+  <span class="w-24 h-12 bg-sky-400 rounded shadow-inner"></span>
+  <span class="w-24 h-12 bg-sky-300 rounded shadow-inner"></span>
+  <span class="w-24 h-12 bg-sky-200 rounded shadow-inner"></span>
+  <span class="w-24 h-12 bg-sky-100 rounded shadow-inner"></span>
+</div>
+
+
+<div class="mt-10 bg-gray-100 p-10 rounded shadow-innser">
+
+  <button type="submit" class="float-right flex items-center bg-sky-700 shadow-inner shadow-md text-white py-2 px-4 rounded hover:bg-sky-600 focus:outline-none">
+    Submit
+    <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
+      <path stroke-linecap="round" stroke-linejoin="round" d="M5 12h14M12 5l7 7-7 7" />
+    </svg>
+  </button>
+
+  <div class="w-[500px] mb-10 relative -ml-20">
+
+    <div style="position:absolute;top:14px;left:120px;width: 150px; height: 6px;" class="bg-sky-600"></div>
+    <div style="position:absolute;top:14px;left:260px;width:140px; height: 6px;" class="z-10 bg-gray-300"></div>
+
+    <div class="flex justify-center space-x-10">
+      <!-- Dot 1 -->
+      <div class="z-20 relative flex items-center justify-center w-8 h-8 rounded-full bg-sky-600">
+        <svg class="w-8 h-8 text-white absolute -ml-1" fill="currentColor" viewBox="0 0 20 20">
+          <path d="M7.293 9.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 011.414 1.414l-4 4a1 1 0 01-1.414 0l-2-2a1 1 0 010-1.414z"/>
+        </svg>
+      </div>
+
+      <!-- Dot 2 -->
+      <div class="z-20 relative flex items-center justify-center w-8 h-8 rounded-full bg-sky-600">
+        <svg class="w-8 h-8 text-white absolute -ml-1" fill="currentColor" viewBox="0 0 20 20">
+          <path d="M7.293 9.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 011.414 1.414l-4 4a1 1 0 01-1.414 0l-2-2a1 1 0 010-1.414z"/>
+        </svg>
+       </div>
+
+       <!-- Dot 3 (Current Step) -->
+       <div class="z-20 relative flex items-center justify-center w-8 h-8 rounded-full bg-sky-600 text-sky-100">
+        <span style="position: relative; top:-2px;font-size:10px">
+        ⬤
+        </span>
+       </div>
+
+       <!-- Dot 4 (Empty) -->
+       <div class="z-20 flex items-center justify-center w-8 h-8 bg-gray-100 border-4 border-gray-300 rounded-full"></div>
+
+       <!-- Dot 5 (Empty) -->
+       <div class="z-20 flex items-center justify-center w-8 h-8 bg-gray-100 border-4 border-gray-300 rounded-full"></div>
+    </div>
+  </div>
+
+  <div class="flex items-center p-4 bg-sky-100 border border-sky-500 text-sky-700">
+    <!-- Exclamation Triangle Icon -->
+    <svg class="w-6 h-6 mr-3" fill="currentColor" viewBox="0 0 20 20">
+      <path d="M8.257 3.099c.366-.737 1.368-.737 1.734 0l6.5 13c.366.737-.092 1.601-.866 1.601H2.623c-.774 0-1.232-.864-.866-1.601l6.5-13zM10 9a1 1 0 00-.993.883L9 10v2a1 1 0 002 0v-2a1 1 0 00-.883-.993L10 9zm0 4a1 1 0 00-.993.883L9 14a1 1 0 001 1h0a1 1 0 001-1v-1a1 1 0 00-.883-.993L10 13z"/>
+    </svg>
+    
+    <!-- Alert Message -->
+    <span class="font-medium">Warning: You must select at least <strong>6</strong> plant species!</span>
+  </div>
+
+</div>
+
+<h2 class="text-2xl mt-10">Status color: danger</h2>
+
+<div class="flex space-x-3 mt-3">
+  <span class="w-12 h-12 bg-red-700 rounded shadow-inner"></span>
+  <span class="w-12 h-12 bg-red-600 rounded shadow-inner"></span>
+  <span class="w-12 h-12 bg-red-500 rounded shadow-inner"></span>
+  <span class="w-12 h-12 bg-red-300 rounded shadow-inner"></span>
+  <span class="w-12 h-12 bg-red-100 rounded shadow-inner"></span>
+  <span class="w-12 h-12 bg-red-50 rounded shadow-inner"></span>
+</div>
+
+<div class="flex items-center justify-center bg-gray-500 bg-opacity-50 mt-5">
+
+  <div class="bg-white shadow-lg w-96 border-t-4 border-red-600 m-20">
+    <div class="p-10">
+      <h2 class="text-lg font-semibold text-gray-800 flex items-center">
+        <svg class="w-5 h-5 text-red-600 mr-2" fill="currentColor" viewBox="0 0 20 20">
+          <path d="M10 2a8 8 0 100 16 8 8 0 000-16zm1 11h-2v2h2v-2zm0-6h-2v4h2V7z"/>
+        </svg>
+        Delete this species
+      </h2>
+      <p class="mt-2 text-gray-600">Are you sure you want to delete this plant? This action cannot be undone.</p>
+    </div>
+    
+    <div class="bg-gray-100 p-4 rounded-md flex justify-between">
+      <button class="px-4 py-2 text-gray-700 hover:bg-gray-200 rounded-md focus:outline-none focus:ring focus:ring-gray-300">
+        Cancel
+      </button>
+      <button class="px-4 py-2 text-red-700 bg-red-100 hover:bg-red-700 hover:text-red-100 rounded-md focus:outline-none focus:ring focus:ring-red-300">
+        <strong>Delete</strong>
+      </button>
+    </div>
+  </div>
+
+</div>
+
+
+<h2 class="text-2xl mt-10">Status color: warning</h2>
+
+<div class="flex space-x-3 mt-3">
+  <span class="w-12 h-12 bg-amber-700 rounded shadow-inner"></span>
+  <span class="w-12 h-12 bg-amber-600 rounded shadow-inner"></span>
+  <span class="w-12 h-12 bg-amber-500 rounded shadow-inner"></span>
+  <span class="w-12 h-12 bg-amber-300 rounded shadow-inner"></span>
+  <span class="w-12 h-12 bg-amber-100 rounded shadow-inner"></span>
+  <span class="w-12 h-12 bg-amber-50 rounded shadow-inner"></span>
+</div>
+
+<div class="flex items-center justify-center bg-gray-100 bg-opacity-50 mt-5 p-20">
+
+  <div class="flex items-center p-4 bg-amber-50 border border-amber-500 text-amber-700">
+    <!-- Exclamation Triangle Icon -->
+    <svg class="w-6 h-6 mr-3" fill="currentColor" viewBox="0 0 20 20">
+      <path d="M8.257 3.099c.366-.737 1.368-.737 1.734 0l6.5 13c.366.737-.092 1.601-.866 1.601H2.623c-.774 0-1.232-.864-.866-1.601l6.5-13zM10 9a1 1 0 00-.993.883L9 10v2a1 1 0 002 0v-2a1 1 0 00-.883-.993L10 9zm0 4a1 1 0 00-.993.883L9 14a1 1 0 001 1h0a1 1 0 001-1v-1a1 1 0 00-.883-.993L10 13z"/>
+    </svg>
+    
+    <!-- Alert Message -->
+    <span class="font-medium">Warning: You must select at least <strong>6</strong> plant species!</span>
+  </div>
+
+
+</div>
+
+<h2 class="text-2xl mt-10">Status color: success</h2>
+
+<div class="flex space-x-3 mt-3">
+  <span class="w-12 h-12 bg-lime-700 rounded shadow-inner"></span>
+  <span class="w-12 h-12 bg-lime-600 rounded shadow-inner"></span>
+  <span class="w-12 h-12 bg-lime-500 rounded shadow-inner"></span>
+  <span class="w-12 h-12 bg-lime-300 rounded shadow-inner"></span>
+  <span class="w-12 h-12 bg-lime-100 rounded shadow-inner"></span>
+  <span class="w-12 h-12 bg-lime-50 rounded shadow-inner"></span>
+</div>
+
+<div class="flex items-center justify-center bg-gray-100 bg-opacity-50 mt-5 p-20">
+  <div class="flex items-center p-4 bg-lime-50 border border-lime-500 text-lime-700">
+    <!-- Exclamation Triangle Icon -->
+    <svg class="w-6 h-6 mr-3" fill="currentColor" viewBox="0 0 20 20">
+      <path d="M8.257 3.099c.366-.737 1.368-.737 1.734 0l6.5 13c.366.737-.092 1.601-.866 1.601H2.623c-.774 0-1.232-.864-.866-1.601l6.5-13zM10 9a1 1 0 00-.993.883L9 10v2a1 1 0 002 0v-2a1 1 0 00-.883-.993L10 9zm0 4a1 1 0 00-.993.883L9 14a1 1 0 001 1h0a1 1 0 001-1v-1a1 1 0 00-.883-.993L10 13z"/>
+    </svg>
+    
+    <!-- Alert Message -->
+    <span class="font-medium">Warning: You must select at least <strong>6</strong> plant species!</span>
+  </div>
+</div>
+
+
+<div class="max-w-lg mx-auto p-6 bg-white rounded-lg shadow-md mt-5">
+  <h2 class="text-2xl font-semibold text-gray-800 mb-4">Garden Information Form</h2>
+  <p class="text-lime-700 mb-6 bg-lime-50 border border-lime-500 p-2">Please fill out the information below to help us understand your gardening needs.</p>
+
+  <form>
+    <!-- Name Field -->
+    <div class="mb-4">
+      <label for="name" class="block text-gray-700 text-sm font-bold mb-2">Name</label>
+      <div class="flex items-center border bg-gray-500">
+        <input type="text" id="name" placeholder="Your Name" class="appearance-none border-none w-full py-2 px-3 bg-gray-100 leading-tight focus:outline-none focus:ring focus:ring-blue-300" required>
+      </div>
+    </div>
+
+    <!-- Email Field -->
+    <div class="mb-4">
+      <label for="email" class="block text-gray-700 text-sm font-bold mb-2">E-mail</label>
+      <div class="flex items-center border bg-gray-500">
+        <input type="text" id="name" placeholder="email@example.org" class="appearance-none border-none w-full py-2 px-3 bg-gray-100 leading-tight focus:outline-none focus:ring focus:ring-blue-300" required>
+      </div>
+    </div>
+
+    <!-- Garden Type Dropdown -->
+    <div class="mb-4">
+      <label for="garden-type" class="block text-gray-700 text-sm font-bold mb-2">Garden Type</label>
+      <select id="garden-type" class="block appearance-none w-full bg-gray-100 border border-gray-300 rounded-md py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:ring focus:ring-blue-300">
+        <option>Vegetable Garden</option>
+        <option>Flower Garden</option>
+        <option>Herb Garden</option>
+        <option>Fruit Garden</option>
+      </select>
+    </div>
+
+    <!-- Newsletter Toggle -->
+    <div class="flex items-center space-x-4 mb-4">
+      <label for="toggle" class="text-gray-700">Subscribe to newsletter:</label>
+      
+      <!-- Toggle Switch -->
+      <div class="relative">
+        <input type="checkbox" id="toggle" class="peer hidden" />
+        <div class="w-12 h-6 bg-lime-700 rounded-full cursor-pointer peer-checked:bg-lime-600 transition-colors"></div>
+        <div class="absolute left-1 top-1 w-4 h-4 bg-white rounded-full transition-transform peer-checked:transform peer-checked:translate-x-6"></div>
+      </div>
+    </div>
+
+    <!-- Photo Upload -->
+    <div class="mb-4">
+      <label for="photos" class="block text-gray-700 text-sm font-bold mb-2">Upload Photos</label>
+      <input type="file" id="photos" accept="image/*" multiple class="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border file:border-gray-300 file:bg-white file:text-sm file:font-semibold hover:file:bg-gray-100"/>
+    </div>
+
+    <!-- Submit Button -->
+    <div class="flex justify-end">
+      <button type="submit" class="px-4 py-2 bg-lime-600 hover:bg-lime-700 text-white font-bold rounded-md focus:outline-none focus:ring focus:ring-lime-300">Submit</button>
+    </div>
+  </form>
+</div>
+
+<h2 class="text-2xl mt-10">Accent colors</h2>
+
+  <div class="grid grid-cols-2 gap-4 p-4">
+
+    <div class="mt-3">
+
+      <div class="flex space-x-3">
+        <span class="w-12 h-12 bg-orange-700 rounded shadow-inner"></span>
+        <span class="w-12 h-12 bg-orange-600 rounded shadow-inner"></span>
+        <span class="w-12 h-12 bg-orange-500 rounded shadow-inner"></span>
+        <span class="w-12 h-12 bg-orange-300 rounded shadow-inner"></span>
+        <span class="w-12 h-12 bg-orange-100 rounded shadow-inner"></span>
+        <span class="w-12 h-12 bg-orange-50 rounded shadow-inner"></span>
+      </div>
+
+      <div class="max-w-4xl mx-auto mt-10">
+        <nav class="flex space-x-4 border-b border-gray-300">
+          <a href="#" class="flex items-center py-2 px-4 text-gray-600 hover:text-orange-600 font-semibold border-b-2 border-orange-600" aria-current="page">
+            <i class="fas fa-home mr-2"></i> Home
+          </a>
+          <a href="#" class="flex items-center py-2 px-4 text-gray-600 hover:text-orange-600 font-semibold">
+            <i class="fas fa-user mr-2"></i> Profile
+          </a>
+          <a href="#" class="flex items-center py-2 px-4 text-gray-600 hover:text-orange-600 font-semibold relative">
+            <i class="fas fa-envelope mr-2"></i> Messages
+            <span class="absolute -top-1 -right-2 bg-orange-500 text-white text-xs font-bold rounded-full px-2">NEW</span>
+          </a>
+          <a href="#" class="flex items-center py-2 px-4 text-gray-600 hover:text-orange-600 font-semibold">
+            <i class="fas fa-cog mr-2"></i> Settings
+          </a>
+        </nav>
+
+        <!-- Tab Content -->
+        <div class="mt-6 p-4 border rounded-lg shadow-md bg-white">
+          <h3 class="text-xl font-semibold">Welcome to the Home Tab!</h3>
+          <button class="float-right px-4 py-2 text-orange-700 bg-orange-100 hover:bg-orange-700 hover:text-orange-100 rounded-md focus:outline-none focus:ring focus:ring-red-300">
+            <strong>Read more</strong>
+          </button>
+          <p class="mt-2 text-gray-700">Explore the latest updates and news here.</p>
+        </div>
+      </div>
+
+      <div class="max-w-4xl mx-auto p-0 bg-white shadow-md flex items-stretch border-l-4 border-orange-700 mt-6">
+        <!-- Text Section -->
+        <div class="flex-1 p-6">
+          <h2 class="text-2xl font-bold text-gray-800">Product Title</h2>
+          <p class="mt-2 text-gray-600">This is a brief description of the product. It highlights the key features and benefits, enticing users to learn more. The text can be longer, and the image will adjust accordingly.</p>
+        </div>
+
+        <!-- Image Section -->
+        <div class="flex-shrink-0">
+          <img src="https://via.placeholder.com/150" alt="Product Image" class="h-full w-auto object-cover" />
+        </div>
+      </div>
+
+      <div class="max-w-4xl mx-auto mb-6 p-6 bg-orange-50 shadow-md flex items-center mt-6">
+        <!-- Text Section -->
+        <div class="flex-1 pr-4">
+          <h2 class="text-2xl font-bold">
+            Plant name
+          </h2>
+          <p class="mt-2 text-gray-600">This is a brief description of the product. It highlights the key features and benefits, enticing users to learn more.</p>
+        </div>
+
+        <!-- Image Section -->
+        <div class="flex-shrink-0">
+          <img src="https://via.placeholder.com/150" alt="Product Image" class="w-32 h-auto object-contain" />
+        </div>
+      </div>
+
+      <div class="bg-gray-100 py-12 mt-10">
+        <div class="max-w-6xl mx-auto px-4">
+          <h2 class="text-3xl text-gray-700 font-bold text-center mb-8">Our Features</h2>
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+
+            <!-- Feature 1 -->
+            <div class="flex flex-col items-center p-6 bg-white shadow-md hover:shadow-lg transition-shadow duration-300 text-gray-700">
+              <i class="fas fa-bolt fa-3x mb-4 text-orange-700"></i>
+              <h3 class="text-xl font-semibold mb-2">Pelargonium</h3>
+              <p class="text">Great pioneer to start with</p>
+            </div>
+
+            <!-- Feature 2 -->
+            <div class="flex flex-col items-center p-6 bg-white shadow-md hover:shadow-lg transition-shadow duration-300 text-gray-700">
+              <i class="fas fa-lock fa-3x mb-4 text-orange-700"></i>
+              <h3 class="text-xl font-semibold mb-2">Helichrysum</h3>
+              <p class="text">Great smelling and good for insects</p>
+            </div>
+
+            <!-- Feature 3 -->
+            <div class="flex flex-col items-center p-6 bg-white shadow-md hover:shadow-lg transition-shadow duration-300 text-gray-700">
+              <i class="fas fa-cogs fa-3x mb-4 text-orange-700"></i>
+              <h3 class="text-xl font-semibold mb-2">Carpobrotus</h3>
+              <p class="text">Ground cover for any garden</p>
+            </div>
+
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <div class="mt-3">
+
+      <div class="flex space-x-3">
+        <span class="w-12 h-12 bg-pink-700 rounded shadow-inner"></span>
+        <span class="w-12 h-12 bg-pink-600 rounded shadow-inner"></span>
+        <span class="w-12 h-12 bg-pink-500 rounded shadow-inner"></span>
+        <span class="w-12 h-12 bg-pink-300 rounded shadow-inner"></span>
+        <span class="w-12 h-12 bg-pink-100 rounded shadow-inner"></span>
+        <span class="w-12 h-12 bg-pink-50 rounded shadow-inner"></span>
+      </div>
+
+      <div class="max-w-4xl mx-auto mt-10">
+        <nav class="flex space-x-4 border-b border-gray-300">
+          <a href="#" class="flex items-center py-2 px-4 text-gray-600 hover:text-pink-600 font-semibold border-b-2 border-pink-600" aria-current="page">
+            <i class="fas fa-home mr-2"></i> Home
+          </a>
+          <a href="#" class="flex items-center py-2 px-4 text-gray-600 hover:text-pink-600 font-semibold">
+            <i class="fas fa-user mr-2"></i> Profile
+          </a>
+          <a href="#" class="flex items-center py-2 px-4 text-gray-600 hover:text-pink-600 font-semibold relative">
+            <i class="fas fa-envelope mr-2"></i> Messages
+            <span class="absolute -top-1 -right-2 bg-pink-500 text-white text-xs font-bold rounded-full px-2">NEW</span>
+          </a>
+          <a href="#" class="flex items-center py-2 px-4 text-gray-600 hover:text-pink-600 font-semibold">
+            <i class="fas fa-cog mr-2"></i> Settings
+          </a>
+        </nav>
+
+        <!-- Tab Content -->
+        <div class="mt-6 p-4 border rounded-lg shadow-md bg-white">
+          <h3 class="text-xl font-semibold">Welcome to the Home Tab!</h3>
+          <button class="float-right px-4 py-2 text-pink-700 bg-pink-100 hover:bg-pink-700 hover:text-pink-100 rounded-md focus:outline-none focus:ring focus:ring-red-300">
+            <strong>Read more</strong>
+          </button>
+          <p class="mt-2 text-gray-700">Explore the latest updates and news here.</p>
+        </div>
+      </div>
+
+      <div class="max-w-4xl mx-auto p-0 bg-white shadow-md flex items-stretch border-l-4 border-pink-700 mt-6">
+        <!-- Text Section -->
+        <div class="flex-1 p-6">
+          <h2 class="text-2xl font-bold text-gray-800">Product Title</h2>
+          <p class="mt-2 text-gray-600">This is a brief description of the product. It highlights the key features and benefits, enticing users to learn more. The text can be longer, and the image will adjust accordingly.</p>
+        </div>
+
+        <!-- Image Section -->
+        <div class="flex-shrink-0">
+          <img src="https://via.placeholder.com/150" alt="Product Image" class="h-full w-auto object-cover" />
+        </div>
+      </div>
+
+      <div class="max-w-4xl mx-auto mb-6 p-6 bg-pink-50 shadow-md flex items-center mt-6">
+        <!-- Text Section -->
+        <div class="flex-1 pr-4">
+          <h2 class="text-2xl font-bold">
+            Plant name
+          </h2>
+          <p class="mt-2 text-gray-600">This is a brief description of the product. It highlights the key features and benefits, enticing users to learn more.</p>
+        </div>
+
+        <!-- Image Section -->
+        <div class="flex-shrink-0">
+          <img src="https://via.placeholder.com/150" alt="Product Image" class="w-32 h-auto object-contain" />
+        </div>
+      </div>
+
+      <div class="bg-gray-100 py-12 mt-10">
+        <div class="max-w-6xl mx-auto px-4">
+          <h2 class="text-3xl text-gray-700 font-bold text-center mb-8">Our Features</h2>
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+
+            <!-- Feature 1 -->
+            <div class="flex flex-col items-center p-6 bg-white shadow-md hover:shadow-lg transition-shadow duration-300 text-gray-700">
+              <i class="fas fa-bolt fa-3x mb-4 text-pink-700"></i>
+              <h3 class="text-xl font-semibold mb-2">Pelargonium</h3>
+              <p class="text">Great pioneer to start with</p>
+            </div>
+
+            <!-- Feature 2 -->
+            <div class="flex flex-col items-center p-6 bg-white shadow-md hover:shadow-lg transition-shadow duration-300 text-gray-700">
+              <i class="fas fa-lock fa-3x mb-4 text-pink-700"></i>
+              <h3 class="text-xl font-semibold mb-2">Helichrysum</h3>
+              <p class="text">Great smelling and good for insects</p>
+            </div>
+
+            <!-- Feature 3 -->
+            <div class="flex flex-col items-center p-6 bg-white shadow-md hover:shadow-lg transition-shadow duration-300 text-gray-700">
+              <i class="fas fa-cogs fa-3x mb-4 text-pink-700"></i>
+              <h3 class="text-xl font-semibold mb-2">Carpobrotus</h3>
+              <p class="text">Ground cover for any garden</p>
+            </div>
+
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+  </div>
+
+<h2 class="text-2xl mt-10">Neutral colors</h2>
+
+<div class="flex space-x-3 mt-5">
+  <span class="w-12 h-12 bg-gray-700 rounded shadow-inner"></span>
+  <span class="w-12 h-12 bg-gray-600 rounded shadow-inner"></span>
+  <span class="w-12 h-12 bg-gray-500 rounded shadow-inner"></span>
+  <span class="w-12 h-12 bg-gray-300 rounded shadow-inner"></span>
+  <span class="w-12 h-12 bg-gray-100 rounded shadow-inner"></span>
+  <span class="w-12 h-12 bg-gray-50 rounded shadow-inner"></span>
+</div>
+
+
+</div>
+
+
+{% endblock %}
