@@ -55,9 +55,33 @@
           </div>
 
           <div class="sm:col-span-4">
-            <label for="file" class="block text-sm/6 font-medium text-gray-900">File</label>
+            <label for="file" class="block text-sm/6 font-medium text-gray-900">File(s)</label>
+            {% if info.attachments.all %}
+              <span class="mt-2 bg-orange-100 text-orange-700 text-xs font-bold rounded-full px-2 py-1 inline-block">
+                <i class="fa fa-info-circle"></i> Existing files will be replaced when you upload a new file.
+              </span>
+            {% endif %}
             <div class="mt-2">
-              <input id="file" name="file" type="file" class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-sky-600 sm:text-sm/6" accept=".zip,application/zip">
+              <input id="file" name="file" type="file" class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-sky-600 sm:text-sm/6" multiple>
+            </div>
+          </div>
+
+          <div class="col-span-full">
+            <label for="cover-photo" class="block text-sm/6 font-medium text-gray-900">Existing file(s)</label>
+            <div class="mt-2 flex rounded-lg border border-dashed border-gray-900/25 px-6 py-10">
+              <ul>
+                {% for each in info.attachments.all %}
+                <li class="text-gray-800">
+                  <i class="fa-fw fa fa-{{ each.get_icon }}"></i>
+                  <a href="{{ each.file.url }}">
+                  {{ each.get_name }}
+                  </a>
+                  <span class="text-xs/5 text-gray-600">
+                    ({{ each.file.size|filesizeformat }})
+                  </span>
+                </li>
+                {% endfor %}
+              </ul>
             </div>
           </div>
 
@@ -77,6 +101,40 @@
         <p class="mt-1 text-sm/6 text-gray-600">Details around appearance and other settings.</p>
 
         <div class="mt-10 space-y-10">
+
+          <fieldset>
+            <legend class="text-sm/6 font-semibold text-gray-900">Shapefile Processing</legend>
+            <div class="mt-6 space-y-6">
+              <div class="relative flex gap-x-3">
+                <div class="flex h-6 items-center">
+                  <input id="regular" name="processing" type="radio" class="size-4 border-gray-300 text-sky-600 focus:ring-sky-600" {% if not info.meta_data.single_reference_space and not info.meta_data.group_spaces_by_name %}checked{% endif %}>
+                </div>
+                <div class="text-sm/6">
+                  <label for="regular" class="font-medium text-gray-900">Regular processing</label>
+                  <p class="text-gray-500">Each item becomes a new reference space</p>
+                </div>
+              </div>
+              <div class="relative flex gap-x-3">
+                <div class="flex h-6 items-center">
+                  <input id="single_reference_space" name="processing" type="radio" class="size-4 border-gray-300 text-sky-600 focus:ring-sky-600" {% if info.meta_data.single_reference_space %}checked{% endif %} value="single_reference_space">
+                </div>
+                <div class="text-sm/6">
+                  <label for="single_reference_space" class="font-medium text-gray-900">Single reference space</label>
+                  <p class="text-gray-500">This contains a single reference space - merge down into a single object</p>
+                </div>
+              </div>
+              <div class="relative flex gap-x-3">
+                <div class="flex h-6 items-center">
+                  <input id="group_spaces_by_name" name="processing" type="radio" class="size-4 border-gray-300 text-sky-600 focus:ring-sky-600" {% if info.meta_data.group_spaces_by_name %}checked{% endif %} value="group_spaces_by_name">
+                </div>
+                <div class="text-sm/6">
+                  <label for="group_spaces_by_name" class="font-medium text-gray-900">Group by name</label>
+                  <p class="text-gray-500">Group all spaces that have the same name together (e.g. separate river segments into a single river)</p>
+                </div>
+              </div>
+            </div>
+          </fieldset>
+
           <fieldset>
             <legend class="text-sm/6 font-semibold text-gray-900">Map Display</legend>
             <div class="mt-6 space-y-6">
@@ -109,6 +167,7 @@
               </div>
             </div>
           </fieldset>
+
           <fieldset>
             <legend class="text-sm/6 font-semibold text-gray-900">Publish map</legend>
             <div class="mt-6 space-y-6">

@@ -10,6 +10,14 @@ from unidecode import unidecode
 from django.urls import reverse
 import uuid
 from django.utils.translation import gettext_lazy as _
+import os
+from django.db.models.signals import post_delete
+from django.dispatch import receiver
+
+# Import user
+from django.contrib.auth.models import User
+from django.contrib.auth import get_user_model
+User = get_user_model()
 
 class Language(models.Model):
     name = models.CharField(max_length=255)
@@ -104,7 +112,6 @@ class Document(models.Model):
     is_active = models.BooleanField(default=True, db_index=True)
     is_shapefile = models.BooleanField(default=True, db_index=True)
     include_in_site_analysis = models.BooleanField(default=False, db_index=True)
-    file = models.FileField(null=True, blank=True, upload_to="files")
     site = models.ForeignKey(Site, on_delete=models.CASCADE, null=True, blank=True, related_name="documents")
 
     def __str__(self):
@@ -304,6 +311,32 @@ class Document(models.Model):
                         source = self,
                         meta_data = {"features": meta_data},
                     )
+
+class Attachment(models.Model):
+    file = models.FileField(upload_to="files")
+    attached_to = models.ForeignKey("Document", on_delete=models.CASCADE, related_name="attachments")
+
+    def get_name(self):
+        return os.path.basename(self.file.name)
+
+    def get_icon(self):
+        filename = self.file.name
+        if filename.endswith(".dbf"):
+            icon = "file-excel"
+        elif filename.endswith(".shp"):
+            icon = "layer-group"
+        elif filename.endswith(".prj"):
+            icon = "globe"
+        elif filename.endswith("."):
+            icon = "database"
+        else:
+            icon = "file"
+        return icon
+
+@receiver(post_delete, sender=Attachment)
+def delete_file_on_model_delete(sender, instance, **kwargs):
+    if os.path.isfile(instance.file.path):
+        os.remove(instance.file.path)
 
 class ReferenceSpace(models.Model):
     name = models.CharField(max_length=255, db_index=True)
@@ -648,3 +681,24 @@ class GardenManager(models.Model):
 
     class Meta:
         ordering = ["garden", "name"]
+
+class Log(models.Model):
+
+    class LogAction(models.IntegerChoices):
+        CREATE = 1, _("Create")
+        UPDATE = 2, _("Update")
+        DELETE = 3, _("Delete")
+
+    action = models.IntegerField(choices=LogAction.choices, db_index=True, default=1)
+    name = models.CharField(max_length=500)
+    url = models.CharField(max_length=1500, null=True, blank=True)
+    details = models.TextField(null=True)
+    user = models.ForeignKey(User, null=True, blank=True, on_delete=models.SET_NULL, related_name="logs")
+    date = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ["date"]
+
+    def delete(self, *args, **kwargs):
+        # We should never delete log objects, so overriding this here
+        return False

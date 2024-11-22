@@ -14,6 +14,12 @@ from django.contrib.gis import geos
 from django.contrib.gis.measure import D
 from django.core.paginator import Paginator
 from django.forms import modelform_factory
+from django.contrib.admin.views.decorators import staff_member_required
+
+import zipfile
+import os
+from django.core.files import File
+import uuid
 
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import authenticate, login, logout
@@ -65,6 +71,11 @@ def get_site(request):
     except:
         return None
 
+# For a default log entry where we take the user and url from request
+def log_action(request, action, name):
+    Log.objects.create(action=action, name=name, url=request.get_full_path(), user=request.user)
+
+# Regular views
 def index(request):
     if "photos" in request.GET:
         return None
@@ -1431,6 +1442,7 @@ def documents(request):
 
 # CONTROL PANEL
 
+@staff_member_required
 def controlpanel(request):
     context = {
         "controlpanel": True,
@@ -1438,6 +1450,7 @@ def controlpanel(request):
     }
     return render(request, "controlpanel/index.html", context)
 
+@staff_member_required
 def controlpanel_shapefiles(request):
 
     context = {
@@ -1447,12 +1460,15 @@ def controlpanel_shapefiles(request):
     }
     return render(request, "controlpanel/shapefiles.html", context)
 
+@staff_member_required
 def controlpanel_shapefile(request, id=None):
     site = get_site(request)
     shapefile = Document.objects.filter(is_shapefile=True).filter(Q(site=site)|Q(site__isnull=True))
     info = Document()
+    action = Log.LogAction.CREATE
     if id:
         info = shapefile.get(pk=id)
+        action = Log.LogAction.UPDATE
 
     if request.method == "POST":
         info.name = request.POST["name"]
@@ -1460,11 +1476,58 @@ def controlpanel_shapefile(request, id=None):
         info.url = request.POST.get("url")
         info.color = request.POST.get("color")
         info.doc_type = request.POST["doc_type"]
-        info.file = request.FILES.get("file")
         info.description = request.POST.get("description")
         info.include_in_site_analysis = True if request.POST.get("include_in_site_analysis") else False
         info.is_active = True if request.POST.get("is_active") == "1" else False
+        if not info.meta_data:
+            info.meta_data = {}
+        else:
+            # Remove any settings that might exist
+            info.meta_data.pop("single_reference_space", None)
+            info.meta_data.pop("group_spaces_by_name", None)
+
+        if request.POST["processing"] == "single_reference_space":
+            info.meta_data["single_reference_space"] = True
+        elif request.POST["processing"] == "group_spaces_by_name":
+            info.meta_data["group_spaces_by_name"] = True
+
         info.save()
+        log_action(request, action, f"Shapefile: {info.name}")
+
+        uploaded_files = request.FILES.getlist("file")
+
+        if uploaded_files:
+            info.attachments.all().delete()
+
+            for uploaded_file in uploaded_files:
+                # If it's a zip, we extract all files and save them separately...
+                if uploaded_file.name.endswith(".zip"):
+                    with zipfile.ZipFile(uploaded_file, "r") as zip_ref:
+
+                        # Extract all the contents into a temporary directory
+                        my_uuid = uuid.uuid4()
+                        temp_dir = "/tmp/" + f"{info.id}-{my_uuid}"
+                        os.makedirs(temp_dir, exist_ok=True)
+                        zip_ref.extractall(temp_dir)
+
+                        # Loop through all extracted files
+                        for filename in os.listdir(temp_dir):
+                            file_path = os.path.join(temp_dir, filename)
+                            with open(file_path, "rb") as f:
+                                attachment = Attachment()
+                                attachment.attached_to = info
+                                attachment.file.save(filename, File(f), save=True)
+
+                    # Remove the temp dir and files
+                    for filename in os.listdir(temp_dir):
+                        os.remove(os.path.join(temp_dir, filename))
+                    os.rmdir(temp_dir)
+
+                else:
+                    Attachment.objects.create(file=uploaded_file, attached_to=info)
+
+        messages.success(request, "Information was saved.")
+        return redirect(reverse("controlpanel_shapefiles"))
 
     context = {
         "controlpanel": True,
