@@ -103,3 +103,28 @@
   object-fit: cover;
   height: 200px;
 }
+
+
+
+/* Define a single class for the table with all necessary styles */
+.table {
+  @apply min-w-full table-auto border-collapse border border-gray-300;
+
+  /* Styles for the table header */
+  & thead tr {
+    @apply bg-gray-100;
+  }
+
+  & thead th {
+    @apply px-6 py-3 text-left text-sm font-semibold text-gray-700 border-b border-gray-300;
+  }
+
+  /* Styles for table rows */
+  & tbody tr {
+    @apply bg-white hover:bg-gray-50;
+  }
+
+  & td {
+    @apply border-b border-slate-100 dark:border-slate-700 p-4 pl-8 text-gray-800 dark:text-slate-400
+  }
+}

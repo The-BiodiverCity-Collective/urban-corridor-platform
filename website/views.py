@@ -107,7 +107,7 @@ def index(request):
             each.save()
 
     context = {
-        #"garden": Garden.objects.filter(active=True).order_by("?")[0],
+        #"garden": Garden.objects.filter(is_active=True).order_by("?")[0],
         "garden": Garden(),
     }
     return render(request, "index.html", context)
@@ -300,7 +300,7 @@ def maps(request):
             hits[e] = []
             type_list[e] = each.label
 
-    documents = Document.objects.filter(active=True, type__in=relevant_types).order_by("type")
+    documents = Document.objects.filter(is_active=True, type__in=relevant_types).order_by("type")
     for each in documents:
         t = each.type
         hits[t].append(each)
@@ -475,7 +475,7 @@ def report(request, show_map=False, lat=False, lng=False, site_selection=False):
             hits[e] = []
             type_list[e] = each.label
 
-    documents = Document.objects.filter(active=True, include_in_site_analysis=True).order_by("type")
+    documents = Document.objects.filter(is_active=True, include_in_site_analysis=True).order_by("type")
     for each in documents:
         t = each.type
         hits[t].append(each)
@@ -714,10 +714,10 @@ def species(request, id):
     return render(request, "website/species.html", context)
 
 def gardens(request):
-    gardens = Garden.objects.prefetch_related("organizations").filter(active=True)
+    gardens = Garden.objects.prefetch_related("organizations").filter(is_active=True)
     inactive_gardens = None
     if request.user.is_authenticated:
-        inactive_gardens = Garden.objects_unfiltered.filter(active=False)
+        inactive_gardens = Garden.objects_unfiltered.filter(is_active=False)
     context = {
         "all": gardens,
         #"page": Page.objects.get(pk=2),
@@ -731,12 +731,12 @@ def garden(request, id):
     info = Garden.objects_unfiltered.get(pk=id)
     show_garden = True
 
-    if not info.active:
+    if not info.is_active:
         show_garden = False
         if request.user.is_authenticated:
             show_garden = True
             if "activate" in request.POST:
-                info.active = True
+                info.is_active = True
                 info.save()
                 messages.success(request, "Garden has been activated.")
                 return redirect(reverse("garden", args=[info.id]))
@@ -833,7 +833,7 @@ def garden_form(request, id=None, token=None, uuid=None):
                     pass
                 info.save()
             if new_garden:
-                info.active = False
+                info.is_active = False
                 info.source_id = 8
                 info.original = request.POST
                 info.save()
@@ -1425,10 +1425,55 @@ def organizations(request):
 
 def documents(request):
     context = {
-        "documents": Document.objects.filter(active=True, type__in=[6,7]).order_by("name"),
+        "documents": Document.objects.filter(is_active=True, type__in=[6,7]).order_by("name"),
     }
     return render(request, "website/documents.html", context)
 
+# CONTROL PANEL
+
+def controlpanel(request):
+    context = {
+        "controlpanel": True,
+        "menu": "index",
+    }
+    return render(request, "controlpanel/index.html", context)
+
+def controlpanel_shapefiles(request):
+
+    context = {
+        "controlpanel": True,
+        "menu": "shapefiles",
+        "shapefiles": Document.objects.filter(is_shapefile=True),
+    }
+    return render(request, "controlpanel/shapefiles.html", context)
+
+def controlpanel_shapefile(request, id=None):
+    site = get_site(request)
+    shapefile = Document.objects.filter(is_shapefile=True).filter(Q(site=site)|Q(site__isnull=True))
+    info = Document()
+    if id:
+        info = shapefile.get(pk=id)
+
+    if request.method == "POST":
+        info.name = request.POST["name"]
+        info.author = request.POST["author"]
+        info.url = request.POST.get("url")
+        info.color = request.POST.get("color")
+        info.doc_type = request.POST["doc_type"]
+        info.file = request.FILES.get("file")
+        info.description = request.POST.get("description")
+        info.include_in_site_analysis = True if request.POST.get("include_in_site_analysis") else False
+        info.is_active = True if request.POST.get("is_active") == "1" else False
+        info.save()
+
+    context = {
+        "controlpanel": True,
+        "menu": "shapefiles",
+        "info": info,
+        "load_form": True,
+        "doc_types": Document.Type,
+    }
+    return render(request, "controlpanel/shapefile.html", context)
 
 def temp(request):
 

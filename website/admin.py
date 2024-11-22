@@ -24,16 +24,16 @@ class VegTypeAdmin(admin.ModelAdmin):
     autocomplete_fields = ["spaces"]
 
 class DocAdmin(SearchAdmin):
-    list_display = ["name", "author", "active", "include_in_site_analysis"]
-    list_filter = ["active", "include_in_site_analysis"]
+    list_display = ["name", "author", "is_active", "include_in_site_analysis"]
+    list_filter = ["is_active", "include_in_site_analysis"]
 
 class SpaceAdmin(SearchAdmin):
     list_display = ["name", "source"]
     list_filter = ["source"]
 
 class GardenAdmin(SearchAdmin):
-    list_display = ["name", "active"]
-    list_filter = ["active", "organizations", "source"]
+    list_display = ["name", "is_active"]
+    list_filter = ["is_active", "organizations", "source"]
 
 class UserAdmin(admin.ModelAdmin):
      list_display = ["username", "email", "first_name", "date_joined", "is_staff", "is_active"]

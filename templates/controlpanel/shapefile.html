@@ -1,0 +1,138 @@
+{% extends "_base.html" %}
+
+{% block content %}
+
+<h1 class="text-3xl">{% block title %}{% if info %}Edit shapefile{% else %}Add shapefile{% endif %}{% endblock %}</h1>
+
+<div class="mt-10 flex items-center justify-center min-h-screen bg-gray-100 py-10">
+  <form class="max-w-[700px]" method="post" enctype="multipart/form-data">
+    <div class="space-y-12">
+
+      <div class="border-b border-gray-900/10 pb-12">
+        <h2 class="text-base/7 font-semibold text-gray-900">General information</h2>
+        <p class="mt-1 text-sm/6 text-gray-600">Meta data of the shapefile</p>
+
+        <div class="grid grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6 mt-10">
+
+          <div class="col-span-full">
+            <label for="name" class="block text-sm/6 font-medium text-gray-900">Name</label>
+            <div class="mt-2">
+              <input type="text" name="name" id="name" class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-sky-600 sm:text-sm/6" value="{{ info.name }}" required>
+            </div>
+          </div>
+
+          <div class="sm:col-span-3">
+            <label for="author" class="block text-sm/6 font-medium text-gray-900">Author</label>
+            <div class="mt-2">
+              <input type="text" name="author" id="author" class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-sky-600 sm:text-sm/6" value="{{ info.author }}" required>
+            </div>
+          </div>
+
+          <div class="sm:col-span-3">
+            <label for="url" class="block text-sm/6 font-medium text-gray-900">URL</label>
+            <div class="mt-2">
+              <input type="url" name="url" id="url" class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-sky-600 sm:text-sm/6" value="{{ info.url|default_if_none:"" }}">
+            </div>
+          </div>
+
+          <div class="sm:col-span-3">
+            <label for="doc_type" class="block text-sm/6 font-medium text-gray-900">Type</label>
+            <div class="mt-2">
+              <select id="doc_type" name="doc_type" class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-sky-600 sm:max-w-xs sm:text-sm/6" required>
+                <option value=""></option>
+                {% for each in doc_types %}
+                <option {% if each == info.doc_type %}selected{% endif %} value="{{ each }}">{{ each.label }}</option>
+                {% endfor %}
+              </select>
+            </div>
+          </div>
+
+          <div class="sm:col-span-3">
+            <label for="color" class="block text-sm/6 font-medium text-gray-900">Color</label>
+            <div class="mt-2">
+              <input type="color" name="color" id="color" class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-sky-600 sm:text-sm/6" value="{{ info.color|default_if_none:"" }}">
+            </div>
+          </div>
+
+          <div class="sm:col-span-4">
+            <label for="file" class="block text-sm/6 font-medium text-gray-900">File</label>
+            <div class="mt-2">
+              <input id="file" name="file" type="file" class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-sky-600 sm:text-sm/6" accept=".zip,application/zip">
+            </div>
+          </div>
+
+          <div class="col-span-full">
+            <label for="description" class="block text-sm/6 font-medium text-gray-900">Description</label>
+            <div class="mt-2">
+              <textarea name="description" id="description" class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-sky-600 sm:text-sm/6">{{ info.description|default_if_none:"" }}</textarea>
+            </div>
+          </div>
+
+
+        </div>
+      </div>
+
+      <div class="border-b border-gray-900/10 pb-12">
+        <h2 class="text-base/7 font-semibold text-gray-900">Settings</h2>
+        <p class="mt-1 text-sm/6 text-gray-600">Details around appearance and other settings.</p>
+
+        <div class="mt-10 space-y-10">
+          <fieldset>
+            <legend class="text-sm/6 font-semibold text-gray-900">Map Display</legend>
+            <div class="mt-6 space-y-6">
+              <div class="relative flex gap-x-3">
+                <div class="flex h-6 items-center">
+                  <input id="mastermap" name="mastermap" type="checkbox" class="size-4 rounded border-gray-300 text-sky-600 focus:ring-sky-600">
+                </div>
+                <div class="text-sm/6">
+                  <label for="mastermap" class="font-medium text-gray-900">Master map</label>
+                  <p class="text-gray-500">Show on the master map</p>
+                </div>
+              </div>
+              <div class="relative flex gap-x-3">
+                <div class="flex h-6 items-center">
+                  <input id="individual_map" name="individual_map" type="checkbox" class="size-4 rounded border-gray-300 text-sky-600 focus:ring-sky-600">
+                </div>
+                <div class="text-sm/6">
+                  <label for="individual_map" class="font-medium text-gray-900">Individual map</label>
+                  <p class="text-gray-500">Show an individual map on the website for this shapefile</p>
+                </div>
+              </div>
+              <div class="relative flex gap-x-3">
+                <div class="flex h-6 items-center">
+                  <input id="include_in_site_analysis" name="include_in_site_analysis" type="checkbox" class="size-4 rounded border-gray-300 text-sky-600 focus:ring-sky-600" {% if info.include_in_site_analysis %}checked{% endif %}>
+                </div>
+                <div class="text-sm/6">
+                  <label for="include_in_site_analysis" class="font-medium text-gray-900">Site analysis</label>
+                  <p class="text-gray-500">Include this map when running a site analysis</p>
+                </div>
+              </div>
+            </div>
+          </fieldset>
+          <fieldset>
+            <legend class="text-sm/6 font-semibold text-gray-900">Publish map</legend>
+            <div class="mt-6 space-y-6">
+              <div class="flex items-center gap-x-3">
+                <input {% if info.is_active %}checked{% endif %} id="is_active" name="is_active" value="1" type="radio" class="size-4 border-gray-300 text-sky-600 focus:ring-sky-600">
+                <label for="is_active" class="block text-sm/6 font-medium text-gray-900">Published</label>
+              </div>
+              <div class="flex items-center gap-x-3">
+                <input {% if not info.is_active %}checked{% endif %} id="is_not_active" name="is_active" value="0" type="radio" class="size-4 border-gray-300 text-sky-600 focus:ring-sky-600">
+                <label for="is_not_active" class="block text-sm/6 font-medium text-gray-900">Unpublished</label>
+              </div>
+            </div>
+          </fieldset>
+        </div>
+      </div>
+    </div>
+
+    <div class="mt-6 flex items-center justify-end gap-x-6">
+      <a href="javascript:history.back(1)" class="text-sm/6 font-semibold text-gray-900">Cancel</a>
+      <button type="submit" class="px-4 py-2 bg-lime-600 hover:bg-lime-700 text-white font-bold rounded-md focus:outline-none focus:ring focus:ring-lime-300">Submit</button>
+    </div>
+    {% csrf_token %}
+  </form>
+
+</div>
+
+{% endblock %}

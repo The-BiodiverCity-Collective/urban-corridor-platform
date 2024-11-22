@@ -11,6 +11,22 @@ from django.urls import reverse
 import uuid
 from django.utils.translation import gettext_lazy as _
 
+class Language(models.Model):
+    name = models.CharField(max_length=255)
+    code = models.CharField(max_length=5)
+
+    def __str__(self):
+        return self.name
+
+class Site(models.Model):
+    name = models.CharField(max_length=255)
+    url = models.CharField(max_length=255)
+    email = models.EmailField(null=True)
+    language = models.ForeignKey(Language, on_delete=models.CASCADE)
+
+    def __str__(self):
+        return self.name
+
 class Page(models.Model):
     name = models.CharField(max_length=255, db_index=True)
     content = models.TextField(null=True, blank=True)
@@ -85,9 +101,11 @@ class Document(models.Model):
     description = models.TextField(null=True, blank=True)
     color = models.CharField(max_length=50, null=True, blank=True, help_text="See https://htmlcolors.com/color-names for an overview of possible color names")
     meta_data = models.JSONField(null=True, blank=True, help_text="Only to be edited if you know what this does - otherwise, please do not change")
-    active = models.BooleanField(default=True, db_index=True)
+    is_active = models.BooleanField(default=True, db_index=True)
+    is_shapefile = models.BooleanField(default=True, db_index=True)
     include_in_site_analysis = models.BooleanField(default=False, db_index=True)
     file = models.FileField(null=True, blank=True, upload_to="files")
+    site = models.ForeignKey(Site, on_delete=models.CASCADE, null=True, blank=True, related_name="documents")
 
     def __str__(self):
         return self.name
@@ -118,6 +136,174 @@ class Document(models.Model):
             return self.meta_data["opacity"]
         except:
             return 0.4 # Default background color opacity in the maps
+
+    def get_gis_layer(self):
+        # Here we try to get the .shp file and load it as a gdal layer
+        try:
+            file = self.attachments.filter(file__iendswith=".shp")
+            file = file[0]
+            filename = settings.MEDIA_ROOT + "/" + file.file.name
+            datasource = DataSource(filename)
+            return datasource[0]
+        except:
+            return None
+
+    def convert_shapefile(self):
+        layer = self.get_gis_layer()
+        fields = layer.fields
+        total_count = layer.num_feat
+        type = layer.geom_type.name
+        if total_count > 1000 and not self.meta_data.get("skip_size_check"):
+            error = "This file has too many objects. It needs to be verified by an administrator in order to be fully loaded into the system."
+        elif "single_reference_space" in self.meta_data:
+            # EXAMPLE: a shapefile containing all the water reticulation (piping) in the city
+            # This is one single space, so we do not loop but instead create a single item
+            # To do that, we get all the geos with get_geoms
+            # (https://docs.djangoproject.com/en/3.1/ref/contrib/gis/gdal/#django.contrib.gis.gdal.Layer.get_geoms)
+            # and then we loop over THOSE, and combine them, using the union function
+            # (https://docs.djangoproject.com/en/3.1/ref/contrib/gis/geos/#django.contrib.gis.geos.GEOSGeometry.union)
+            polygon = None
+            ct = None
+            if layer.srs.srid != 4326:
+                # If this isn't WGS 84 then we need to convert the crs to this one
+                try:
+                    ct = CoordTransform(layer.srs, SpatialReference("WGS84"))
+                except Exception as e:
+                    error = "The following error occurred when trying to change the coordinate reference system: " + str(e)
+
+            if not error:
+                try:
+                    for each in layer.get_geoms(True):
+                        try:
+                            if ct:
+                                each.transform(ct)
+                        except Exception as e:
+                            error = "The following error occurred when trying to fetch the shapefile info: " + str(e)
+
+                        if not polygon:
+                            polygon = each
+                        else:
+                            try:
+                                polygon = polygon.union(each)
+                            except Exception as e:
+                                error = "The following error occurred when trying to merge geometries: " + str(e)
+                except Exception as e:
+                    error = "The following error occurred when trying to get all the geometries: " + str(e)
+
+            if not error:
+
+                if type == "Point25D" or type == "LineString25D" or type == "Polygon25D":
+                    # This type has a "Z" geometry which needs to be changed to a 2-dimensional geometry
+                    # See also https://stackoverflow.com/questions/35851577/strip-z-dimension-on-geodjango-force-2d-geometry
+                    get_clone = polygon.clone()
+                    polygon.coord_dim = 2
+                    polygon = get_clone
+
+                if polygon.hasz:
+                    # Oddly enough the code above does not always work. Not yet sure why. I have had lines that were combined,
+                    # into a multilinestring, and it seems like it is not possible (for Django?) to remove 3D from this
+                    # kind of object. So we simply do another check to see if it 'has z'. BTW we can likely use hasz
+                    # instead of type == point25d etc but I only now learned about it. Something for later.
+                    # https://docs.djangoproject.com/en/3.1/ref/contrib/gis/geos/#django.contrib.gis.geos.GEOSGeometry.hasz
+                    error = "This shapefile includes data in 3D. We only store shapefiles with 2D data. Please remove the elevation data (Z coordinates). This can be done, for instance, using QGIS: https://docs.qgis.org/testing/en/docs/user_manual/processing_algs/qgis/vectorgeometry.html#drop-m-z-values"
+                else:
+                    space = ReferenceSpace.objects.create(
+                        name = self.meta_data.get("shortname"),
+                        geometry = polygon,
+                        source = self,
+                    )
+        elif "group_spaces_by_name" in self.meta_data:
+            # EXAMPLE: a shapefile containing land use data, in which there are many polygons indicating
+            # a few different types (e.g. BUILT ENVIRONMENT, LAKES, AGRICULTURE). These should be saved
+            # as individual reference spaces (so we can differentiate them), grouped by their name
+            spaces = {}
+            for each in layer:
+
+                try:
+                    if type == "Point25D" or type == "LineString25D" or type == "Polygon25D":
+                        # This type has a "Z" geometry which needs to be changed to a 2-dimensional geometry
+                        # See also https://stackoverflow.com/questions/35851577/strip-z-dimension-on-geodjango-force-2d-geometry
+                        get_clone = each.geom.clone()
+                        get_clone.coord_dim = 2
+                        geo = get_clone
+                    else:
+                        geo = each.geom
+                except Exception as e:
+                    error = "The following error occurred when trying to prepare the shapefile element: " + str(e)
+
+                # We use WGS 84 (4326) as coordinate reference system, so we gotta convert to that
+                # if it uses something else
+                if layer.srs.srid != 4326:
+                    try:
+                        ct = CoordTransform(layer.srs, SpatialReference("WGS84"))
+                        geo.transform(ct)
+                    except Exception as e:
+                        error = "The following error occurred when trying to change the coordinate reference system: " + str(e)
+
+                name = str(each.get(self.meta_data["columns"]["name"]))
+
+                # So what we do here is to check if this particular field (based on the name) already exists
+                # If not, we create a new space in our dictionary with the geometry of this one.
+                if name not in spaces:
+                    spaces[name] = geo
+                else:
+                    # However, if it already exists then we use the union function to merge the geometry of this space
+                    # with the existing info
+                    try:
+                        s = spaces[name]
+                        spaces[name] = s.union(geo)
+                    except Exception as e:
+                        error = "The following error occurred when trying to merge geometries: " + str(e)
+
+            if not error:
+                for name,geo in spaces.items():
+                    ReferenceSpace.objects.create(
+                        name = name,
+                        geometry = geo.wkt,
+                        source = self,
+                    )
+        else:
+            count = 0
+            for each in layer:
+                count += 1
+                meta_data = {}
+
+                # We'll get all the properties and we store this in the meta data of the new object
+                for f in fields:
+                    # We can't save datetime objects in json, so if it's a datetime then we convert to string
+                    meta_data[f] = str(each.get(f)) if isinstance(each.get(f), datetime.date) else each.get(f)
+
+                name = str(each.get(self.meta_data["columns"]["name"]))
+
+                try:
+                    if type == "Point25D" or type == "LineString25D" or type == "Polygon25D":
+                        # This type has a "Z" geometry which needs to be changed to a 2-dimensional geometry
+                        # See also https://stackoverflow.com/questions/35851577/strip-z-dimension-on-geodjango-force-2d-geometry
+                        get_clone = each.geom.clone()
+                        get_clone.coord_dim = 2
+                        geo = get_clone
+                    else:
+                        geo = each.geom
+                except Exception as e:
+                    error = "The following error occurred when trying to obtain the shapefile geometry: " + str(e)
+
+                # We use WGS 84 (4326) as coordinate reference system, so we gotta convert to that
+                # if it uses something else
+                if layer.srs.srid != 4326:
+                    try:
+                        ct = CoordTransform(layer.srs, SpatialReference("WGS84"))
+                        geo.transform(ct)
+                    except Exception as e:
+                        error = "The following error occurred when trying to convert the coordinate reference system to WGS84: " + str(e)
+
+                if not error:
+                    geo = geo.wkt
+                    space = ReferenceSpace.objects.create(
+                        name = name,
+                        geometry = geo,
+                        source = self,
+                        meta_data = {"features": meta_data},
+                    )
 
 class ReferenceSpace(models.Model):
     name = models.CharField(max_length=255, db_index=True)
@@ -187,10 +373,10 @@ class ReferenceSpace(models.Model):
 
 class ActiveRecordManager(models.Manager):
     def get_queryset(self):
-        return super().get_queryset().filter(active=True)
+        return super().get_queryset().filter(is_active=True)
 
 class Garden(ReferenceSpace):
-    active = models.BooleanField(default=True, db_index=True)
+    is_active = models.BooleanField(default=True, db_index=True)
     original = models.JSONField(null=True, blank=True)
 
     class PhaseStatus(models.IntegerChoices):
@@ -462,19 +648,3 @@ class GardenManager(models.Model):
 
     class Meta:
         ordering = ["garden", "name"]
-
-class Language(models.Model):
-    name = models.CharField(max_length=255)
-    code = models.CharField(max_length=5)
-
-    def __str__(self):
-        return self.name
-
-class Site(models.Model):
-    name = models.CharField(max_length=255)
-    url = models.CharField(max_length=255)
-    email = models.EmailField(null=True)
-    language = models.ForeignKey(Language, on_delete=models.CASCADE)
-
-    def __str__(self):
-        return self.name
