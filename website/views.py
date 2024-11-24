@@ -1461,7 +1461,43 @@ def controlpanel_shapefiles(request):
     return render(request, "controlpanel/shapefiles.html", context)
 
 @staff_member_required
-def controlpanel_shapefile(request, id=None):
+def controlpanel_shapefile(request, id):
+    site = get_site(request)
+    shapefile = Document.objects.filter(is_shapefile=True).filter(Q(site=site)|Q(site__isnull=True))
+    info = shapefile.get(pk=id)
+
+    if "create_shapefile_plot" in request.POST:
+        plot = info.create_shapefile_plot()
+        if plot:
+            messages.success(request, "Plot image was created.")
+        else:
+            messages.error(request, "There was a problem creating the plot.")
+        return redirect(request.get_full_path())
+    elif "convert_shapefile" in request.POST:
+        if info.shpinfo["count"] > 1000:
+            # There is a way to limit processing items with 1000 records. However, for now if people
+            # see the alert and accept it, we automatically override this limit. Later we can restrict
+            # who can automatically do that and who can't
+            info.meta_data["skip_size_check"] = True
+            info.save()
+        info.convert_shapefile()
+        return redirect(request.get_full_path())
+    elif "load_shapefile_info" in request.POST:
+        info.load_shapefile_info()
+        messages.success(request, "Shapefile info was loaded.")
+        return redirect(request.get_full_path())
+
+    print("Static URL:", settings.STATIC_ROOT)
+
+    context = {
+        "controlpanel": True,
+        "menu": "shapefiles",
+        "info": info,
+    }
+    return render(request, "controlpanel/shapefile.html", context)
+
+@staff_member_required
+def controlpanel_shapefile_form(request, id=None):
     site = get_site(request)
     shapefile = Document.objects.filter(is_shapefile=True).filter(Q(site=site)|Q(site__isnull=True))
     info = Document()
@@ -1536,7 +1572,7 @@ def controlpanel_shapefile(request, id=None):
         "load_form": True,
         "doc_types": Document.Type,
     }
-    return render(request, "controlpanel/shapefile.html", context)
+    return render(request, "controlpanel/shapefile.form.html", context)
 
 def temp(request):
 

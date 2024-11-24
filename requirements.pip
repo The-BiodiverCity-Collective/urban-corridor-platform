@@ -9,5 +9,6 @@ unidecode
 numpy
 pandas
 geopandas
+contextily
 folium
 bleach

@@ -1,197 +1,202 @@
 {% extends "_base.html" %}
+{% load static %}
 
 {% block content %}
 
-<h1 class="text-3xl">{% block title %}{% if info %}Edit shapefile{% else %}Add shapefile{% endif %}{% endblock %}</h1>
+<a class="float-right" href="{% url "controlpanel_shapefile_form" info.id %}"><i class="fa fa-pencil"></i></a>
+<h1 class="text-3xl">{% block title %}{{ info }}{% endblock %}</h1>
 
-<div class="mt-10 flex items-center justify-center min-h-screen bg-gray-100 py-10">
-  <form class="max-w-[700px]" method="post" enctype="multipart/form-data">
-    <div class="space-y-12">
+<div class="grid grid-cols-2 gap-4">
+  <div class="bg-gray-200 p-4">
 
-      <div class="border-b border-gray-900/10 pb-12">
-        <h2 class="text-base/7 font-semibold text-gray-900">General information</h2>
-        <p class="mt-1 text-sm/6 text-gray-600">Meta data of the shapefile</p>
-
-        <div class="grid grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6 mt-10">
-
-          <div class="col-span-full">
-            <label for="name" class="block text-sm/6 font-medium text-gray-900">Name</label>
-            <div class="mt-2">
-              <input type="text" name="name" id="name" class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-sky-600 sm:text-sm/6" value="{{ info.name }}" required>
-            </div>
-          </div>
-
-          <div class="sm:col-span-3">
-            <label for="author" class="block text-sm/6 font-medium text-gray-900">Author</label>
-            <div class="mt-2">
-              <input type="text" name="author" id="author" class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-sky-600 sm:text-sm/6" value="{{ info.author }}" required>
-            </div>
-          </div>
-
-          <div class="sm:col-span-3">
-            <label for="url" class="block text-sm/6 font-medium text-gray-900">URL</label>
-            <div class="mt-2">
-              <input type="url" name="url" id="url" class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-sky-600 sm:text-sm/6" value="{{ info.url|default_if_none:"" }}">
-            </div>
-          </div>
-
-          <div class="sm:col-span-3">
-            <label for="doc_type" class="block text-sm/6 font-medium text-gray-900">Type</label>
-            <div class="mt-2">
-              <select id="doc_type" name="doc_type" class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-sky-600 sm:max-w-xs sm:text-sm/6" required>
-                <option value=""></option>
-                {% for each in doc_types %}
-                <option {% if each == info.doc_type %}selected{% endif %} value="{{ each }}">{{ each.label }}</option>
-                {% endfor %}
-              </select>
-            </div>
-          </div>
-
-          <div class="sm:col-span-3">
-            <label for="color" class="block text-sm/6 font-medium text-gray-900">Color</label>
-            <div class="mt-2">
-              <input type="color" name="color" id="color" class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-sky-600 sm:text-sm/6" value="{{ info.color|default_if_none:"" }}">
-            </div>
-          </div>
-
-          <div class="sm:col-span-4">
-            <label for="file" class="block text-sm/6 font-medium text-gray-900">File(s)</label>
-            {% if info.attachments.all %}
-              <span class="mt-2 bg-orange-100 text-orange-700 text-xs font-bold rounded-full px-2 py-1 inline-block">
-                <i class="fa fa-info-circle"></i> Existing files will be replaced when you upload a new file.
-              </span>
-            {% endif %}
-            <div class="mt-2">
-              <input id="file" name="file" type="file" class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-sky-600 sm:text-sm/6" multiple>
-            </div>
-          </div>
-
-          <div class="col-span-full">
-            <label for="cover-photo" class="block text-sm/6 font-medium text-gray-900">Existing file(s)</label>
-            <div class="mt-2 flex rounded-lg border border-dashed border-gray-900/25 px-6 py-10">
-              <ul>
-                {% for each in info.attachments.all %}
-                <li class="text-gray-800">
-                  <i class="fa-fw fa fa-{{ each.get_icon }}"></i>
-                  <a href="{{ each.file.url }}">
-                  {{ each.get_name }}
-                  </a>
-                  <span class="text-xs/5 text-gray-600">
-                    ({{ each.file.size|filesizeformat }})
-                  </span>
-                </li>
-                {% endfor %}
-              </ul>
-            </div>
-          </div>
-
-          <div class="col-span-full">
-            <label for="description" class="block text-sm/6 font-medium text-gray-900">Description</label>
-            <div class="mt-2">
-              <textarea name="description" id="description" class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-sky-600 sm:text-sm/6">{{ info.description|default_if_none:"" }}</textarea>
-            </div>
-          </div>
-
-
-        </div>
-      </div>
-
-      <div class="border-b border-gray-900/10 pb-12">
-        <h2 class="text-base/7 font-semibold text-gray-900">Settings</h2>
-        <p class="mt-1 text-sm/6 text-gray-600">Details around appearance and other settings.</p>
-
-        <div class="mt-10 space-y-10">
-
-          <fieldset>
-            <legend class="text-sm/6 font-semibold text-gray-900">Shapefile Processing</legend>
-            <div class="mt-6 space-y-6">
-              <div class="relative flex gap-x-3">
-                <div class="flex h-6 items-center">
-                  <input id="regular" name="processing" type="radio" class="size-4 border-gray-300 text-sky-600 focus:ring-sky-600" {% if not info.meta_data.single_reference_space and not info.meta_data.group_spaces_by_name %}checked{% endif %}>
-                </div>
-                <div class="text-sm/6">
-                  <label for="regular" class="font-medium text-gray-900">Regular processing</label>
-                  <p class="text-gray-500">Each item becomes a new reference space</p>
-                </div>
-              </div>
-              <div class="relative flex gap-x-3">
-                <div class="flex h-6 items-center">
-                  <input id="single_reference_space" name="processing" type="radio" class="size-4 border-gray-300 text-sky-600 focus:ring-sky-600" {% if info.meta_data.single_reference_space %}checked{% endif %} value="single_reference_space">
-                </div>
-                <div class="text-sm/6">
-                  <label for="single_reference_space" class="font-medium text-gray-900">Single reference space</label>
-                  <p class="text-gray-500">This contains a single reference space - merge down into a single object</p>
-                </div>
-              </div>
-              <div class="relative flex gap-x-3">
-                <div class="flex h-6 items-center">
-                  <input id="group_spaces_by_name" name="processing" type="radio" class="size-4 border-gray-300 text-sky-600 focus:ring-sky-600" {% if info.meta_data.group_spaces_by_name %}checked{% endif %} value="group_spaces_by_name">
-                </div>
-                <div class="text-sm/6">
-                  <label for="group_spaces_by_name" class="font-medium text-gray-900">Group by name</label>
-                  <p class="text-gray-500">Group all spaces that have the same name together (e.g. separate river segments into a single river)</p>
-                </div>
-              </div>
-            </div>
-          </fieldset>
-
-          <fieldset>
-            <legend class="text-sm/6 font-semibold text-gray-900">Map Display</legend>
-            <div class="mt-6 space-y-6">
-              <div class="relative flex gap-x-3">
-                <div class="flex h-6 items-center">
-                  <input id="mastermap" name="mastermap" type="checkbox" class="size-4 rounded border-gray-300 text-sky-600 focus:ring-sky-600">
-                </div>
-                <div class="text-sm/6">
-                  <label for="mastermap" class="font-medium text-gray-900">Master map</label>
-                  <p class="text-gray-500">Show on the master map</p>
-                </div>
-              </div>
-              <div class="relative flex gap-x-3">
-                <div class="flex h-6 items-center">
-                  <input id="individual_map" name="individual_map" type="checkbox" class="size-4 rounded border-gray-300 text-sky-600 focus:ring-sky-600">
-                </div>
-                <div class="text-sm/6">
-                  <label for="individual_map" class="font-medium text-gray-900">Individual map</label>
-                  <p class="text-gray-500">Show an individual map on the website for this shapefile</p>
-                </div>
-              </div>
-              <div class="relative flex gap-x-3">
-                <div class="flex h-6 items-center">
-                  <input id="include_in_site_analysis" name="include_in_site_analysis" type="checkbox" class="size-4 rounded border-gray-300 text-sky-600 focus:ring-sky-600" {% if info.include_in_site_analysis %}checked{% endif %}>
-                </div>
-                <div class="text-sm/6">
-                  <label for="include_in_site_analysis" class="font-medium text-gray-900">Site analysis</label>
-                  <p class="text-gray-500">Include this map when running a site analysis</p>
-                </div>
-              </div>
-            </div>
-          </fieldset>
-
-          <fieldset>
-            <legend class="text-sm/6 font-semibold text-gray-900">Publish map</legend>
-            <div class="mt-6 space-y-6">
-              <div class="flex items-center gap-x-3">
-                <input {% if info.is_active %}checked{% endif %} id="is_active" name="is_active" value="1" type="radio" class="size-4 border-gray-300 text-sky-600 focus:ring-sky-600">
-                <label for="is_active" class="block text-sm/6 font-medium text-gray-900">Published</label>
-              </div>
-              <div class="flex items-center gap-x-3">
-                <input {% if not info.is_active %}checked{% endif %} id="is_not_active" name="is_active" value="0" type="radio" class="size-4 border-gray-300 text-sky-600 focus:ring-sky-600">
-                <label for="is_not_active" class="block text-sm/6 font-medium text-gray-900">Unpublished</label>
-              </div>
-            </div>
-          </fieldset>
-        </div>
-      </div>
+    <h3>Files</h3>
+    <div class="mt-2 flex rounded-lg border border-dashed border-gray-900/25 px-6 py-10 mb-5">
+      <ul>
+        {% for each in info.attachments.all %}
+        <li class="text-gray-800">
+          <i class="fa-fw fa fa-{{ each.get_icon }}"></i>
+          <a href="{{ each.file.url }}">
+          {{ each.get_name }}
+          </a>
+          <span class="text-xs/5 text-gray-600">
+            ({{ each.file.size|filesizeformat }})
+          </span>
+        </li>
+        {% endfor %}
+      </ul>
     </div>
 
-    <div class="mt-6 flex items-center justify-end gap-x-6">
-      <a href="javascript:history.back(1)" class="text-sm/6 font-semibold text-gray-900">Cancel</a>
-      <button type="submit" class="px-4 py-2 bg-lime-600 hover:bg-lime-700 text-white font-bold rounded-md focus:outline-none focus:ring focus:ring-lime-300">Submit</button>
+    <h3>Shapefile Processing</h3>
+
+    <p class="font-bold">
+    {% if info.meta_data.single_reference_space %}
+      Convert into a single reference space (named {{ info }})
+    {% elif info.meta_data.group_spaces_by_name %}
+      Group all spaces that have the same name
+    {% else %}
+      Each item becomes a new reference space 
+    {% endif %}
+    </p>
+
+    <h3 class="mt-5">Plot</h3>
+    {% if info.meta_data.shapefile_plot %}
+      <img src="{% get_media_prefix %}{{ info.meta_data.shapefile_plot }}" alt="" />
+    {% elif info.meta_data.shapefile_plot_error %}
+
+        <div class="flex items-center p-4 bg-amber-50 border border-amber-500 text-amber-700 mb-3">
+          <i class="fa fa-triangle-exclamation mr-2"></i>          
+          <span class="font-medium">
+            The plot could not be generated. This error was returned:
+            <br>
+            <span class="font-mono font-bold">
+            {{ info.meta_data.shapefile_plot_error }}
+            </span>
+          </span>
+        </div>
+      
+    {% endif %}
+
+    <form method="post" class="mt-5">
+      <input type="hidden" name="create_shapefile_plot" value="true" />
+      {% csrf_token %}
+      <button type="submit" class="px-4 py-2 bg-lime-600 hover:bg-lime-700 text-white font-bold rounded-md focus:outline-none focus:ring focus:ring-lime-300">
+        {% if info.meta_data.shapefile_plot %}
+          Re-generate plot
+        {% else %}
+          Create plot
+        {% endif %}
+      </button>
+    </form>
+
+  </div>
+  <div class="bg-gray-300 p-4 flex flex-col justify-between">
+    <div>
+      <h3>Existing spaces</h3>
+      <p class="font-bold">No spaces have been loaded into the database yet.</p>
+
+      {% if info.shpinfo %}
+        <h3 class="mt-3">Details</h3>
+
+        <span class="mr-4">
+          <i class="text-gray-500 fa fa-fw
+          {% if "LineString" in info.shpinfo.type %}
+            fa-bars-staggered
+          {% elif "Polygon" in info.shpinfo.type %}
+            fa-draw-polygon
+          {% elif "Point" in info.shpinfo.type %}
+            fa-location-dot
+          {% else %}
+            fa-circle-question
+          {% endif %}
+          "></i>
+          {{ info.shpinfo.type }}
+        </span>
+
+        <span class="mr-4">
+          <i class="text-gray-500 fa fa-list fa-fw"></i>
+          <strong>{{ info.shpinfo.fields|length }}</strong>
+          fields
+        </span>
+
+        <span class="mr-4">
+          <i class="text-gray-500 fa-regular fa-file fa-fw"></i>
+          <strong>{{ info.shpinfo.count }}</strong>
+          items
+        </span>
+
+
+      <h3 class="mt-3">Fields</h3>
+      <ul class="list-disc ml-4 space-y-2 mt-2">
+        {% for each in info.shpinfo.fields|slice:":20" %}
+          <li class="text-gray-700">{{ each }}</li>
+          {% endfor %}
+      </ul>
+
+      {% if info.shpinfo.fields|length > 20 %}
+        <button id="view-all" class="text-blue-500 hover:underline mt-2">VIEW ALL</button>
+    
+        <ul id="extra-items" class="list-disc ml-4 mt-2 space-y-2 hidden">
+          {% for each in info.shpinfo.fields|slice:"20:" %}
+            <li class="extra text-gray-700">{{ each }}</li>
+          {% endfor %}
+        </ul>
+      {% endif %}
+
+    {% endif %}
+
+
+    {% if info.meta_data.processing_error %}
+
+        <div class="flex items-center p-4 bg-amber-50 border border-amber-500 text-amber-700 mb-3 mt-5">
+          <i class="fa fa-triangle-exclamation mr-2"></i>          
+          <span class="font-medium">
+            The shapefile could not be loaded. Error:
+            <br>
+            <span class="font-mono font-bold">
+            {{ info.meta_data.processing_error }}
+            </span>
+          </span>
+        </div>
+      
+    {% endif %}
+
     </div>
-    {% csrf_token %}
-  </form>
+
+    <form method="post">
+      <div class="mt-6">
+        {% if not info.shpinfo %}
+          <button type="submit" class="px-4 py-2 bg-lime-600 hover:bg-lime-700 text-white font-bold rounded-md focus:outline-none focus:ring focus:ring-lime-300" name="load_shapefile_info" value="true">
+            Load shapefile info
+          </button>
+        {% endif %}
+
+        {% if info.shpinfo.count > 1000 and not info.meta_data.skip_size_check %}
+          <div class="flex items-center p-4 bg-amber-50 border border-amber-500 text-amber-700 mb-4">
+            <!-- Exclamation Triangle Icon -->
+            <svg class="w-6 h-6 mr-3" fill="currentColor" viewBox="0 0 20 20">
+              <path d="M8.257 3.099c.366-.737 1.368-.737 1.734 0l6.5 13c.366.737-.092 1.601-.866 1.601H2.623c-.774 0-1.232-.864-.866-1.601l6.5-13zM10 9a1 1 0 00-.993.883L9 10v2a1 1 0 002 0v-2a1 1 0 00-.883-.993L10 9zm0 4a1 1 0 00-.993.883L9 14a1 1 0 001 1h0a1 1 0 001-1v-1a1 1 0 00-.883-.993L10 13z"/>
+            </svg>
+            
+            <!-- Alert Message -->
+            <span class="font-medium">You have over 1,000 items. Make sure you really want to import that many items.</span>
+          </div>
+        {% endif %}
+
+        {% if not info.shpinfo %}
+          <button type="submit" class="px-4 py-2 bg-gray-500 text-gray-200 font-bold rounded-md focus:outline-none focus:ring focus:ring-gray-300 cursor-not-allowed" name="convert_shapefile" value="true" disabled>
+            Save shapefile to db
+          </button>
+        {% else %}
+          <button type="submit" class="px-4 py-2 bg-lime-600 hover:bg-lime-700 text-white font-bold rounded-md focus:outline-none focus:ring focus:ring-lime-300" name="convert_shapefile" value="true">
+            Save shapefile to db
+          </button>
+        {% endif %}
+
+      </div>
+      {% csrf_token %}
+    </form>
+
+  </div>
+</div>
+
+<h3 class="mb-2 mt-10">Meta data</h3>
+{% for key,value in info.meta_data.items %}
+  <p class="font-mono"><strong>{{ key }}</strong>: {{ value }}</p>
+{% endfor %}
+
 
 </div>
 
+{% endblock %}
+
+{% block js %}
+<script>
+  $(document).ready(function() {
+    // Toggle the visibility of extra items when the button is clicked
+    $("#view-all").on("click", function() {
+      $("#extra-items").toggleClass("hidden");
+      $(this).hide();
+    });
+  });
+</script>
 {% endblock %}

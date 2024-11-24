@@ -17,13 +17,14 @@
     <tr>
       <td>{{ each.name }}</td>
       <td>{{ each.get_doc_type_display }}</td>
-      <td><a class="btn btn-info" href="{% url "controlpanel_shapefile" each.id %}"><i class="fa fa-pencil"></i> Edit</a></td>
+      <td><a class="btn btn-info" href="{% url "controlpanel_shapefile" each.id %}"><i class="fa fa-gear"></i> Manage</a></td>
+      <td><a class="btn btn-info" href="{% url "controlpanel_shapefile_form" each.id %}"><i class="fa fa-pencil"></i> Edit</a></td>
     </tr>
   {% endfor %}
   </tbody>
 </table>
 
-<a href="{% url "controlpanel_shapefile" %}">Add shapefile</a>
+<a href="{% url "controlpanel_shapefile_form" %}">Add shapefile</a>
 
 
 {% endblock %}

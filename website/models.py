@@ -13,6 +13,17 @@ from django.utils.translation import gettext_lazy as _
 import os
 from django.db.models.signals import post_delete
 from django.dispatch import receiver
+from django.db.models import Q
+
+from django.utils import timezone
+
+# To create the sample shapefile images
+import geopandas
+import contextily as ctx
+
+# For our shapefile work
+from django.contrib.gis.gdal import DataSource, OGRGeometry
+from django.contrib.gis.gdal.srs import (AxisOrder, CoordTransform, SpatialReference)
 
 # Import user
 from django.contrib.auth.models import User
@@ -144,6 +155,14 @@ class Document(models.Model):
         except:
             return 0.4 # Default background color opacity in the maps
 
+    # Shortcut to make it easier to access the properties
+    @property
+    def shpinfo(self):
+        try:
+            return self.meta_data["shapefile_info"]
+        except:
+            return None
+
     def get_gis_layer(self):
         # Here we try to get the .shp file and load it as a gdal layer
         try:
@@ -152,14 +171,34 @@ class Document(models.Model):
             filename = settings.MEDIA_ROOT + "/" + file.file.name
             datasource = DataSource(filename)
             return datasource[0]
-        except:
+        except Exception as e:
+            print(str(e))
             return None
+
+    def load_shapefile_info(self):
+        layer = self.get_gis_layer()
+        fields = layer.fields
+        total_count = layer.num_feat
+        shapefile_type = layer.geom_type.name
+
+        if not self.meta_data:
+            self.meta_data = {}
+
+        self.meta_data["shapefile_info"] = {
+            "fields": fields,
+            "count": total_count,
+            "type": shapefile_type,
+        }
+
+        self.save()
+        return True
 
     def convert_shapefile(self):
         layer = self.get_gis_layer()
         fields = layer.fields
         total_count = layer.num_feat
-        type = layer.geom_type.name
+        shapefile_type = layer.geom_type.name
+
         if total_count > 1000 and not self.meta_data.get("skip_size_check"):
             error = "This file has too many objects. It needs to be verified by an administrator in order to be fully loaded into the system."
         elif "single_reference_space" in self.meta_data:
@@ -199,7 +238,7 @@ class Document(models.Model):
 
             if not error:
 
-                if type == "Point25D" or type == "LineString25D" or type == "Polygon25D":
+                if shapefile_type == "Point25D" or shapefile_type == "LineString25D" or shapefile_type == "Polygon25D":
                     # This type has a "Z" geometry which needs to be changed to a 2-dimensional geometry
                     # See also https://stackoverflow.com/questions/35851577/strip-z-dimension-on-geodjango-force-2d-geometry
                     get_clone = polygon.clone()
@@ -210,7 +249,7 @@ class Document(models.Model):
                     # Oddly enough the code above does not always work. Not yet sure why. I have had lines that were combined,
                     # into a multilinestring, and it seems like it is not possible (for Django?) to remove 3D from this
                     # kind of object. So we simply do another check to see if it 'has z'. BTW we can likely use hasz
-                    # instead of type == point25d etc but I only now learned about it. Something for later.
+                    # instead of shapefile_type == point25d etc but I only now learned about it. Something for later.
                     # https://docs.djangoproject.com/en/3.1/ref/contrib/gis/geos/#django.contrib.gis.geos.GEOSGeometry.hasz
                     error = "This shapefile includes data in 3D. We only store shapefiles with 2D data. Please remove the elevation data (Z coordinates). This can be done, for instance, using QGIS: https://docs.qgis.org/testing/en/docs/user_manual/processing_algs/qgis/vectorgeometry.html#drop-m-z-values"
                 else:
@@ -227,7 +266,7 @@ class Document(models.Model):
             for each in layer:
 
                 try:
-                    if type == "Point25D" or type == "LineString25D" or type == "Polygon25D":
+                    if shapefile_type == "Point25D" or shapefile_type == "LineString25D" or shapefile_type == "Polygon25D":
                         # This type has a "Z" geometry which needs to be changed to a 2-dimensional geometry
                         # See also https://stackoverflow.com/questions/35851577/strip-z-dimension-on-geodjango-force-2d-geometry
                         get_clone = each.geom.clone()
@@ -283,7 +322,7 @@ class Document(models.Model):
                 name = str(each.get(self.meta_data["columns"]["name"]))
 
                 try:
-                    if type == "Point25D" or type == "LineString25D" or type == "Polygon25D":
+                    if shapefile_type == "Point25D" or shapefile_type == "LineString25D" or shapefile_type == "Polygon25D":
                         # This type has a "Z" geometry which needs to be changed to a 2-dimensional geometry
                         # See also https://stackoverflow.com/questions/35851577/strip-z-dimension-on-geodjango-force-2d-geometry
                         get_clone = each.geom.clone()
@@ -311,6 +350,50 @@ class Document(models.Model):
                         source = self,
                         meta_data = {"features": meta_data},
                     )
+
+        self.meta_data["processing_date"] = str(timezone.now())
+        if error:
+            self.meta_data["processing_error"] = error
+        else:
+            self.meta_data["processed"] = True
+            self.meta_data.pop("processing_error", None)
+
+        self.save()
+
+        return True
+
+    def create_shapefile_plot(self):
+        success = False
+        if not self.meta_data:
+            self.meta_data = {}
+        try:
+            files = self.attachments.filter(Q(file__iendswith=".shp")|Q(file__iendswith=".shx")|Q(file__iendswith=".dbf")|Q(file__iendswith=".prj"))
+            if files.count() < 4:
+                self.meta_data["shapefile_plot_error"] = "No shapefile found! Make sure all required files are uploaded (.shp, .shx, .dbf, .prj)."
+            elif files.count() > 4:
+                self.meta_data["shapefile_plot_error"] = "Too many files found! Make sure one file is uploaded for all four required types (.shp, .shx, .dbf, .prj)."
+            else:
+                file = files.filter(file__iendswith=".shp")
+                if not file:
+                    self.meta_data["shapefile_plot_error"] = "No shapefile (.shp) found!"
+                else:
+                    file = file[0]
+                    filename = settings.MEDIA_ROOT + "/" + file.file.name
+                    df = geopandas.read_file(filename)
+                    df = df.to_crs(epsg=3857)
+                    ax = df.plot(alpha=0.5, edgecolor="k")
+                    ctx.add_basemap(ax)
+                    fig = ax.get_figure()
+                    output = f"plots/{self.id}.png" 
+                    fig.savefig(settings.MEDIA_ROOT + "/" + output)
+                    self.meta_data["shapefile_plot"] = output
+                    self.meta_data.pop("shapefile_plot_error", None)
+                    success = True
+            self.save()
+        except Exception as e:
+            self.meta_data["shapefile_plot_error"] = str(e)
+            self.save()
+        return True if success else False
 
 class Attachment(models.Model):
     file = models.FileField(upload_to="files")
