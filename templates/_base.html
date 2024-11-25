@@ -16,17 +16,29 @@
   {% if load_form %}
     <script src="https://cdn.tailwindcss.com?plugins=forms"></script>
   {% endif %}
-  <style type="text/css">
-  .bg-gray-800{background:#52a3ab !important}
-  .bg-gray-800{background:#f4f4f4 !important}
-  </style>
-  {% block css %}
-    
-  {% endblock %}
 
-  {% block head %}
-    
-  {% endblock %}
+  {% if load_datatables %}
+    <link href="{% static 'css/datatables.min.css' %}" rel="stylesheet" />
+  {% endif %}
+
+  {% if load_map %}
+    <link rel="stylesheet"
+          href="https://unpkg.com/leaflet@1.6.0/dist/leaflet.css"
+          integrity="sha512-xwE/Az9zrjBIphAcBb3F6JVqxf46+CDLwfLMHloNu6KEQCAWi6HcDUbeOfBIptF7tcCzusKFjFw2yuvEpDL9wQ=="
+          crossorigin=""/>
+
+    <link href="https://api.mapbox.com/mapbox.js/plugins/leaflet-fullscreen/v1.0.1/leaflet.fullscreen.css" rel="stylesheet" />
+  {% endif %}
+
+
+  {% if load_leaflet_legend %}
+    <link href="{% static 'css/leaflet.legend.css' %}" rel="stylesheet" />
+  {% endif %}
+
+
+  {% block css %}{% endblock %}
+  {% block head %}{% endblock %}
+
 </head>
 
 <body >
@@ -225,6 +237,24 @@
     </div>
   </div>
 </footer>
+
+  {% if load_datatables %}
+    <script src="{% static 'js/datatables.min.js' %}"></script>
+    <script>
+      $(".datatable").DataTable();
+    </script>
+  {% endif %}
+  {% if load_map %}
+    {% include "_leaflet.html" %}
+  {% endif %}
+
+  {% if load_leaflet_legend %}
+    {% include "_leaflet.legend.html" %}
+  {% endif %}
+
+  {% if load_leaflet_item %}
+    {% include "_leaflet.item.html" %}
+  {% endif %}
 
 {% block js %}
   

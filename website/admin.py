@@ -61,3 +61,4 @@ admin_site.register(Group)
 
 admin_site.register(Language)
 admin_site.register(Site)
+admin_site.register(MapStyle)

@@ -14,6 +14,7 @@ import os
 from django.db.models.signals import post_delete
 from django.dispatch import receiver
 from django.db.models import Q
+import datetime
 
 from django.utils import timezone
 
@@ -135,13 +136,6 @@ class Document(models.Model):
             return None
 
     @property
-    def get_dataviz(self):
-        if self.meta_data and "dataviz" in self.meta_data:
-            return self.meta_data["dataviz"]
-        else:
-            return {}
-
-    @property
     def get_absolute_url(self):
         return "/maps/" + str(self.id)
 
@@ -198,6 +192,7 @@ class Document(models.Model):
         fields = layer.fields
         total_count = layer.num_feat
         shapefile_type = layer.geom_type.name
+        error = None
 
         if total_count > 1000 and not self.meta_data.get("skip_size_check"):
             error = "This file has too many objects. It needs to be verified by an administrator in order to be fully loaded into the system."
@@ -286,7 +281,9 @@ class Document(models.Model):
                     except Exception as e:
                         error = "The following error occurred when trying to change the coordinate reference system: " + str(e)
 
-                name = str(each.get(self.meta_data["columns"]["name"]))
+                name = each.get(self.meta_data["columns"]["name"])
+                if not name:
+                    name = _("Unnamed")
 
                 # So what we do here is to check if this particular field (based on the name) already exists
                 # If not, we create a new space in our dictionary with the geometry of this one.
@@ -317,9 +314,10 @@ class Document(models.Model):
                 # We'll get all the properties and we store this in the meta data of the new object
                 for f in fields:
                     # We can't save datetime objects in json, so if it's a datetime then we convert to string
-                    meta_data[f] = str(each.get(f)) if isinstance(each.get(f), datetime.date) else each.get(f)
+                    if f in self.meta_data["columns"]["import"]:
+                        meta_data[f] = str(each.get(f)) if isinstance(each.get(f), datetime.date) else each.get(f)
 
-                name = str(each.get(self.meta_data["columns"]["name"]))
+                name = each.get(self.meta_data["columns"]["name"])
 
                 try:
                     if shapefile_type == "Point25D" or shapefile_type == "LineString25D" or shapefile_type == "Polygon25D":
@@ -422,7 +420,7 @@ def delete_file_on_model_delete(sender, instance, **kwargs):
         os.remove(instance.file.path)
 
 class ReferenceSpace(models.Model):
-    name = models.CharField(max_length=255, db_index=True)
+    name = models.CharField(max_length=255, db_index=True, null=True)
     description = models.TextField(null=True, blank=True)
     geometry = models.GeometryField(null=True, blank=True)
     photo = models.ForeignKey("Photo", on_delete=models.CASCADE, null=True, blank=True, related_name="referencespace")
@@ -465,7 +463,7 @@ class ReferenceSpace(models.Model):
             return settings.MEDIA_URL + "/placeholder.png"
 
     def __str__(self):
-        return self.name if self.name else "Unnamed garden"
+        return self.name if self.name else _("Unnamed object")
 
     @property
     def suburb(self):
@@ -785,3 +783,34 @@ class Log(models.Model):
     def delete(self, *args, **kwargs):
         # We should never delete log objects, so overriding this here
         return False
+
+class MapStyle(models.Model):
+    name = models.CharField(max_length=100)
+    tilelayer = models.CharField(max_length=1500)
+    attribution = models.CharField(max_length=1500)
+    style = models.CharField(max_length=500)
+    image = models.ImageField(upload_to="mapstyle")
+
+    def __str__(self):
+        return self.name
+
+    class Meta:
+        ordering = ["name"]
+
+    @property
+    def get_tilelayer(self):
+        s = self.tilelayer
+        return s.replace("__MAPBOX_API_KEY__", settings.MAPBOX_API_KEY)
+
+class Dataviz(models.Model):
+    site = models.ForeignKey(Site, on_delete=models.CASCADE)
+    shapefile = models.ForeignKey(Document, on_delete=models.CASCADE)
+    mapstyle = models.ForeignKey(MapStyle, on_delete=models.CASCADE, null=True)
+    colors = models.JSONField(null=True)
+    opacity = models.PositiveSmallIntegerField(null=True)
+    fill_opacity = models.PositiveSmallIntegerField(null=True)
+    line_width = models.PositiveSmallIntegerField(null=True)
+
+    def __str__(self):
+        return f"Dataviz for {self.shapefile.name}"
+

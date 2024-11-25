@@ -1,0 +1,138 @@
+{% extends "_base.html" %}
+
+{% block content %}
+
+
+<h1 class="text-3xl">{% block title %}Dataviz: {{ info.shapefile }}{% endblock %}</h1>
+
+<div class="float-right relative" style="bottom:-15px">
+  <a class="mr-2 p-1" href="{% url "controlpanel_shapefile" info.shapefile.id %}"><i class="fa-regular fa-file"></i></a>
+  <a class="mr-2 p-1 bg-gray-100 text-orange-700" href="{% url "controlpanel_shapefile_dataviz" info.shapefile.id %}"><i class="fa fa-object-group"></i></a>
+  <a class="mr-2 p-1" href="{% url "controlpanel_shapefile_form" info.shapefile.id %}"><i class="fa fa-pencil"></i></a>
+  <a class="p-1" href="{% url "map" info.shapefile.id %}"><i class="fa fa-map"></i></a>
+</div>
+
+<form method="post" enctype="multipart/form-data">
+
+  <div class="mt-10 flex items-center justify-center bg-gray-100 py-10">
+    <div class="space-y-12 max-w-[700px] pb-12">
+
+      <h2 class="text-base/7 font-semibold text-gray-900">Color settings</h2>
+
+      <div class="mt-10">
+
+        <fieldset>
+          <legend class="text-sm/6 font-semibold text-gray-900">Color management</legend>
+          <div class="mt-6 space-y-6">
+            <div class="relative flex gap-x-3">
+              <div class="flex h-6 items-center">
+                <input id="regular" name="colors" type="radio" class="size-4 border-gray-300 text-sky-600 focus:ring-sky-600" {% if info.colors.option == "single" %}checked{% endif %} value="single">
+              </div>
+              <div class="text-sm/6">
+                <label for="regular" class="font-medium text-gray-900">Single color</label>
+                <p class="text-gray-500">All items in this shapefile have a single, defined color</p>
+                <input name="color" type="color" value="{{ info.colors.color }}" />
+              </div>
+            </div>
+            <div class="relative flex gap-x-3">
+              <div class="flex h-6 items-center">
+                <input id="scheme" name="colors" type="radio" class="size-4 border-gray-300 text-sky-600 focus:ring-sky-600" {% if info.colors.option == "scheme" %}checked{% endif %} value="scheme">
+              </div>
+              <div class="text-sm/6">
+                <label for="scheme" class="font-medium text-gray-900">Multiple colors, using color scheme</label>
+                <p class="text-gray-500">Items will be shown using a color scheme to randomly assign each item with a color</p>
+              </div>
+            </div>
+            <div class="relative flex gap-x-3">
+              <div class="flex h-6 items-center">
+                <input id="assigned" name="colors" type="radio" class="size-4 border-gray-300 text-sky-600 focus:ring-sky-600" {% if info.colors.option == "assigned" %}checked{% endif %} value="assigned">
+              </div>
+              <div class="text-sm/6">
+                <label for="assigned" class="font-medium text-gray-900">Multiple, assigned colors</label>
+                <p class="text-gray-500">Each item in the shapefile is assigned a specific color</p>
+              </div>
+            </div>
+          </div>
+        </fieldset>
+
+        <fieldset class="mt-20">
+          <legend class="text-sm/6 font-semibold text-gray-900">Styling</legend>
+
+          <div class="grid grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6 mt-10">
+
+            <div class="sm:col-span-3">
+              <label for="opacity" class="block text-sm/6 font-medium text-gray-900">Opacity (0-100)</label>
+              <div class="mt-2">
+                <input type="number" name="opacity" id="opacity" class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-sky-600 sm:text-sm/6" value="{{ info.opacity }}" required>
+              </div>
+            </div>
+
+            <div class="sm:col-span-3">
+              <label for="fill_opacity" class="block text-sm/6 font-medium text-gray-900">Fill Opacity</label>
+              <div class="mt-2">
+                <input type="number" name="fill_opacity" id="fill_opacity" class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-sky-600 sm:text-sm/6" value="{{ info.fill_opacity }}">
+              </div>
+            </div>
+
+            <div class="sm:col-span-3">
+              <label for="line_width" class="block text-sm/6 font-medium text-gray-900">Line width</label>
+              <div class="mt-2">
+                <input type="number" name="line_width" id="line_width" class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-sky-600 sm:text-sm/6" value="{{ info.line_width }}">
+              </div>
+            </div>
+
+          </div>
+
+        </fieldset>
+
+      </div>
+    </div>
+  </div>
+
+  <h3 class="mb-4 text-xl font-semibold text-gray-900 mt-10">Map Style</h3>
+
+  <div class="container mx-auto px-4">
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+      {% for each in styles %}
+        <div class="card w-full h-auto bg-white border-4 border-{% if info.mapstyle == each %}sky{% else %}white{% endif %}-500 rounded-lg shadow-md overflow-hidden cursor-pointer" data-card-id="{{ each.id }}">
+          <input type="radio" name="mapstyle" value="{{ each.id }}" {% if info.mapstyle == each %}checked{% endif %} class="hidden" id="card{{ each.id }}">
+          <div class="h-40 bg-cover bg-center" style="background-image: url('{{ each.image.url }}');"></div>
+          <div class="p-4">
+            <h3 class="text-l font-semibold">{{ each }}</h3>
+          </div>
+        </div>
+      {% endfor %}
+    </div>
+  </div>
+
+  <div class="mt-6 flex items-center justify-end gap-x-6">
+    <a href="javascript:history.back(1)" class="text-sm/6 font-semibold text-gray-900">Cancel</a>
+    <button type="submit" class="px-4 py-2 bg-lime-600 hover:bg-lime-700 text-white font-bold rounded-md focus:outline-none focus:ring focus:ring-lime-300">Submit</button>
+  </div>
+
+  {% csrf_token %}
+
+</form>
+
+{% endblock %}
+
+{% block js %}
+   <script>
+    $(document).ready(function() {
+      // When a card is clicked
+      $(".card").click(function() {
+        var cardId = $(this).data("card-id"); // Get the card id
+        var radio = $("#card" + cardId); // Get the associated radio button
+        
+        // Deselect all cards and remove the highlight
+        $(".card").removeClass("border-sky-500");
+        $(".card").addClass("border-white-500");
+        $("input[type='radio']").prop("checked", false);
+
+        // Check the radio and add the highlighted border
+        radio.prop("checked", true);
+        $(this).addClass("border-sky-500");
+      });
+    });
+  </script> 
+{% endblock %}

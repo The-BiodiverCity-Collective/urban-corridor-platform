@@ -5,7 +5,6 @@ from . import views
 
 urlpatterns = [
     path("", views.index, name="index"),
-    path("temp/", views.temp),
     path("design/", views.design),
     path("gardens/", views.gardens, name="gardens"),
     path("gardens/<int:id>/", views.garden, name="garden"),
@@ -78,6 +77,8 @@ urlpatterns = [
     path("controlpanel/shapefiles/", views.controlpanel_shapefiles, name="controlpanel_shapefiles"),
     path("controlpanel/shapefiles/<int:id>/", views.controlpanel_shapefile, name="controlpanel_shapefile"),
     path("controlpanel/shapefiles/<int:id>/edit/", views.controlpanel_shapefile_form, name="controlpanel_shapefile_form"),
+    path("controlpanel/shapefiles/<int:id>/classify/", views.controlpanel_shapefile_classify, name="controlpanel_shapefile_classify"),
     path("controlpanel/shapefiles/create/", views.controlpanel_shapefile_form, name="controlpanel_shapefile_form"),
+    path("controlpanel/shapefiles/<int:id>/dataviz/", views.controlpanel_shapefile_dataviz, name="controlpanel_shapefile_dataviz"),
 
 ]

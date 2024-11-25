@@ -1,0 +1,100 @@
+{% extends "_base.html" %}
+{% load static %}
+{% load ucp_extras %}
+
+{% block content %}
+
+<form method="post">
+    
+  <button type="submit" class="float-right px-4 py-2 bg-lime-600 hover:bg-lime-700 text-white font-bold rounded-md focus:outline-none focus:ring focus:ring-lime-300" name="convert_shapefile" value="true">
+    Import
+  </button>
+
+  <h1 class="text-3xl">
+  <a href="javascript:history.back(1)"><i class="fa fa-arrow-left"></i></a>
+  {% block title %}{{ info }}{% endblock %}</h1>
+
+  <div class="clear-both mt-3 grid bg-gray-100 overflow-x-auto overflow-y-auto" style="max-height:50vh">
+
+  <table id="classify">
+
+    <thead>
+      {% for key in info.shpinfo.fields %}
+        <th class="p-1">{{ key }}
+          <select name="action[{{ key }}]" required>
+            <option value=""></option>
+            <option value="primary" {% if info.meta_data.columns.name == key %}selected{% elif not info.meta_data.columns and key|slugify == "name" %}selected{% endif %}>Name</option>
+            <option value="import" {% if key in info.meta_data.columns.import %}selected{% endif %}>Import</option>
+            <option value="discard" {% if info.meta_data.columns and key not in info.meta_data.columns.import and info.meta_data.columns.name != key %}selected{% elif not info.meta_data.columns and key|slugify != "name" %}selected{% endif %}>Discard</option>
+          </select>
+        </th>
+      {% endfor %}
+    </thead>
+    
+    <tbody>
+      {% for each in layer %}
+        {% if forloop.counter <= 100 %}
+          <tr>
+            {% for field in layer.fields %}
+              <td class="p-1">{{ each|get_item:field }}</td>
+            {% endfor %}
+          </tr>
+        {% endif %}
+      {% endfor %}
+    </tbody>
+
+  </table>
+
+  </div>
+
+  {% csrf_token %}
+</form>
+  
+{% endblock %}
+
+{% block js %}
+<script>
+$(document).ready(function() {
+  // Variable to store the index of the currently selected "Primary" column
+  let primaryIndex = -1;
+
+  // Event listener for changes in any <select> element
+  $("#classify select").change(function() {
+    // Get the index of the current column (th is the header, td is the body)
+    const columnIndex = $(this).parent().index();
+    const selectedValue = $(this).val();
+
+    $("th").eq(columnIndex).removeClass("bg-lime-50 text-lime-700 bg-gray-200 text-gray-500 bg-amber-200 text-amber-500");
+    $("td:nth-child(" + (columnIndex + 1) + ")").removeClass("bg-lime-50 text-lime-700 bg-gray-200 text-gray-500 bg-amber-200 text-amber-500");
+
+    if (selectedValue === "import") {
+      $("th").eq(columnIndex).addClass("bg-lime-50 text-lime-700");
+      $("td:nth-child(" + (columnIndex + 1) + ")").addClass("bg-lime-50 text-lime-700");
+    } else if (selectedValue === "discard") {
+      $("th").eq(columnIndex).addClass("bg-gray-200 text-gray-500");
+      $("td:nth-child(" + (columnIndex + 1) + ")").addClass("bg-gray-200 text-gray-500");
+    } else if (selectedValue === "primary") {
+      $('#classify select').filter(function() {
+          return $(this).val() === 'primary';
+      }).val('import');
+      $(this).val('primary');
+
+      $("th").eq(columnIndex).addClass("bg-amber-200 text-amber-500");
+      $("td:nth-child(" + (columnIndex + 1) + ")").addClass("bg-amber-200 text-amber-500");
+      
+      // If there is a previously selected primary, change it to active
+      if (primaryIndex !== -1 && primaryIndex !== columnIndex) {
+        $("th").eq(primaryIndex).addClass("bg-lime-50 text-lime-700");
+        $("td:nth-child(" + (primaryIndex + 1) + ")").addClass("bg-lime-50 text-lime-700");
+      }
+      
+      // Update the index of the currently selected "Primary" column
+      primaryIndex = columnIndex;
+    }
+  });
+
+  $("#classify select").trigger('change');
+});
+</script>
+{% endblock %}
+

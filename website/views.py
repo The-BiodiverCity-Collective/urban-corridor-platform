@@ -20,6 +20,8 @@ import zipfile
 import os
 from django.core.files import File
 import uuid
+import sys
+from django.core import serializers
 
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import authenticate, login, logout
@@ -41,13 +43,9 @@ def p(text):
     print("----------------------")
 
 # Also defined in context_processor for templates, but we need it sometimes in the Folium map configuration
-MAPBOX_API_KEY = "pk.eyJ1IjoiY29tbXVuaXRyZWUiLCJhIjoiY2lzdHZuanl1MDAwODJvcHR1dzU5NHZrbiJ9.0ETJ3fXYJ_biD7R7FiwAEg"
-SATELLITE_TILES = "https://api.mapbox.com/v4/mapbox.satellite/{z}/{x}/{y}@2x.png?access_token=" + MAPBOX_API_KEY
-STREET_TILES = "https://api.mapbox.com/styles/v1/mapbox/streets-v11/tiles/{z}/{x}/{y}?access_token=" + MAPBOX_API_KEY
-LIGHT_TILES = "https://api.mapbox.com/styles/v1/mapbox/light-v10/tiles/{z}/{x}/{y}?access_token=" + MAPBOX_API_KEY
-
-# Some reference spaces/lists we will be using
-SUBURBS = ReferenceSpace.objects.filter(source_id=334434)
+SATELLITE_TILES = "https://api.mapbox.com/v4/mapbox.satellite/{z}/{x}/{y}@2x.png?access_token=" + settings.MAPBOX_API_KEY
+STREET_TILES = "https://api.mapbox.com/styles/v1/mapbox/streets-v11/tiles/{z}/{x}/{y}?access_token=" + settings.MAPBOX_API_KEY
+LIGHT_TILES = "https://api.mapbox.com/styles/v1/mapbox/light-v10/tiles/{z}/{x}/{y}?access_token=" + settings.MAPBOX_API_KEY
 
 COLOR_SCHEMES = {
     "moc": ["#144d58","#a6cee3","#33a02c","#b2df8a","#e31a1c","#fb9a99","#ff7f00","#fdbf6f","#6a3d9a","#cab2d6","#b15928","#ffff99"],
@@ -128,6 +126,7 @@ def design(request):
 
 def map(request, id):
     info = get_object_or_404(Document, pk=id)
+    site = get_site(request)
     spaces = info.spaces.all()
     features = []
     if info.spaces.all().count() == 1:
@@ -138,7 +137,6 @@ def map(request, id):
         space_count = spaces.count()
         spaces = spaces[:500]
 
-    map = None
     simplify_factor = None
     geom_type = None
 
@@ -157,11 +155,14 @@ def map(request, id):
     count = 0
     legend = {}
     show_individual_colors = False
-    properties = info.get_dataviz
-    if "color_type" in properties:
-        if properties["color_type"] == "single":
+    dataviz = Dataviz.objects.filter(shapefile=info, site=site)
+    if dataviz:
+        properties = dataviz[0]
+    if properties.colors["option"]:
+        if properties.colors["option"] == "single":
             # One single color for everything on the map
             show_individual_colors = False
+            color = properties.colors["color"]
         else:
             # Each space has an individual color
             show_individual_colors = True
@@ -190,8 +191,6 @@ def map(request, id):
                 color = colors[0]
                 count = 0
             legend[color] = each.name
-        else:
-            color = None
 
         content = ""
         content = content + f"<a href='{url}'>View details</a>"
@@ -226,8 +225,9 @@ def map(request, id):
         "show_individual_colors": show_individual_colors,
         "colors": colors,
         "features": features,
+        "mapstyle": properties.mapstyle if properties else None,
     }
-    return render(request, "website/map.html", context)
+    return render(request, "map.html", context)
 
 def space(request, id):
     info = get_object_or_404(ReferenceSpace, pk=id)
@@ -294,7 +294,7 @@ def space(request, id):
         "satmap": satmap._repr_html_(),
         "center": info.geometry.centroid,
     }
-    return render(request, "website/space.html", context)
+    return render(request, "space.html", context)
 
 
 def maps(request):
@@ -1463,8 +1463,7 @@ def controlpanel_shapefiles(request):
 @staff_member_required
 def controlpanel_shapefile(request, id):
     site = get_site(request)
-    shapefile = Document.objects.filter(is_shapefile=True).filter(Q(site=site)|Q(site__isnull=True))
-    info = shapefile.get(pk=id)
+    info = Document.objects.filter(Q(site=site) | Q(site__isnull=True)).get(pk=id, is_shapefile=True)
 
     if "create_shapefile_plot" in request.POST:
         plot = info.create_shapefile_plot()
@@ -1480,30 +1479,33 @@ def controlpanel_shapefile(request, id):
             # who can automatically do that and who can't
             info.meta_data["skip_size_check"] = True
             info.save()
-        info.convert_shapefile()
-        return redirect(request.get_full_path())
+        return redirect(reverse("controlpanel_shapefile_classify", args=[info.id]))
     elif "load_shapefile_info" in request.POST:
         info.load_shapefile_info()
         messages.success(request, "Shapefile info was loaded.")
         return redirect(request.get_full_path())
 
-    print("Static URL:", settings.STATIC_ROOT)
+    size_in_bytes = 0
+    # If we have spaces, let's see what the size of them is...
+    if info.spaces.count():
+        serialized_data = serializers.serialize("json", info.spaces.all())
+        size_in_bytes = sys.getsizeof(serialized_data)
 
     context = {
         "controlpanel": True,
         "menu": "shapefiles",
         "info": info,
+        "size_in_bytes": size_in_bytes,
     }
     return render(request, "controlpanel/shapefile.html", context)
 
 @staff_member_required
 def controlpanel_shapefile_form(request, id=None):
     site = get_site(request)
-    shapefile = Document.objects.filter(is_shapefile=True).filter(Q(site=site)|Q(site__isnull=True))
     info = Document()
     action = Log.LogAction.CREATE
     if id:
-        info = shapefile.get(pk=id)
+        info = Document.objects.filter(Q(site=site) | Q(site__isnull=True)).get(pk=id, is_shapefile=True)
         action = Log.LogAction.UPDATE
 
     if request.method == "POST":
@@ -1574,196 +1576,69 @@ def controlpanel_shapefile_form(request, id=None):
     }
     return render(request, "controlpanel/shapefile.form.html", context)
 
-def temp(request):
+@staff_member_required
+def controlpanel_shapefile_dataviz(request, id):
+    site = get_site(request)
+    shapefile = Document.objects.filter(Q(site=site) | Q(site__isnull=True)).get(pk=id, is_shapefile=True)
 
-    plants = [
-      "Acokanthera oppositifolia",
-      "Ledebouria petiolata",
-      "Clausena anisata",
-      "Vachellia karroo",
-      "Freylinia tropica",
-      "Agapanthus praecox",
-      "Salix mucronata",
-      "Searsia lancea",
-      "Carpobrotus edulis",
-      "Senegalia burkei",
-      "Leonotis leonurus",
-      "Vachellia xanthophloea",
-      "Zantedeschia aethiopica",
-      "Carissa macrocarpa",
-      "Setaria megaphylla",
-      "Imperata cylindrica",
-      "Nuxia floribunda",
-      "Phyllanthus reticulatus",
-      "Scutia myrtina",
-      "Celtis africana",
-      "Calpurnia aurea",
-      "Crassula spathulata",
-      "Buddleja saligna",
-      "Dodonaea angustifolia",
-      "Thunbergia alata",
-      "Senegalia nigrescens",
-      "Vachellia abyssinica",
-      "Cotyledon orbiculata",
-      "Vepris lanceolata",
-      "Diospyros simii",
-      "Plumbago auriculata",
-      "Searsia pyroides",
-      "Pavetta gardeniifolia",
-      "Senegalia ataxacantha",
-      "Asystasia gangetica",
-      "Grewia occidentalis",
-      "Indigofera jucunda",
-      "Faidherbia albida",
-      "Combretum molle",
-      "Vachellia hebeclada",
-      "Selago corymbosa",
-      "Phoenix reclinata",
-      "Plectranthus neochilus",
-      "Kraussia floribunda",
-      "Prunus africana",
-      "Senecio macroglossus",
-      "Dombeya rotundifolia",
-      "Searsia crenata",
-      "Rothmannia globosa",
-      "Bolusanthus speciosus",
-      "Crinum bulbispermum",
-      "Brachylaena discolor",
-      "Searsia pendulina",
-      "Schotia brachypetala",
-      "Carissa bispinosa",
-      "Philenoptera violacea",
-      "Dovyalis caffra",
-      "Trema orientalis",
-      "Vachellia natalitia",
-      "Senegalia caffra",
-      "Bauhinia tomentosa",
-      "Ziziphus mucronata",
-      "Cassinopsis ilicifolia",
-      "Euclea crispa",
-      "Halleria lucida",
-      "Dais cotinifolia",
-      "Vangueria infausta",
-      "Crocosmia aurea",
-      "Myrsine africana",
-      "Ptaeroxylon obliquum",
-      "Coddia rudis",
-      "Ekebergia capensis",
-      "Ehretia rigida",
-      "Apodytes dimidiata",
-      "Bauhinia galpinii",
-      "Grewia flavescens",
-      "Burchellia bubalina",
-      "Dovyalis zeyheri",
-      "Vachellia robusta",
-      "Kigelia africana",
-      "Kiggelaria africana",
-      "Euryops pectinatus",
-      "Erythrina lysistemon",
-      "Ochna serrulata",
-      "Ilex mitis",
-      "Hypoestes aristata",
-      "Antidesma venosum",
-      "Asparagus falcatus",
-      "Combretum erythrophyllum",
-      "Asparagus virgatus",
-      "Dichrostachys cinerea",
-      "Portulacaria afra",
-      "Clivia miniata",
-      "Metarungia longistrobus",
-      "Panicum maximum",
-      "Senecio tamoides",
-      "Peltophorum africanum",
-      "Hibiscus calyphyllus",
-      "Bulbine frutescens",
-      "Vachellia tortilis",
-      "Rhamnus prinoides",
-      "Gardenia volkensii",
-      "Searsia dentata",
-      "Melianthus major",
-      "Searsia leptodictya",
-      "Pittosporum viridiflorum",
-      "Psychotria capensis",
-      "Ficus ingens",
-      "Deinbollia oblongifolia",
-      "Senegalia mellifera",
-      "Rothmannia capensis",
-      "Mundulea sericea",
-      "Harpephyllum caffrum",
-      "Gloriosa superba",
-      "Albizia adianthifolia",
-      "Eriocephalus africanus",
-      "Ficus sur",
-      "Senegalia galpinii",
-      "Leucosidea sericea",
-      "Syzygium cordatum",
-      "Cussonia paniculata",
-      "Impatiens sylvicola",
-      "Searsia lucida",
-      "Heteropyxis natalensis",
-      "Tarchonanthus camphoratus",
-      "Dymondia margaretae",
-      "Pappea capensis",
-      "Erythrina humeana",
-      "Searsia chirindensis",
-      "Jasminum multipartitum",
-      "Croton gratissimus",
-      "Rhoicissus tridentata",
-      "Rapanea melanophloeos",
-      "Ficus lutea",
-      "Rhoicissus digitata",
-      "Melianthus comosus",
-      "Arctotheca calendula",
-      "Combretum bracteosum",
-      "Spirostachys africana",
-      "Erythrophysa transvaalensis",
-      "Scadoxus puniceus",
-      "Mimusops zeyheri",
-      "Combretum zeyheri",
-      "Calodendrum capense",
-      "Crassula ovata",
-      "Bulbine abyssinica",
-      "Hippobromus pauciflorus",
-      "Cussonia spicata",
-      "Aloe striata",
-      "Pentas lanceolata",
-      "Adansonia digitata",
-      "Cryptocarya latifolia",
-      "Impatiens hochstetteri",
-      "Diospyros whyteana",
-      "Strelitzia nicolai",
-      "Euryops virgineus",
-      "Dracaena aletriformis",
-      "Thunbergia natalensis",
-      "Gerbera jamesonii",
-      "Cunonia capensis",
-      "Cyperus papyrus",
-      "Zanthoxylum capense",
-      "Pavonia praemorsa",
-      "Dyschoriste rogersii",
-      "Sclerocarya birrea",
-      "Encephalartos ferox",
-      "Encephalartos villosus",
-      "Combretum krausii",
-      "Plectranthus ecklonii",
-      "Crassula arborescens",
-      "Sansevieria hyacinthoides",
-      "Aloe pretoriensis",
-    ]
+    info = Dataviz.objects.get_or_create(site=site, shapefile=shapefile)
+    info = info[0]
+    
+    if request.method == "POST":
+        info.colors = {
+            "option": request.POST.get("colors"),
+            "color": request.POST.get("color"),
+        }
+        info.mapstyle_id = request.POST.get("mapstyle")
+        info.opacity = request.POST.get("opacity")
+        info.fill_opacity = request.POST.get("fill_opacity")
+        info.line_width = request.POST.get("line_width")
 
-    import csv
-    species = Species.objects.filter(name__in=plants).values('name', 'propagation_seed', 'propagation_cutting', 'description')
+        info.save()
 
-    csv_file_path = 'species.csv'
+        messages.success(request, "Information was saved.")
+        return redirect(request.get_full_path())
 
-    # Write the data to the CSV file
-    with open(csv_file_path, mode='w', newline='', encoding='utf-8') as file:
-        writer = csv.DictWriter(file, fieldnames=['name', 'propagation_seed', 'propagation_cutting', 'description'])
-        
-        # Write the header
-        writer.writeheader()
-        
-        # Write the rows
-        for org in species:
-            writer.writerow(org)
+    context = {
+        "controlpanel": True,
+        "menu": "shapefiles",
+        "info": info,
+        "load_form": True,
+        "styles": MapStyle.objects.all(),
+    }
+    return render(request, "controlpanel/shapefile.dataviz.html", context)
+
+@staff_member_required
+def controlpanel_shapefile_classify(request, id):
+    site = get_site(request)
+    info = Document.objects.filter(Q(site=site) | Q(site__isnull=True)).get(pk=id, is_shapefile=True)
+    layer = info.get_gis_layer()
+
+    if request.method == "POST":
+        import_columns = []
+        if not "columns" in info.meta_data:
+            info.meta_data["columns"] = {}
+
+        for field in layer[0].fields:
+            setting = request.POST.get(f"action[{field}]")
+
+            if setting == "primary":
+                info.meta_data["columns"]["name"] = field
+            elif setting == "import":
+                import_columns.append(field)
+
+            info.meta_data["columns"]["import"] = import_columns
+        info.save()
+
+        info.convert_shapefile()
+        messages.success(request, "Shapefile data was imported into the system")
+        return redirect(reverse("controlpanel_shapefile", args=[info.id]))
+
+    context = {
+        "controlpanel": True,
+        "menu": "shapefiles",
+        "info": info,
+        "layer": layer,
+    }
+    return render(request, "controlpanel/shapefile.classify.html", context)
 
