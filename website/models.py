@@ -43,6 +43,7 @@ class Site(models.Model):
     url = models.CharField(max_length=255)
     email = models.EmailField(null=True)
     language = models.ForeignKey(Language, on_delete=models.CASCADE)
+    corridor = models.ForeignKey("Document", on_delete=models.CASCADE, null=True, blank=True, limit_choices_to={"doc_type":8}, related_name="primary_site")
 
     def __str__(self):
         return self.name
@@ -114,6 +115,7 @@ class Document(models.Model):
         CONTEXT = 5, _("Context")
         TEACHING = 6, _("Teaching resources")
         GENERAL = 7, _("General document repository")
+        CORRIDOR = 8, _("Ecological corridor")
 
     doc_type = models.IntegerField(choices=Type.choices, db_index=True)
     author = models.CharField(max_length=255, null=True, blank=True)
@@ -249,7 +251,7 @@ class Document(models.Model):
                     error = "This shapefile includes data in 3D. We only store shapefiles with 2D data. Please remove the elevation data (Z coordinates). This can be done, for instance, using QGIS: https://docs.qgis.org/testing/en/docs/user_manual/processing_algs/qgis/vectorgeometry.html#drop-m-z-values"
                 else:
                     space = ReferenceSpace.objects.create(
-                        name = self.meta_data.get("shortname"),
+                        name = self.name,
                         geometry = polygon,
                         source = self,
                     )
@@ -428,7 +430,7 @@ class ReferenceSpace(models.Model):
     meta_data = models.JSONField(null=True, blank=True)
 
     def __str__(self):
-        return f"{self.name} ({self.source.name})"
+        return self.name if self.name else str(_("Unnamed object"))
 
     @property
     def get_absolute_url(self):
@@ -461,9 +463,6 @@ class ReferenceSpace(models.Model):
             return self.photo.image.medium.url
         else:
             return settings.MEDIA_URL + "/placeholder.png"
-
-    def __str__(self):
-        return self.name if self.name else _("Unnamed object")
 
     @property
     def suburb(self):

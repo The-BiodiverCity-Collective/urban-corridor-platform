@@ -128,6 +128,15 @@ def map(request, id):
     info = get_object_or_404(Document, pk=id)
     site = get_site(request)
     spaces = info.spaces.all()
+
+    swapped_corridor_coords = None
+    corridor = ReferenceSpace.objects.filter(source=site.corridor)
+    if corridor:
+        corridor = corridor[0]
+        corridor = json.loads(corridor.geometry.geojson)
+        corridor = corridor["coordinates"][0]
+        swapped_corridor_coords = [[y, x] for x, y in corridor] # This is needed for the hole punching to work
+
     features = []
     if info.spaces.all().count() == 1:
         # If this is only associated to a single space then we show that one
@@ -200,7 +209,7 @@ def map(request, id):
                 "type": "Feature",
                 "geometry": json.loads(geo.json),
                 "properties": {
-                    "name": each.name,
+                    "name": str(each),
                     "id": each.id,
                     "content": content,
                     "color": color if color else "",
@@ -226,7 +235,9 @@ def map(request, id):
         "colors": colors,
         "features": features,
         "mapstyle": properties.mapstyle if properties else None,
+        "swapped_corridor_coords": swapped_corridor_coords,
     }
+
     return render(request, "map.html", context)
 
 def space(request, id):
@@ -1472,6 +1483,25 @@ def controlpanel_shapefile(request, id):
         else:
             messages.error(request, "There was a problem creating the plot.")
         return redirect(request.get_full_path())
+    elif "clip" in request.POST:
+        clip_boundaries = ReferenceSpace.objects.get(pk=request.POST["clip"])
+        info.meta_data["clip"] = request.POST["clip"]
+        info.save()
+
+        # First we delete the spaces that are outside the clipped area
+        spaces = info.spaces.exclude(Q(geometry__within=clip_boundaries.geometry)|Q(geometry__intersects=clip_boundaries.geometry))
+        total_to_delete = int(spaces.count())
+        spaces.delete()
+
+        # And then we cut off those that cross boundaries
+        intersecting = info.spaces.filter(geometry__intersects=clip_boundaries.geometry)
+        for each in intersecting:
+            sliced_geometry = each.geometry.intersection(clip_boundaries.geometry)
+            each.geometry = sliced_geometry
+            each.save()
+
+        messages.success(request, f"Borders were clipped to {clip_boundaries.name}; {total_to_delete} spaces were removed and {intersecting.count()} spaces were clipped.")
+        return redirect(request.get_full_path())
     elif "convert_shapefile" in request.POST:
         if info.shpinfo["count"] > 1000:
             # There is a way to limit processing items with 1000 records. However, for now if people
@@ -1491,11 +1521,18 @@ def controlpanel_shapefile(request, id):
         serialized_data = serializers.serialize("json", info.spaces.all())
         size_in_bytes = sys.getsizeof(serialized_data)
 
+    clip_boundaries = None
+    if "clip" in info.meta_data:
+        clip_boundaries = ReferenceSpace.objects.get(pk=info.meta_data["clip"])
+
     context = {
         "controlpanel": True,
         "menu": "shapefiles",
         "info": info,
         "size_in_bytes": size_in_bytes,
+        "corridors": ReferenceSpace.objects.filter(source__doc_type=8),
+        "clip_boundaries": clip_boundaries,
+        "load_form": True,
     }
     return render(request, "controlpanel/shapefile.html", context)
 
@@ -1628,8 +1665,10 @@ def controlpanel_shapefile_classify(request, id):
                 import_columns.append(field)
 
             info.meta_data["columns"]["import"] = import_columns
+        info.meta_data["clip"] = request.POST.get("clip")
         info.save()
 
+        info.spaces.all().delete()
         info.convert_shapefile()
         messages.success(request, "Shapefile data was imported into the system")
         return redirect(reverse("controlpanel_shapefile", args=[info.id]))

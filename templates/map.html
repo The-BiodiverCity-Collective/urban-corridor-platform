@@ -11,7 +11,7 @@
 
 {% block content %}
 
-  <h1>{% block title %}{{ info }}{% endblock %}</h1>
+  <h1 class="text-3xl">{% block title %}{{ info }}{% endblock %}</h1>
 
   {% if info.content %}
     <div>
@@ -20,12 +20,12 @@
   {% endif %}
 
   {% if info.author %}
-    <h3 class="mt-4">Map author</h3>
+    <h3 class="mt-4 text-2xl">Map author</h3>
     <div>{{ info.author }}</div>
   {% endif %}
 
   {% if info.url %}
-    <h3 class="mt-4">More information</h3>
+    <h3 class="mt-4 text-2xl">More information</h3>
     <div><a href="{{ info.url }}">{{ info.url }}</a></div>
   {% endif %}
 

@@ -42,6 +42,41 @@
 
   tileLayer.addTo(map);
 
+  {% if swapped_corridor_coords %}
+    /* START OF CUTOUT SCRIPT */
+
+    // This is the whole globe's bounds:
+    const globeBounds = [
+      [-90, -180],
+      [-90, 180],
+      [90, 180],
+      [90, -180],
+      [-90, -180]
+    ];
+
+    const polygonCoords = {{ swapped_corridor_coords }};
+    const corridorCoords = {{ swapped_corridor_coords }};
+
+    // Create a mask layer that will fill the map with a transparent black layer
+    // and create a hole based on the polygon shape:  
+    const mask = L.polygon([ // The outer rectangle
+      ...globeBounds,
+      ...polygonCoords.reverse() // The polygon as a hole
+    ], {
+      color: "black",
+      fillColor: "black",
+      fillOpacity: 0.25,
+      stroke: false
+    }).addTo(map);
+
+    const polygon = L.polygon(polygonCoords, {
+        stroke: false,
+        fillOpacity: 0
+    }).addTo(map);
+
+    /* END OF CUTOUT SCRIPT */
+  {% endif %}
+
   // function to convert canvas data to png and simulate click on download button
   function downloadImage(err, canvas) {
     var downloadLink = document.createElement("a");

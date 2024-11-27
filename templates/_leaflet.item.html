@@ -107,7 +107,23 @@
         })
       }
 
-      map.addLayer(dataLayer).fitBounds(dataLayer.getBounds())
+      {% if corridor %}
+        map.addLayer(dataLayer);
+
+        var corridorPoly = L.polygon(corridorCoords, {
+          color: 'transparent',  // Transparent stroke
+          fillColor: 'transparent',  // Transparent fill
+          weight: 0,  // No border
+          opacity: 0  // Invisible
+        }).addTo(map);
+
+        // Use fitBounds to adjust the map view to the polygon's bounds
+        map.fitBounds(corridorPoly.getBounds());
+
+
+      {% else %}
+        map.addLayer(dataLayer).fitBounds(dataLayer.getBounds())
+      {% endif %}
   {% endif %}
 
 </script>

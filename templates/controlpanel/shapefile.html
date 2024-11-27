@@ -158,6 +158,16 @@
           <strong>{{ size_in_bytes|filesizeformat }}</strong> estimated db size
         </span>
 
+        {% if clip_boundaries %}
+          <div class="mt-5">
+            <span class="mr-4">
+              <i class="text-gray-500 fa-solid fa-burst fa-fw"></i>
+              Clipped to match the boundaries of
+              <strong><a href="{{ clip_boundaries.get_absolute_url }}">{{ clip_boundaries }}</a></strong>
+            </span>
+          </div>
+        {% endif %}
+
       {% else %}
 
         <h3 class="mt-3">Fields</h3>
@@ -233,6 +243,26 @@
 
   </div>
 </div>
+
+  <form method="post" class="mt-10">
+
+      <h3 class="text-xl">Clipping</h3>
+      <p>Do you want to clip the shapefile so it only shows elements within your corridor? This is especially useful 
+      if the shapefile covers a much larger area.</p>
+
+      <select name="clip" class="mt-4 block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-sky-600 sm:max-w-xs sm:text-sm/6" required>
+        <option value=""></option>
+        {% for each in corridors %}
+          <option value="{{ each.id }}">{{ each }}</option>
+        {% endfor %}
+      </select>
+      <button type="submit" class="px-4 py-2 mt-4 bg-lime-600 hover:bg-lime-700 text-white font-bold rounded-md focus:outline-none focus:ring focus:ring-lime-300" name="convert_shapefile" value="true">
+        Clip to these borders
+      </button>
+    {% csrf_token %}
+
+  </form>
+
 
 <h3 class="mb-2 mt-10">Meta data</h3>
 {% for key,value in info.meta_data.items %}
