@@ -4,7 +4,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>{{ SITE }}</title>
+  <title>{% block title %}{% endblock %} - {{ SITE }}</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="stylesheet" href="{% static "css/fontawesome.css" %}">
   {% if DEBUG %}
@@ -34,6 +34,32 @@
   {% if load_leaflet_legend %}
     <link href="{% static 'css/leaflet.legend.css' %}" rel="stylesheet" />
   {% endif %}
+
+  <style type="text/css">
+dl.dl-horizontal {
+    display: flex;
+    flex-direction: column;
+    margin: 0;
+}
+
+dl.dl-horizontal dt, dl.dl-horizontal dd {
+    display: inline-block;
+    margin: 0;
+}
+
+dl.dl-horizontal dt {
+    font-weight: bold;
+    width: 200px; /* Adjust this width as necessary */
+    margin-bottom: 5px;
+}
+
+dl.dl-horizontal dd {
+    margin-left: 0;
+    margin-bottom: 10px;
+    width: auto;
+    flex: 1;
+}
+  </style>
 
 
   {% block css %}{% endblock %}

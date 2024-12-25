@@ -114,39 +114,6 @@
         <div class="mt-10 space-y-10">
 
           <fieldset>
-            <legend class="text-sm/6 font-semibold text-gray-900">Shapefile Processing</legend>
-            <div class="mt-6 space-y-6">
-              <div class="relative flex gap-x-3">
-                <div class="flex h-6 items-center">
-                  <input id="regular" name="processing" type="radio" class="size-4 border-gray-300 text-sky-600 focus:ring-sky-600" {% if not info.meta_data.single_reference_space and not info.meta_data.group_spaces_by_name %}checked{% endif %}>
-                </div>
-                <div class="text-sm/6">
-                  <label for="regular" class="font-medium text-gray-900">Regular processing</label>
-                  <p class="text-gray-500">Each item becomes a new reference space</p>
-                </div>
-              </div>
-              <div class="relative flex gap-x-3">
-                <div class="flex h-6 items-center">
-                  <input id="single_reference_space" name="processing" type="radio" class="size-4 border-gray-300 text-sky-600 focus:ring-sky-600" {% if info.meta_data.single_reference_space %}checked{% endif %} value="single_reference_space">
-                </div>
-                <div class="text-sm/6">
-                  <label for="single_reference_space" class="font-medium text-gray-900">Single reference space</label>
-                  <p class="text-gray-500">This contains a single reference space - merge down into a single object</p>
-                </div>
-              </div>
-              <div class="relative flex gap-x-3">
-                <div class="flex h-6 items-center">
-                  <input id="group_spaces_by_name" name="processing" type="radio" class="size-4 border-gray-300 text-sky-600 focus:ring-sky-600" {% if info.meta_data.group_spaces_by_name %}checked{% endif %} value="group_spaces_by_name">
-                </div>
-                <div class="text-sm/6">
-                  <label for="group_spaces_by_name" class="font-medium text-gray-900">Group by name</label>
-                  <p class="text-gray-500">Group all spaces that have the same name together (e.g. separate river segments into a single river)</p>
-                </div>
-              </div>
-            </div>
-          </fieldset>
-
-          <fieldset>
             <legend class="text-sm/6 font-semibold text-gray-900">Map Display</legend>
             <div class="mt-6 space-y-6">
               <div class="relative flex gap-x-3">

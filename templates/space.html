@@ -47,6 +47,23 @@
       </div>
     </div>
 
+    {% if info.meta_data.features %}
+
+      <div class="mt-4 mb-4">
+
+        <dl class="dl dl-horizontal">
+          {% for key,value in info.meta_data.features.items %}
+            
+            <dt>{{ key }}</dt>
+            <dd>{{ value }}</dd>
+
+          {% endfor %}
+        </dl>
+
+      </div>
+
+    {% endif %}
+
     <div class="mb-4">
       <form method="post" class="float-end">
         <button type="submit" name="download" value="true" class="btn btn-secondary">

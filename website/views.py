@@ -19,6 +19,7 @@ from django.contrib.admin.views.decorators import staff_member_required
 import zipfile
 import os
 from django.core.files import File
+import shutil
 import uuid
 import sys
 from django.core import serializers
@@ -160,25 +161,32 @@ def map(request, id):
             simplify_factor = 0.001
 
     colors = ["green", "blue", "red", "orange", "brown", "navy", "teal", "purple", "pink", "maroon", "chocolate", "gold", "ivory", "snow"]
+    color_features = {}
 
     count = 0
     legend = {}
     show_individual_colors = False
     dataviz = Dataviz.objects.filter(shapefile=info, site=site)
+    properties = None
     if dataviz:
         properties = dataviz[0]
-    if properties.colors["option"]:
-        if properties.colors["option"] == "single":
+        if properties.colors and properties.colors["option"] == "single":
             # One single color for everything on the map
             show_individual_colors = False
             color = properties.colors["color"]
+        elif properties.colors and properties.colors["option"] == "assigned":
+            # Colors are assigned by particular features, so we check what feature that is and we store the json with the associated colors
+            show_individual_colors = True
+            color_features = properties.colors["features"]
+            get_feature = properties.colors["set_feature"]
         else:
             # Each space has an individual color
             show_individual_colors = True
     else:
         show_individual_colors = True
 
-    if show_individual_colors and "scheme" in properties:
+    # Awaiting embedding of SCHEME
+    if show_individual_colors and False:
         s = properties["scheme"]
         colors = COLOR_SCHEMES[s]
 
@@ -193,12 +201,19 @@ def map(request, id):
 
         # If we need separate colors we'll itinerate over them one by one
         if show_individual_colors:
-            try:
-                color = colors[count]
-                count += 1
-            except:
-                color = colors[0]
-                count = 0
+            if color_features:
+                relevant_feature = each.meta_data["features"][get_feature]
+                if relevant_feature in color_features:
+                    color = color_features[relevant_feature]
+                else:
+                    color = "purple"
+            else:
+                try:
+                    color = colors[count]
+                    count += 1
+                except:
+                    color = colors[0]
+                    count = 0
             legend[color] = each.name
 
         content = ""
@@ -1522,8 +1537,11 @@ def controlpanel_shapefile(request, id):
         size_in_bytes = sys.getsizeof(serialized_data)
 
     clip_boundaries = None
-    if "clip" in info.meta_data:
-        clip_boundaries = ReferenceSpace.objects.get(pk=info.meta_data["clip"])
+    if "clip" in info.meta_data and info.meta_data["clip"]:
+        try:
+            clip_boundaries = ReferenceSpace.objects.get(pk=info.meta_data["clip"])
+        except Exception as e:
+            messages.warning(request, "We could not clip the shapefile - error: " + str(e))
 
     context = {
         "controlpanel": True,
@@ -1561,11 +1579,6 @@ def controlpanel_shapefile_form(request, id=None):
             info.meta_data.pop("single_reference_space", None)
             info.meta_data.pop("group_spaces_by_name", None)
 
-        if request.POST["processing"] == "single_reference_space":
-            info.meta_data["single_reference_space"] = True
-        elif request.POST["processing"] == "group_spaces_by_name":
-            info.meta_data["group_spaces_by_name"] = True
-
         info.save()
         log_action(request, action, f"Shapefile: {info.name}")
 
@@ -1578,24 +1591,40 @@ def controlpanel_shapefile_form(request, id=None):
                 # If it's a zip, we extract all files and save them separately...
                 if uploaded_file.name.endswith(".zip"):
                     with zipfile.ZipFile(uploaded_file, "r") as zip_ref:
-
+                        
                         # Extract all the contents into a temporary directory
                         my_uuid = uuid.uuid4()
-                        temp_dir = "/tmp/" + f"{info.id}-{my_uuid}"
+                        temp_dir = "/tmp/" + f"{info.id}-{my_uuid}/"
                         os.makedirs(temp_dir, exist_ok=True)
-                        zip_ref.extractall(temp_dir)
+                        #zip_ref.extractall(temp_dir)
+
+                        for file in zip_ref.namelist():
+                            extracted_filename = os.path.basename(file)
+                            zip_ref.extract(file, temp_dir)
+
+                            # We move all files into the main directory
+                            if file != extracted_filename:
+                                os.rename(os.path.join(temp_dir, file), os.path.join(temp_dir, extracted_filename))
 
                         # Loop through all extracted files
                         for filename in os.listdir(temp_dir):
                             file_path = os.path.join(temp_dir, filename)
-                            with open(file_path, "rb") as f:
-                                attachment = Attachment()
-                                attachment.attached_to = info
-                                attachment.file.save(filename, File(f), save=True)
+                            if os.path.isfile(file_path):
+                                with open(file_path, "rb") as f:
+                                    attachment = Attachment()
+                                    attachment.attached_to = info
+                                    attachment.file.save(filename, File(f), save=True)
 
-                    # Remove the temp dir and files
                     for filename in os.listdir(temp_dir):
-                        os.remove(os.path.join(temp_dir, filename))
+                        file_path = os.path.join(temp_dir, filename)
+                        
+                        # Check if it's a file and remove it
+                        if os.path.isfile(file_path):
+                            os.remove(file_path)
+                        # If it's a directory, recursively remove it
+                        elif os.path.isdir(file_path):
+                            shutil.rmtree(file_path)
+
                     os.rmdir(temp_dir)
 
                 else:
@@ -1626,6 +1655,13 @@ def controlpanel_shapefile_dataviz(request, id):
             "option": request.POST.get("colors"),
             "color": request.POST.get("color"),
         }
+        if "color_set_feature" in request.POST:
+            info.colors["set_feature"] = request.POST["color_set_feature"]
+        if "color_features" in request.POST:
+            try:
+                info.colors["features"] = json.loads(request.POST["color_features"])
+            except json.JSONDecodeError:
+                messages.warning(request, "JSON object is not valid and was not saved")
         info.mapstyle_id = request.POST.get("mapstyle")
         info.opacity = request.POST.get("opacity")
         info.fill_opacity = request.POST.get("fill_opacity")
@@ -1666,6 +1702,15 @@ def controlpanel_shapefile_classify(request, id):
 
             info.meta_data["columns"]["import"] = import_columns
         info.meta_data["clip"] = request.POST.get("clip")
+
+        info.meta_data.pop("single_reference_space", None)
+        info.meta_data.pop("group_spaces_by_name", None)
+
+        if request.POST["processing"] == "single_reference_space":
+            info.meta_data["single_reference_space"] = True
+        elif request.POST["processing"] == "group_spaces_by_name":
+            info.meta_data["group_spaces_by_name"] = True
+
         info.save()
 
         info.spaces.all().delete()

@@ -1,4 +1,5 @@
 {% extends "_base.html" %}
+{% load ucp_extras %}
 
 {% block content %}
 
@@ -52,6 +53,34 @@
                 <p class="text-gray-500">Each item in the shapefile is assigned a specific color</p>
               </div>
             </div>
+
+            <div class="assigned_colors">
+
+              <h2>Select the colors by which to differentiate</h2>
+
+              {% for each in info.shapefile.spaces.all.0.meta_data.features %}
+                <div class="relative flex gap-x-3">
+                  <div class="flex h-6 items-center">
+                    <input id="item_{{ forloop.counter }}" name="color_set_feature" type="radio" class="size-4 border-gray-300 text-sky-600 focus:ring-sky-600" {% if info.colors.set_feature == each %}checked{% endif %} value="{{ each }}">
+                  </div>
+                  <div class="text-sm/6">
+                    <label for="item_{{ forloop.counter }}" class="font-medium text-gray-900">{{ each }}</label>
+                  </div>
+                </div>
+              {% endfor %}
+
+              <div class="col-span-full mt-5">
+                <label for="color_features" class="block text-sm/6 font-medium text-gray-900">JSON with feature colors</label>
+                <div class="mt-2">
+                  <textarea name="color_features" id="color_features" rows="3" class="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6">{{ info.colors.features|json_dumps|default_if_none:"" }}</textarea>
+                </div>
+              </div>
+
+
+            </div>
+
+
+
           </div>
         </fieldset>
 

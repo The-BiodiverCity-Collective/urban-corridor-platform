@@ -1,5 +1,6 @@
 from django import template
 from django.template.defaulttags import register
+import json
 
 register = template.Library()
 
@@ -14,3 +15,8 @@ def get_item(dictionary, key):
             return ""
     except:
         return ""
+
+@register.filter
+def json_dumps(string):
+    if string:
+        return json.dumps(string)
