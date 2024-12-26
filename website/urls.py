@@ -81,4 +81,8 @@ urlpatterns = [
     path("controlpanel/shapefiles/create/", views.controlpanel_shapefile_form, name="controlpanel_shapefile_form"),
     path("controlpanel/shapefiles/<int:id>/dataviz/", views.controlpanel_shapefile_dataviz, name="controlpanel_shapefile_dataviz"),
 
+    path("controlpanel/species/", views.controlpanel_specieslist, name="controlpanel_specieslist"),
+    path("controlpanel/species/<int:id>/", views.controlpanel_species, name="controlpanel_species"),
+    path("controlpanel/species/create/", views.controlpanel_species, name="controlpanel_species"),
+
 ]

@@ -1726,3 +1726,22 @@ def controlpanel_shapefile_classify(request, id):
     }
     return render(request, "controlpanel/shapefile.classify.html", context)
 
+@staff_member_required
+def controlpanel_specieslist(request):
+
+    context = {
+        "controlpanel": True,
+        "menu": "species",
+        "species": Species.objects.all(),
+    }
+    return render(request, "controlpanel/specieslist.html", context)
+
+@staff_member_required
+def controlpanel_species(request, id=None):
+
+    context = {
+        "controlpanel": True,
+        "menu": "species",
+    }
+    return render(request, "controlpanel/species.html", context)
+

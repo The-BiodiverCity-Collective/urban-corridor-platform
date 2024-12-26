@@ -12,7 +12,7 @@
   {% else %}
     <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
   {% endif %}
-  <link rel="stylesheet" href="{% static "css/ucp.css" %}">
+
   {% if load_form %}
     <script src="https://cdn.tailwindcss.com?plugins=forms"></script>
   {% endif %}
@@ -30,37 +30,12 @@
     <link href="https://api.mapbox.com/mapbox.js/plugins/leaflet-fullscreen/v1.0.1/leaflet.fullscreen.css" rel="stylesheet" />
   {% endif %}
 
-
   {% if load_leaflet_legend %}
     <link href="{% static 'css/leaflet.legend.css' %}" rel="stylesheet" />
   {% endif %}
 
-  <style type="text/css">
-dl.dl-horizontal {
-    display: flex;
-    flex-direction: column;
-    margin: 0;
-}
-
-dl.dl-horizontal dt, dl.dl-horizontal dd {
-    display: inline-block;
-    margin: 0;
-}
-
-dl.dl-horizontal dt {
-    font-weight: bold;
-    width: 200px; /* Adjust this width as necessary */
-    margin-bottom: 5px;
-}
-
-dl.dl-horizontal dd {
-    margin-left: 0;
-    margin-bottom: 10px;
-    width: auto;
-    flex: 1;
-}
-  </style>
-
+  <link rel="stylesheet" href="{% static "css/ucp.css" %}?id=11">
+  <link rel="stylesheet" href="{% static "css/test.css" %}?id=11">
 
   {% block css %}{% endblock %}
   {% block head %}{% endblock %}
@@ -85,6 +60,7 @@ dl.dl-horizontal dd {
         <div class="hidden sm:ml-6 sm:block">
           <div class="flex space-x-4">
             <a href="{% url "controlpanel_shapefiles" %}" class="rounded-md {% if menu == "shapefiles" %}bg-gray-900{% endif %} px-3 py-2 text-sm font-medium text-white" aria-current="page">Shapefiles</a>
+            <a href="{% url "controlpanel_specieslist" %}" class="rounded-md {% if menu == "species" %}bg-gray-900{% endif %} px-3 py-2 text-sm font-medium text-white" aria-current="page">Species list</a>
           </div>
         </div>
       </div>
