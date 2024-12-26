@@ -1,0 +1,18 @@
+{
+  "name": "src",
+  "version": "1.0.0",
+  "description": "This repository contains the source code of the Urban Corridor Platform. This platform is built to provide cities with a way to educate and involve civil society groups, individuals and other interested parties with tools to collaboratively build urban, green corridors.",
+  "main": "index.js",
+  "scripts": {
+    "build": "npx postcss static/css/ucp.css -o static/css/output.css"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "autoprefixer": "^10.4.20",
+    "postcss": "^8.4.49",
+    "postcss-cli": "^11.0.0",
+    "tailwindcss": "^3.4.17"
+  }
+}

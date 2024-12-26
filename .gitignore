@@ -10,3 +10,4 @@ docs/*
 oldtemplates/*
 *csv
 templates/index.html
+node_modules/*
