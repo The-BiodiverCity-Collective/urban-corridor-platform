@@ -73,6 +73,7 @@ urlpatterns = [
     path("contact/", views.page, {"slug": "contact-form"}, name="contact"),
 
     path("shapefiles/<int:id>/zip/", views.shapefile_zip, name="shapefile_zip"),
+    path("setcookie/", views.set_cookie, name="set_cookie"),
 
     # Control Panel
     path("controlpanel/", views.controlpanel, name="controlpanel"),

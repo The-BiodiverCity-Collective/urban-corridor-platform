@@ -1487,6 +1487,11 @@ def shapefile_zip(request, id):
     
     return response
 
+def set_cookie(request):
+    response = redirect(request.GET["redirect"])
+    response.set_cookie("site", request.GET["site"])
+    return response
+
 # CONTROL PANEL
 
 @staff_member_required
