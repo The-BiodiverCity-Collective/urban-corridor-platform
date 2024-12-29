@@ -758,8 +758,8 @@ def gardens(request):
     context = {
         "all": gardens,
         #"page": Page.objects.get(pk=2),
-        "load_map": True,
-        "load_datatables": True,
+        #"load_map": True,
+        #"load_datatables": True,
         "inactive_gardens": inactive_gardens,
     }
     return render(request, "gardens.html", context)

@@ -13,10 +13,13 @@ def site(request):
 
     url = request.META.get("HTTP_HOST")
     url = url.lower()
+    
+    site = Site.objects.get(url=url)
+    site = Site.objects.get(pk=2)
 
     return {
         "DEBUG": settings.DEBUG,
         "WORK_OFFLINE": True if work_offline else False,
         "MAPBOX_API_KEY": "pk.eyJ1IjoiY29tbXVuaXRyZWUiLCJhIjoiY2lzdHZuanl1MDAwODJvcHR1dzU5NHZrbiJ9.0ETJ3fXYJ_biD7R7FiwAEg",
-        "SITE": Site.objects.get(url=url),
+        "SITE": site,
     }

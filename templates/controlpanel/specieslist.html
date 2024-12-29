@@ -4,7 +4,7 @@
 
 <h1 class="text-3xl">Species list</h1>
 
-<table class="table">
+<table class="table mb-5">
   <thead>
     <tr>
       <th>Name</th>
@@ -22,6 +22,6 @@
   </tbody>
 </table>
 
-<a href="{% url "controlpanel_species" %}">Add species</a>
+<a class="btn-add" href="{% url "controlpanel_species" %}">Add species</a>
 
 {% endblock %}

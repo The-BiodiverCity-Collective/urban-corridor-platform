@@ -44,6 +44,8 @@ class Site(models.Model):
     email = models.EmailField(null=True)
     language = models.ForeignKey(Language, on_delete=models.CASCADE)
     corridor = models.ForeignKey("Document", on_delete=models.CASCADE, null=True, blank=True, limit_choices_to={"doc_type":8}, related_name="primary_site")
+    logo = StdImageField(upload_to="logos", variations={"thumbnail": (350, 350), "medium": (800, 600)}, null=True, blank=True)
+    design = models.JSONField(null=True, blank=True)
 
     def __str__(self):
         return self.name
