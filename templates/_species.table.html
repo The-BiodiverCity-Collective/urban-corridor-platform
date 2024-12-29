@@ -1,0 +1,30 @@
+<table class="table datatable">
+  <thead>
+    <tr>
+      <th style="width:250px">Scientific name</th>
+      <th style="width:200px">Common name</th>
+      <th>Features</th>
+      <th>Vegetation type(s)</th>
+    </tr>
+  </thead>
+  <tbody>
+  {% for each in species_list %}
+    <tr>
+      <td><a href="{% url "species" each.id %}">{{ each.name }}</a></td>
+      <td>
+        {{ each.common_name }}
+      </td>
+      <td>
+        {% for feature in each.features.all %}
+          <span class="badge bg-warning">{{ feature }}</span><br>
+        {% endfor %}
+      </td>
+      <td>
+        {% for veg in each.vegetation_types.all %}
+          <span class="badge bg-success">{{ veg }}</span>
+        {% endfor %}
+      </td>
+    </tr>
+  {% endfor %}
+  </tbody>
+</table>

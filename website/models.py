@@ -42,8 +42,8 @@ class Site(models.Model):
     name = models.CharField(max_length=255)
     url = models.CharField(max_length=255)
     email = models.EmailField(null=True)
-    language = models.ForeignKey(Language, on_delete=models.CASCADE)
-    corridor = models.ForeignKey("Document", on_delete=models.CASCADE, null=True, blank=True, limit_choices_to={"doc_type":8}, related_name="primary_site")
+    language = models.ForeignKey(Language, on_delete=models.PROTECT)
+    corridor = models.ForeignKey("Document", on_delete=models.SET_NULL, null=True, blank=True, limit_choices_to={"doc_type":8}, related_name="primary_site")
     logo = StdImageField(upload_to="logos", variations={"thumbnail": (350, 350), "medium": (800, 600)}, null=True, blank=True)
     design = models.JSONField(null=True, blank=True)
 
@@ -129,6 +129,8 @@ class Document(models.Model):
     is_shapefile = models.BooleanField(default=True, db_index=True)
     include_in_site_analysis = models.BooleanField(default=False, db_index=True)
     site = models.ForeignKey(Site, on_delete=models.CASCADE, null=True, blank=True, related_name="documents")
+
+    temp_file = models.CharField(max_length=255, null=True, blank=True)
 
     def __str__(self):
         return self.name
@@ -617,17 +619,11 @@ class SpeciesFeatures(models.Model):
 
 class Species(models.Model):
     name = models.CharField(max_length=255, db_index=True)
-    common_name = models.CharField(max_length=255, db_index=True, null=True, blank=True)
-    common_name_xh = models.CharField(max_length=255, db_index=True, null=True, blank=True)
-    common_name_af = models.CharField(max_length=255, db_index=True, null=True, blank=True)
     redlist = models.ForeignKey(Redlist, on_delete=models.CASCADE, null=True, blank=True)
     links = models.JSONField(null=True, blank=True)
     animals = models.JSONField(null=True, blank=True)
     soils = models.JSONField(null=True, blank=True)
     properties = models.JSONField(null=True, blank=True)
-    propagation_seed = models.TextField(null=True, blank=True)
-    propagation_cutting = models.TextField(null=True, blank=True)
-    description = models.TextField(null=True, blank=True)
     genus = models.ForeignKey(Genus, on_delete=models.CASCADE, related_name="species")
     family = models.ForeignKey(Family, on_delete=models.CASCADE, null=True, blank=True, related_name="species")
     features = models.ManyToManyField(SpeciesFeatures, blank=True, related_name="species")
@@ -686,6 +682,15 @@ class Species(models.Model):
             links["Redlist"] = original.get("link_redlist")
 
         return links
+
+class SpeciesText(models.Model):
+    species = models.ForeignKey(Species, on_delete=models.CASCADE)
+    language = models.ForeignKey(Language, on_delete=models.CASCADE)
+    common_name = models.CharField(max_length=255, null=True, blank=True)
+    description = models.TextField(null=True, blank=True)
+    alternative_names = models.CharField(max_length=255, null=True, blank=True)
+    propagation_seed = models.TextField(null=True, blank=True)
+    propagation_cutting = models.TextField(null=True, blank=True)
 
 class Photo(models.Model):
     name = models.CharField(max_length=255, db_index=True, null=True, blank=True)

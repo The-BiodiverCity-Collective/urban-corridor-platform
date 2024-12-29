@@ -17,6 +17,7 @@ from django.forms import modelform_factory
 from django.contrib.admin.views.decorators import staff_member_required
 
 import zipfile
+from io import BytesIO
 import os
 from django.core.files import File
 import shutil
@@ -649,7 +650,7 @@ def species_overview(request, vegetation_type=None):
         "vegetation_type": vegetation_type,
         "veg_link": f"?vegetation_type={vegetation_type.id}" if vegetation_type else "",
     }
-    return render(request, "website/species.overview.html", context)
+    return render(request, "species.overview.html", context)
 
 def species_list(request, genus=None, family=None):
     species = Species.objects.all()
@@ -676,7 +677,7 @@ def species_list(request, genus=None, family=None):
         "species_list": species,
         "full_list": full_list,
     }
-    return render(request, "website/species.all.html", context)
+    return render(request, "species.all.html", context)
 
 def species_full_list(request):
     species = Species.objects.all()
@@ -703,7 +704,7 @@ def species_full_list(request):
         "features": features,
         "vegetation_type": vegetation_type,
     }
-    return render(request, "website/species.all.html", context)
+    return render(request, "species.all.html", context)
 
 def rehabilitation_assessment(request, title="Assess and imagine"):
     if "next" in request.POST:
@@ -748,7 +749,7 @@ def species(request, id):
     context = {
         "info": get_object_or_404(Species, pk=id),
     }
-    return render(request, "website/species.html", context)
+    return render(request, "species.html", context)
 
 def gardens(request):
     gardens = Garden.objects.prefetch_related("organizations").filter(is_active=True)
@@ -815,7 +816,7 @@ def garden(request, id):
         "info": info,
         "photos": photos,
     }
-    return render(request, "website/garden.html", context)
+    return render(request, "garden.html", context)
 
 def garden_form(request, id=None, token=None, uuid=None):
 
@@ -1466,6 +1467,26 @@ def documents(request):
     }
     return render(request, "website/documents.html", context)
 
+def shapefile_zip(request, id):
+    info = Document.objects.get(pk=id)
+
+    zip_buffer = BytesIO()
+
+    with zipfile.ZipFile(zip_buffer, "w", zipfile.ZIP_DEFLATED) as zip_file:
+        attachments = Attachment.objects.filter(attached_to=info)
+        
+        for attachment in attachments:
+            file_to_add = attachment.file
+            zip_file.writestr(file_to_add.name, file_to_add.read())
+    
+    # Set the buffer's position to the beginning so it can be read from the start
+    zip_buffer.seek(0)
+    
+    response = HttpResponse(zip_buffer, content_type="application/zip")
+    response["Content-Disposition"] = f'attachment; filename="{info.name}.zip"'
+    
+    return response
+
 # CONTROL PANEL
 
 @staff_member_required
@@ -1537,7 +1558,7 @@ def controlpanel_shapefile(request, id):
         size_in_bytes = sys.getsizeof(serialized_data)
 
     clip_boundaries = None
-    if "clip" in info.meta_data and info.meta_data["clip"]:
+    if info.meta_data and info.meta_data.get("clip"):
         try:
             clip_boundaries = ReferenceSpace.objects.get(pk=info.meta_data["clip"])
         except Exception as e:

@@ -5,7 +5,6 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>{% if title %}{{ title }} - {% endif %}{{ SITE }}</title>
-  <link rel="stylesheet" href="{% static "css/fontawesome.css" %}">
   {% if DEBUG %}
     <script src="{% static "js/jquery-3.7.1.min.js" %}"></script>
   {% else %}
@@ -47,32 +46,44 @@
 
 <body class="h-full">
 
+<div class="min-h-full">
+
 {% if controlpanel %}
-  <nav class="bg-sky-800">
-  <div class="mx-auto max-w-7xl px-2 sm:px-6 lg:px-8">
-    <div class="relative flex h-16 items-center justify-between">
-      <div class="flex flex-1 items-center justify-center sm:items-stretch sm:justify-start text-gray-100">
-        <div class="flex shrink-0 items-center">
-          <a href="/" class="mr-5"><i class="fa fa-arrow-left"></i></a>
-          <a href="{% url "controlpanel" %}" class="rounded-md px-3 py-2 text-sm font-medium text-white {% if menu == "index" %}bg-gray-900{% endif %}">
-            <i class="fa fa-lock"></i>
-            Control Panel
-          </a>
-        </div>
-        <div class="hidden sm:ml-6 sm:block">
-          <div class="flex space-x-4">
-            <a href="{% url "controlpanel_shapefiles" %}" class="rounded-md {% if menu == "shapefiles" %}bg-gray-900{% endif %} px-3 py-2 text-sm font-medium text-white" aria-current="page">Shapefiles</a>
-            <a href="{% url "controlpanel_specieslist" %}" class="rounded-md {% if menu == "species" %}bg-gray-900{% endif %} px-3 py-2 text-sm font-medium text-white" aria-current="page">Species list</a>
+  <div class="bg-sky-800 pb-32">
+    <nav class="bg-sky-800">
+      <div class="mx-auto max-w-7xl px-2 sm:px-6 lg:px-8">
+        <div class="relative flex h-16 items-center justify-between">
+          <div class="flex flex-1 items-center justify-center sm:items-stretch sm:justify-start text-gray-100">
+            <div class="flex shrink-0 items-center">
+              <a href="/" class="mr-5"><i class="fa fa-arrow-left"></i></a>
+            </div>
+            <div class="hidden sm:ml-6 sm:block">
+              <div class="flex space-x-4">
+                <a href="{% url "controlpanel_shapefiles" %}" class="rounded-md {% if menu == "shapefiles" %}bg-gray-900{% endif %} px-3 py-2 text-sm font-medium text-white" aria-current="page">Shapefiles</a>
+                <a href="{% url "controlpanel_specieslist" %}" class="rounded-md {% if menu == "species" %}bg-gray-900{% endif %} px-3 py-2 text-sm font-medium text-white" aria-current="page">Species list</a>
+              </div>
+            </div>
           </div>
         </div>
       </div>
-    </div>
+    </nav>
+
+    <header class="py-10">
+      <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+
+        <h1 class="text-3xl font-bold tracking-tight text-white">
+          <a href="{% url "controlpanel" %}">
+          <i class="fa fa-lock"></i>
+          Control Panel
+          </a>
+        </h1>
+      </div>
+    </header>
+
   </div>
 
-  </nav>
 {% else %}
 
-<div class="min-h-full">
   <div class="{{ SITE.design.header }} pb-32">
     <nav class="{{ SITE.design.header }}">
       <div class="mx-auto max-w-7xl sm:px-6 lg:px-8">
@@ -186,14 +197,19 @@
         </div>
       </div>
     </nav>
+
     <header class="py-10">
       <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+
         <h1 class="text-3xl font-bold tracking-tight text-white">
           {{ SITE }}
         </h1>
       </div>
     </header>
+
   </div>
+
+  {% endif %}
 
   <main class="-mt-32">
     <div class="mx-auto max-w-7xl px-4 pb-12 sm:px-6 lg:px-8">
@@ -258,8 +274,6 @@
     </div>
   </div>
 </footer>
-
-{% endif %}
 
   {% if load_datatables %}
     <script src="{% static 'js/datatables.min.js' %}"></script>
