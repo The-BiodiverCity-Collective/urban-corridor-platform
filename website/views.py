@@ -1762,12 +1762,96 @@ def controlpanel_specieslist(request):
     }
     return render(request, "controlpanel/specieslist.html", context)
 
+# Used while we migrate from the old system
+# Can be removed after completing migrations
+def temp_html_fix_text(s):
+    import html
+    import re
+    if not s:
+        return s
+    s = html.unescape(s)
+
+    # Step 2: Remove <br /> tags using regex
+    s = re.sub(r'<br\s*/?>', '', s)
+    return s
+
 @staff_member_required
 def controlpanel_species(request, id=None):
+
+    if id:
+        info = Species.objects.get(pk=id)
+    else:
+        info = Species()
+
+    languages = Language.objects.all()
+
+    if request.method == "POST":
+
+        if id:
+            info.features.clear()
+            info.vegetation_types.clear()
+
+        info.name = request.POST.get("name")
+        info.genus_id = request.POST.get("genus")
+        info.family_id = request.POST.get("family")
+        info.links = request.POST.getlist("links")
+
+        if not info.genus_id and request.POST.get("new_genus"):
+            info.genus = Genus.objects.create(name=request.POST.get("new_genus"))
+
+        if not info.family_id and request.POST.get("new_family"):
+            info.family = Family.objects.create(name=request.POST.get("new_family"))
+
+        info.features.add(*SpeciesFeatures.objects.filter(id__in=request.POST.getlist("features")))
+        info.vegetation_types.add(*VegetationType.objects.filter(id__in=request.POST.getlist("vegetation_types")))
+
+        info.save()
+
+
+        for language in languages:
+            common_name = request.POST.get(f"common_name_{language.id}")
+            description = request.POST.get(f"description_{language.id}")
+            seed = request.POST.get(f"propagation_seed_{language.id}")
+            cutting = request.POST.get(f"propagation_cutting_{language.id}")
+
+            species_text, created = SpeciesText.objects.get_or_create(
+                species=info,
+                language=language
+            )
+
+            if common_name or description or seed or cutting:
+                species_text.common_name = common_name
+                species_text.description = description
+                species_text.propagation_seed = seed
+                species_text.propagation_cutting = cutting
+                species_text.save()
+            else:
+                species_text.delete()
+
+        messages.success(request, "Information was saved.")
+
+    # Put all the text inside a dictionary so we can retrieve it and fill inputs/textareas
+    texts = {}
+    for each in info.texts.all():
+        texts[each.language.id] = { 
+            "description": each.description, 
+            "name": each.common_name, 
+            "seed": each.propagation_seed, 
+            "cutting": each.propagation_cutting,
+            "alternatives": each.alternative_names,
+        }
 
     context = {
         "controlpanel": True,
         "menu": "species",
+        "genus_list": Genus.objects.all(),
+        "family_list": Family.objects.all(),
+        "features_list": SpeciesFeatures.objects.all(),
+        "vegetation_types_list": VegetationType.objects.all(),
+        "info": info,
+        "languages": languages,
+        "texts": texts,
+        "title": info.name if info.name else "Add new species",
     }
     return render(request, "controlpanel/species.html", context)
 

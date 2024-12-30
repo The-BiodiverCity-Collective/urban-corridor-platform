@@ -5,6 +5,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>{% if title %}{{ title }} - {% endif %}{{ SITE }}</title>
+  <link rel="stylesheet" href="{% static "css/fontawesome.css" %}">
   {% if DEBUG %}
     <script src="{% static "js/jquery-3.7.1.min.js" %}"></script>
   {% else %}
@@ -73,7 +74,7 @@
 
         <h1 class="text-3xl font-bold tracking-tight text-white">
           <a href="{% url "controlpanel" %}">
-          <i class="fa fa-lock"></i>
+          <i class="fa fa-lock fa-fw"></i>
           Control Panel
           </a>
         </h1>
@@ -228,10 +229,7 @@
           {% endfor %}
         {% endif %}
 
-
-
         {% block content %}
-          
         {% endblock %}
 
       </div>

@@ -621,9 +621,11 @@ class Species(models.Model):
     name = models.CharField(max_length=255, db_index=True)
     redlist = models.ForeignKey(Redlist, on_delete=models.CASCADE, null=True, blank=True)
     links = models.JSONField(null=True, blank=True)
+
     animals = models.JSONField(null=True, blank=True)
     soils = models.JSONField(null=True, blank=True)
     properties = models.JSONField(null=True, blank=True)
+
     genus = models.ForeignKey(Genus, on_delete=models.CASCADE, related_name="species")
     family = models.ForeignKey(Family, on_delete=models.CASCADE, null=True, blank=True, related_name="species")
     features = models.ManyToManyField(SpeciesFeatures, blank=True, related_name="species")
@@ -652,6 +654,7 @@ class Species(models.Model):
         else:
             return settings.MEDIA_URL + "/placeholder.png"
 
+    @property
     def old(self):
         return self.meta_data.get("original")
 
@@ -684,7 +687,7 @@ class Species(models.Model):
         return links
 
 class SpeciesText(models.Model):
-    species = models.ForeignKey(Species, on_delete=models.CASCADE)
+    species = models.ForeignKey(Species, on_delete=models.CASCADE, related_name="texts")
     language = models.ForeignKey(Language, on_delete=models.CASCADE)
     common_name = models.CharField(max_length=255, null=True, blank=True)
     description = models.TextField(null=True, blank=True)

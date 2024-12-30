@@ -1,0 +1,257 @@
+{% extends "_base.html" %}
+{% load ucp_extras %}
+
+{% block content %}
+  {% if info.id %}
+    <h1>{{ info }}</h1>
+  {% else %}
+    <h1>Add species</h1>
+  {% endif %}
+
+  <div class="sm:block">
+    <div class="border-b border-gray-200">
+      <nav class="-mb-px flex space-x-8 tabs" aria-label="Tabs">
+        <a href="#" data-section="general" class="tab active">
+          {{ _("General information") }}
+        </a>
+        {% for each in languages %}
+          <a href="#" data-section="lan-{{ each.id }}" class="tab inactive">{{ each }}</a>
+        {% endfor %}
+        <a href="#" data-section="inaturalist" class="tab inactive">iNaturalist</a>
+      </nav>
+    </div>
+  </div>
+
+<form method="post" action="" class="space-y-6 p-6">
+  {% csrf_token %}
+  
+  <section class="general">
+
+  <div class="mb-4">
+    <label for="id_name" class="block text-lg font-semibold text-gray-700">Species Name</label>
+    <input type="text" name="name" id="id_name" value="{{ info.name }}" class="mt-1" required>
+  </div>
+
+  <div class="mb-4 grid grid-cols-1 sm:grid-cols-2 gap-6">
+    <div>
+      <label for="id_genus" class="block text-lg font-semibold text-gray-700 flex justify-between items-center">
+        <span>Genus</span>
+        <button type="button" id="add-genus-btn" class="text-blue-500 hover:text-blue-700">
+          <i class="fas fa-plus-circle"></i>
+        </button>
+      </label>
+      <div class="relative">
+        <select name="genus" id="id_genus" class="mt-1" required>
+          <option value="" disabled {% if not info.genus %} selected {% endif %}>Select Genus</option>
+          {% for genus in genus_list %}
+            <option value="{{ genus.id }}" {% if genus == info.genus %} selected {% endif %}>{{ genus.name }}</option>
+          {% endfor %}
+        </select>
+      </div>
+      <div id="new-genus-container" class="hidden mt-2">
+        <input type="text" name="new_genus" id="id_new_genus" placeholder="Enter new genus name">
+      </div>
+    </div>
+
+    <div>
+      <label for="id_family" class="block text-lg font-semibold text-gray-700 flex justify-between items-center">
+        <span>Family</span>
+        <button type="button" id="add-family-btn" class="text-blue-500 hover:text-blue-700">
+          <i class="fas fa-plus-circle"></i>
+        </button>
+      </label>
+      <div class="relative">
+        <select name="family" id="id_family" class="mt-1">
+          <option value="" disabled {% if not info.family %} selected {% endif %}>Select Family</option>
+          {% for family in family_list %}
+            <option value="{{ family.id }}" {% if family == info.family %} selected {% endif %}>{{ family.name }}</option>
+          {% endfor %}
+        </select>
+      </div>
+      <div id="new-family-container" class="hidden mt-2">
+        <input type="text" name="new_family" id="id_new_family" placeholder="Enter new family name">
+      </div>
+    </div>
+  </div>
+
+  <div class="mb-4">
+    <label class="block text-lg font-semibold text-gray-700">Features</label>
+    <div class="grid grid-cols-2 gap-4">
+      {% for feature in features_list %}
+        <div class="flex items-center">
+          <input type="checkbox" name="features" id="id_features_{{ feature.id }}" value="{{ feature.id }}" class="form-checkbox h-5 w-5 text-blue-500" {% if feature in info.features.all %} checked {% endif %}>
+          <label for="id_features_{{ feature.id }}" class="ml-2 text-gray-700">{{ feature.name }}</label>
+        </div>
+      {% endfor %}
+    </div>
+  </div>
+
+  <div class="mb-4">
+    <label class="block text-lg font-semibold text-gray-700">Vegetation Types</label>
+    <div class="grid grid-cols-2 gap-4">
+      {% for vegetation_type in vegetation_types_list %}
+        <div class="flex items-center">
+          <input type="checkbox" name="vegetation_types" id="id_vegetation_types_{{ vegetation_type.id }}" value="{{ vegetation_type.id }}" class="form-checkbox h-5 w-5 text-green-500" {% if vegetation_type in info.vegetation_types.all %} checked {% endif %}>
+          <label for="id_vegetation_types_{{ vegetation_type.id }}" class="ml-2 text-gray-700">{{ vegetation_type.name }}</label>
+        </div>
+      {% endfor %}
+    </div>
+  </div>
+
+  <div class="mb-4">
+    <label for="id_links" class="block text-lg font-semibold text-gray-700">Links</label>
+    <div id="links-container">
+      {% if info.links %}
+        {% for link in info.links %}
+          <div class="flex items-center space-x-2 mb-2">
+            <input type="url" name="links" value="{{ link }}" required>
+            <button type="button" class="remove-link text-red-500 hover:text-red-700">
+              <i class="fas fa-minus-circle"></i>
+            </button>
+          </div>
+        {% endfor %}
+      {% else %}
+        <div class="flex items-center space-x-2 mb-2">
+          <input type="url" name="links" required>
+          <button type="button" class="remove-link text-red-500 hover:text-red-700">
+            <i class="fas fa-minus-circle"></i>
+          </button>
+        </div>
+      {% endif %}
+    </div>
+    <button type="button" id="add-link" class="text-blue-500 hover:text-blue-700">
+      <i class="fas fa-plus-circle"></i> Add Another Link
+    </button>
+  </div>
+
+  </section>
+
+
+  {% for language in languages %}
+
+  <section class="hidden language lan-{{ language.id }} space-y-6">
+
+      <div class="mb-4">
+        <label for="common_name_{{ language.id }}" class="block text-lg font-semibold text-gray-700">Common Name</label>
+        <input type="text" name="common_name_{{ language.id }}" id="common_name_{{ language.id }}" value="{{ texts|get_item:language.id|get_item:"name" }}">
+      </div>
+
+      <div class="mb-4">
+        <label for="alternative_names_{{ language.id }}" class="block text-lg font-semibold text-gray-700">Alternative names</label>
+        <input type="text" name="alternative_names_{{ language.id }}" id="alternative_names_{{ language.id }}" 
+               value="{{ texts|get_item:language.id|get_item:"alternatives" }}"
+               placeholder="Enter alternative names separated by commas">
+      </div>
+
+      <div class="mb-4">
+        <label for="description_{{ language.id }}" class="block text-lg font-semibold text-gray-700">Description</label>
+        <textarea name="description_{{ language.id }}" id="description_{{ language.id }}" 
+            rows="4">{{ texts|get_item:language.id|get_item:"description" }}</textarea>
+      </div>
+
+      <div class="mb-4">
+        <label for="propagation_seed_{{ language.id }}" class="block text-lg font-semibold text-gray-700">Propagation instructions (seed)</label>
+        <textarea name="propagation_seed_{{ language.id }}" id="propagation_seed_{{ language.id }}" 
+            rows="4">{{ texts|get_item:language.id|get_item:"seed" }}</textarea>
+      </div>
+
+      <div class="mb-4">
+        <label for="propagation_cutting_{{ language.id }}" class="block text-lg font-semibold text-gray-700">Propagation instructions (cutting)</label>
+        <textarea name="propagation_cutting_{{ language.id }}" id="propagation_cutting_{{ language.id }}" 
+            rows="4">{{ texts|get_item:language.id|get_item:"cutting" }}</textarea>
+      </div>
+
+    </section>
+  {% endfor %}
+
+  <div class="flex justify-end">
+    <button type="submit" class="btn-green">
+      {% if info.id %} Update Species {% else %} Create Species {% endif %}
+    </button>
+  </div>
+</form>
+
+<script>
+  $(document).ready(function() {
+
+    // Allow user to add genus or family clicking + button
+    $("#add-genus-btn").click(function() {
+      $("#id_genus").addClass("hidden").val("");
+      $("#new-genus-container").removeClass("hidden");
+      $("#add-genus-btn").addClass("hidden");
+    });
+
+    $("#add-family-btn").click(function() {
+      $("#id_family").addClass("hidden").val("");
+      $("#new-family-container").removeClass("hidden");
+      $("#add-family-btn").addClass("hidden");
+    });
+
+    // Hide input and show select again when ESC is pressed (for Genus and Family)
+    $("#id_new_genus").on("keydown", function(e) {
+      if (e.key === "Escape") {
+        $("#id_genus").removeClass("hidden");
+        $("#new-genus-container").addClass("hidden");
+        $("#add-genus-btn").removeClass("hidden");
+        $("id_new_genus").val("");
+      }
+    });
+
+    $("#id_new_family").on("keydown", function(e) {
+      if (e.key === "Escape") {
+        $("#id_family").removeClass("hidden");
+        $("#new-family-container").addClass("hidden");
+        $("#add-family-btn").removeClass("hidden");
+        $("id_new_family").val("");
+      }
+    });
+
+    // Add / remove links
+    $('#add-link').click(function() {
+      $('#links-container').append(`
+        <div class="flex items-center space-x-2 mb-2">
+          <input type="url" name="links" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" required>
+          <button type="button" class="remove-link text-red-500 hover:text-red-700">
+            <i class="fas fa-minus-circle"></i>
+          </button>
+        </div>
+      `);
+    });
+    $(document).on('click', '.remove-link', function() {
+      $(this).closest('.flex').remove();
+    });
+
+    // Function to check and select genus based on species name
+    $("#id_name").on("input", function() {
+      var speciesName = $(this).val().trim();
+      
+      if (speciesName) {
+        // Split the species name and assume the first part is the genus name
+        var genusName = speciesName.split(" ")[0];
+
+        // Check if a genus with that name exists in the select options
+        var genusOption = $("#id_genus option").filter(function() {
+          return $(this).text().toLowerCase() === genusName.toLowerCase();
+        });
+
+        if (genusOption.length) {
+          // If the genus exists, select it
+          $("#id_genus").val(genusOption.val());
+        }
+      }
+    });
+
+    $(".tabs a").click(function(e) {
+      var section = $(this).data("section");
+      console.log(section);
+      $("form section").hide();
+      $("form section."+section).show();
+      e.preventDefault();
+      $(".tabs a.active").removeClass("active").addClass("inactive");
+      $(this).removeClass("inactive").addClass("active");
+    });
+
+  });
+</script>
+
+{% endblock %}
