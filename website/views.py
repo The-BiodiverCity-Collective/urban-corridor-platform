@@ -15,6 +15,7 @@ from django.contrib.gis.measure import D
 from django.core.paginator import Paginator
 from django.forms import modelform_factory
 from django.contrib.admin.views.decorators import staff_member_required
+from django.utils.translation import gettext_lazy as _
 
 import zipfile
 from io import BytesIO
@@ -1759,6 +1760,8 @@ def controlpanel_specieslist(request):
         "controlpanel": True,
         "menu": "species",
         "species": Species.objects.all(),
+        "title": _("Species list"),
+        "load_datatables": True,
     }
     return render(request, "controlpanel/specieslist.html", context)
 
@@ -1784,6 +1787,9 @@ def controlpanel_species(request, id=None):
         info = Species()
 
     languages = Language.objects.all()
+
+    if "inat" in request.GET:
+        info.get_taxa_info()
 
     if request.method == "POST":
 
@@ -1841,6 +1847,11 @@ def controlpanel_species(request, id=None):
             "alternatives": each.alternative_names,
         }
 
+    try:
+        inat = json.dumps(info.meta_data["inat"], indent=2)
+    except:
+        inat = None
+
     context = {
         "controlpanel": True,
         "menu": "species",
@@ -1852,6 +1863,15 @@ def controlpanel_species(request, id=None):
         "languages": languages,
         "texts": texts,
         "title": info.name if info.name else "Add new species",
+        "inat": inat,
     }
+
+    # TEMP SYNC BLOCK
+    if "sync" in request.GET:
+        for each in Species.objects.exclude(meta_data__has_key="inat").exclude(meta_data__has_key="inat_error")[:20]:
+            each.get_taxa_info()
+            p(each)
+    # END SYNC BLOCK
+
     return render(request, "controlpanel/species.html", context)
 

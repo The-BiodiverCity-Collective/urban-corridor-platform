@@ -1,6 +1,12 @@
 {% extends "_base.html" %}
 {% load ucp_extras %}
 
+{% block head %}
+  {% if request.GET.sync %}
+    <meta http-equiv="refresh" content="120">
+  {% endif %}
+{% endblock %}
+
 {% block content %}
   {% if info.id %}
     <h1>{{ info }}</h1>
@@ -104,7 +110,7 @@
       {% if info.links %}
         {% for link in info.links %}
           <div class="flex items-center space-x-2 mb-2">
-            <input type="url" name="links" value="{{ link }}" required>
+            <input type="url" name="links" value="{{ link }}">
             <button type="button" class="remove-link text-red-500 hover:text-red-700">
               <i class="fas fa-minus-circle"></i>
             </button>
@@ -112,7 +118,7 @@
         {% endfor %}
       {% else %}
         <div class="flex items-center space-x-2 mb-2">
-          <input type="url" name="links" required>
+          <input type="url" name="links">
           <button type="button" class="remove-link text-red-500 hover:text-red-700">
             <i class="fas fa-minus-circle"></i>
           </button>
@@ -163,6 +169,46 @@
 
     </section>
   {% endfor %}
+
+  <section class="inaturalist hidden">
+    <a href="?inat=true">Update inat info</a>
+
+    {% if info.meta_data.inat_error %}
+    <pre>
+    {{ info.meta_data.inat_error }}
+    </pre>
+    {% endif %}
+
+    {% if info.inat_photos %}
+
+    <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+
+      {% for each in info.inat_photos %}
+
+      <div class="relative overflow-hidden rounded-lg shadow-lg aspect-w-16 aspect-h-9">
+        <img src="{{ each.photo.small_url }}" alt="Photo 2" class="object-cover w-full h-full">
+      </div>
+
+      {% endfor %}
+    </div>
+    {% endif %}
+
+    <div class="max-w-4xl mx-auto p-8">
+      <h1 class="text-3xl font-bold text-center mb-6">{{ taxon.name }}</h1>
+
+      <h2>Taxa information</h2>
+
+      <pre class="bg-gray-800 text-white p-4 rounded-lg overflow-x-auto font-mono text-sm">{{ inat|escape }}</pre>
+          
+      {% if info.meta_data.inat.default_photo %}
+        <div class="mt-4">
+          <h3>Photo</h3>
+          <img src="{{ info.meta_data.inat.default_photo.medium_url }}" alt="Taxon Photo" class="rounded-lg shadow-md mt-2">
+        </div>
+      {% endif %}
+    </div>
+
+  </section>
 
   <div class="flex justify-end">
     <button type="submit" class="btn-green">

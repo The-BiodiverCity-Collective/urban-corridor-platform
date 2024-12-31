@@ -4,19 +4,22 @@
 
 <h1 class="text-3xl">Species list</h1>
 
-<table class="table mb-5">
+<table class="table mb-5 datatable">
   <thead>
     <tr>
       <th>Name</th>
-      <th>Type</th>
-      <th>Uploaded</th>
+      <th>iNat</th>
+      <th>IUCN</th>
+      <th>SANBI</th>
     </tr>
   </thead>
   <tbody>
   {% for each in species %}
     <tr>
-      <td>{{ each.name }}</td>
-      <td><a class="btn btn-info" href="{% url "controlpanel_species" each.id %}"><i class="fa fa-pencil"></i> Edit</a></td>
+      <td><a href="{% url "controlpanel_species" each.id %}">{{ each.name }}</a></td>
+      <td>{% if each.meta_data.inat %}<i class="fa fa-check"></i>{% else %}<i class="fa fa-minus-circle"></i>{% endif %}</td>
+      <td>{{ each.get_conservation_status|default_if_none:"" }}</td>
+      <td>{{ each.get_sanbi_conservation_status|default_if_none:"" }}</td>
     </tr>
   {% endfor %}
   </tbody>

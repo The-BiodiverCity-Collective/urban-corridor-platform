@@ -280,7 +280,10 @@
   {% if load_datatables %}
     <script src="{% static 'js/datatables.min.js' %}"></script>
     <script>
-      $(".datatable").DataTable();
+      $(".datatable").DataTable({
+        "pageLength": 20,  // Set the default page length to 20
+        "lengthMenu": [ [10, 20, 50, 100, -1], [10, 20, 50, 100, "{{ _("All") }}"] ]  // Show 20 or "Show All" option
+      });
     </script>
   {% endif %}
   {% if load_map %}

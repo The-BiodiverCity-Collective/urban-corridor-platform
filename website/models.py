@@ -15,6 +15,7 @@ from django.db.models.signals import post_delete
 from django.dispatch import receiver
 from django.db.models import Q
 import datetime
+import requests
 
 from django.utils import timezone
 
@@ -685,6 +686,92 @@ class Species(models.Model):
             links["Redlist"] = original.get("link_redlist")
 
         return links
+
+    @property
+    def inat_id(self):
+        try:
+            return self.meta_data["inat_id"]
+        except:
+            return None
+
+    def get_taxa_info(self):
+
+        error = None
+        taxon_id = self.inat_id
+
+        # If we don't have any info yet, then we need to look up the info by using the name
+        if not taxon_id:
+
+            inat_base_url = "https://api.inaturalist.org/v1/taxa"
+
+            if not self.meta_data:
+                self.meta_data = {}
+
+            try:
+                response = requests.get(inat_base_url, params={"q": self.name, "limit": 1})
+                
+                if response.status_code == 200:
+                    data = response.json()  # Parse the JSON response
+                    if "results" in data and data["results"]:
+                        species_info = data["results"][0]
+                        self.meta_data["inat"] = species_info
+                        self.meta_data.pop("inat_error", None)
+                        taxon_id = species_info["id"]
+                        self.save()
+                    else:
+                        error = "No information was returned"
+                else:
+                    error = f"Error: {response.status_code}"
+            except Exception as e:
+                error = f"An error occurred: {e}"
+
+        # Once we have the taxon id, we can fetch the full info from iNat
+        if taxon_id:
+            base_url = f"https://api.inaturalist.org/v1/taxa/{taxon_id}"
+
+            try:
+                response = requests.get(base_url)
+                
+                if response.status_code == 200:
+                    data = response.json()
+                    
+                    if "results" in data and data["results"]:
+                        info = data["results"][0]
+                        self.meta_data["inat"] = info
+                        self.save()
+                    else:
+                        error = "No information was returned"
+                else:
+                    error = f"Error: {response.status_code}"
+            except Exception as e:
+                error = f"An error occurred: {e}"
+
+        if error:
+            self.meta_data["inat_error"] = error
+            self.save()
+
+    @property
+    def inat_photos(self):
+        try:
+            return self.meta_data["inat"]["taxon_photos"]
+        except:
+            return None
+
+    @property
+    def get_sanbi_conservation_status(self):
+        try:
+            for each in self.meta_data["inat"]["conservation_statuses"]:
+                if "SANBI" in each["authority"]:
+                    return each["status"]
+        except:
+            return None
+
+    @property
+    def get_conservation_status(self):
+        try:
+            return self.meta_data["inat"]["conservation_status"]["status"]
+        except:
+            return None
 
 class SpeciesText(models.Model):
     species = models.ForeignKey(Species, on_delete=models.CASCADE, related_name="texts")
