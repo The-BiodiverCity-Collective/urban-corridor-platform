@@ -746,9 +746,25 @@ def rehabilitation_plant_selection(request):
     }
     return render(request, "website/assessment.html", context)
 
+# Get species text in the local language, with English as a fall-back
+def fetch_species_text(request, species):
+    info = SpeciesText.objects.filter(language__code=request.language, species=species)
+    if not info:
+        info = SpeciesText.objects.filter(language_id=1, species=species)
+    if info:
+        return info[0]
+    else:
+        return SpeciesText()
+
 def species(request, id):
+    species = get_object_or_404(Species, pk=id)
+    details = fetch_species_text(request, species)
+
     context = {
-        "info": get_object_or_404(Species, pk=id),
+        "info": species,
+        "details": details,
+        "photos": Photo.objects.filter(species=species, position__gte=1),
+        "title": species.name,
     }
     return render(request, "species.html", context)
 
@@ -1793,59 +1809,75 @@ def controlpanel_species(request, id=None):
 
     if request.method == "POST":
 
+        if "delete" in request.POST:
+            info.delete()
+            messages.success(request, "Species was removed from the database")
+            return redirect(reverse("controlpanel_specieslist"))
+
         if id:
             info.features.clear()
             info.vegetation_types.clear()
 
-        info.name = request.POST.get("name")
+        info.name = request.POST["name"].strip()
         info.genus_id = request.POST.get("genus")
         info.family_id = request.POST.get("family")
-        info.links = request.POST.getlist("links")
+        links = [link.strip() for link in request.POST.getlist("links") if link.strip()]
+        info.links = links if links else None
 
         if not info.genus_id and request.POST.get("new_genus"):
             info.genus = Genus.objects.create(name=request.POST.get("new_genus"))
+        elif not info.genus_id:
+            name = info.name
+            info.genus = Genus.objects.create(name=name.split()[0])
 
         if not info.family_id and request.POST.get("new_family"):
             info.family = Family.objects.create(name=request.POST.get("new_family"))
 
-        info.features.add(*SpeciesFeatures.objects.filter(id__in=request.POST.getlist("features")))
-        info.vegetation_types.add(*VegetationType.objects.filter(id__in=request.POST.getlist("vegetation_types")))
-
         info.save()
 
+        if not id:
+            info.get_taxa_info()
+            messages.success(request, "Species was added and data retrieved from iNat. Add more info below.")
+            return redirect(reverse("controlpanel_species", args=[info.id]))
 
-        for language in languages:
-            common_name = request.POST.get(f"common_name_{language.id}")
-            description = request.POST.get(f"description_{language.id}")
-            seed = request.POST.get(f"propagation_seed_{language.id}")
-            cutting = request.POST.get(f"propagation_cutting_{language.id}")
+        else:
 
-            species_text, created = SpeciesText.objects.get_or_create(
-                species=info,
-                language=language
-            )
+            info.features.add(*SpeciesFeatures.objects.filter(id__in=request.POST.getlist("features")))
+            info.vegetation_types.add(*VegetationType.objects.filter(id__in=request.POST.getlist("vegetation_types")))
 
-            if common_name or description or seed or cutting:
-                species_text.common_name = common_name
-                species_text.description = description
-                species_text.propagation_seed = seed
-                species_text.propagation_cutting = cutting
-                species_text.save()
-            else:
-                species_text.delete()
+            for language in languages:
+                common_name = request.POST.get(f"common_name_{language.id}")
+                description = request.POST.get(f"description_{language.id}")
+                seed = request.POST.get(f"propagation_seed_{language.id}")
+                cutting = request.POST.get(f"propagation_cutting_{language.id}")
+
+                species_text, created = SpeciesText.objects.get_or_create(
+                    species=info,
+                    language=language
+                )
+
+                if common_name or description or seed or cutting:
+                    species_text.common_name = common_name
+                    species_text.description = description
+                    species_text.propagation_seed = seed
+                    species_text.propagation_cutting = cutting
+                    species_text.save()
+                else:
+                    species_text.delete()
 
         messages.success(request, "Information was saved.")
 
     # Put all the text inside a dictionary so we can retrieve it and fill inputs/textareas
     texts = {}
-    for each in info.texts.all():
-        texts[each.language.id] = { 
-            "description": each.description, 
-            "name": each.common_name, 
-            "seed": each.propagation_seed, 
-            "cutting": each.propagation_cutting,
-            "alternatives": each.alternative_names,
-        }
+    if info.id:
+        for each in info.texts.all():
+            texts[each.language.id] = { 
+                "description": each.description, 
+                "name": each.common_name, 
+                "seed": each.propagation_seed, 
+                "cutting": each.propagation_cutting,
+                "alternatives": each.alternative_names,
+            }
 
     try:
         inat = json.dumps(info.meta_data["inat"], indent=2)
@@ -1865,13 +1897,6 @@ def controlpanel_species(request, id=None):
         "title": info.name if info.name else "Add new species",
         "inat": inat,
     }
-
-    # TEMP SYNC BLOCK
-    if "sync" in request.GET:
-        for each in Species.objects.exclude(meta_data__has_key="inat").exclude(meta_data__has_key="inat_error")[:20]:
-            each.get_taxa_info()
-            p(each)
-    # END SYNC BLOCK
 
     return render(request, "controlpanel/species.html", context)
 

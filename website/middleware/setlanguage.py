@@ -7,10 +7,10 @@ def locale_middleware(get_response):
         host = host.lower()
         sites = {
             # Development environment
-            "0.0.0.0:7777": "en_GB",
+            "0.0.0.0:7777": "en_ZA",
 
             # Official sites
-            "fynboscorridors.org": "en_GB",
+            "fynboscorridors.org": "en_ZA",
 
         }
         if host in sites:

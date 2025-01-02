@@ -5,8 +5,10 @@
   <h1>{% block title %}Species list{% endblock %}</h1>
 
   <div class="alert alert-info">
-    <strong>{{ species_list.count }}</strong>
-    species found
+    <i class="fa fa-info-circle fa-fw mr-3"></i>
+    <span>
+      <strong>{{ species_list.count }}</strong> species found
+    </span>
   </div>
 
   {% if features %}

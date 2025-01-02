@@ -1,6 +1,7 @@
 from django import template
 from django.template.defaulttags import register
 import json
+from urllib.parse import urlparse
 
 register = template.Library()
 
@@ -20,3 +21,11 @@ def get_item(dictionary, key):
 def json_dumps(string):
     if string:
         return json.dumps(string)
+
+@register.filter
+def domain(url):
+    try:
+        parsed_url = urlparse(url)
+        return parsed_url.netloc
+    except Exception as e:
+        return ""

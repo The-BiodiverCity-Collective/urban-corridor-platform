@@ -467,7 +467,7 @@ class ReferenceSpace(models.Model):
         if self.photo:
             return self.photo.image.medium.url
         else:
-            return settings.MEDIA_URL + "/placeholder.png"
+            return settings.MEDIA_URL + "/placeholder.jpg"
 
     @property
     def suburb(self):
@@ -588,7 +588,7 @@ class Redlist(models.Model):
 class VegetationType(models.Model):
     name = models.CharField(max_length=255, db_index=True)
     description = models.TextField(null=True, blank=True)
-    redlist = models.ForeignKey(Redlist, on_delete=models.CASCADE)
+    redlist = models.ForeignKey(Redlist, on_delete=models.SET_NULL, null=True)
     slug = models.SlugField(max_length=255)
     spaces = models.ManyToManyField(ReferenceSpace, blank=True, limit_choices_to={"source_id": 983172})
 
@@ -619,7 +619,7 @@ class SpeciesFeatures(models.Model):
         ordering = ["name"]
 
 class Species(models.Model):
-    name = models.CharField(max_length=255, db_index=True)
+    name = models.CharField(max_length=255, unique=True, db_index=True)
     redlist = models.ForeignKey(Redlist, on_delete=models.CASCADE, null=True, blank=True)
     links = models.JSONField(null=True, blank=True)
 
@@ -631,7 +631,7 @@ class Species(models.Model):
     family = models.ForeignKey(Family, on_delete=models.CASCADE, null=True, blank=True, related_name="species")
     features = models.ManyToManyField(SpeciesFeatures, blank=True, related_name="species")
     vegetation_types = models.ManyToManyField(VegetationType, blank=True, related_name="species")
-    photo = models.ForeignKey("Photo", on_delete=models.CASCADE, null=True, blank=True, related_name="main_species")
+    photo = models.ForeignKey("Photo", on_delete=models.SET_NULL, null=True, blank=True, related_name="main_species")
     meta_data = models.JSONField(null=True, blank=True)
 
     def __str__(self):
@@ -642,24 +642,29 @@ class Species(models.Model):
         verbose_name_plural = "Species"
 
     @property
+    def get_absolute_url(self):
+        return reverse("species", args=[self.id])
+
+    @property
     def get_photo_medium(self):
         if self.photo:
             return self.photo.image.medium.url
         else:
-            return settings.MEDIA_URL + "/placeholder.png"
+            return settings.MEDIA_URL + "/placeholder.jpg"
 
     @property
-    def get_photo_thumbnail(self):
+    def thumbnail(self):
         if self.photo:
-            return self.photo.image.thumbnail.url
+            return self.photo.thumbnail
         else:
-            return settings.MEDIA_URL + "/placeholder.png"
+            return settings.MEDIA_URL + "/placeholder.jpg"
 
     @property
     def old(self):
         return self.meta_data.get("original")
 
     def get_links(self):
+        return self.links
         links = {}
         original = self.meta_data.get("original")
         if original.get("link"):
@@ -709,14 +714,21 @@ class Species(models.Model):
 
             try:
                 response = requests.get(inat_base_url, params={"q": self.name, "limit": 1})
-                
                 if response.status_code == 200:
-                    data = response.json()  # Parse the JSON response
+                    data = response.json()
                     if "results" in data and data["results"]:
                         species_info = data["results"][0]
                         self.meta_data["inat"] = species_info
                         self.meta_data.pop("inat_error", None)
                         taxon_id = species_info["id"]
+
+                        if not self.links:
+                            self.links = [f"https://www.inaturalist.org/taxa/{taxon_id}"]
+                        elif not any("inaturalist" in link for link in self.links):
+                            self.links.append(f"https://www.inaturalist.org/taxa/{taxon_id}")
+                        if not any("wikipedia.org" in link for link in self.links) and species_info["wikipedia_url"]:
+                            self.links.append(species_info["wikipedia_url"])
+
                         self.save()
                     else:
                         error = "No information was returned"
@@ -738,7 +750,20 @@ class Species(models.Model):
                     if "results" in data and data["results"]:
                         info = data["results"][0]
                         self.meta_data["inat"] = info
+
+                        # If no family is set, let's get if from iNat
+                        if not self.family_id:
+                            family = None
+                            for each in info["ancestors"]:
+                                if each["rank"] == "family":
+                                    family = each["name"]
+                            if family:
+                                family, created = Family.objects.get_or_create(name=family)
+                                self.family = family
+
                         self.save()
+                        self.load_inat_photos()
+
                     else:
                         error = "No information was returned"
                 else:
@@ -748,6 +773,43 @@ class Species(models.Model):
 
         if error:
             self.meta_data["inat_error"] = error
+            self.save()
+
+    def load_inat_photos(self):
+
+        # Remove existing photo if it's one of the pics we'll delete
+        # For some reason we otherwise get an error further below
+        if self.photo and self.photo.source == "inaturalist":
+            self.photo = None
+            self.save()
+
+        Photo.objects.filter(species=self, source="inaturalist").delete()
+
+        latest_position = Photo.objects.filter(species=self).order_by("-position")
+        pos = 0
+        if latest_position:
+            pos = latest_position[0].position
+
+        if self.inat_photos:
+            for photo_detail in self.inat_photos:
+                photo = photo_detail["photo"]
+
+                if photo["license_code"]:
+                    pos += 1
+
+                    new_photo = Photo.objects.create(
+                        author = photo["attribution"],
+                        image_inat = photo,
+                        license_code = photo["license_code"],
+                        species = self,
+                        position = pos,
+                        source = "inaturalist",
+                    )
+
+                    if not self.photo_id:
+                        self.photo = new_photo
+
+            self.meta_data["pics_imported"] = True
             self.save()
 
     @property
@@ -785,14 +847,33 @@ class SpeciesText(models.Model):
 class Photo(models.Model):
     name = models.CharField(max_length=255, db_index=True, null=True, blank=True)
     description = models.TextField(null=True, blank=True)
-    image = StdImageField(upload_to="photos", variations={"thumbnail": (350, 350), "medium": (800, 600), "large": (1280, 1024)}, delete_orphans=True)
+    image = StdImageField(upload_to="photos", variations={"thumbnail": (350, 350), "medium": (800, 600), "large": (1280, 1024)}, delete_orphans=True, null=True, blank=True)
+    image_inat = models.JSONField(null=True, blank=True) #Dictionary with large_/small_/medium_/original_/square_url values
     position = models.PositiveSmallIntegerField(db_index=True, default=1)
-    date = models.DateField()
+    date = models.DateField(null=True)
     upload_date = models.DateTimeField(auto_now_add=True)
     author = models.CharField(max_length=255, db_index=True, null=True, blank=True)
     garden = models.ForeignKey(Garden, on_delete=models.CASCADE, null=True, blank=True, related_name="photos")
     event = models.ForeignKey(Event, on_delete=models.CASCADE, null=True, blank=True, related_name="photos")
     species = models.ForeignKey(Species, on_delete=models.CASCADE, null=True, blank=True, related_name="photos")
+
+    LICENSE_CHOICES = [
+        ("cc0", "Creative Commons Zero (CC0)"),
+        ("cc-by", "Creative Commons Attribution (CC BY)"),
+        ("cc-by-sa", "Creative Commons Attribution-ShareAlike (CC BY-SA)"),
+        ("cc-by-nc", "Creative Commons Attribution-NonCommercial (CC BY-NC)"),
+        ("cc-by-nc-sa", "Creative Commons Attribution-NonCommercial-ShareAlike (CC BY-NC-SA)"),
+        ("cc-by-nc-nd", "Creative Commons Attribution-NonCommercial-NoDerivs (CC BY-NC-ND)"),
+        ("cc-by-nd", "Creative Commons Attribution-NoDerivs (CC BY-ND)"),
+        ("all-rights-reserved", "All Rights Reserved"),
+    ]
+    license_code = models.CharField(max_length=20, choices=LICENSE_CHOICES, null=True, blank=True)
+
+    SOURCE_CHOICES = [
+        ("upload", "Uploaded photo"),
+        ("inaturalist", "iNaturalist"),
+    ]
+    source = models.CharField(max_length=11, choices=SOURCE_CHOICES)
 
     def __str__(self):
         if self.name:
@@ -801,16 +882,25 @@ class Photo(models.Model):
             return f"Photo {self.id}"
 
     @property
-    def get_photo_large(self):
-        return self.image.large.url
+    def thumbnail(self):
+        if self.source == "inaturalist":
+            return self.image_inat["small_url"]
+        else:
+            return self.image.thumbnail.url
 
     @property
-    def get_photo_medium(self):
-        return self.image.medium.url
+    def medium(self):
+        if self.source == "inaturalist":
+            return self.image_inat["medium_url"]
+        else:
+            return self.image.medium.url
 
     @property
-    def get_photo_thumbnail(self):
-        return self.image.thumbnail.url
+    def large(self):
+        if self.source == "inaturalist":
+            return self.image_inat["large_url"]
+        else:
+            return self.image.large.url
 
     class Meta:
         ordering = ["position", "date"]

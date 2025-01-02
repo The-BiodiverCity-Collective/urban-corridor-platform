@@ -130,6 +130,11 @@ dl.dl-horizontal dd {
     width: auto;
     flex: 1;
 }
+.btn-edit {
+  position: fixed;
+  bottom: 10px;
+  left: 10px;
+}
 
 @layer components {
 
@@ -157,8 +162,16 @@ dl.dl-horizontal dd {
     @apply bg-lime-600 shadow-inner shadow-md text-white py-2 px-4 rounded hover:bg-lime-700 focus:outline-none font-bold focus:ring-lime-300 no-underline hover:text-white;
   }
 
+  .btn-danger {
+    @apply bg-red-600 shadow-inner shadow-md text-white py-2 px-4 rounded hover:bg-red-700 focus:outline-none font-bold focus:ring-red-300 no-underline hover:text-white;
+  }
+
   .btn-add {
     @apply bg-orange-600 shadow-inner shadow-md text-white py-2 px-4 rounded hover:bg-orange-700 focus:outline-none font-bold focus:ring-orange-300 no-underline hover:text-white;
+  }
+
+  .btn-edit {
+    @apply bg-amber-300 shadow-inner shadow-md text-white py-2 px-4 rounded hover:bg-amber-400 focus:outline-none font-bold focus:ring-orange-300 no-underline hover:text-white;
   }
 
   .alert {
