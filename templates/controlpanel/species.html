@@ -9,6 +9,7 @@
 
 {% block content %}
   {% if info.id %}
+    <a href="{% url "species" info.id %}" class="btn float-right"><i class="fa fa-file"></i></a>
     <h1>{{ info }}</h1>
   {% else %}
     <h1>Add species</h1>

@@ -1,0 +1,28 @@
+{% extends "_base.html" %}
+
+{% block content %}
+
+<h1 class="text-3xl">{% block title %}Species management{% endblock %}</h1>
+
+<div class="flex items-center justify-center min-h-screen">
+  <form method="post">
+    <div class="space-y-12">
+
+      <div class="border-b border-gray-900/10 pb-12">
+        <h2 class="text-base/7 font-semibold text-gray-900">{{ info }}</h2>
+
+        <h2>{{ file }}</h2>
+        {{ df }}
+      </div>
+
+    </div>
+
+    <div class="mt-6 flex items-center justify-end gap-x-6">
+      <button type="submit" class="px-4 py-2 bg-lime-600 hover:bg-lime-700 text-white font-bold rounded-md focus:outline-none focus:ring focus:ring-lime-300">Submit</button>
+    </div>
+    {% csrf_token %}
+  </form>
+
+</div>
+
+{% endblock %}

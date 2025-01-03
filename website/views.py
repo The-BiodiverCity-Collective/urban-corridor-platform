@@ -31,6 +31,8 @@ from django.contrib.auth import authenticate, login, logout
 from django.utils import timezone
 from dateutil.relativedelta import relativedelta
 
+import pandas as pd
+
 # These are used so that we can send mail
 from django.core.mail import send_mail
 from django.template.loader import render_to_string, get_template
@@ -1520,6 +1522,131 @@ def controlpanel(request):
     return render(request, "controlpanel/index.html", context)
 
 @staff_member_required
+def controlpanel_documents(request):
+
+    documents = Document.objects.filter(is_shapefile=False)
+    if "type" in request.GET and request.GET["type"]:
+        documents = documents.filter(doc_type=request.GET["type"])
+
+    context = {
+        "controlpanel": True,
+        "menu": "documents",
+        "documents": documents,
+    }
+    return render(request, "controlpanel/documents.html", context)
+
+@staff_member_required
+def controlpanel_document(request, id=None):
+
+    info = Document()
+    if id:
+        info = Document.objects.get(pk=id)
+        action = Log.LogAction.UPDATE
+
+    site = get_site(request)
+    action = Log.LogAction.CREATE
+
+    if request.method == "POST":
+        info.name = request.POST["name"]
+        info.author = request.POST["author"]
+        info.url = request.POST.get("url")
+        info.doc_type = request.POST["doc_type"]
+        info.description = request.POST.get("description")
+        info.is_active = True if request.POST.get("is_active") == "1" else False
+        info.is_shapefile = False
+        info.site = site
+        info.save()
+        log_action(request, action, f"Document: {info.name}")
+
+        uploaded_files = request.FILES.getlist("file")
+
+        if uploaded_files:
+            info.attachments.all().delete()
+
+            for uploaded_file in uploaded_files:
+                Attachment.objects.create(file=uploaded_file, attached_to=info)
+
+        messages.success(request, "Information was saved.")
+        return redirect(reverse("controlpanel_documents"))
+
+    context = {
+        "controlpanel": True,
+        "menu": "documents",
+        "info": info,
+        "doc_types": Document.DOC_TYPES,
+    }
+    return render(request, "controlpanel/document.html", context)
+
+@staff_member_required
+def controlpanel_document_species(request, id):
+    info = Document.objects.get(pk=id)
+    file_info = Attachment.objects.get(attached_to=info, pk=request.GET["file"])
+
+    file = file_info.file
+    df = pd.read_excel(file, sheet_name=0)
+
+    if request.method == "POST":
+        for _, row in df.iterrows():
+
+            name = row["Name"].strip()
+
+            genus = Genus.objects.filter(name=name.split()[0])
+            if genus:
+                genus = genus[0]
+            else:
+                genus = Genus.objects.create(name=name.split()[0])
+
+            species_type = row["Type"]
+            species = Species.objects.filter(name=name)
+            if species:
+                species = species[0]
+            else:
+                species = Species.objects.create(
+                    name = name,
+                    genus = genus,
+                )
+
+    results = []
+    alerts = []
+    error = None
+    try:
+        for index, row in df.iterrows():
+            # We take the name row, and we check if each species exists. We then add a column with the result.
+            name = row["Name"]
+            name_words = name.split()
+
+            if len(name_words) < 2:
+                alerts.append(_("Species names must contain genus + species. This row is invalid and will NOT be added."))
+                results.append("✖️")
+            else:
+                if len(name_words) > 2:
+                    name = " ".join(name_words[:2]) # If there is e.g. a subspecies name, then we only look up the first two words, not var. 
+                    alerts.append("Only species names will be checked/added. First two words were used:" + " " + name)
+                else:
+                    alerts.append("")
+                exists = Species.objects.filter(name=name.strip()).exists()
+            results.append("✓" if exists else "✖️")
+
+        df["Exists"] = results
+        df["Details"] = alerts
+        html_table = df.to_html(classes="table", escape=False)
+
+    except Exception as e:
+        error = _("No column named 'Name' found - please make sure it is present")
+        messages.error(request, error)
+
+    context = {
+        "controlpanel": True,
+        "menu": "documents",
+        "info": info,
+        "file": file,
+        "df": mark_safe(html_table) if not error else None,
+    }
+    return render(request, "controlpanel/document.species.html", context)
+
+
+
+@staff_member_required
 def controlpanel_shapefiles(request):
 
     context = {
@@ -1806,6 +1933,8 @@ def controlpanel_species(request, id=None):
 
     if "inat" in request.GET:
         info.get_taxa_info()
+        messages.success(request, "iNaturalist data was reloaded; photos were imported.")
+        return redirect(reverse("controlpanel_species", args=[info.id]))
 
     if request.method == "POST":
 

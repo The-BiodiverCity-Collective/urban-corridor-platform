@@ -1,0 +1,28 @@
+{% extends "_base.html" %}
+
+{% block content %}
+
+<h1 class="text-3xl">Documents</h1>
+
+<table class="table mb-5">
+  <thead>
+    <tr>
+      <th>Name</th>
+      <th>Type</th>
+      <th>Edit</th>
+    </tr>
+  </thead>
+  <tbody>
+  {% for each in documents %}
+    <tr>
+      <td>{{ each.name }}</td>
+      <td>{{ each.get_doc_type_display }}</td>
+      <td><a class="btn btn-info" href="{% url "controlpanel_document" each.id %}"><i class="fa fa-pencil"></i> Edit</a></td>
+    </tr>
+  {% endfor %}
+  </tbody>
+</table>
+
+<a class="btn-add" href="{% url "controlpanel_document" %}"><i class="fa fa-plus"></i> Add document</a>
+
+{% endblock %}

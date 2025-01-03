@@ -77,6 +77,10 @@ urlpatterns = [
 
     # Control Panel
     path("controlpanel/", views.controlpanel, name="controlpanel"),
+    path("controlpanel/documents/", views.controlpanel_documents, name="controlpanel_documents"),
+    path("controlpanel/documents/<int:id>/", views.controlpanel_document, name="controlpanel_document"),
+    path("controlpanel/documents/<int:id>/speciesmanagement/", views.controlpanel_document_species, name="controlpanel_document_species"),
+    path("controlpanel/documents/create/", views.controlpanel_document, name="controlpanel_document"),
     path("controlpanel/shapefiles/", views.controlpanel_shapefiles, name="controlpanel_shapefiles"),
     path("controlpanel/shapefiles/<int:id>/", views.controlpanel_shapefile, name="controlpanel_shapefile"),
     path("controlpanel/shapefiles/<int:id>/edit/", views.controlpanel_shapefile_form, name="controlpanel_shapefile_form"),

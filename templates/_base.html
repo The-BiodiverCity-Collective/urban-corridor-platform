@@ -61,6 +61,7 @@
             <div class="hidden sm:ml-6 sm:block">
               <div class="flex space-x-4">
                 <a href="{% url "controlpanel_shapefiles" %}" class="rounded-md {% if menu == "shapefiles" %}bg-gray-900{% endif %} px-3 py-2 text-sm font-medium text-white" aria-current="page">Shapefiles</a>
+                <a href="{% url "controlpanel_documents" %}?type=SPECIES_LIST" class="rounded-md {% if request.GET.type == "SPECIES_LIST" %}bg-gray-900{% endif %} px-3 py-2 text-sm font-medium text-white" aria-current="page">Species documents</a>
                 <a href="{% url "controlpanel_specieslist" %}" class="rounded-md {% if menu == "species" %}bg-gray-900{% endif %} px-3 py-2 text-sm font-medium text-white" aria-current="page">Species list</a>
               </div>
             </div>

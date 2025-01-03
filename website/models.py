@@ -109,18 +109,18 @@ class Organization(models.Model):
 
 class Document(models.Model):
     name = models.CharField(max_length=255, db_index=True)
-
-    class Type(models.IntegerChoices):
-        NATURE = 1, _("Existing stepping-stones")
-        CONNECTOR = 2, _("Corridor connectors")
-        TRANSPORT = 3, _("Transport")
-        POTENTIAL = 4, _("Possible stepping-stones")
-        CONTEXT = 5, _("Context")
-        TEACHING = 6, _("Teaching resources")
-        GENERAL = 7, _("General document repository")
-        CORRIDOR = 8, _("Ecological corridor")
-
-    doc_type = models.IntegerField(choices=Type.choices, db_index=True)
+    DOC_TYPES = [
+        ("STEPPING_STONES", _("Existing stepping-stones")),
+        ("CONNECTORS", _("Corridor connectors")),
+        ("TRANSPORT", _("Transport")),
+        ("POTENTIAL", _("Possible stepping-stones")),
+        ("CONTEXT", _("Context")),
+        ("TEACHING", _("Teaching resources")),
+        ("GENERAL", _("General document repository")),
+        ("CORRIDOR", _("Ecological corridor")),
+        ("SPECIES_LIST", _("Species lists")),
+    ]
+    doc_type = models.CharField(choices=DOC_TYPES, db_index=True, max_length=20, default="GENERAL")
     author = models.CharField(max_length=255, null=True, blank=True)
     url = models.URLField(max_length=255, null=True, blank=True)
     description = models.TextField(null=True, blank=True)
@@ -404,7 +404,7 @@ class Attachment(models.Model):
     file = models.FileField(upload_to="files")
     attached_to = models.ForeignKey("Document", on_delete=models.CASCADE, related_name="attachments")
 
-    def get_name(self):
+    def __str__(self):
         return os.path.basename(self.file.name)
 
     def get_icon(self):
