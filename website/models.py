@@ -693,9 +693,16 @@ class Species(models.Model):
         return links
 
     @property
+    def name_en(self):
+        try:
+            return self.texts.get(language_id=1).common_name
+        except:
+            return None
+
+    @property
     def inat_id(self):
         try:
-            return self.meta_data["inat_id"]
+            return self.meta_data["inat"]["id"]
         except:
             return None
 
@@ -761,8 +768,15 @@ class Species(models.Model):
                                 family, created = Family.objects.get_or_create(name=family)
                                 self.family = family
 
+                        # If there is no common name in EN, we save it
+                        if "preferred_common_name" in info and info["preferred_common_name"] and not self.name_en:
+                            species_text, created = SpeciesText.objects.get_or_create(species=self, language_id=1)
+                            species_text.common_name = info["preferred_common_name"]
+                            species_text.save()
+                            
                         self.save()
                         self.load_inat_photos()
+                        return True
 
                     else:
                         error = "No information was returned"
@@ -774,6 +788,7 @@ class Species(models.Model):
         if error:
             self.meta_data["inat_error"] = error
             self.save()
+            return False
 
     def load_inat_photos(self):
 
@@ -843,6 +858,11 @@ class SpeciesText(models.Model):
     alternative_names = models.CharField(max_length=255, null=True, blank=True)
     propagation_seed = models.TextField(null=True, blank=True)
     propagation_cutting = models.TextField(null=True, blank=True)
+
+class SpeciesVegetationTypeLink(models.Model):
+    species = models.ForeignKey(Species, on_delete=models.CASCADE)
+    vegetation_type = models.ForeignKey(VegetationType, on_delete=models.CASCADE)
+    file = models.ForeignKey(Attachment, on_delete=models.CASCADE)
 
 class Photo(models.Model):
     name = models.CharField(max_length=255, db_index=True, null=True, blank=True)

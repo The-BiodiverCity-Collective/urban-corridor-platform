@@ -1586,25 +1586,43 @@ def controlpanel_document_species(request, id):
     df = pd.read_excel(file, sheet_name=0)
 
     if request.method == "POST":
+        vegetation_type = VegetationType.objects.get(pk=request.POST["vegetation_type"])
+        SpeciesVegetationTypeLink.objects.filter(file=file_info).delete()
         for _, row in df.iterrows():
 
             name = row["Name"].strip()
 
-            genus = Genus.objects.filter(name=name.split()[0])
-            if genus:
-                genus = genus[0]
-            else:
-                genus = Genus.objects.create(name=name.split()[0])
+            # Only process if there are at least 2 words
+            if len(name.split()) >= 2:
 
-            species_type = row["Type"]
-            species = Species.objects.filter(name=name)
-            if species:
-                species = species[0]
-            else:
-                species = Species.objects.create(
-                    name = name,
-                    genus = genus,
+                genus = Genus.objects.filter(name=name.split()[0])
+                if genus:
+                    genus = genus[0]
+                else:
+                    genus = Genus.objects.create(name=name.split()[0])
+
+                species_type = row["Type"]
+                species = Species.objects.filter(name=name)
+                if species:
+                    species = species[0]
+                else:
+                    species = Species.objects.create(
+                        name = name,
+                        genus = genus,
+                    )
+
+                # We store this link in a table so we can trace it back...
+                SpeciesVegetationTypeLink.objects.create(
+                    species = species,
+                    vegetation_type = vegetation_type,
+                    file = file_info,
                 )
+
+                # And we mark the actual species as belonging to this vegetation type
+                species.vegetation_types.add(vegetation_type)
+
+        messages.success(request, "The species were linked to the selected vegetation type.")
+        return redirect(reverse("controlpanel_specieslist") + "?file=" + request.GET["file"])
 
     results = []
     alerts = []
@@ -1619,16 +1637,13 @@ def controlpanel_document_species(request, id):
                 alerts.append(_("Species names must contain genus + species. This row is invalid and will NOT be added."))
                 results.append("✖️")
             else:
-                if len(name_words) > 2:
-                    name = " ".join(name_words[:2]) # If there is e.g. a subspecies name, then we only look up the first two words, not var. 
-                    alerts.append("Only species names will be checked/added. First two words were used:" + " " + name)
-                else:
-                    alerts.append("")
+                alerts.append("")
                 exists = Species.objects.filter(name=name.strip()).exists()
             results.append("✓" if exists else "✖️")
 
         df["Exists"] = results
         df["Details"] = alerts
+        df = df.fillna("")
         html_table = df.to_html(classes="table", escape=False)
 
     except Exception as e:
@@ -1641,10 +1656,18 @@ def controlpanel_document_species(request, id):
         "info": info,
         "file": file,
         "df": mark_safe(html_table) if not error else None,
+        "vegetation_types": VegetationType.objects.all(),
     }
     return render(request, "controlpanel/document.species.html", context)
 
-
+@staff_member_required
+def controlpanel_ajax_get_inat_data(request, id):
+    info = Species.objects.get(pk=id)
+    inat_info = info.get_taxa_info()
+    success = False
+    if inat_info:
+        success = True
+    return JsonResponse({"success": success})
 
 @staff_member_required
 def controlpanel_shapefiles(request):
@@ -1899,10 +1922,14 @@ def controlpanel_shapefile_classify(request, id):
 @staff_member_required
 def controlpanel_specieslist(request):
 
+    species = Species.objects.all()
+    if "file" in request.GET:
+        species = species.filter(speciesvegetationtypelink__file_id=request.GET["file"])
+
     context = {
         "controlpanel": True,
         "menu": "species",
-        "species": Species.objects.all(),
+        "species": species,
         "title": _("Species list"),
         "load_datatables": True,
     }
@@ -1930,11 +1957,6 @@ def controlpanel_species(request, id=None):
         info = Species()
 
     languages = Language.objects.all()
-
-    if "inat" in request.GET:
-        info.get_taxa_info()
-        messages.success(request, "iNaturalist data was reloaded; photos were imported.")
-        return redirect(reverse("controlpanel_species", args=[info.id]))
 
     if request.method == "POST":
 

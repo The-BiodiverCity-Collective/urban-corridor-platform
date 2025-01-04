@@ -1,16 +1,20 @@
 {% extends "_base.html" %}
+{% load static %}
 {% load ucp_extras %}
-
-{% block head %}
-  {% if request.GET.sync %}
-    <meta http-equiv="refresh" content="120">
-  {% endif %}
-{% endblock %}
 
 {% block content %}
   {% if info.id %}
     <a href="{% url "species" info.id %}" class="btn float-right"><i class="fa fa-file"></i></a>
-    <h1>{{ info }}</h1>
+    {% if info.inat_id %}
+      <a class="float-right" href="https://www.inaturalist.org/taxa/{{ info.inat_id }}"><img style="width:20px" class="inline mr-2" src="{% static "img/inat.icon.png" %}"></a>
+    {% endif %}
+    <h1>
+      {% if info.name_en %}
+        {{ info.name_en }} (<em>{{ info }}</em>)
+      {% else %}
+        {{ info }}
+      {% endif %}
+    </h1>
   {% else %}
     <h1>Add species</h1>
   {% endif %}
@@ -24,7 +28,7 @@
         {% for each in languages %}
           <a href="#" data-section="lan-{{ each.id }}" class="tab inactive">{{ each }}</a>
         {% endfor %}
-        <a href="#" data-section="inaturalist" class="tab inactive">iNaturalist</a>
+        <a href="#" data-section="inaturalist" class="tab inactive"><img src="{% static "img/inat.icon.png" %}" style="width:20px" class="mr-2 inline"> iNaturalist</a>
       </nav>
     </div>
   </div>
@@ -33,6 +37,22 @@
   {% csrf_token %}
   
   <section class="general">
+
+  {% if info.inat_id %}
+    <span class="float-right">
+      <i id="refresh" class="fa fa-refresh cursor-pointer" title="{{ _("Refresh data from iNaturalist") }}"></i>
+    </span>
+  {% endif %}
+
+  {% if info.inat_photos %}
+    <div class="grid grid-cols-12 gap-2 mb-6">
+      {% for each in info.inat_photos %}
+        <div class="relative overflow-hidden rounded-lg shadow-lg aspect-w-16 aspect-h-9">
+          <img src="{{ each.photo.small_url }}" alt="" class="object-cover w-full h-full">
+        </div>
+      {% endfor %}
+    </div>
+  {% endif %}
 
   <div class="mb-4">
     <label for="id_name" class="block text-lg font-semibold text-gray-700">Species Name</label>
@@ -177,26 +197,19 @@
     {% endfor %}
 
     <section class="inaturalist hidden">
-      <a href="?inat=true">Update inat info</a>
 
       {% if info.meta_data.inat_error %}
-      <pre>
-      {{ info.meta_data.inat_error }}
-      </pre>
+        <pre>{{ info.meta_data.inat_error }}</pre>
       {% endif %}
 
       {% if info.inat_photos %}
-
-      <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-
-        {% for each in info.inat_photos %}
-
-        <div class="relative overflow-hidden rounded-lg shadow-lg aspect-w-16 aspect-h-9">
-          <img src="{{ each.photo.small_url }}" alt="Photo 2" class="object-cover w-full h-full">
+        <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+          {% for each in info.inat_photos %}
+            <div class="relative overflow-hidden rounded-lg shadow-lg aspect-w-16 aspect-h-9">
+              <img src="{{ each.photo.small_url }}" alt="Photo 2" class="object-cover w-full h-full">
+            </div>
+          {% endfor %}
         </div>
-
-        {% endfor %}
-      </div>
       {% endif %}
 
       <div class="max-w-4xl mx-auto p-8">
@@ -230,8 +243,51 @@
 
 </form>
 
+
+<div class="relative z-10 hidden" id="inat_modal" aria-labelledby="modal-title" role="dialog" aria-modal="true">
+  <div class="fixed inset-0 bg-gray-500/75 transition-opacity" aria-hidden="true"></div>
+
+  <div class="fixed inset-0 z-10 w-screen overflow-y-auto">
+    <div class="flex min-h-full items-end justify-center p-4 text-center sm:items-center sm:p-0">
+      <div class="relative transform overflow-hidden rounded-lg bg-white px-4 pb-4 pt-5 text-left shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-sm sm:p-6">
+        <div>
+          <div class="mx-auto flex size-12 items-center justify-center rounded-full bg-amber-100">
+            <i class="fa fa-spinner fa-spin"></i>
+          </div>
+          <div class="mt-3 text-center sm:mt-5">
+            <h3 class="text-base font-semibold text-gray-900" id="modal-title">{{ _("Loading iNaturalist information...") }}</h3>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
 <script>
   $(document).ready(function() {
+
+    $("#refresh").click(function(){
+      $("#inat_modal").show("fast");
+      $.ajax({
+        url: "/controlpanel/ajax/get_inat_data/{{ info.id }}/",
+        method: "GET",
+        success: function(response) {
+          if (response.success) {
+            window.location.href = "{{ request.get_full_path }}?refresh_success=true";
+          } else {
+            $("#inat_modal .fa-spinner").removeClass("fa-spinner fa-spin").addClass("fa-times-circle text-red-500");
+            $("#inat_modal div.bg-amber-100").removeClass("bg-amber-100").addClass("bg-gray-200");
+            $("#inat_modal h3").html("{{ _("Sorry, we could not update the information. Check the API/connection") }}");
+          }
+        },
+        error: function() {
+          $("#inat_modal .fa-spinner").removeClass("fa-spinner fa-spin").addClass("fa-times-circle text-red-500");
+          $("#inat_modal div.bg-amber-100").removeClass("bg-amber-100").addClass("bg-gray-200");
+          $("#inat_modal h3").html("{{ _("Sorry, we could not update the information. Check the API/connection") }}");
+        }
+      });
+    });
 
     // Allow user to add genus or family clicking + button
     $("#add-genus-btn").click(function() {

@@ -865,6 +865,9 @@ main .tab.inactive:hover {
 .static {
   position: static;
 }
+.fixed {
+  position: fixed;
+}
 .absolute {
   position: absolute;
 }
@@ -1076,6 +1079,9 @@ main .tab.inactive:hover {
 .inline-block {
   display: inline-block;
 }
+.inline {
+  display: inline;
+}
 .flex {
   display: flex;
 }
@@ -1109,6 +1115,10 @@ main .tab.inactive:hover {
 .size-10 {
   width: 2.5rem;
   height: 2.5rem;
+}
+.size-12 {
+  width: 3rem;
+  height: 3rem;
 }
 .size-4 {
   width: 1rem;
@@ -1226,6 +1236,9 @@ main .tab.inactive:hover {
 .w-full {
   width: 100%;
 }
+.w-screen {
+  width: 100vw;
+}
 .min-w-0 {
   min-width: 0px;
 }
@@ -1297,6 +1310,15 @@ main .tab.inactive:hover {
 .transform-gpu {
   transform: translate3d(var(--tw-translate-x), var(--tw-translate-y), 0) rotate(var(--tw-rotate)) skewX(var(--tw-skew-x)) skewY(var(--tw-skew-y)) scaleX(var(--tw-scale-x)) scaleY(var(--tw-scale-y));
 }
+@keyframes spin {
+
+  to {
+    transform: rotate(360deg);
+  }
+}
+.animate-spin {
+  animation: spin 1s linear infinite;
+}
 .cursor-not-allowed {
   cursor: not-allowed;
 }
@@ -1314,6 +1336,9 @@ main .tab.inactive:hover {
 .grid-cols-1 {
   grid-template-columns: repeat(1, minmax(0, 1fr));
 }
+.grid-cols-12 {
+  grid-template-columns: repeat(12, minmax(0, 1fr));
+}
 .grid-cols-2 {
   grid-template-columns: repeat(2, minmax(0, 1fr));
 }
@@ -1328,6 +1353,9 @@ main .tab.inactive:hover {
 }
 .items-start {
   align-items: flex-start;
+}
+.items-end {
+  align-items: flex-end;
 }
 .items-center {
   align-items: center;
@@ -1349,6 +1377,9 @@ main .tab.inactive:hover {
 }
 .gap-1 {
   gap: 0.25rem;
+}
+.gap-2 {
+  gap: 0.5rem;
 }
 .gap-4 {
   gap: 1rem;
@@ -1633,6 +1664,9 @@ main .tab.inactive:hover {
 .bg-gray-500 {
   --tw-bg-opacity: 1;
   background-color: rgb(107 114 128 / var(--tw-bg-opacity, 1));
+}
+.bg-gray-500\/75 {
+  background-color: rgb(107 114 128 / 0.75);
 }
 .bg-gray-600 {
   --tw-bg-opacity: 1;
@@ -1957,6 +1991,9 @@ main .tab.inactive:hover {
 .pb-32 {
   padding-bottom: 8rem;
 }
+.pb-4 {
+  padding-bottom: 1rem;
+}
 .pb-80 {
   padding-bottom: 20rem;
 }
@@ -1983,6 +2020,9 @@ main .tab.inactive:hover {
 }
 .pt-6 {
   padding-top: 1.5rem;
+}
+.text-left {
+  text-align: left;
 }
 .text-center {
   text-align: center;
@@ -2116,6 +2156,10 @@ main .tab.inactive:hover {
 .text-indigo-600 {
   --tw-text-opacity: 1;
   color: rgb(79 70 229 / var(--tw-text-opacity, 1));
+}
+.text-lime-500 {
+  --tw-text-opacity: 1;
+  color: rgb(132 204 22 / var(--tw-text-opacity, 1));
 }
 .text-lime-700 {
   --tw-text-opacity: 1;
@@ -2255,8 +2299,18 @@ main .tab.inactive:hover {
   transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
   transition-duration: 150ms;
 }
+.transition-all {
+  transition-property: all;
+  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+  transition-duration: 150ms;
+}
 .transition-colors {
   transition-property: color, background-color, border-color, text-decoration-color, fill, stroke;
+  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+  transition-duration: 150ms;
+}
+.transition-opacity {
+  transition-property: opacity;
   transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
   transition-duration: 150ms;
 }
@@ -2709,6 +2763,11 @@ dl.dl-horizontal dd {
     grid-column: span 4 / span 4;
   }
 
+  .sm\:my-8 {
+    margin-top: 2rem;
+    margin-bottom: 2rem;
+  }
+
   .sm\:ml-16 {
     margin-left: 4rem;
   }
@@ -2723,6 +2782,10 @@ dl.dl-horizontal dd {
 
   .sm\:mt-20 {
     margin-top: 5rem;
+  }
+
+  .sm\:mt-5 {
+    margin-top: 1.25rem;
   }
 
   .sm\:block {
@@ -2741,8 +2804,16 @@ dl.dl-horizontal dd {
     width: 57rem;
   }
 
+  .sm\:w-full {
+    width: 100%;
+  }
+
   .sm\:max-w-lg {
     max-width: 32rem;
+  }
+
+  .sm\:max-w-sm {
+    max-width: 24rem;
   }
 
   .sm\:max-w-xs {
@@ -2779,6 +2850,10 @@ dl.dl-horizontal dd {
     grid-template-columns: repeat(6, minmax(0, 1fr));
   }
 
+  .sm\:items-center {
+    align-items: center;
+  }
+
   .sm\:items-stretch {
     align-items: stretch;
   }
@@ -2798,6 +2873,14 @@ dl.dl-horizontal dd {
 
   .sm\:gap-y-8 {
     row-gap: 2rem;
+  }
+
+  .sm\:p-0 {
+    padding: 0px;
+  }
+
+  .sm\:p-6 {
+    padding: 1.5rem;
   }
 
   .sm\:px-0 {

@@ -72,7 +72,10 @@
                         ({{ each.file.size|filesizeformat }})
                       </span>
                     {% if info.doc_type == "SPECIES_LIST" %}
-                      <a class="ml-10 btn-blue" href="{% url "controlpanel_document_species" info.id %}?file={{ each.id }}"><i class="fa fa-folder-open fa-fw"></i> Extract species</a>
+                      <div class="mt-3">
+                      <a class="btn-blue" href="{% url "controlpanel_document_species" info.id %}?file={{ each.id }}"><i class="fa fa-folder-open fa-fw"></i> Extract species</a>
+                      <a class="ml-3 btn-blue" href="{% url "controlpanel_specieslist" %}?file={{ each.id }}"><i class="fa fa-folder-open fa-fw"></i> View species</a>
+                      </div>
                     {% endif %}
                   </li>
                   {% endfor %}
