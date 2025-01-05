@@ -1,0 +1,34 @@
+
+  <div class="bg-sky-800 pb-32">
+    <nav class="bg-sky-800">
+      <div class="mx-auto max-w-7xl px-2 sm:px-6 lg:px-8">
+        <div class="relative flex h-16 items-center justify-between">
+          <div class="flex flex-1 items-center justify-center sm:items-stretch sm:justify-start text-gray-100">
+            <div class="flex shrink-0 items-center">
+              <a href="/" class="mr-5"><i class="fa fa-arrow-left"></i></a>
+            </div>
+            <div class="hidden sm:ml-6 sm:block">
+              <div class="flex space-x-4">
+                <a href="{% url "controlpanel_shapefiles" %}" class="rounded-md {% if menu == "shapefiles" %}bg-gray-900{% endif %} px-3 py-2 text-sm font-medium text-white" aria-current="page">Shapefiles</a>
+                <a href="{% url "controlpanel_documents" %}?type=SPECIES_LIST" class="rounded-md {% if request.GET.type == "SPECIES_LIST" %}bg-gray-900{% endif %} px-3 py-2 text-sm font-medium text-white" aria-current="page">Species documents</a>
+                <a href="{% url "controlpanel_specieslist" %}" class="rounded-md {% if menu == "species" %}bg-gray-900{% endif %} px-3 py-2 text-sm font-medium text-white" aria-current="page">Species list</a>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </nav>
+
+    <header class="py-10">
+      <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+
+        <h1 class="text-3xl font-bold tracking-tight text-white">
+          <a href="{% url "controlpanel" %}">
+          <i class="fa fa-lock fa-fw"></i>
+          Control Panel
+          </a>
+        </h1>
+      </div>
+    </header>
+
+  </div>
