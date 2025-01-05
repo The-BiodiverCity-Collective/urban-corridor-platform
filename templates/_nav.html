@@ -7,9 +7,13 @@
       </span>
       <a href="/" class="mr-4"><i class="fa fa-home"></i></a>
 
-      <a href="/species/" class="mr-3 inline-flex items-center gap-x-1 text-sm/6 font-semibold text-gray-900 hovermenu" data-target="species" aria-expanded="false">
+      <a href="/species/" class="mr-3 inline-flex items-center gap-x-1 text-sm/6 font-semibold {% if menu == "species" %}text-sky-600{% else %}text-gray-900{% endif %} hovermenu" data-target="species" aria-expanded="false">
         {{ _("Species") }}
-        <i class="fa fa-angle-down mt-1"></i>
+        {% if menu == "species" %}
+          <i class="fa fa-circle text-sky-600 mt-1"></i>
+        {% else %}
+          <i class="fa fa-angle-down mt-1"></i>
+        {% endif %}
       </a>
 
       <a href="/maps/" class="mr-3 inline-flex items-center gap-x-1 text-sm/6 font-semibold text-gray-900 hovermenu" data-target="maps" aria-expanded="false">

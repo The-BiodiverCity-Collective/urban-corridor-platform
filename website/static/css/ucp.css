@@ -136,6 +136,12 @@ dl.dl-horizontal dd {
   bottom: 10px;
   left: 10px;
 }
+.mainnav .dropdown {
+  visibility: hidden;
+  opacity: 0;
+  transition: opacity 0.2s ease-out, transform 0.2s ease-out;
+  position: absolute;
+}
 
 @layer components {
 

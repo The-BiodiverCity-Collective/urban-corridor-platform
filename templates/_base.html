@@ -39,13 +39,6 @@
     $("#mobile-menu").hide();
   });
   </script>
-  <style type="text/css">
-    .mainnav .dropdown {
-      opacity: 0;
-      transition: opacity 0.2s ease-out, transform 0.2s ease-out;
-      position: absolute;
-    }
-  </style>
 
   {% block css %}{% endblock %}
   {% block head %}{% endblock %}
@@ -160,7 +153,8 @@ $(function(){
     $(".mainnav a.text-sky-600").addClass("text-gray-900").removeClass("text-sky-600");
     $(".mainnav .dropdown").css({
       opacity: 0,
-      transform: "translateY(-1rem)"
+      transform: "translateY(-1rem)",
+      visibility: "hidden",
     });
   }
 
@@ -176,7 +170,8 @@ $(function(){
       $(this).find(".fa").removeClass("fa-angle-down").addClass("fa-angle-up text-sky-600");
       $(dropdown).css({
         opacity: 1,
-        transform: "translateY(0)"
+        transform: "translateY(0)",
+        visibility: "visible",
       });
     }
   });
