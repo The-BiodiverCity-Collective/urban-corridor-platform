@@ -407,6 +407,10 @@ class Attachment(models.Model):
     def __str__(self):
         return os.path.basename(self.file.name)
 
+    def extension(self):
+        filename = self.file.name
+        return filename.split(".")[-1]
+
     def get_icon(self):
         filename = self.file.name
         if filename.endswith(".dbf"):
@@ -622,6 +626,7 @@ class Species(models.Model):
     name = models.CharField(max_length=255, unique=True, db_index=True)
     redlist = models.ForeignKey(Redlist, on_delete=models.CASCADE, null=True, blank=True)
     links = models.JSONField(null=True, blank=True)
+    site = models.ManyToManyField(Site, blank=True)
 
     animals = models.JSONField(null=True, blank=True)
     soils = models.JSONField(null=True, blank=True)

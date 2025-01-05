@@ -618,10 +618,11 @@ def geojson(request, id):
 
 def species_overview(request, vegetation_type=None):
 
-    samples = Species.objects.values_list("id", flat=True).filter(photo__isnull=False)
-    genus = Genus.objects.all()
-    families = Family.objects.all()
-    species = Species.objects.all()
+    site = get_site(request)
+    samples = Species.objects.values_list("id", flat=True).filter(site=site, photo__isnull=False)
+    genus = Genus.objects.filter(species__site=site)
+    families = Family.objects.filter(species__site=site)
+    species = Species.objects.filter(site=site)
     veg_types = VegetationType.objects.all().annotate(total=Count("species"))
 
     if vegetation_type:
@@ -656,7 +657,8 @@ def species_overview(request, vegetation_type=None):
     return render(request, "species.overview.html", context)
 
 def species_list(request, genus=None, family=None):
-    species = Species.objects.all()
+    site = get_site(request)
+    species = Species.objects.filter(site=site)
 
     if genus:
         genus = get_object_or_404(Genus, pk=genus)
@@ -683,7 +685,8 @@ def species_list(request, genus=None, family=None):
     return render(request, "species.all.html", context)
 
 def species_full_list(request):
-    species = Species.objects.all()
+    site = get_site(request)
+    species = Species.objects.filter(site=site)
 
     vegetation_type = None
     if "vegetation_type" in request.GET:
@@ -768,6 +771,7 @@ def species(request, id):
         "photos": Photo.objects.filter(species=species, position__gte=1),
         "title": species.name,
     }
+
     return render(request, "species.html", context)
 
 def gardens(request):
@@ -1581,6 +1585,7 @@ def controlpanel_document(request, id=None):
 def controlpanel_document_species(request, id):
     info = Document.objects.get(pk=id)
     file_info = Attachment.objects.get(attached_to=info, pk=request.GET["file"])
+    site = get_site(request)
 
     file = file_info.file
     df = pd.read_excel(file, sheet_name=0)
@@ -1588,7 +1593,7 @@ def controlpanel_document_species(request, id):
     if request.method == "POST":
         vegetation_type = VegetationType.objects.get(pk=request.POST["vegetation_type"])
         SpeciesVegetationTypeLink.objects.filter(file=file_info).delete()
-        for _, row in df.iterrows():
+        for _,row in df.iterrows():
 
             name = row["Name"].strip()
 
@@ -1601,7 +1606,6 @@ def controlpanel_document_species(request, id):
                 else:
                     genus = Genus.objects.create(name=name.split()[0])
 
-                species_type = row["Type"]
                 species = Species.objects.filter(name=name)
                 if species:
                     species = species[0]
@@ -1621,8 +1625,12 @@ def controlpanel_document_species(request, id):
                 # And we mark the actual species as belonging to this vegetation type
                 species.vegetation_types.add(vegetation_type)
 
+                # And make sure this is activated for the current site
+                species.site.add(site)
+
         messages.success(request, "The species were linked to the selected vegetation type.")
         return redirect(reverse("controlpanel_specieslist") + "?file=" + request.GET["file"])
+
 
     results = []
     alerts = []
@@ -1925,6 +1933,9 @@ def controlpanel_specieslist(request):
     species = Species.objects.all()
     if "file" in request.GET:
         species = species.filter(speciesvegetationtypelink__file_id=request.GET["file"])
+    elif "site" in request.GET:
+        site = Site.objects.get(pk=request.GET["site"])
+        species = species.filter(site=site)
 
     context = {
         "controlpanel": True,

@@ -20,6 +20,9 @@
       <th>iNat</th>
       <th>IUCN</th>
       <th>SANBI</th>
+      {% if request.GET.photos %}
+        <th>Photos</th>
+      {% endif %}
     </tr>
   </thead>
   <tbody>
@@ -29,6 +32,9 @@
       <td>{% if each.meta_data.inat %}<i class="fa fa-check"></i>{% else %}<i class="fa fa-minus-circle" data-id="{{ each.id }}"></i>{% endif %}</td>
       <td>{{ each.get_conservation_status|default_if_none:"" }}</td>
       <td>{{ each.get_sanbi_conservation_status|default_if_none:"" }}</td>
+      {% if request.GET.photos %}
+        <td data-sort="{{ each.photos.count }}">{{ each.photos.count }}</td>
+      {% endif %}
     </tr>
   {% endfor %}
   </tbody>
