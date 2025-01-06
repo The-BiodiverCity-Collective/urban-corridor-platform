@@ -14,28 +14,28 @@
         <div class="grid grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6 mt-10">
 
           <div class="col-span-full">
-            <label for="name" class="block text-sm/6 font-medium text-gray-900">Name</label>
+            <label for="name" class="block text-sm/6 font-medium text-gray-900">{{ _("Name") }}</label>
             <div class="mt-2">
               <input type="text" name="name" id="name" class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-sky-600 sm:text-sm/6" value="{{ info.name }}" required>
             </div>
           </div>
 
           <div class="sm:col-span-3">
-            <label for="author" class="block text-sm/6 font-medium text-gray-900">Author</label>
+            <label for="author" class="block text-sm/6 font-medium text-gray-900">{{ _("Author") }}</label>
             <div class="mt-2">
               <input type="text" name="author" id="author" class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-sky-600 sm:text-sm/6" value="{{ info.author }}" required>
             </div>
           </div>
 
           <div class="sm:col-span-3">
-            <label for="url" class="block text-sm/6 font-medium text-gray-900">URL</label>
+            <label for="url" class="block text-sm/6 font-medium text-gray-900">{{ _("URL") }}</label>
             <div class="mt-2">
               <input type="url" name="url" id="url" class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-sky-600 sm:text-sm/6" value="{{ info.url|default_if_none:"" }}">
             </div>
           </div>
 
           <div class="sm:col-span-3">
-            <label for="doc_type" class="block text-sm/6 font-medium text-gray-900">Type</label>
+            <label for="doc_type" class="block text-sm/6 font-medium text-gray-900">{{ _("Type") }}</label>
             <div class="mt-2">
               <select id="doc_type" name="doc_type" class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-sky-600 sm:max-w-xs sm:text-sm/6" required>
                 <option value=""></option>

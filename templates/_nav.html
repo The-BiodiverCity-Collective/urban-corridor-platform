@@ -1,4 +1,4 @@
-<nav class="mainnav relative isolate z-50 shadow {{ SITE.design.header }}">
+<nav class="mainnav relative isolate z-50 shadow {{ SITE.meta_data.header }}">
 
   <div class="bg-white py-5">
     <div class="mx-auto max-w-7xl px-6 lg:px-8">
@@ -9,11 +9,7 @@
 
       <a href="/species/" class="mr-3 inline-flex items-center gap-x-1 text-sm/6 font-semibold {% if menu == "species" %}text-sky-600{% else %}text-gray-900{% endif %} hovermenu" data-target="species" aria-expanded="false">
         {{ _("Species") }}
-        {% if menu == "species" %}
-          <i class="fa fa-circle text-sky-600 mt-1"></i>
-        {% else %}
-          <i class="fa fa-angle-down mt-1"></i>
-        {% endif %}
+          <i class="fa fa-angle-down mt-1 {% if menu == "species" %}text-sky-600{% endif %}"></i>
       </a>
 
       <a href="/maps/" class="mr-3 inline-flex items-center gap-x-1 text-sm/6 font-semibold text-gray-900 hovermenu" data-target="maps" aria-expanded="false">
@@ -204,7 +200,7 @@
 
 </nav>
 
-  <div class="{{ SITE.design.header }} pb-32">
+  <div class="{{ SITE.meta_data.header }} pb-32">
 
     <header class="py-10">
       <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">

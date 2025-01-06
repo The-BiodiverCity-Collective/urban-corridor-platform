@@ -328,28 +328,37 @@ def space(request, id):
 
 
 def maps(request):
-    types = Document.Type
+    site = get_site(request)
+    types = Document.DOC_TYPES
     parents = []
     hits = {}
     type_list = {}
     getcolors = {}
-    relevant_types = [1,2,3,4,5]
-    for each in types:
-        e = int(each)
-        if e in relevant_types:
-            parents.append(e)
-            hits[e] = []
-            type_list[e] = each.label
+    relevant_types = ["STEPPING_STONES", "CONNECTORS", "TRANSPORT", "POTENTIAL", "CONTEXT"]
 
-    documents = Document.objects.filter(is_active=True, type__in=relevant_types).order_by("type")
+    for each in types:
+        if each[0] in relevant_types:
+            parents.append(each[0])
+            hits[each[0]] = []
+            type_list[each[0]] = each[1]
+
+    documents = Document.objects.filter(is_active=True, doc_type__in=relevant_types, is_shapefile=True).order_by("doc_type")
     for each in documents:
-        t = each.type
+        t = each.doc_type
         hits[t].append(each)
         getcolors[each.id] = each.color
 
     for each in parents:
         if not hits[each]:
             parents.remove(each)
+
+    swapped_corridor_coords = None
+    corridor = ReferenceSpace.objects.filter(source=site.corridor)
+    if corridor:
+        corridor = corridor[0]
+        corridor = json.loads(corridor.geometry.geojson)
+        corridor = corridor["coordinates"][0]
+        swapped_corridor_coords = [[y, x] for x, y in corridor] # This is needed for the hole punching to work
 
     context = {
         "maps": documents,
@@ -366,9 +375,10 @@ def maps(request):
             3: "train",
             4: "map-marker",
             5: "info-circle",
-        }
+        },
+        "swapped_corridor_coords": swapped_corridor_coords,
     }
-    return render(request, "website/maps.html", context)
+    return render(request, "maps.html", context)
 
 def report(request, show_map=False, lat=False, lng=False, site_selection=False):
 
@@ -503,7 +513,7 @@ def report(request, show_map=False, lat=False, lng=False, site_selection=False):
         existing["label"] = "<span class='badge bg-success'>great</span>"
     existing["label"] = mark_safe(existing["label"])
 
-    types = Document.Type
+    types = Document.DOC_TYPES
     parents = []
     hits = {}
     type_list = {}
@@ -653,6 +663,7 @@ def species_overview(request, vegetation_type=None):
         "vegetation_types": veg_types,
         "vegetation_type": vegetation_type,
         "veg_link": f"?vegetation_type={vegetation_type.id}" if vegetation_type else "",
+        "menu": "species",
     }
     return render(request, "species.overview.html", context)
 
@@ -681,6 +692,7 @@ def species_list(request, genus=None, family=None):
         "family": family,
         "species_list": species,
         "full_list": full_list,
+        "menu": "species",
     }
     return render(request, "species.all.html", context)
 
@@ -709,6 +721,7 @@ def species_full_list(request):
         "load_datatables": True,
         "features": features,
         "vegetation_type": vegetation_type,
+        "menu": "species",
     }
     return render(request, "species.all.html", context)
 
@@ -770,6 +783,7 @@ def species(request, id):
         "details": details,
         "photos": Photo.objects.filter(species=species, position__gte=1),
         "title": species.name,
+        "menu": "species",
     }
 
     return render(request, "species.html", context)
@@ -1680,10 +1694,11 @@ def controlpanel_ajax_get_inat_data(request, id):
 @staff_member_required
 def controlpanel_shapefiles(request):
 
+    site = get_site(request)
     context = {
         "controlpanel": True,
         "menu": "shapefiles",
-        "shapefiles": Document.objects.filter(is_shapefile=True),
+        "shapefiles": Document.objects.filter(is_shapefile=True, site=site),
     }
     return render(request, "controlpanel/shapefiles.html", context)
 
@@ -1749,7 +1764,7 @@ def controlpanel_shapefile(request, id):
         "menu": "shapefiles",
         "info": info,
         "size_in_bytes": size_in_bytes,
-        "corridors": ReferenceSpace.objects.filter(source__doc_type=8),
+        "corridors": ReferenceSpace.objects.filter(source__doc_type="CORRIDOR"),
         "clip_boundaries": clip_boundaries,
         "load_form": True,
     }
@@ -1773,6 +1788,7 @@ def controlpanel_shapefile_form(request, id=None):
         info.description = request.POST.get("description")
         info.include_in_site_analysis = True if request.POST.get("include_in_site_analysis") else False
         info.is_active = True if request.POST.get("is_active") == "1" else False
+        info.site = site
         if not info.meta_data:
             info.meta_data = {}
         else:
@@ -1839,7 +1855,7 @@ def controlpanel_shapefile_form(request, id=None):
         "menu": "shapefiles",
         "info": info,
         "load_form": True,
-        "doc_types": Document.Type,
+        "doc_types": Document.DOC_TYPES,
     }
     return render(request, "controlpanel/shapefile.form.html", context)
 
@@ -1930,7 +1946,8 @@ def controlpanel_shapefile_classify(request, id):
 @staff_member_required
 def controlpanel_specieslist(request):
 
-    species = Species.objects.all()
+    site = get_site(request)
+    species = Species.objects.filter(site=site)
     if "file" in request.GET:
         species = species.filter(speciesvegetationtypelink__file_id=request.GET["file"])
     elif "site" in request.GET:

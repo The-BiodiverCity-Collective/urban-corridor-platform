@@ -119,11 +119,10 @@
 
         // Use fitBounds to adjust the map view to the polygon's bounds
         map.fitBounds(corridorPoly.getBounds());
-
-
       {% else %}
         map.addLayer(dataLayer).fitBounds(dataLayer.getBounds())
       {% endif %}
+
   {% endif %}
 
 </script>

@@ -24,50 +24,50 @@
         <div class="grid grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6 mt-10">
 
           <div class="col-span-full">
-            <label for="name" class="block text-sm/6 font-medium text-gray-900">Name</label>
+            <label for="name" class="block text-sm/6 font-medium text-gray-900">{{ _("Name") }}</label>
             <div class="mt-2">
               <input type="text" name="name" id="name" class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-sky-600 sm:text-sm/6" value="{{ info.name }}" required>
             </div>
           </div>
 
           <div class="sm:col-span-3">
-            <label for="author" class="block text-sm/6 font-medium text-gray-900">Author</label>
+            <label for="author" class="block text-sm/6 font-medium text-gray-900">{{ _("Author") }}</label>
             <div class="mt-2">
               <input type="text" name="author" id="author" class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-sky-600 sm:text-sm/6" value="{{ info.author }}" required>
             </div>
           </div>
 
           <div class="sm:col-span-3">
-            <label for="url" class="block text-sm/6 font-medium text-gray-900">URL</label>
+            <label for="url" class="block text-sm/6 font-medium text-gray-900">{{ _("URL") }}</label>
             <div class="mt-2">
               <input type="url" name="url" id="url" class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-sky-600 sm:text-sm/6" value="{{ info.url|default_if_none:"" }}">
             </div>
           </div>
 
           <div class="sm:col-span-3">
-            <label for="doc_type" class="block text-sm/6 font-medium text-gray-900">Type</label>
+            <label for="doc_type" class="block text-sm/6 font-medium text-gray-900">{{ _("Type") }}</label>
             <div class="mt-2">
               <select id="doc_type" name="doc_type" class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-sky-600 sm:max-w-xs sm:text-sm/6" required>
                 <option value=""></option>
-                {% for each in doc_types %}
-                <option {% if each == info.doc_type %}selected{% endif %} value="{{ each }}">{{ each.label }}</option>
+                {% for key,value in doc_types %}
+                  <option {% if key == info.doc_type %}selected{% endif %} value="{{ key }}">{{ value }}</option>
                 {% endfor %}
               </select>
             </div>
           </div>
 
           <div class="sm:col-span-3">
-            <label for="color" class="block text-sm/6 font-medium text-gray-900">Color</label>
+            <label for="color" class="block text-sm/6 font-medium text-gray-900">{{ _("Color") }}</label>
             <div class="mt-2">
               <input type="color" name="color" id="color" class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-sky-600 sm:text-sm/6" value="{{ info.color|default_if_none:"" }}">
             </div>
           </div>
 
           <div class="sm:col-span-4">
-            <label for="file" class="block text-sm/6 font-medium text-gray-900">File(s)</label>
+            <label for="file" class="block text-sm/6 font-medium text-gray-900">{{ _("File(s)") }}</label>
             {% if info.id and info.attachments.all %}
               <span class="mt-2 bg-orange-100 text-orange-700 text-xs font-bold rounded-full px-2 py-1 inline-block">
-                <i class="fa fa-info-circle"></i> Existing files will be replaced when you upload a new file.
+                <i class="fa fa-info-circle"></i> {{ _("Existing files will be replaced when you upload a new file.") }}
               </span>
             {% endif %}
             <div class="mt-2">
@@ -77,14 +77,14 @@
 
           {% if info.id and info.attachments.all %}
             <div class="col-span-full">
-              <label for="cover-photo" class="block text-sm/6 font-medium text-gray-900">Existing file(s)</label>
+              <label for="cover-photo" class="block text-sm/6 font-medium text-gray-900">{{ _("Existing file(s)") }}</label>
               <div class="mt-2 flex rounded-lg border border-dashed border-gray-900/25 px-6 py-10">
                 <ul>
                   {% for each in info.attachments.all %}
                   <li class="text-gray-800">
                     <i class="fa-fw fa fa-{{ each.get_icon }}"></i>
                     <a href="{{ each.file.url }}">
-                    {{ each.get_name }}
+                    {{ each }}
                     </a>
                     <span class="text-xs/5 text-gray-600">
                       ({{ each.file.size|filesizeformat }})

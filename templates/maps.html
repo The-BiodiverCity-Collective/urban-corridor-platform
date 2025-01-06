@@ -1,0 +1,53 @@
+{% extends "_base.html" %}
+{% load static %}
+
+{% block head %}
+  <link rel="stylesheet" href="{% static "css/leaflet.multilayer.css" %}" />
+{% endblock %}
+
+{% block content %}
+
+  <h1>{% block title %}Maps{% endblock %}</h1>
+
+  <div class="alert alert-warning">
+    <strong>Notes</strong>
+    <br>
+    We have assembled a list of maps that might be useful to fynbos stepping stone 
+    gardeners. These maps are also used in other parts of our website, such as the
+    <a href="{% url "report" %}">Instant site analysis tool</a> where we query different
+    layers at once.
+    <br><br>
+    You can open any of the maps and view their contents by clicking on their name below.
+    However, if you want a live preview and overlay different maps on the same background, 
+    then use the legend in the map below and click on any map name to add it right here.
+    <br>
+    <br>
+    If you are looking for <a href="/corridors/">fynbos corridor maps</a>, we recommend you
+    check out that particular section on our website instead. 
+  </div>
+
+  <div id="map" class="leaflet-map"></div>
+
+  <h3>Browse maps</h3>
+
+  <div class="row">
+      {% for each in maps %}
+        {% ifchanged each.type %}
+          {% if each.type != 1 %}
+          </div>
+          {% endif %}
+          <div class="col col-lg-3 col-md-4 col-sm-6">
+          </ul>
+          <h4>{{ each.get_type_display }}</h4>
+          <ul>
+        {% endifchanged %}
+        <li><a href="{% url "map" each.id %}">{{ each }}</a></li>
+      {% endfor %}
+    </div>
+  </div>
+
+{% endblock %}
+
+{% block js %}
+  {% include "_leaflet.multilayer.html" %}
+{% endblock %}
