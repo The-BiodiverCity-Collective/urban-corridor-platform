@@ -6,16 +6,18 @@
 
 <h1 class="text-3xl">{% block title %}Dataviz: {{ info.shapefile }}{% endblock %}</h1>
 
-<div class="float-right relative" style="bottom:-15px">
-  <a class="mr-2 p-1" href="{% url "controlpanel_shapefile" info.shapefile.id %}"><i class="fa-regular fa-file"></i></a>
-  <a class="mr-2 p-1 bg-gray-100 text-orange-700" href="{% url "controlpanel_shapefile_dataviz" info.shapefile.id %}"><i class="fa fa-object-group"></i></a>
-  <a class="mr-2 p-1" href="{% url "controlpanel_shapefile_form" info.shapefile.id %}"><i class="fa fa-pencil"></i></a>
-  <a class="p-1" href="{% url "map" info.shapefile.id %}"><i class="fa fa-map"></i></a>
-</div>
-
 <form method="post" enctype="multipart/form-data">
 
-  <div class="mt-10 flex items-center justify-center bg-gray-100 py-10">
+  <div class="mt-10 flex items-center justify-center bg-gray-100 py-10 relative">
+
+  <div class="float-right absolute" style="top:-26px;right:0">
+    <a class="mr-2 p-1" href="{% url "controlpanel_shapefile" info.shapefile.id %}"><i class="fa-regular fa-file"></i></a>
+    <a class="mr-2 p-1 bg-gray-100 text-orange-700" href="{% url "controlpanel_shapefile_dataviz" info.shapefile.id %}"><i class="fa fa-object-group"></i></a>
+    <a class="mr-2 p-1" href="{% url "controlpanel_shapefile_form" info.shapefile.id %}"><i class="fa fa-pencil"></i></a>
+    <a class="p-1" href="{% url "map" info.shapefile.id %}"><i class="fa fa-map"></i></a>
+  </div>
+
+
     <div class="space-y-12 max-w-[700px] pb-12">
 
       <h2 class="text-base/7 font-semibold text-gray-900">Color settings</h2>

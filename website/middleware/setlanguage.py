@@ -16,7 +16,7 @@ def locale_middleware(get_response):
         if host in sites:
            language_code = sites[host]
         else:
-           language_code = "en_GB"
+           language_code = "en_ZA"
 
         translation.activate(language_code)
         request.language = language_code

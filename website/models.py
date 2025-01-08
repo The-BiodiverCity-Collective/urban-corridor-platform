@@ -860,6 +860,8 @@ class SpeciesText(models.Model):
     language = models.ForeignKey(Language, on_delete=models.CASCADE)
     common_name = models.CharField(max_length=255, null=True, blank=True)
     description = models.TextField(null=True, blank=True)
+    summary_wikipedia = models.TextField(null=True, blank=True)
+    description_wikipedia = models.TextField(null=True, blank=True)
     alternative_names = models.CharField(max_length=255, null=True, blank=True)
     propagation_seed = models.TextField(null=True, blank=True)
     propagation_cutting = models.TextField(null=True, blank=True)

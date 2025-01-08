@@ -4,16 +4,17 @@
 
 <h1 class="text-3xl">{% block title %}{% if info.id %}Edit shapefile{% else %}Add shapefile{% endif %}{% endblock %}</h1>
 
-{% if info.id %}
-  <div class="float-right relative" style="bottom:-15px">
-    <a class="mr-2 p-1" href="{% url "controlpanel_shapefile" info.id %}"><i class="fa-regular fa-file"></i></a>
-    <a class="mr-2 p-1" href="{% url "controlpanel_shapefile_dataviz" info.id %}"><i class="fa fa-object-group"></i></a>
-    <a class="mr-2 p-1 bg-gray-100 text-orange-700" href="{% url "controlpanel_shapefile_form" info.id %}"><i class="fa fa-pencil"></i></a>
-    <a class="p-1" href="{% url "map" info.id %}"><i class="fa fa-map"></i></a>
-  </div>
-{% endif %}
+<div class="mt-10 flex items-center justify-center min-h-screen bg-gray-100 py-10 relative">
 
-<div class="mt-10 flex items-center justify-center min-h-screen bg-gray-100 py-10">
+  {% if info.id %}
+    <div class="absolute" style="right:10px;top:-26px">
+      <a class="mr-2 p-1" href="{% url "controlpanel_shapefile" info.id %}"><i class="fa-regular fa-file"></i></a>
+      <a class="mr-2 p-1" href="{% url "controlpanel_shapefile_dataviz" info.id %}"><i class="fa fa-object-group"></i></a>
+      <a class="mr-2 p-1 bg-gray-100 text-orange-700" href="{% url "controlpanel_shapefile_form" info.id %}"><i class="fa fa-pencil"></i></a>
+      <a class="p-1" href="{% url "map" info.id %}"><i class="fa fa-map"></i></a>
+    </div>
+  {% endif %}
+
   <form class="max-w-[700px]" method="post" enctype="multipart/form-data">
     <div class="space-y-12">
 

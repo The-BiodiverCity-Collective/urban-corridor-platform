@@ -25,6 +25,7 @@ import shutil
 import uuid
 import sys
 from django.core import serializers
+import wikipediaapi
 
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import authenticate, login, logout
@@ -1692,6 +1693,44 @@ def controlpanel_ajax_get_inat_data(request, id):
     return JsonResponse({"success": success})
 
 @staff_member_required
+def controlpanel_ajax_get_wikipedia(request, id):
+    info = Species.objects.get(pk=id)
+    success = False
+    error = None
+    description = None
+    summary = None
+    description = None
+    language = Language.objects.get(name="English")
+
+    try:
+        url = info.meta_data["inat"]["wikipedia_url"]
+        if url:
+            title = url.split("/")[-1] #Get the page title from the URL
+            wiki_wiki = wikipediaapi.Wikipedia("Urban Corridor Platform (info@fynboscorridors.org)", "en")
+            page = wiki_wiki.page(title)
+
+            if page.exists():
+                species_text, created = SpeciesText.objects.get_or_create(
+                    species=info,
+                    language=language
+                )
+                if page.summary:
+                    species_text.summary_wikipedia = page.summary
+                success = True
+                species_text.description_wikipedia = page.text
+                species_text.save()
+                description = page.text
+                summary = page.summary
+            else:
+                error = "Page does not exist"
+        else:
+            error = _("No wikipedia page found in the species profile")
+    except Exception as e:
+        error = str(e)
+
+    return JsonResponse({"success": success, "error": error, "description": description, "summary": summary})
+
+@staff_member_required
 def controlpanel_shapefiles(request):
 
     site = get_site(request)
@@ -2052,6 +2091,7 @@ def controlpanel_species(request, id=None):
         for each in info.texts.all():
             texts[each.language.id] = { 
                 "description": each.description, 
+                "description_wikipedia": each.description_wikipedia,
                 "name": each.common_name, 
                 "seed": each.propagation_seed, 
                 "cutting": each.propagation_cutting,

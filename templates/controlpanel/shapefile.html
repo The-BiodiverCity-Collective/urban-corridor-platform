@@ -4,16 +4,17 @@
 
 {% block content %}
 
-<div class="float-right relative" style="bottom:-10px">
-  <a class="mr-2 bg-gray-300 text-orange-700 p-1" href="{% url "controlpanel_shapefile" info.id %}"><i class="fa-regular fa-file"></i></a>
-  <a class="mr-2 p-1" href="{% url "controlpanel_shapefile_dataviz" info.id %}"><i class="fa fa-object-group"></i></a>
-  <a class="mr-2 p-1" href="{% url "controlpanel_shapefile_form" info.id %}"><i class="fa fa-pencil"></i></a>
-  <a class="p-1" href="{% url "map" info.id %}"><i class="fa fa-map"></i></a>
-</div>
-
 <h1 class="text-3xl">{% block title %}{{ info }}{% endblock %}</h1>
 
-<div class="grid grid-cols-2 gap-4">
+<div class="grid grid-cols-2 gap-4 relative">
+
+  <div class="float-right absolute" style="right: 0;top:-26px">
+    <a class="mr-2 bg-gray-300 text-orange-700 p-1" href="{% url "controlpanel_shapefile" info.id %}"><i class="fa-regular fa-file"></i></a>
+    <a class="mr-2 p-1" href="{% url "controlpanel_shapefile_dataviz" info.id %}"><i class="fa fa-object-group"></i></a>
+    <a class="mr-2 p-1" href="{% url "controlpanel_shapefile_form" info.id %}"><i class="fa fa-pencil"></i></a>
+    <a class="p-1" href="{% url "map" info.id %}"><i class="fa fa-map"></i></a>
+  </div>
+
   <div class="bg-gray-200 p-4">
 
     <h3>Files</h3>
