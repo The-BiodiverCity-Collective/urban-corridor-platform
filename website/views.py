@@ -17,6 +17,10 @@ from django.forms import modelform_factory
 from django.contrib.admin.views.decorators import staff_member_required
 from django.utils.translation import gettext_lazy as _
 
+# To annotate querysets with the SpeciesText info
+from django.db.models import OuterRef, Subquery, Value
+from django.db.models import CharField
+
 import zipfile
 from io import BytesIO
 import os
@@ -69,9 +73,12 @@ COLOR_SCHEMES = {
 # This fetches the site the user is on
 def get_site(request):
     try:
-        url = request.META.get("HTTP_HOST")
-        url = url.lower()
-        return Site.objects.get(url=url)
+        if request.COOKIES.get("site"):
+            return Site.objects.get(pk=request.COOKIES.get("site"))
+        else:
+            url = request.META.get("HTTP_HOST")
+            url = url.lower()
+            return Site.objects.get(url=url)
     except:
         return None
 
@@ -2000,7 +2007,26 @@ def controlpanel_specieslist(request):
         "title": _("Species list"),
         "load_datatables": True,
     }
-    return render(request, "controlpanel/specieslist.html", context)
+
+    description_subquery = SpeciesText.objects.filter(
+        species=OuterRef("pk"),
+        language=Language.objects.get(name="English")
+    ).values("description_wikipedia")[:1]  # Get the first matching description
+
+    description_subquery_en = SpeciesText.objects.filter(
+        species=OuterRef("pk"),
+        language=Language.objects.get(name="English")
+    ).values("description")[:1]  # Get the first matching description
+
+    if "descriptions" in request.GET:
+        context["languages"] = Language.objects.all()
+        context["species"] = species.annotate(
+            description_wikipedia = Subquery(description_subquery, output_field=CharField()),
+            description = Subquery(description_subquery_en, output_field=CharField())
+        )
+        return render(request, "controlpanel/speciesdescriptions.html", context)
+    else:
+        return render(request, "controlpanel/specieslist.html", context)
 
 # Used while we migrate from the old system
 # Can be removed after completing migrations

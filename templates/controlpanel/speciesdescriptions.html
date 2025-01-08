@@ -1,0 +1,107 @@
+{% extends "_base.html" %}
+
+{% block content %}
+
+<h1 class="text-3xl">Species list</h1>
+
+<button id="process-btn" class="btn-blue flex items-center">
+  <span id="btn-text">Get missing wikipedia info</span>
+  <svg id="loading-spinner" class="hidden w-4 h-4 animate-spin text-white ml-2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+    <circle cx="12" cy="12" r="10" stroke-width="4" stroke="currentColor" stroke-opacity="0.25"></circle>
+    <path fill="none" stroke="currentColor" stroke-width="4" d="M4 12a8 8 0 1 1 8 8"></path>
+  </svg>
+  <span id="pending-count" class="ml-2 hidden"></span>
+</button>
+
+<table class="table mb-5 datatable">
+  <thead>
+    <tr>
+      <th>{{ _("Name") }}</th>
+      <th>{{ _("Description") }}</th>
+      <th>Wikipedia</th>
+    </tr>
+  </thead>
+  <tbody>
+  {% for each in species %}
+    <tr class="{% if each.description_wikipedia %}has_wiki{% elif not each.meta_data.inat.wikipedia_url %}no_wiki{% endif %}">
+      <td><a href="{% url "controlpanel_species" each.id %}">{{ each.name }}</a></td>
+      <td>{% if each.description %}<i class="fa fa-check"></i>{% endif %}</td>
+      <td>
+        {% if each.description_wikipedia %}
+          <i class="fa fa-check"></i>
+        {% elif each.meta_data.inat.wikipedia_url %}
+          <i class="fa fa-minus-circle" data-id="{{ each.id }}"></i>
+        {% else %}
+          <i class="fa fa-close text-red-600"></i>
+        {% endif %}
+      </td>
+    </tr>
+  {% endfor %}
+  </tbody>
+</table>
+
+<a class="btn-add" href="{% url "controlpanel_species" %}">{{ _("Add species") }}</a>
+
+{% endblock %}
+
+{% block js %}
+  <script type="text/javascript">
+  $(function(){
+    $("#process-btn").click(function() {
+      $(".datatable").DataTable().destroy();
+      $(".datatable tr.has_wiki").hide();
+      $(".datatable tr.no_wiki").hide();
+      const $btn = $(this);
+      const $spinner = $("#loading-spinner");
+      const $btnText = $("#btn-text");
+      const $pendingCount = $("#pending-count");
+      const $icons = $(".fa-minus-circle");
+      let pendingCountValue = $icons.length;
+
+      // Show loading spinner and hide text
+      $btnText.addClass("hidden");
+      $spinner.removeClass("hidden");
+      $pendingCount.removeClass("hidden").text(pendingCountValue);
+
+      // Function to process each icon sequentially
+      function processNextIcon(index) {
+        if (index >= $icons.length) {
+          // All done
+          $spinner.addClass("hidden");
+          $btnText.removeClass("hidden");
+          return;
+        }
+
+        const $icon = $($icons[index]);
+        const dataId = $icon.data("id");
+
+        $icon.removeClass("fa-minus-circle").addClass("fa-spinner fa-spin text-amber-500");
+
+        $.ajax({
+          url: "/controlpanel/ajax/get_wikipedia/" + dataId + "/",
+          method: "GET",
+          success: function(response) {
+            if (response.success) {
+              $icon.removeClass("fa-spinner fa-spin text-amber-500").addClass("fa-check-circle text-lime-500");
+            } else {
+              $icon.removeClass("fa-spinner fa-spin text-amber-500").addClass("fa-times-circle text-red-500");
+            }
+          },
+          error: function() {
+            $icon.removeClass("fa-spinner fa-spin").addClass("fa-times-circle text-red-500");
+          },
+          complete: function() {
+            pendingCountValue--;
+            $pendingCount.text(pendingCountValue);
+            processNextIcon(index + 1); // Move to the next icon
+          }
+        });
+      }
+
+      // Start processing from the first icon
+      processNextIcon(0);
+    });
+
+  });
+  </script>
+{% endblock %}

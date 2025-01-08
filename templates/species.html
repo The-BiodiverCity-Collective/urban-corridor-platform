@@ -3,6 +3,59 @@
 
 {% block content %}
 
+<div class="bg-white">
+  <div class="mx-auto max-w-2xl px-4 py-16 sm:px-6 sm:py-24 lg:max-w-7xl lg:px-8">
+    <div class="lg:grid lg:grid-cols-2 lg:items-start lg:gap-x-8">
+      <div class="flex flex-col-reverse">
+        <div class="mx-auto mt-6 w-full max-w-2xl sm:block lg:max-w-none">
+          <div class="grid grid-cols-4 gap-6 gallery" aria-orientation="horizontal" role="tablist">
+
+            {% for each in photos %}
+              <button data-target="{{ each.large }}" id="tabs-1-tab-1" class="relative flex h-24 cursor-pointer items-center justify-center rounded-md bg-white text-sm font-medium uppercase text-gray-900 hover:bg-gray-50 focus:outline-none focus:ring focus:ring-sky-500/50 focus:ring-offset-4" aria-controls="tabs-1-panel-1" role="tab" type="button">
+                <span class="absolute inset-0 rounded-md">
+                  <img src="{{ each.thumbnail }}" alt="" class="size-full object-cover">
+                </span>
+                <span class="pointer-events-none absolute inset-0 rounded-md ring-2 {% if forloop.counter == 1 %}ring-sky-500{% else %}ring-transparent{% endif %} ring-offset-2" ></span>
+              </button>
+            {% endfor %}
+
+          </div>
+        </div>
+
+        <div>
+          <div id="headshot" aria-labelledby="headshot" tabindex="0">
+            <img src="{{ photos.0.large }}" alt="" class="aspect-square w-full object-cover sm:rounded-lg">
+          </div>
+        </div>
+      </div>
+
+      <div class="mt-10 px-4 sm:mt-16 sm:px-0 lg:mt-0">
+        <h1 class="text-3xl font-bold tracking-tight text-gray-900">{{ details.common_name }}</h1>
+
+        <div class="mt-3">
+          <h2 class="sr-only">Product information</h2>
+          <p class="text-3xl tracking-tight text-gray-900">{{ info }}</p>
+        </div>
+
+        <p class="mt-6 text-base/7 text-gray-600">
+          {% if details.description %}
+          {{ details.description|linebreaksbr }}
+          {% elif details.description_wikipedia %}
+            {% if details.summary_wikipedia %}
+              <strong>{{ details.summary_wikipedia|linebreaksbr }}</strong><br><br>
+            {% endif %}
+            {{ details.description_wikipedia|linebreaksbr }}
+          {% endif %}
+        </p>
+
+      </div>
+    </div>
+  </div>
+</div>
+
+
+
+
 <div class="overflow-hidden bg-white py-32">
   <div class="mx-auto max-w-7xl px-6 lg:flex lg:px-8">
     <div class="mx-auto grid max-w-2xl grid-cols-1 gap-x-12 gap-y-16 lg:mx-0 lg:min-w-full lg:max-w-none lg:flex-none lg:gap-y-8">
@@ -10,7 +63,14 @@
         <h2 class="text-4xl font-semibold tracking-tight text-gray-900 sm:text-5xl">{{ details.common_name }}</h2>
         <h3><em>{{ info }}</em></h3>
         <p class="mt-6 text-base/7 text-gray-600">
-          {{ details.description|truncatewords:100|linebreaksbr }}
+          {% if details.description %}
+          {{ details.description|linebreaksbr }}
+          {% elif details.description_wikipedia %}
+            {% if details.summary_wikipedia %}
+              <strong>{{ details.summary_wikipedia|linebreaksbr }}</strong><br><br>
+            {% endif %}
+            {{ details.description|linebreaksbr }}
+          {% endif %}
         </p>
         <div class="mt-10 flex">
           <h2>{{ _("More information") }}</h2>
@@ -150,4 +210,22 @@
   </a>
 {% endif %}
 
+{% endblock %}
+
+{% block js %}
+  <script type="text/javascript">
+  $(function(){
+
+    $(".gallery button").click(function(){
+      var url = $(this).data("target");
+      img = $("#headshot img");
+      thumbnail = $(this).find("img");
+      img.attr("src", thumbnail.attr("src")); // While the large image loads, we show the thumbnail (instantly as it's already shown on page)
+      img.attr("src", url);
+      $(".gallery button .ring-sky-500").removeClass("ring-sky-500").addClass("ring-transparent");
+      $(this).find(".ring-2").removeClass("ring-transparent").addClass("ring-sky-500");
+    });
+    
+  });
+  </script>
 {% endblock %}
