@@ -474,6 +474,13 @@ class ReferenceSpace(models.Model):
             return settings.MEDIA_URL + "/placeholder.jpg"
 
     @property
+    def thumbnail(self):
+        if self.photo:
+            return self.photo.image.medium.url
+        else:
+            return settings.MEDIA_URL + "/placeholder.jpg"
+
+    @property
     def suburb(self):
         if not self.geometry:
             return None
@@ -500,6 +507,7 @@ class ActiveRecordManager(models.Manager):
 class Garden(ReferenceSpace):
     is_active = models.BooleanField(default=True, db_index=True)
     original = models.JSONField(null=True, blank=True)
+    site = models.ForeignKey(Site, on_delete=models.CASCADE)
 
     class PhaseStatus(models.IntegerChoices):
         PENDING = 1, _("Pending")

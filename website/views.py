@@ -797,18 +797,24 @@ def species(request, id):
     return render(request, "species.html", context)
 
 def gardens(request):
-    gardens = Garden.objects.prefetch_related("organizations").filter(is_active=True)
-    inactive_gardens = None
-    if request.user.is_authenticated:
-        inactive_gardens = Garden.objects_unfiltered.filter(is_active=False)
+    site = get_site(request)
+    gardens = Garden.objects.prefetch_related("organizations").filter(is_active=True, site=site)
     context = {
-        "all": gardens,
-        #"page": Page.objects.get(pk=2),
-        #"load_map": True,
-        #"load_datatables": True,
-        "inactive_gardens": inactive_gardens,
+        "gardens": gardens,
+        "page": Page.objects.get(pk=2),
+        "load_datatables": True,
     }
-    return render(request, "gardens.html", context)
+    return render(request, "gardens/index.html", context)
+
+def gardens_map(request):
+    site = get_site(request)
+    gardens = Garden.objects.prefetch_related("organizations").filter(is_active=True, site=site)
+    context = {
+        "gardens": gardens,
+        "page": Page.objects.get(pk=2),
+        "load_map": True,
+    }
+    return render(request, "gardens/map.html", context)
 
 def garden(request, id):
     info = Garden.objects_unfiltered.get(pk=id)
@@ -861,7 +867,7 @@ def garden(request, id):
         "info": info,
         "photos": photos,
     }
-    return render(request, "garden.html", context)
+    return render(request, "gardens/garden.html", context)
 
 def garden_form(request, id=None, token=None, uuid=None):
 

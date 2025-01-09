@@ -1,0 +1,45 @@
+{% extends "_base.html" %}
+
+{% block css %}
+<style>
+  #map {
+    height: 80vh;
+    position: sticky !important;
+    top: 1rem;
+  }
+
+</style>
+{% endblock %}
+
+{% block content %}
+
+  <h1>{{ page }}</h1>
+  {{ page.get_content }}
+
+  <div class="border rounded bg-white shadow-sm p-3 d-inline-block mb-4">
+    <i class="fal fa-fw fa-info-circle me-1"></i> We currently have <strong>{{ all.count }}</strong> gardens in our network.
+  </div>
+
+  <div class="row mb-4">
+    <div class="col-lg-8">
+      <div id="map" class="rounded shadow-sm"></div>
+    </div>
+  </div>
+
+{% endblock %}
+
+{% block js %}
+<script type="text/javascript">
+
+  var geojsonlayer = L.geoJSON().addTo(map);
+  {% for each in gardens %}
+    {% if each.geometry %}
+    var garden_{{ each.id }} = {{ each.geometry.geojson|safe }};
+    var g_{{ each.id }} = L.geoJSON(garden_{{ each.id }}).addTo(map).bindPopup("{{ each.get_popup }}");
+    {% endif %}
+  {% endfor %}
+  var all_geojson = new L.featureGroup([{% for each in all %}{% if each.geometry %}g_{{ each.id }},{% endif %}{% endfor %}]);
+  map.fitBounds(all_geojson.getBounds());
+
+</script>
+{% endblock %}
