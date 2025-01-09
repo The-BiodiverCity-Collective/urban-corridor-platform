@@ -1,0 +1,26 @@
+{% extends "_base.html" %}
+
+{% block content %}
+
+<h1 class="text-3xl">{{ _("Gardens") }}</h1>
+
+<table class="table mb-5">
+  <thead>
+    <tr>
+      <th>{{ _("Name") }}</th>
+      <th>{{ _("Status") }}</th>
+    </tr>
+  </thead>
+  <tbody>
+  {% for each in gardens %}
+    <tr>
+      <td><a href="{% url "controlpanel_garden" each.id %}">{{ each.name }}</td>
+      <td>{{ each.is_active }}</td>
+    </tr>
+  {% endfor %}
+  </tbody>
+</table>
+
+<a class="btn-add" href="{% url "controlpanel_garden" %}"><i class="fa fa-plus"></i> {{ _("Add garden") }}</a>
+
+{% endblock %}

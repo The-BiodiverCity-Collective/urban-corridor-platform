@@ -30,6 +30,8 @@ import uuid
 import sys
 from django.core import serializers
 import wikipediaapi
+import xml.etree.ElementTree as ET
+from django.contrib.gis.geos import Polygon
 
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import authenticate, login, logout
@@ -81,6 +83,19 @@ def get_site(request):
             return Site.objects.get(url=url)
     except:
         return None
+
+# To show the corridor by blacking out everything that is NOT the corridor, we need to 
+# get the 'swapped around' coordinates and blacken those out. This function returns exactly that.
+def get_swapped_corridor_coords(site):
+    swapped_corridor_coords = None
+    if site.corridor:
+        corridor = ReferenceSpace.objects.filter(source=site.corridor)
+        if corridor:
+            corridor = corridor[0]
+            corridor = json.loads(corridor.geometry.geojson)
+            corridor = corridor["coordinates"][0]
+            swapped_corridor_coords = [[y, x] for x, y in corridor] # This is needed for the hole punching to work
+    return swapped_corridor_coords
 
 # For a default log entry where we take the user and url from request
 def log_action(request, action, name):
@@ -141,14 +156,6 @@ def map(request, id):
     info = get_object_or_404(Document, pk=id)
     site = get_site(request)
     spaces = info.spaces.all()
-
-    swapped_corridor_coords = None
-    corridor = ReferenceSpace.objects.filter(source=site.corridor)
-    if corridor:
-        corridor = corridor[0]
-        corridor = json.loads(corridor.geometry.geojson)
-        corridor = corridor["coordinates"][0]
-        swapped_corridor_coords = [[y, x] for x, y in corridor] # This is needed for the hole punching to work
 
     features = []
     if info.spaces.all().count() == 1:
@@ -262,7 +269,7 @@ def map(request, id):
         "colors": colors,
         "features": features,
         "mapstyle": properties.mapstyle if properties else None,
-        "swapped_corridor_coords": swapped_corridor_coords,
+        "swapped_corridor_coords": get_swapped_corridor_coords(site),
     }
 
     return render(request, "map.html", context)
@@ -360,14 +367,6 @@ def maps(request):
         if not hits[each]:
             parents.remove(each)
 
-    swapped_corridor_coords = None
-    corridor = ReferenceSpace.objects.filter(source=site.corridor)
-    if corridor:
-        corridor = corridor[0]
-        corridor = json.loads(corridor.geometry.geojson)
-        corridor = corridor["coordinates"][0]
-        swapped_corridor_coords = [[y, x] for x, y in corridor] # This is needed for the hole punching to work
-
     context = {
         "maps": documents,
         "load_map": True,
@@ -384,7 +383,7 @@ def maps(request):
             4: "map-marker",
             5: "info-circle",
         },
-        "swapped_corridor_coords": swapped_corridor_coords,
+        "swapped_corridor_coords": get_swapped_corridor_coords(site),
     }
     return render(request, "maps.html", context)
 
@@ -813,6 +812,8 @@ def gardens_map(request):
         "gardens": gardens,
         "page": Page.objects.get(pk=2),
         "load_map": True,
+        "mapstyle": MapStyle.objects.get(pk=3),
+        "swapped_corridor_coords": get_swapped_corridor_coords(site),
     }
     return render(request, "gardens/map.html", context)
 
@@ -1554,9 +1555,100 @@ def controlpanel(request):
     return render(request, "controlpanel/index.html", context)
 
 @staff_member_required
+def controlpanel_gardens(request):
+
+    site = get_site(request)
+    gardens = Garden.objects.filter(site=site)
+
+    context = {
+        "controlpanel": True,
+        "menu": "gardens",
+        "gardens": gardens,
+    }
+    return render(request, "controlpanel/gardens.html", context)
+
+@staff_member_required
+def controlpanel_garden(request, id=None):
+
+    info = Garden()
+    if id:
+        info = Garden.objects.get(pk=id)
+        action = Log.LogAction.UPDATE
+
+    site = get_site(request)
+    action = Log.LogAction.CREATE
+
+    if request.method == "POST":
+        info.name = request.POST["name"]
+        info.contact_name = request.POST.get("contact_name")
+        info.contact_email = request.POST.get("contact_email")
+        info.contact_phone = request.POST.get("contact_phone")
+        info.description = request.POST.get("description")
+        info.is_active = True if request.POST.get("is_active") == "1" else False
+        info.site = site
+
+        uploaded_file = request.FILES.get("file")
+        if uploaded_file:
+            info.location_file = uploaded_file
+
+        info.save()
+        log_action(request, action, f"Garden: {info.name}")
+
+        messages.success(request, _("Information was saved."))
+
+        if uploaded_file:
+            try:
+                location_file_path = info.location_file.path
+                directory = f"/tmp/kmz_extracted_{info.id}"
+                with zipfile.ZipFile(location_file_path, "r") as kmz:
+                    kmz.extractall(directory)
+
+                # Find the KML file in the extracted contents
+                kml_file_path = None
+                for file in os.listdir(directory):
+                    if file.endswith(".kml"):
+                        kml_file_path = os.path.join(directory, file)
+                        break
+
+                # Read the KML file and extract geometry
+                if kml_file_path:
+
+                    tree = ET.parse(kml_file_path)
+                    root = tree.getroot()
+
+                    # Extract coordinates from KML (assuming simple KML with <coordinates> tag)
+                    coordinates = root.findall('.//{http://www.opengis.net/kml/2.2}coordinates')[0].text.strip().split()
+
+                    # Convert to a list of tuples of coordinates
+                    coords = [(float(c.split(',')[0]), float(c.split(',')[1])) for c in coordinates]
+
+                    # Create geometry (assuming it's a polygon)
+                    polygon = Polygon(coords)
+
+                    # Save the geometry in the model
+                    info.geometry = polygon
+                    info.save()
+                else:
+                    messages.warning(request, _("No KML file found. Is this a valid KMZ file?"))
+
+            except Exception as e:
+
+                messages.warning(request, _("We were unable to save the coordinates, please make sure it is a valid KMZ file. Error:") + str(e))
+
+        return redirect(reverse("controlpanel_gardens"))
+
+    context = {
+        "controlpanel": True,
+        "menu": "gardens",
+        "info": info,
+    }
+    return render(request, "controlpanel/garden.html", context)
+
+@staff_member_required
 def controlpanel_documents(request):
 
-    documents = Document.objects.filter(is_shapefile=False)
+    site = get_site(request)
+    documents = Document.objects.filter(site=site, is_shapefile=False)
     if "type" in request.GET and request.GET["type"]:
         documents = documents.filter(doc_type=request.GET["type"])
 

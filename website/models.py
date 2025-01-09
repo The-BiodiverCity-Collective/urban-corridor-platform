@@ -509,6 +509,10 @@ class Garden(ReferenceSpace):
     original = models.JSONField(null=True, blank=True)
     site = models.ForeignKey(Site, on_delete=models.CASCADE)
 
+    contact_name = models.CharField(max_length=255, null=True)
+    contact_phone = models.CharField(max_length=255, null=True)
+    contact_email = models.CharField(max_length=255, null=True)
+
     class PhaseStatus(models.IntegerChoices):
         PENDING = 1, _("Pending")
         IN_PROGRESS = 2, _("In progress")
@@ -524,6 +528,7 @@ class Garden(ReferenceSpace):
     organizations = models.ManyToManyField(Organization, blank=True)
     vegetation_type = models.ForeignKey("VegetationType", on_delete=models.CASCADE, null=True, blank=True, related_name="gardens")
     uuid = models.UUIDField(default=uuid.uuid4, editable=False, null=True, blank=True)
+    location_file = models.FileField(upload_to="gardenlocations", null=True)
 
     objects = ActiveRecordManager()
     objects_unfiltered = models.Manager()

@@ -20,11 +20,13 @@
     <i class="fal fa-fw fa-info-circle me-1"></i> We currently have <strong>{{ all.count }}</strong> gardens in our network.
   </div>
 
-  <div class="row mb-4">
-    <div class="col-lg-8">
-      <div id="map" class="rounded shadow-sm"></div>
-    </div>
+  <div>
+    <div id="map" class="rounded shadow-sm"></div>
   </div>
+
+  {% if not request.GET.area %}
+    <a href="?area=true">Show area</a>
+  {% endif %}
 
 {% endblock %}
 
@@ -34,7 +36,11 @@
   var geojsonlayer = L.geoJSON().addTo(map);
   {% for each in gardens %}
     {% if each.geometry %}
-    var garden_{{ each.id }} = {{ each.geometry.geojson|safe }};
+      {% if request.GET.area %}
+        var garden_{{ each.id }} = {{ each.geometry.geojson|safe }};
+      {% else %}
+        var garden_{{ each.id }} = {{ each.geometry.centroid.geojson|safe }};
+      {% endif %}
     var g_{{ each.id }} = L.geoJSON(garden_{{ each.id }}).addTo(map).bindPopup("{{ each.get_popup }}");
     {% endif %}
   {% endfor %}

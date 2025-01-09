@@ -32,7 +32,18 @@
 
   <script type="text/javascript">
   $(function(){
-    $("#mobile-menu").hide();
+    $("textarea").each(function() {
+      if (!$(this).hasClass("no-resize")) {
+        var contentHeight = this.scrollHeight;
+
+        if (contentHeight > 150) {
+          var newHeight = contentHeight > window.innerHeight ? Math.min(contentHeight, window.innerHeight) : contentHeight;
+          $(this).height(newHeight > 100 ? newHeight : 150);
+        } else {
+          $(this).height(150);
+        }
+      }
+    });
   });
   </script>
 
