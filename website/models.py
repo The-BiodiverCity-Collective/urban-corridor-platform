@@ -885,7 +885,6 @@ class SpeciesVegetationTypeLink(models.Model):
     file = models.ForeignKey(Attachment, on_delete=models.CASCADE)
 
 class Photo(models.Model):
-    name = models.CharField(max_length=255, db_index=True, null=True, blank=True)
     description = models.TextField(null=True, blank=True)
     image = StdImageField(upload_to="photos", variations={"thumbnail": (350, 350), "medium": (800, 600), "large": (1280, 1024)}, delete_orphans=True, null=True, blank=True)
     image_inat = models.JSONField(null=True, blank=True) #Dictionary with large_/small_/medium_/original_/square_url values
@@ -898,14 +897,14 @@ class Photo(models.Model):
     species = models.ForeignKey(Species, on_delete=models.CASCADE, null=True, blank=True, related_name="photos")
 
     LICENSE_CHOICES = [
-        ("cc0", "Creative Commons Zero (CC0)"),
-        ("cc-by", "Creative Commons Attribution (CC BY)"),
-        ("cc-by-sa", "Creative Commons Attribution-ShareAlike (CC BY-SA)"),
-        ("cc-by-nc", "Creative Commons Attribution-NonCommercial (CC BY-NC)"),
-        ("cc-by-nc-sa", "Creative Commons Attribution-NonCommercial-ShareAlike (CC BY-NC-SA)"),
-        ("cc-by-nc-nd", "Creative Commons Attribution-NonCommercial-NoDerivs (CC BY-NC-ND)"),
-        ("cc-by-nd", "Creative Commons Attribution-NoDerivs (CC BY-ND)"),
-        ("all-rights-reserved", "All Rights Reserved"),
+        ("cc0", _("Creative Commons Zero (CC0)")),
+        ("cc-by", _("Creative Commons Attribution (CC BY)")),
+        ("cc-by-sa", _("Creative Commons Attribution-ShareAlike (CC BY-SA)")),
+        ("cc-by-nc", _("Creative Commons Attribution-NonCommercial (CC BY-NC)")),
+        ("cc-by-nc-sa", _("Creative Commons Attribution-NonCommercial-ShareAlike (CC BY-NC-SA)")),
+        ("cc-by-nc-nd", _("Creative Commons Attribution-NonCommercial-NoDerivs (CC BY-NC-ND)")),
+        ("cc-by-nd", _("Creative Commons Attribution-NoDerivs (CC BY-ND)")),
+        ("all-rights-reserved", _("All Rights Reserved")),
     ]
     license_code = models.CharField(max_length=20, choices=LICENSE_CHOICES, null=True, blank=True)
 
@@ -916,10 +915,7 @@ class Photo(models.Model):
     source = models.CharField(max_length=11, choices=SOURCE_CHOICES)
 
     def __str__(self):
-        if self.name:
-            return self.name
-        else:
-            return f"Photo {self.id}"
+        return f"Photo {self.id}"
 
     @property
     def thumbnail(self):

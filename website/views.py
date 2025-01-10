@@ -9,7 +9,7 @@ from django.utils.safestring import mark_safe
 import folium
 from folium.plugins import Fullscreen
 import random
-from django.db.models import Q, Count
+from django.db.models import Q, Count, Max
 from django.contrib.gis import geos
 from django.contrib.gis.measure import D
 from django.core.paginator import Paginator
@@ -20,6 +20,10 @@ from django.utils.translation import gettext_lazy as _
 # To annotate querysets with the SpeciesText info
 from django.db.models import OuterRef, Subquery, Value
 from django.db.models import CharField
+
+from PIL import Image
+from PIL.ExifTags import TAGS, GPSTAGS
+import io
 
 import zipfile
 from io import BytesIO
@@ -1641,8 +1645,61 @@ def controlpanel_garden(request, id=None):
         "controlpanel": True,
         "menu": "gardens",
         "info": info,
+        "title": _("Edit garden") + ": " + info.name if info.id else _("Add garden"),
     }
     return render(request, "controlpanel/garden.html", context)
+
+@staff_member_required
+def controlpanel_garden_photos(request, id):
+
+    info = Garden.objects.get(pk=id)
+    position = Photo.objects.filter(garden=info).aggregate(Max("position"))["position__max"]
+    if not position:
+        position = 0
+
+    if request.method == "POST":
+        for each in request.FILES.getlist("photos"):
+            position += 1
+            # Try to get the date from the EXIF data
+            image_file = each.read()
+            image = Image.open(io.BytesIO(image_file))
+            exif_data = image._getexif()
+            if exif_data:
+                for tag_id, value in exif_data.items():
+                    tag = TAGS.get(tag_id, tag_id)
+                    if tag == "DateTimeOriginal":
+                        # Convert the EXIF date string to a datetime object
+                        try:
+                            photo_date = timezone.datetime.strptime(value, "%Y:%m:%d %H:%M:%S")
+                        except ValueError:
+                            photo_date = timezone.now()  # Fallback to today's date if parsing fails
+                            messages.warning(request, f"Photo date was not found for {each.name} - using today's date. Please change if needed.")
+
+            else:
+                photo_date = timezone.now()
+                messages.warning(request, f"Photo date was not found for {each.name} - using today's date. Please change if needed.")
+
+            Photo.objects.create(
+                author = request.POST["author"],
+                description = request.POST.get("description"),
+                image = each,
+                position = position,
+                garden = info,
+                source = "upload",
+                license_code = request.POST["license"],
+            )
+
+        messages.success(request, _("Photos have been added."))
+        return redirect(request.get_full_path())
+
+    context = {
+        "controlpanel": True,
+        "menu": "gardens",
+        "info": info,
+        "title": _("Edit photos") + ": " + info.name,
+        "licenses": Photo.LICENSE_CHOICES,
+    }
+    return render(request, "controlpanel/garden.photos.html", context)
 
 @staff_member_required
 def controlpanel_documents(request):

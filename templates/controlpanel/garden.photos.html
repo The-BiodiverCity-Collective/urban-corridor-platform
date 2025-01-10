@@ -1,0 +1,102 @@
+{% extends "_base.html" %}
+
+{% block content %}
+
+<h1 class="text-3xl">{% block title %}{% if info.id %}{{ _("Edit garden") }}: {{ info }}{% else %}{{ _("Add garden") }}{% endif %}{% endblock %}</h1>
+
+<form method="post" enctype="multipart/form-data" class="bg-gray-100 py-10 relative">
+
+    {% if info.photos.all %}
+      <div class="grid grid-cols-12 gap-2 mb-6">
+        {% for each in info.photos.all %}
+          <div class="overflow-hidden rounded-lg shadow-lg aspect-w-16 aspect-h-9">
+            <img src="{{ each.thumbnail }}" alt="" class="object-cover w-full h-full" />
+          </div>
+        {% endfor %}
+      </div>
+    {% endif %}
+
+  <div class="mt-10 flex items-center justify-center">
+
+    {% if info.id %}
+      <div class="float-right absolute" style="top:-26px;right:0">
+        <a class="mr-2 p-1" href="{% url "controlpanel_garden" info.id %}"><i class="fa fa-pencil"></i></a>
+        <a class="mr-2 p-1 bg-gray-100 text-orange-700" href="{% url "controlpanel_garden_photos" info.id %}"><i class="fa fa-image"></i></a>
+        <a class="p-1" href="{% url "garden" info.id %}"><i class="fa-regular fa-file"></i></a>
+      </div>
+    {% endif %}
+
+    <div class="space-y-12" style="max-width:500px">
+
+      <div class="border-b border-gray-900/10 pb-12">
+
+        <h2 class="text-base/7 font-semibold text-gray-900">{{ _("Photos") }}</h2>
+
+        <div class="grid grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6 mt-10">
+
+          <div class="sm:col-span-3">
+            <label for="author" class="block text-sm/6 font-medium text-gray-900">{{ _("Photographer") }}</label>
+            <div class="mt-2">
+              <input type="text" name="author" id="author" class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-sky-600 sm:text-sm/6" value="{{ info.author|default_if_none:"" }}" required>
+            </div>
+          </div>
+
+          <div class="sm:col-span-3">
+            <label for="license" class="block text-sm/6 font-medium text-gray-900">{{ _("License") }}</label>
+            <div class="mt-2">
+              <select id="license" name="license" class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-sky-600 sm:max-w-xs sm:text-sm/6" required>
+                <option value=""></option>
+                {% for key,value in licenses %}
+                  <option {% if key == info.license %}selected{% endif %} value="{{ key }}">{{ value }}</option>
+                {% endfor %}
+              </select>
+            </div>
+          </div>
+
+          <div class="sm:col-span-4">
+            <label for="file" class="block text-sm/6 font-medium text-gray-900">{{ _("File(s)") }}</label>
+            <div class="mt-2">
+              <input id="file" name="photos" type="file" class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-sky-600 sm:text-sm/6" multiple accept=".jpg, .jpeg" required>
+            </div>
+          </div>
+
+          {% if info.files %}
+            <div class="col-span-full">
+              <label for="cover-photo" class="block text-sm/6 font-medium text-gray-900">{{ _("File") }}</label>
+              <div class="mt-2 flex rounded-lg border border-dashed border-gray-900/25 px-6 py-10">
+                <ul>
+                    <li class="mb-5">
+                      <i class="fa-fw fa fa-{{ info.location_file.get_icon }}"></i>
+                      <a href="{{ info.location_file.file.url }}">
+                      {{ info.location_file }}
+                      </a>
+                      <span class="text-xs/5 text-gray-600">
+                        ({{ info.location_file.file.size|filesizeformat }})
+                      </span>
+                  </li>
+                </ul>
+              </div>
+            </div>
+          {% endif %}
+
+          <div class="col-span-full">
+            <label for="description" class="block text-sm/6 font-medium text-gray-900">{{ _("Description") }}</label>
+            <div class="mt-2">
+              <textarea name="description" id="description" class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-sky-600 sm:text-sm/6">{{ info.description|default_if_none:"" }}</textarea>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+    <div class="mt-6 flex items-center justify-end gap-x-6">
+      <button type="submit" class="px-4 py-2 bg-lime-600 hover:bg-lime-700 text-white font-bold rounded-md focus:outline-none focus:ring focus:ring-lime-300">
+        {{ _("Save") }}
+      </button>
+    </div>
+    {% csrf_token %}
+
+  </div>
+</form>
+
+{% endblock %}
