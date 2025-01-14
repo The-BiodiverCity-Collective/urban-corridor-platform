@@ -1,0 +1,86 @@
+{% extends "_base.html" %}
+
+{% block content %}
+
+<form method="post" class="float-right">
+  <button onclick="javascript:return confirm('Are you sure?')" type="submit" class="btn-danger"><i class="fa fa-trash fa-fw"></i> {{ _("Delete photo") }}</button>
+  <input type="hidden" name="delete" value="true" />
+  {% csrf_token %}
+</form>
+
+<div class="mx-auto max-w-4xl">
+  <h1 class="text-3xl">{{ _("Photo") }} #{{ info.id }}</h1>
+
+  <img src="{{ info.medium }}">
+
+  <div class="mt-6 border-t border-gray-100">
+    <dl class="divide-y divide-gray-100">
+      <div class="px-4 py-3 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-0">
+        <dt class="text-sm/6 font-bold text-gray-900">{{ _("ID") }}</dt>
+        <dd class="mt-1 text-sm/6 text-gray-700 sm:col-span-2 sm:mt-0">{{ info.id }}</dd>
+      </div>
+      <div class="px-4 py-3 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-0">
+        <dt class="text-sm/6 font-bold text-gray-900">{{ _("Garden") }}</dt>
+        <dd class="mt-1 text-sm/6 text-gray-700 sm:col-span-2 sm:mt-0">{{ info.garden }}</dd>
+      </div>
+      <div class="px-4 py-3 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-0">
+        <dt class="text-sm/6 font-bold text-gray-900">{{ _("Upload date") }}</dt>
+        <dd class="mt-1 text-sm/6 text-gray-700 sm:col-span-2 sm:mt-0">{{ info.upload_date|date:"M d, Y" }}</dd>
+      </div>
+      <div class="px-4 py-3 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-0">
+        <dt class="text-sm/6 font-bold text-gray-900">{{ _("Date") }}</dt>
+        <dd class="mt-1 text-sm/6 text-gray-700 sm:col-span-2 sm:mt-0">{{ info.date }}</dd>
+      </div>
+      <div class="px-4 py-3 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-0">
+        <dt class="text-sm/6 font-bold text-gray-900">{{ _("Source") }}</dt>
+        <dd class="mt-1 text-sm/6 text-gray-700 sm:col-span-2 sm:mt-0">{{ info.source }}</dd>
+      </div>
+    </dl>
+  </div>
+
+  <form method="post" class="space-y-12 bg-gray-100 p-10 mt-10">
+    <div class="sm:col-span-3">
+      <label for="author" class="block text-sm/6 font-medium text-gray-900">{{ _("Photographer") }}</label>
+      <div class="mt-2">
+        <input type="text" name="author" id="author" class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-sky-600 sm:text-sm/6" value="{{ info.author|default_if_none:"" }}" required>
+      </div>
+    </div>
+
+    <div class="sm:col-span-3">
+      <label for="position" class="block text-sm/6 font-medium text-gray-900">{{ _("Position") }}</label>
+      <div class="mt-2">
+        <input type="text" name="position" id="position" class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-sky-600 sm:text-sm/6" value="{{ info.position|default_if_none:"" }}" required>
+      </div>
+    </div>
+
+    <div class="sm:col-span-3">
+      <label for="license" class="block text-sm/6 font-medium text-gray-900">{{ _("License") }}</label>
+      <div class="mt-2">
+        <select id="license" name="license" class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-sky-600 sm:max-w-xs sm:text-sm/6" required>
+          <option value=""></option>
+          {% for key,value in licenses %}
+            <option {% if key == info.license_code %}selected{% endif %} value="{{ key }}">{{ value }}</option>
+          {% endfor %}
+        </select>
+      </div>
+    </div>
+
+    <div class="col-span-full">
+      <label for="description" class="block text-sm/6 font-medium text-gray-900">{{ _("Description") }}</label>
+      <div class="mt-2">
+        <textarea name="description" id="description" class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-sky-600 sm:text-sm/6">{{ info.description|default_if_none:"" }}</textarea>
+      </div>
+    </div>
+
+      <div class="mt-6 flex items-center justify-end gap-x-6">
+        <button type="submit" class="px-4 py-2 bg-lime-600 hover:bg-lime-700 text-white font-bold rounded-md focus:outline-none focus:ring focus:ring-lime-300">
+          {{ _("Save") }}
+        </button>
+      </div>
+
+    {% csrf_token %}
+  </form>
+
+</div>
+
+{% endblock %}

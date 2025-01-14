@@ -1683,6 +1683,7 @@ def controlpanel_garden_photos(request, id):
                 author = request.POST["author"],
                 description = request.POST.get("description"),
                 image = each,
+                date = photo_date,
                 position = position,
                 garden = info,
                 source = "upload",
@@ -1700,6 +1701,34 @@ def controlpanel_garden_photos(request, id):
         "licenses": Photo.LICENSE_CHOICES,
     }
     return render(request, "controlpanel/garden.photos.html", context)
+
+@staff_member_required
+def controlpanel_garden_photo(request, garden, id):
+    site = get_site(request)
+    info = Photo.objects.get(pk=id, garden__site=site)
+
+    if "delete" in request.POST:
+        url = reverse("controlpanel_garden_photos", args=[info.garden.id])
+        log_action(request, Log.LogAction.DELETE, f"Photo #{info.id}")
+        info.delete()
+        messages.success(request, _("The photo was deleted"))
+        return redirect(url)
+    elif request.method == "POST":
+        info.description = request.POST.get("description")
+        info.author = request.POST.get("author")
+        info.position = request.POST.get("position")
+        info.license_code = request.POST["license"]
+        info.save()
+        messages.success(request, _("The information was saved."))
+        log_action(request, Log.LogAction.UPDATE, f"Photo #{info.id}")
+
+    context = {
+        "info": info,
+        "licenses": Photo.LICENSE_CHOICES,
+        "controlpanel": True,
+        "menu": "gardens",
+    }
+    return render(request, "controlpanel/photo.html", context)
 
 @staff_member_required
 def controlpanel_documents(request):

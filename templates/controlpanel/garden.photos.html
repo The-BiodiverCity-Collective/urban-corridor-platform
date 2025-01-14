@@ -10,7 +10,7 @@
       <div class="grid grid-cols-12 gap-2 mb-6">
         {% for each in info.photos.all %}
           <div class="overflow-hidden rounded-lg shadow-lg aspect-w-16 aspect-h-9">
-            <img src="{{ each.thumbnail }}" alt="" class="object-cover w-full h-full" />
+            <a href="{% url "controlpanel_garden_photo" info.id each.id %}"><img src="{{ each.thumbnail }}" alt="" class="object-cover w-full h-full" /></a>
           </div>
         {% endfor %}
       </div>

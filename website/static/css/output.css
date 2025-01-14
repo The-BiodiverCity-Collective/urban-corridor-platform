@@ -1491,6 +1491,15 @@ main .tab.inactive:hover {
   margin-top: calc(2rem * calc(1 - var(--tw-space-y-reverse)));
   margin-bottom: calc(2rem * var(--tw-space-y-reverse));
 }
+.divide-y > :not([hidden]) ~ :not([hidden]) {
+  --tw-divide-y-reverse: 0;
+  border-top-width: calc(1px * calc(1 - var(--tw-divide-y-reverse)));
+  border-bottom-width: calc(1px * var(--tw-divide-y-reverse));
+}
+.divide-gray-100 > :not([hidden]) ~ :not([hidden]) {
+  --tw-divide-opacity: 1;
+  border-color: rgb(243 244 246 / var(--tw-divide-opacity, 1));
+}
 .self-end {
   align-self: flex-end;
 }
@@ -1553,6 +1562,9 @@ main .tab.inactive:hover {
 .border-l-4 {
   border-left-width: 4px;
 }
+.border-t {
+  border-top-width: 1px;
+}
 .border-t-4 {
   border-top-width: 4px;
 }
@@ -1565,6 +1577,10 @@ main .tab.inactive:hover {
 .border-amber-500 {
   --tw-border-opacity: 1;
   border-color: rgb(245 158 11 / var(--tw-border-opacity, 1));
+}
+.border-gray-100 {
+  --tw-border-opacity: 1;
+  border-color: rgb(243 244 246 / var(--tw-border-opacity, 1));
 }
 .border-gray-200 {
   --tw-border-opacity: 1;
@@ -2732,6 +2748,10 @@ dl.dl-horizontal dd {
     z-index: -10;
   }
 
+  .sm\:col-span-2 {
+    grid-column: span 2 / span 2;
+  }
+
   .sm\:col-span-3 {
     grid-column: span 3 / span 3;
   }
@@ -2757,6 +2777,10 @@ dl.dl-horizontal dd {
     margin-right: 2.5rem;
   }
 
+  .sm\:mt-0 {
+    margin-top: 0px;
+  }
+
   .sm\:mt-16 {
     margin-top: 4rem;
   }
@@ -2767,6 +2791,10 @@ dl.dl-horizontal dd {
 
   .sm\:block {
     display: block;
+  }
+
+  .sm\:grid {
+    display: grid;
   }
 
   .sm\:aspect-video {
@@ -2849,6 +2877,10 @@ dl.dl-horizontal dd {
 
   .sm\:justify-start {
     justify-content: flex-start;
+  }
+
+  .sm\:gap-4 {
+    gap: 1rem;
   }
 
   .sm\:gap-8 {
