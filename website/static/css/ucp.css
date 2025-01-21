@@ -200,7 +200,7 @@ dl.dl-horizontal dd {
   }
 
   .alert {
-    @apply p-4 border mb-2;
+    @apply p-4 border mb-2 rounded;
   }
   .alert-icon {
     @apply flex items-center p-4 border;

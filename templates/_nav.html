@@ -44,7 +44,7 @@
     <div class="mx-auto grid max-w-7xl grid-cols-1 gap-x-8 gap-y-10 px-6 py-10 lg:grid-cols-2 lg:px-8">
       <div class="grid grid-cols-2 gap-x-6 sm:gap-x-8">
         <div>
-          <h3 class="text-sm/6 font-medium text-gray-500">View collections</h3>
+          <h3 class="text-sm/6 font-medium text-gray-500">View plant collections</h3>
           <div class="mt-6 flow-root">
             <div class="-my-2">
               <a href="/species/" class="flex gap-x-4 py-2 text-sm/6 font-semibold text-gray-900">
@@ -76,7 +76,7 @@
         </div>
         <div>
           <h3 class="text-sm/6 font-medium text-gray-500">{{ _("Animal-friendly plants") }}</h3>
-          <div class="mt-6 flow-root">
+          <div class="mt-6 mb-6 flow-root">
             <div class="-my-2">
               <a href="/species/" class="flex gap-x-4 py-2 text-sm/6 font-semibold text-gray-900">
                 <i class="fa fa-feather fa-fw text-lg text-gray-400 mr-1"></i>
@@ -89,6 +89,15 @@
               <a href="/species/" class="flex gap-x-4 py-2 text-sm/6 font-semibold text-gray-900">
                 <i class="fa fa-feather fa-fw text-lg text-gray-400 mr-1"></i>
                 For genets
+              </a>
+            </div>
+          </div>
+          <h3 class="text-sm/6 font-medium text-gray-500">{{ _("Additional info") }}</h3>
+          <div class="mt-6 flow-root">
+            <div class="-my-2">
+              <a href="{% url "species_sources" %}" class="flex gap-x-4 py-2 text-sm/6 font-semibold text-gray-900">
+                <i class="fa fa-feather fa-fw text-lg text-gray-400 mr-1"></i>
+                {{ _("Source documents") }}
               </a>
             </div>
           </div>

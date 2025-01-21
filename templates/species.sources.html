@@ -1,0 +1,10 @@
+{% extends "_base.html" %}
+
+{% block content %}
+  <h1>{{ _("Species sources") }}</h1>
+  <ul class="list-disc ml-4">
+    {% for each in documents %}
+      <li><a href="{% url "species_source" each.id %}">{{ each }}</a></li>
+    {% endfor %}
+  </ul>
+{% endblock %}

@@ -15,9 +15,12 @@
   <tbody>
   {% for each in documents %}
     <tr>
-      <td>{{ each.name }}</td>
+      <td><a class="btn btn-info" href="{% url "controlpanel_document" each.id %}">{{ each }}</a></td>
       <td>{{ each.get_doc_type_display }}</td>
-      <td><a class="btn btn-info" href="{% url "controlpanel_document" each.id %}"><i class="fa fa-pencil"></i> Edit</a></td>
+      <td>
+        <a class="btn btn-info" href="{% url "controlpanel_document" each.id %}"><i class="fa fa-pencil"></i> Edit</a>
+        <a class="btn btn-info" href="{% url "species_source" each.id %}"><i class="fa fa-file"></i> View</a>
+      </td>
     </tr>
   {% endfor %}
   </tbody>

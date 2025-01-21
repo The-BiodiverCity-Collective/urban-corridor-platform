@@ -130,6 +130,7 @@ class Document(models.Model):
     is_shapefile = models.BooleanField(default=True, db_index=True)
     include_in_site_analysis = models.BooleanField(default=False, db_index=True)
     site = models.ForeignKey(Site, on_delete=models.CASCADE, null=True, blank=True, related_name="documents")
+    cover_image = StdImageField(upload_to="covers", variations={"thumbnail": (300, 300), "medium": (700, 700)}, delete_orphans=True, null=True)
 
     temp_file = models.CharField(max_length=255, null=True, blank=True)
 
@@ -880,9 +881,9 @@ class SpeciesText(models.Model):
     propagation_cutting = models.TextField(null=True, blank=True)
 
 class SpeciesVegetationTypeLink(models.Model):
-    species = models.ForeignKey(Species, on_delete=models.CASCADE)
+    species = models.ForeignKey(Species, on_delete=models.CASCADE, related_name="species_links")
     vegetation_type = models.ForeignKey(VegetationType, on_delete=models.CASCADE)
-    file = models.ForeignKey(Attachment, on_delete=models.CASCADE)
+    file = models.ForeignKey(Attachment, on_delete=models.CASCADE, related_name="species")
 
 class Photo(models.Model):
     description = models.TextField(null=True, blank=True)

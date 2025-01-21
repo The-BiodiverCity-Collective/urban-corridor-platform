@@ -1,0 +1,41 @@
+{% extends "_base.html" %}
+{% load i18n %}
+
+{% block content %}
+
+<div class="mx-auto mt-16 grid max-w-2xl grid-cols-1 gap-x-8 gap-y-16 lg:mx-0 lg:mt-10 lg:max-w-none lg:grid-cols-12">
+        <div class="relative lg:order-last lg:col-span-5">
+          <figure class="border-l border-sky-800 pl-8">
+            <figcaption class="mt-8 flex gap-x-4">
+      <img src="{{ info.cover_image.thumbnail.url }}" class="rounded-2xl float-right" />
+            </figcaption>
+            <blockquote class="text-xl/8 font-semibold tracking-tight text-gray-900 mt-4">
+              <p>
+                {{ info.author }}<br>
+                <a href="{{ info.url }}"><i class="fa fa-link"></i> Website</a>
+              </p>
+            </blockquote>
+          </figure>
+        </div>
+        <div class="max-w-xl text-base/7 text-gray-700 lg:col-span-7">
+    <p class="text-base/7 font-semibold text-sky-600">{{ _("Species source document") }}</p>
+      <h1>{{ info }}</h1>
+      {{ info.description|linebreaksbr }}
+        </div>
+      </div>
+
+
+  {% if species_list %}
+    <h2 class="mt-8">{{ _("Linked species") }}</h2>
+    <div class="alert alert-info">
+      <i class="fa fa-info-circle mr-4"></i>
+
+    {% blocktrans with count=species_list.count %}
+      The following <strong>{{ count }}</strong> species were imported from this document.
+    {% endblocktrans %}
+
+    </div>
+    {% include "_species.list.html" %}
+  {% endif %}
+
+{% endblock %}

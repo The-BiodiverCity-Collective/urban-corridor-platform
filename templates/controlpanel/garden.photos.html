@@ -6,15 +6,15 @@
 
 <form method="post" enctype="multipart/form-data" class="bg-gray-100 py-10 relative">
 
-    {% if info.photos.all %}
-      <div class="grid grid-cols-12 gap-2 mb-6">
-        {% for each in info.photos.all %}
-          <div class="overflow-hidden rounded-lg shadow-lg aspect-w-16 aspect-h-9">
-            <a href="{% url "controlpanel_garden_photo" info.id each.id %}"><img src="{{ each.thumbnail }}" alt="" class="object-cover w-full h-full" /></a>
-          </div>
-        {% endfor %}
-      </div>
-    {% endif %}
+  {% if info.photos.all %}
+    <div class="grid grid-cols-12 gap-2 mb-6">
+      {% for each in info.photos.all %}
+        <div class="overflow-hidden rounded-lg shadow-lg aspect-w-16 aspect-h-9">
+          <a href="{% url "controlpanel_garden_photo" info.id each.id %}"><img src="{{ each.thumbnail }}" alt="" class="object-cover w-full h-full" /></a>
+        </div>
+      {% endfor %}
+    </div>
+  {% endif %}
 
   <div class="mt-10 flex items-center justify-center">
 
@@ -82,7 +82,7 @@
           <div class="col-span-full">
             <label for="description" class="block text-sm/6 font-medium text-gray-900">{{ _("Description") }}</label>
             <div class="mt-2">
-              <textarea name="description" id="description" class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-sky-600 sm:text-sm/6">{{ info.description|default_if_none:"" }}</textarea>
+              <textarea name="description" id="description" class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-sky-600 sm:text-sm/6"></textarea>
             </div>
           </div>
 

@@ -799,6 +799,30 @@ def species(request, id):
 
     return render(request, "species.html", context)
 
+def species_sources(request):
+    site = get_site(request)
+    
+    context = {
+        "menu": "species",
+        "documents": Document.objects.filter(site=site, doc_type="SPECIES_LIST"),
+        "title": _("Species source document"),
+    }
+    return render(request, "species.sources.html", context)
+
+def species_source(request, id):
+    site = get_site(request)
+    info = Document.objects.get(site=site, doc_type="SPECIES_LIST", pk=id)
+    species = Species.objects.filter(species_links__file__attached_to=info)
+
+    context = {
+        "menu": "species",
+        "info": info,
+        "species_list": species,
+        "title": info.name,
+    }
+
+    return render(request, "species.source.html", context)
+
 def gardens(request):
     site = get_site(request)
     gardens = Garden.objects.prefetch_related("organizations").filter(is_active=True, site=site)
@@ -1765,8 +1789,11 @@ def controlpanel_document(request, id=None):
         info.is_active = True if request.POST.get("is_active") == "1" else False
         info.is_shapefile = False
         info.site = site
+        if request.FILES.get("cover"):
+            info.cover_image = request.FILES.get("cover")
         info.save()
         log_action(request, action, f"Document: {info.name}")
+
 
         uploaded_files = request.FILES.getlist("file")
 
@@ -2179,7 +2206,7 @@ def controlpanel_specieslist(request):
     site = get_site(request)
     species = Species.objects.filter(site=site)
     if "file" in request.GET:
-        species = species.filter(speciesvegetationtypelink__file_id=request.GET["file"])
+        species = species.filter(species_links__file_id=request.GET["file"])
     elif "site" in request.GET:
         site = Site.objects.get(pk=request.GET["site"])
         species = species.filter(site=site)
