@@ -919,6 +919,10 @@ class Photo(models.Model):
         return f"Photo {self.id}"
 
     @property
+    def credit(self):
+        return self.author
+
+    @property
     def thumbnail(self):
         if self.source == "inaturalist":
             return self.image_inat["small_url"]
