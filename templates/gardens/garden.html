@@ -14,154 +14,160 @@
 
 {% block content %}
 
-  <h1>{% block title %}{{ info }}{% endblock %}</h1>
-  <a href="{% url "gardens" %}">&laquo; Back to stepping-stone garden network</a>
-
-  {% if not info.is_active %}
-    <div class="alert alert-warning">
-      <i class="fa fa-info-circle"></i>
-      Please note: this garden is not yet publicly active. You can review and edit this garden before activating.
-      <form method="post">
-        <button type="submit" name="activate" value="true" class="btn btn-success mt-3">Activate this garden</button>
-        {% csrf_token %}
-      </form>
-    </div>
-  {% endif %}
-
-  <div class="row my-4">
-    <div class="col-6">
-
-      <img src="{{ info.get_photo_medium }}" alt="" class="rounded shadow-sm main-image" />
-
-      {% if info.meta_data.original.image_credit %}
-        <em>Image: <a href="{{ info.meta_data.original.image_link }}">{{ info.meta_data.original.image_credit }}</a></em>
-      {% endif %}
-
-    </div>
-
-    <div class="col-6">
-      {% if info.geometry %}
-
-        <div id="map" class="rounded shadow-sm">
-          {{ map|safe }}
-        </div>
-
-        <div class="mt-2">
-          <small>
-            Coordinates: <code>{{ info.geometry.centroid.1 }}, {{ info.geometry.centroid.0 }}</code>
-          </small>
-        </div>
-      {% endif %}
-
-      <a href="/gardens/" class="btn btn-pink mt-3">
-        <i class="fal fa-arrow-left fa-fw me-1"></i> All gardens
-      </a>
-    </div>
-  
+{% if not info.is_active %}
+  <div class="alert alert-warning">
+    <i class="fa fa-info-circle"></i>
+    Please note: this garden is not yet publicly active. You can review and edit this garden before activating.
+    <form method="post">
+      <button type="submit" name="activate" value="true" class="btn btn-success mt-3">Activate this garden</button>
+      {% csrf_token %}
+    </form>
   </div>
+{% endif %}
 
-  <div class="row">
-    <div class="col-6">
-      {% if info.description %}
-        <h3>Description</h3>
-        {{ info.description|linebreaksbr|urlize }}
-      {% endif %}
+<div class="bg-white">
+  <div class="mx-auto max-w-2xl px-4 py-16 sm:px-6 sm:py-24 lg:max-w-7xl lg:px-8">
+    <div class="lg:grid lg:grid-cols-2 lg:items-start lg:gap-x-8">
 
       <div>
-        <h3 class="mt-4">Support</h3>
+        <h1 class="text-3xl font-bold tracking-tight text-gray-900">{{ info }}</h1>
 
-        <ul class="list-group list-group-horizontal">
-          <a href="/contact/" class="list-group-item list-group-item-action flex-fill text-center border-purple bg-pink action">
-            <i class="fal fa-handshake fa-2x fa-fw my-2"></i> <br>
-            I would like to link my nearby garden to this one
-          </a>
-          <a href="/contact/" class="list-group-item list-group-item-action flex-fill text-center border-purple bg-pink action">
-            <i class="fal fa-heart-circle fa-2x fa-fw my-2"></i> <br>
-            I would like to support this garden
-          </a>
-          <a href="/contact/" class="list-group-item list-group-item-action flex-fill text-center border-purple bg-pink action">
-            <i class="fal fa-edit fa-2x fa-fw my-2"></i> <br>
-            I would like to register my own garden
-          </a>
-        </ul>
-      </div>
+        <div class="flex flex-col-reverse">
 
-    {% if photos.count > 1 %}
-    <div class="row">
-      <h4 class="mt-3"><a href="{% url 'garden_photos' info.id %}">Photos</a></h4>
-      {% for each in photos %}
-        <div class="col-3 mb-2">
-          <div class="card">
-            <a href="{% url 'garden_photo' info.id each.id %}">
-              <img src="{{ each.get_photo_medium }}" class="card-img-top fixed-thumb" alt="{{ each }}">
-            </a>
-          </div>
-        </div>
-      {% endfor %}
-      <p><a href="{% url 'garden_photos' info.id %}">View all photos ({{ info.photos.count }})</a></p>
-    </div>
-    {% endif %}
+          {% if photos.count > 1 %}
+            <div class="mx-auto mt-6 w-full max-w-2xl sm:block lg:max-w-none">
+              <div class="grid grid-cols-4 gap-6 gallery" aria-orientation="horizontal" role="tablist">
 
-    </div>
-    <div class="col-6">
-      <div class="row">
-        <div class="col-sm">
-          <div class="border rounded shadow-sm bg-white p-3 text-center mb-3">
-            <i class="fal fa-fw fa-map me-2"></i> Suburb
-            <h5 class="mt-2 mb-0 fw-bold">{{ info.suburb }}</h5>
-          </div>
+                {% for each in photos %}
+                  <button data-target="{{ each.large }}" id="tabs-1-tab-1" class="relative flex h-24 cursor-pointer items-center justify-center rounded-md bg-white text-sm font-medium uppercase text-gray-900 hover:bg-gray-50 focus:outline-none focus:ring focus:ring-sky-500/50 focus:ring-offset-4" aria-controls="tabs-1-panel-1" role="tab" type="button" data-credit="{{ each.credit }}">
+                    <span class="absolute inset-0 rounded-md">
+                      <img src="{{ each.thumbnail }}" alt="" class="size-full object-cover">
+                    </span>
+                    <span class="pointer-events-none absolute inset-0 rounded-md ring-2 {% if forloop.counter == 1 %}ring-sky-500{% else %}ring-transparent{% endif %} ring-offset-2" ></span>
+                  </button>
+                {% endfor %}
 
-          <div class="border rounded shadow-sm bg-white p-3 text-center position-relative mb-3">
-            <i class="fal fa-fw fa-leaf me-2"></i> Vegetation type
-            <a class="text-decoration-none stretched-link" href="{{ info.vegetation_type.get_absolute_url }}">
-              <h5 class="mt-2 mb-0 fw-bold">{{ info.vegetation_type }}</h5>
-            </a>
-          </div>
-
-          {% if info.organizations.count %}
-            <div class="border rounded shadow-sm bg-white p-3 text-center mb-3">
-              <i class="fal fa-fw fa-users-class me-2"></i> Involved organisations
-              <ul class="list-unstyled mb-0 mt-2">
-              {% for each in info.organizations.all %}
-                <li>
-                  <h5 class="mt-2 fw-bold">
-                    <a class="text-decoration-none" href="{{ each.url }}"> {{ each }}</a> <i class="fal fa-external-link-alt fa-fw ms-2"></i>
-                  </h5>
-                </li>
-              {% endfor %}
-              </ul>
+              </div>
             </div>
           {% endif %}
-        </div>
-        <div class="col-sm">
-          <div class="border rounded shadow-sm bg-white p-3 text-center mb-3 position-relative">
-            <i class="fal fa-fw fa-clipboard-list me-2"></i> Species list analysis
-            <h5 class="my-2 fw-bold">
-              <a class="stretched-link text-decoration-none" href="{% url 'profile' info.get_lat info.get_lng %}">Location plant profile</a>
-            </h5>
-            <small>Lists the plants that are most appropriate for this location</small>
+
+          <div>
+            <div id="headshot" aria-labelledby="headshot" tabindex="0" class="relative">
+              <img src="{{ photos.0.large }}" alt="" class="aspect-square w-full object-cover sm:rounded-lg">
+              <span id="credit" class="absolute text-sm bg-gray-50 opacity-90 p-1 rounded-tr-md" style="bottom:0;">{{ photos.0.credit }}</span>
+            </div>
           </div>
 
-          <div class="border rounded shadow-sm bg-white p-3 text-center mb-3 position-relative">
-            <i class="fal fa-fw fa-bullseye me-2"></i> Site analysis
-            <h5 class="my-2 fw-bold">
-              <a class="stretched-link text-decoration-none" href="{% url 'report' info.get_lat info.get_lng %}">Site analysis profile</a>
-            </h5>
-            <small>provides an overview of this location, including nearby features and corridor building opportunities</small>
-          </div>
         </div>
+
+        <h2 class="mt-4">{{ _("Support") }}</h2>
+        <ul class="flex space-x-4">
+          <a href="/contact/" class="flex-fill text-center border-purple bg-pink action p-4 rounded shadow-md">
+            <i class="fal fa-handshake fa-2x fa-fw my-2"></i> <br>
+            {{ _("I would like to link my nearby garden to this one") }}
+          </a>
+          <a href="/contact/" class="flex-fill text-center border-purple bg-pink action p-4 rounded shadow-md">
+            <i class="fal fa-heart-circle fa-2x fa-fw my-2"></i> <br>
+            {{ _("I would like to support this garden") }}
+          </a>
+          <a href="/contact/" class="flex-fill text-center border-purple bg-pink action p-4 rounded shadow-md">
+            <i class="fal fa-edit fa-2x fa-fw my-2"></i> <br>
+            {{ _("I would like to register my own garden") }}
+          </a>
+        </ul>
+
       </div>
-    </div>
-  </div>
 
-  <div class="mt-4">
-    <h4>Update information</h4>
+      <div class="mt-10 px-4 sm:mt-16 sm:px-0 lg:mt-0">
+
+        {% if info.geometry %}
+
+          <h2>{{ _("Location") }}</h2>
+          <div id="map" class="rounded shadow-sm">
+            {{ map|safe }}
+          </div>
+          <div class="mt-2">
+            <small>
+              Coordinates: <code>{{ info.geometry.centroid.1 }}, {{ info.geometry.centroid.0 }}</code>
+            </small>
+          </div>
+        {% endif %}
+
+        <h2 class="mt-4">{{ _("Description") }}</h2>
+        <p class="mt-6 text-base/7 text-gray-600">
+          {{ info.description|linebreaksbr|urlize }}
+        </p>
+
+        <h2 class="mt-4">{{ _("More information") }}</h2>
+
+        <div class="w-1/2">
+          <div class="flex flex-wrap">
+            <div class="w-full sm:w-1/2">
+
+              <div class="border rounded shadow-sm bg-white p-3 text-center mb-3">
+                <i class="fal fa-fw fa-map mr-2"></i> {{ _("Suburb") }}
+                <h5 class="mt-2 mb-0 font-bold">{{ info.suburb }}</h5>
+              </div>
+
+              <div class="border rounded shadow-sm bg-white p-3 text-center relative mb-3">
+                <i class="fal fa-fw fa-leaf mr-2"></i> {{ _("Vegetation type") }}
+                <a class="text-blue-500 hover:underline" href="{{ info.vegetation_type.get_absolute_url }}">
+                  <h5 class="mt-2 mb-0 font-bold">{{ info.vegetation_type }}</h5>
+                </a>
+              </div>
+
+              {% if info.organizations.count %}
+                <div class="border rounded shadow-sm bg-white p-3 text-center mb-3">
+                  <i class="fal fa-fw fa-users-class mr-2"></i> {{ _("Involved organisations") }}
+                  <ul class="list-none mb-0 mt-2">
+                    {% for each in info.organizations.all %}
+                      <li>
+                        <h5 class="mt-2 font-bold">
+                          <a class="text-blue-500 hover:underline" href="{{ each.url }}">{{ each }}</a> <i class="fal fa-external-link-alt fa-fw ml-2"></i>
+                        </h5>
+                      </li>
+                    {% endfor %}
+                  </ul>
+                </div>
+              {% endif %}
+            </div>
+
+            <div class="w-full sm:w-1/2">
+              <div class="border rounded shadow-sm bg-white p-3 text-center mb-3 relative">
+                <i class="fal fa-fw fa-clipboard-list mr-2"></i> {{ _("Species list analysis") }}
+                <h5 class="my-2 font-bold">
+                  <a class="text-blue-500 hover:underline" href="{% url 'profile' info.get_lat info.get_lng %}">{{ _("Location plant profile") }}</a>
+                </h5>
+                <small>{{ _("Lists the plants that are most appropriate for this location") }}</small>
+              </div>
+
+              <div class="border rounded shadow-sm bg-white p-3 text-center mb-3 relative">
+                <i class="fal fa-fw fa-bullseye mr-2"></i> {{ _("Site analysis") }}
+                <h5 class="my-2 font-bold">
+                  <a class="text-blue-500 hover:underline" href="{% url 'report' info.get_lat info.get_lng %}">{{ _("Site analysis profile") }}</a>
+                </h5>
+                <small>{{ _("provides an overview of this location, including nearby features and corridor building opportunities") }}</small>
+              </div>
+            </div>
+          </div>
+        </div>
+
+
+      </div>
+
+    </div>
+
+      <a href="{% url "gardens" %}">&laquo; Back to stepping-stone garden network</a>
+
+      <h4 class="mt-4">Update information</h4>
       <p>
         Do you want to update information on this page? 
         <a href="{% url "garden_manager" info.id %}">Click here</a>.
       </p>
-    </form>
+
+
   </div>
+</div>
 
 {% if request.user.is_staff %}
   <a class="btn-warning btn-edit" href="{% url "controlpanel_garden" info.id %}?redirect={{ request.get_full_path }}">
@@ -169,26 +175,28 @@
   </a>
 {% endif %}
 
-  {% if request.user.is_staff %}
-    <pre class="mt-5 alert alert-warning"><h5 style="cursor:pointer" class="original-submission">ORIGINAL SUBMISSION</h5><div class="openup" style="display:none">
+{% endblock %}
 
-{% for key,value in info.original.items %}
-{{ key }}: {{ value }}
-{% endfor %}</div></pre>
-    <form method="post" style="position:fixed;bottom:10px;right:150px">
-      <button type="submit" class="btn btn-danger" onclick="javascript:return confirm('Are you sure?')">Delete this garden</button>
-      <input type="hidden" name="delete" value="true" />
-      {% csrf_token %}
-    </form>
-  {% endif %}
+{% block js %}
+  <script type="text/javascript">
+  $(function(){
 
-  {% if false %}
-    <div>
-      {% for key,value in info.meta_data.original.items %}
-        <p><strong>{{ key }}</strong><br>
-        {{ value }}</p>
-      {% endfor %}
-    </div>
-  {% endif %}
+    $(".gallery button").click(function(){
+      var url = $(this).data("target");
+      var credit = $(this).data("credit");
+      img = $("#headshot img");
+      thumbnail = $(this).find("img");
+      img.attr("src", thumbnail.attr("src")); // While the large image loads, we show the thumbnail (instantly as it's already shown on page)
+      img.attr("src", url);
+      $("#credit").html(credit);
+      $(".gallery button .ring-sky-500").removeClass("ring-sky-500").addClass("ring-transparent");
+      $(this).find(".ring-2").removeClass("ring-transparent").addClass("ring-sky-500");
+    });
 
+    $("#refresh").click(function(){
+      $("#inat_modal").show("fast");
+    });
+    
+  });
+  </script>
 {% endblock %}

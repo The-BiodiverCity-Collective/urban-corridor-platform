@@ -38,11 +38,9 @@
   
   <section class="general">
 
-  {% if info.inat_id %}
-    <span class="float-right">
-      <i id="refresh" class="fa fa-refresh cursor-pointer" title="{{ _("Refresh data from iNaturalist") }}"></i>
-    </span>
-  {% endif %}
+  <span class="float-right">
+    <i id="refresh" class="fa fa-refresh cursor-pointer" title="{{ _("Refresh data from iNaturalist") }}"></i>
+  </span>
 
   {% if info.inat_photos %}
     <div class="grid grid-cols-12 gap-2 mb-6">
@@ -304,7 +302,7 @@
           } else {
             $("#inat_modal .fa-spinner").removeClass("fa-spinner fa-spin").addClass("fa-times-circle text-red-500");
             $("#inat_modal div.bg-amber-100").removeClass("bg-amber-100").addClass("bg-gray-200");
-            $("#inat_modal h3").html("{{ _("Sorry, we could not update the information. Check the API/connection") }}");
+            $("#inat_modal h3").html("{{ _("Sorry, we could not update the information. Error: ") }}" + response.error);
           }
         },
         error: function() {

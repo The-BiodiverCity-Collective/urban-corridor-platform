@@ -1,55 +1,43 @@
-from django.shortcuts import render, get_object_or_404, redirect
-from .models import *
 from .forms import *
-from django.conf import settings
-from django.http import JsonResponse, HttpResponse, Http404
-import urllib.request, json 
-from django.contrib import messages
-from django.utils.safestring import mark_safe
-import folium
-from folium.plugins import Fullscreen
-import random
-from django.db.models import Q, Count, Max
-from django.contrib.gis import geos
-from django.contrib.gis.measure import D
-from django.core.paginator import Paginator
-from django.forms import modelform_factory
-from django.contrib.admin.views.decorators import staff_member_required
-from django.utils.translation import gettext_lazy as _
-
-# To annotate querysets with the SpeciesText info
-from django.db.models import OuterRef, Subquery, Value
-from django.db.models import CharField
-
+from .models import *
 from PIL import Image
 from PIL.ExifTags import TAGS, GPSTAGS
-import io
-
-import zipfile
-from io import BytesIO
-import os
-from django.core.files import File
-import shutil
-import uuid
-import sys
+from dateutil.relativedelta import relativedelta
+from django.conf import settings
+from django.contrib import messages
+from django.contrib.admin.views.decorators import staff_member_required
+from django.contrib.auth import authenticate, login, logout
+from django.contrib.auth.decorators import login_required
+from django.contrib.gis import geos
+from django.contrib.gis.geos import Polygon
+from django.contrib.gis.measure import D
 from django.core import serializers
+from django.core.files import File
+from django.core.mail import send_mail
+from django.core.paginator import Paginator
+from django.db.models import OuterRef, Subquery, Value, CharField, Q, Count, Max
+from django.forms import modelform_factory
+from django.http import JsonResponse, HttpResponse, Http404
+from django.shortcuts import render, get_object_or_404, redirect
+from django.template.loader import render_to_string, get_template
+from django.utils import timezone
+from django.utils.safestring import mark_safe
+from django.utils.translation import gettext_lazy as _
+from folium.plugins import Fullscreen
+
+import folium
+import io
+import os
+import pandas as pd
+import random
+import secrets
+import shutil
+import sys
+import urllib.request, json 
+import uuid
 import wikipediaapi
 import xml.etree.ElementTree as ET
-from django.contrib.gis.geos import Polygon
-
-from django.contrib.auth.decorators import login_required
-from django.contrib.auth import authenticate, login, logout
-from django.utils import timezone
-from dateutil.relativedelta import relativedelta
-
-import pandas as pd
-
-# These are used so that we can send mail
-from django.core.mail import send_mail
-from django.template.loader import render_to_string, get_template
-
-# For token generation
-import secrets
+import zipfile
 
 # Quick debugging, sometimes it's tricky to locate the PRINT in all the Django 
 # output in the console, so just using a simply function to highlight it better
@@ -872,6 +860,7 @@ def garden(request, id):
 
     try:
         photos = Photo.objects.filter(garden=info).exclude(id=info.photo.id).order_by("-date")[:12]
+        photos = Photo.objects.filter(garden=info).order_by("-date")[:12]
     except:
         photos = None
 
@@ -895,6 +884,7 @@ def garden(request, id):
         "map": map._repr_html_() if info.geometry else None,
         "info": info,
         "photos": photos,
+        "title": info.name,
     }
     return render(request, "gardens/garden.html", context)
 
@@ -1550,7 +1540,7 @@ def documents(request):
 def shapefile_zip(request, id):
     info = Document.objects.get(pk=id)
 
-    zip_buffer = BytesIO()
+    zip_buffer = io.BytesIO()
 
     with zipfile.ZipFile(zip_buffer, "w", zipfile.ZIP_DEFLATED) as zip_file:
         attachments = Attachment.objects.filter(attached_to=info)
@@ -1906,9 +1896,14 @@ def controlpanel_ajax_get_inat_data(request, id):
     info = Species.objects.get(pk=id)
     inat_info = info.get_taxa_info()
     success = False
+    error = None
     if inat_info:
         success = True
-    return JsonResponse({"success": success})
+    else:
+        info = Species.objects.get(pk=id)
+        error = info.meta_data["inat_error"]
+
+    return JsonResponse({"success": success, "error": error})
 
 @staff_member_required
 def controlpanel_ajax_get_wikipedia(request, id):
