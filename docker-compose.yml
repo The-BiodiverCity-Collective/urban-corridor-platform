@@ -1,6 +1,6 @@
 services:  
   db:
-    image: postgis/postgis:16-master
+    image: postgis/postgis:17-3.5
     container_name: ucp_db
     environment:
        POSTGRES_HOST_AUTH_METHOD: trust
@@ -9,7 +9,7 @@ services:
        POSTGRES_DB: postgres
   adminer:
     command: php -S 0.0.0.0:8080 -t /var/www/html
-    image: adminer:4.8.1
+    image: adminer:4.17.1
     depends_on: 
       - db
     ports:

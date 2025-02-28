@@ -9,6 +9,8 @@ The following technologies are used:
 - PostgreSQL 
 - PostGIS
 - Docker
+- Node
+- TailwindCSS
 
 In order to meaningfully contribute to this project (or clone it and use it for your own purposes), you should ideally be comfortable with (or willing to learn about) the aforementioned technologies. You can make a meaningful contribution if you know either about python/Django, or about HTML/CSS/Javascript (allowing you to contribute with back-end or front-end programming, respectively).
 

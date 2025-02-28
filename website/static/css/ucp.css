@@ -256,7 +256,7 @@ dl.dl-horizontal dd {
     @apply font-bold mb-2;
   }
 
-  main input {
+  main input:not([type="radio"]):not([type="checkbox"]) {
     @apply w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500;
   }
   main select {

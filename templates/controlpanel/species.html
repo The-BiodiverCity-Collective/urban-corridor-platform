@@ -39,7 +39,7 @@
   <section class="general">
 
   <span class="float-right">
-    <i id="refresh" class="fa fa-refresh cursor-pointer" title="{{ _("Refresh data from iNaturalist") }}"></i>
+    <i id="refresh" class="fa fa-sync-alt cursor-pointer" title="{{ _("Refresh data from iNaturalist") }}"></i>
   </span>
 
   {% if info.inat_photos %}
@@ -182,7 +182,7 @@
         <div class="mb-4">
           <label for="description_wikipedia_{{ language.id }}" class="block text-lg font-semibold text-gray-700">
             Description (wikipedia)
-            <i class="fa fa-refresh cursor-pointer" id="wiki_refresh"></i>
+            <i class="fa fa-sync-alt cursor-pointer" id="wiki_refresh"></i>
           </label>
           <textarea class="bg-gray-200 text-gray-500 cursor-not-allowed" name="description_wikipedia_{{ language.id }}" id="description_wikipedia_{{ language.id }}"
               disabled

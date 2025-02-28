@@ -28,7 +28,11 @@
     <link href="{% static 'css/leaflet.legend.css' %}" rel="stylesheet" />
   {% endif %}
 
-  <link rel="stylesheet" href="{% static "css/output.css" %}?id=12">
+  {% if request.GET.online_tailwind %}
+    <script src="https://unpkg.com/@tailwindcss/browser@4"></script>
+  {% else %}
+    <link rel="stylesheet" href="{% static "css/output.css" %}?id=12">
+  {% endif %}
 
   <script type="text/javascript">
   $(function(){

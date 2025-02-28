@@ -1,6 +1,7 @@
 {% extends "_base.html" %}
 
 {% block content %}
+
 <h1>{% block title %}Species{% endblock %}</h1>
 {% if vegetation_type %}
   <h2>
@@ -20,116 +21,104 @@
   {% include "_species.list.html" %}
 {% endwith %}
 
-<div class="mt-5">
-  <div class="col">
-    <div class="card">
-      <div class="card-body">
-        <h2>Search species list</h2>
-        <form action="{% url "species_search" %}">
-          {% if vegetation_type %}
-            <input type="hidden" name="vegetation_type" value="{{ vegetation_type.id }}" />
-          {% endif %}
-          {% for each in features %}
-            <div class="form-check">
-              <input type="checkbox" name="feature" value="{{ each.id }}" id="feature_{{ each.id }}" class="form-check-input" />
-              <label class="form-check-label" for="feature_{{ each.id }}">
-                {{ each }}
-              </label>
-            </div>
-          {% endfor %}
-          <p class="mt-4">
-            Show species matching:
-            <button name="search" value="all" type="submit" class="btn btn-primary">ALL of these filters</button>
-            <button name="search" value="any" type="submit" class="btn btn-warning">ANY of these filters</button>
-          </p>
-        </form>
+<h2 class="mt-10">{{ _("Search species list") }}</h2>
+<form action="{% url "species_search" %}">
+  {% if vegetation_type %}
+    <input type="hidden" name="vegetation_type" value="{{ vegetation_type.id }}" />
+  {% endif %}
+
+  <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+
+    {% for each in features %}
+
+      <div class="flex gap-3">
+        <div class="flex h-6 shrink-0 items-center">
+          <div class="group grid size-4 grid-cols-1">
+            <input id="feature_{{ each.id }}" aria-describedby="comments-description" name="feature" type="checkbox" value="{{ each.id }}" class="col-start-1 row-start-1 appearance-none rounded border border-gray-300 bg-white checked:border-sky-800 checked:bg-sky-800 indeterminate:border-sky-800 indeterminate:bg-sky-800 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-sky-800 disabled:border-gray-300 disabled:bg-gray-100 disabled:checked:bg-gray-100 forced-colors:appearance-auto">
+            <svg class="pointer-events-none col-start-1 row-start-1 size-3.5 self-center justify-self-center stroke-white group-has-[:disabled]:stroke-gray-950/25" viewBox="0 0 14 14" fill="none">
+              <path class="opacity-0 group-has-[:checked]:opacity-100" d="M3 8L6 11L11 3.5" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+              <path class="opacity-0 group-has-[:indeterminate]:opacity-100" d="M3 7H11" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+            </svg>
+          </div>
+        </div>
+        <div class="text-sm/6">
+          <label for="feature_{{ each.id }}" class="font-medium text-gray-900 cursor-pointer hover:text-sky-800">{{ each }}</label>
+        </div>
       </div>
-    </div>
+
+    {% endfor %}
+
   </div>
-  <div class="col">
-    <div class="card">
-      <div class="card-body">
-        <h2>Browse by genus</h2>
-        <table class="table table-striped datatable">
-          <thead>
-            <tr>
-              <th>Genus</th>
-              <th>Species</th>
-            </tr>
-          </thead>
-          <tbody>
-          {% for each in genus %}
-            <tr>
-              <td><a href="{% url "genus" each.id %}{{ veg_link }}">{{ each }}</a></td>
-              <td>{{ each.total }}</td>
-            </tr>
-          {% endfor %}
-          </tbody>
-        </table>
-      </div>
-    </div>
+
+  <p class="mt-4">
+    Show species matching:
+  </p>
+  <button name="search" value="all" type="submit" class="btn-blue"><i class="fa fa-search fa-fw"></i> ALL of these filters</button>
+  <button name="search" value="any" type="submit" class="btn-add"><i class="fa fa-search fa-fw"></i> ANY of these filters</button>
+</form>
+
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-4 mt-10">
+  <div>
+    <h2>Browse by genus</h2>
+    <table class="table table-striped datatable">
+      <thead>
+        <tr>
+          <th>Genus</th>
+          <th>Species</th>
+        </tr>
+      </thead>
+      <tbody>
+      {% for each in genus %}
+        <tr>
+          <td><a href="{% url "genus" each.id %}{{ veg_link }}">{{ each }}</a></td>
+          <td>{{ each.total }}</td>
+        </tr>
+      {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  <div>
+    <h2>Browse by family</h2>
+    <table class="table table-striped datatable">
+      <thead>
+        <tr>
+          <th>Family</th>
+          <th>Species</th>
+        </tr>
+      </thead>
+      <tbody>
+      {% for each in family %}
+        <tr>
+          <td><a href="/species/family/{{ each.id }}/{{ veg_link }}">{{ each }}</a></td>
+          <td>{{ each.total }}</td>
+        </tr>
+      {% endfor %}
+      </tbody>
+    </table>
   </div>
 </div>
 
-<div class="row mb-3">
-  <div class="col">
-    <div class="card mb-3">
-      <div class="card-body">
-        <h2>Browse by vegetation type</h2>
-        <table class="table table-striped datatable">
-          <thead>
-            <tr>
-              <th>Vegetation type</th>
-              <th>Species</th>
-            </tr>
-          </thead>
-          <tbody>
-          {% for each in vegetation_types %}
-            <tr {% if each == vegetation_type %}class="bg-primary text-light"{% endif %}>
-              <td><a href="{% url "vegetation_type_species" each.slug %}">{{ each }}</a></td>
-              <td>{{ each.total }}</td>
-            </tr>
-          {% endfor %}
-          </tbody>
-        </table>
-      </div>
-    </div>
-    <div class="card bg-secondary bg-gradient text-white">
-      <div class="card-body">
-        <h2>Acknowledgements</h2>
-        This tool has been developed by <a href="http://" style="color:#fff">Communitree</a> and is based on species 
-        information from LIST_PRINCIPAL_SOURCES.
-      </div>
-    </div>
+  <div>
+    <h2>Browse by vegetation type</h2>
+    <table class="table table-striped datatable">
+      <thead>
+        <tr>
+          <th>Vegetation type</th>
+          <th>Species</th>
+        </tr>
+      </thead>
+      <tbody>
+      {% for each in vegetation_types %}
+        <tr {% if each == vegetation_type %}class="bg-primary text-light"{% endif %}>
+          <td><a href="{% url "vegetation_type_species" each.slug %}">{{ each }}</a></td>
+          <td>{{ each.total }}</td>
+        </tr>
+      {% endfor %}
+      </tbody>
+    </table>
   </div>
-  <div class="col">
-    <div class="card mb-3">
-      <div class="card-body">
-        <h2>Browse by family</h2>
-        <table class="table table-striped datatable">
-          <thead>
-            <tr>
-              <th>Family</th>
-              <th>Species</th>
-            </tr>
-          </thead>
-          <tbody>
-          {% for each in family %}
-            <tr>
-              <td><a href="/species/family/{{ each.id }}/{{ veg_link }}">{{ each }}</a></td>
-              <td>{{ each.total }}</td>
-            </tr>
-          {% endfor %}
-          </tbody>
-        </table>
-      </div>
-    </div>
-    <div class="card">
-      <div class="card-body">
-        <h2>Browse full list</h2>
-        <a href="{% url "species_full_list" %}{{ veg_link }}" class="btn btn-primary">View all ({{ all }})</a>
-      </div>
-    </div>
-  </div>
-</div>
+
+<h2>Browse full list</h2>
+<a href="{% url "species_full_list" %}{{ veg_link }}" class="btn btn-primary">View all ({{ all }})</a>
+
 {% endblock %}

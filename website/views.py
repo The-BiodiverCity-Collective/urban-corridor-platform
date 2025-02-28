@@ -632,7 +632,9 @@ def species_overview(request, vegetation_type=None):
     genus = Genus.objects.filter(species__site=site)
     families = Family.objects.filter(species__site=site)
     species = Species.objects.filter(site=site)
-    veg_types = VegetationType.objects.all().annotate(total=Count("species"))
+    veg_types = VegetationType.objects.filter(sites=site).annotate(
+        total=Count("species", filter=Q(species__site=site))
+    ).filter(total__gt=0)
 
     if vegetation_type:
         vegetation_type = VegetationType.objects.get(slug=vegetation_type)
@@ -774,15 +776,18 @@ def fetch_species_text(request, species):
         return SpeciesText()
 
 def species(request, id):
-    species = get_object_or_404(Species, pk=id)
-    details = fetch_species_text(request, species)
+    site = get_site(request)
+    info = get_object_or_404(Species, pk=id)
+    details = fetch_species_text(request, info)
+    sources = SpeciesVegetationTypeLink.objects.filter(species=info, vegetation_type__sites=site)
 
     context = {
-        "info": species,
+        "info": info,
         "details": details,
-        "photos": Photo.objects.filter(species=species, position__gte=1),
-        "title": species.name,
+        "photos": Photo.objects.filter(species=info, position__gte=1),
+        "title": info.name,
         "menu": "species",
+        "sources": sources,
     }
 
     return render(request, "species.html", context)
