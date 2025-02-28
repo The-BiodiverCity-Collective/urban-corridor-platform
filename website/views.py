@@ -650,7 +650,7 @@ def species_overview(request, vegetation_type=None):
         features = SpeciesFeatures.objects.all()
 
     try:
-        samples = Species.objects.filter(pk__in=random.sample(list(samples), 4))
+        samples = Species.objects.filter(pk__in=random.sample(list(samples), 3))
     except:
         samples = None
 
@@ -665,6 +665,7 @@ def species_overview(request, vegetation_type=None):
         "vegetation_type": vegetation_type,
         "veg_link": f"?vegetation_type={vegetation_type.id}" if vegetation_type else "",
         "menu": "species",
+        "show_total_box": True,
     }
     return render(request, "species.overview.html", context)
 
