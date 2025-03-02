@@ -1,0 +1,426 @@
+<nav class="mainnav relative isolate z-50 shadow {{ SITE.meta_data.header }}">
+
+  <div class="bg-white py-5">
+    <div class="mx-auto max-w-7xl px-6 lg:px-8">
+      <span class="inline-flex hidden">
+        <img class="size-8" src="{{ SITE.logo.thumbnail.url }}" alt="">
+      </span>
+      <a href="/" class="mr-4"><i class="fa fa-home"></i></a>
+
+      <a href="/gardens/" class="mr-3 inline-flex items-center gap-x-1 text-sm/6 font-semibold text-gray-900 hovermenu" data-target="gardens" aria-expanded="false">
+        {{ _("About Us") }}
+        <i class="fa fa-angle-down mt-1"></i>
+      </a>
+
+      <a href="/gardens/" class="mr-3 inline-flex items-center gap-x-1 text-sm/6 font-semibold text-gray-900 hovermenu" data-target="gardens" aria-expanded="false">
+        {{ _("Garden network") }}
+        <i class="fa fa-angle-down mt-1"></i>
+      </a>
+
+      <a href="/species/" class="mr-3 inline-flex items-center gap-x-1 text-sm/6 font-semibold {% if menu == "species" %}text-sky-600{% else %}text-gray-900{% endif %} hovermenu" data-target="species" aria-expanded="false">
+        {{ _("Species") }}
+          <i class="fa fa-angle-down mt-1 {% if menu == "species" %}text-sky-600{% endif %}"></i>
+      </a>
+
+      <a href="/maps/" class="mr-3 inline-flex items-center gap-x-1 text-sm/6 font-semibold text-gray-900 hovermenu" data-target="maps" aria-expanded="false">
+        {{ _("Maps") }}
+        <i class="fa fa-angle-down mt-1"></i>
+      </a>
+
+      <a href="/join/" class="mr-3 inline-flex items-center gap-x-1 text-sm/6 font-semibold text-gray-900 hovermenu" data-target="join" aria-expanded="false">
+        {{ _("Join Us") }}
+        <i class="fa fa-angle-down mt-1"></i>
+      </a>
+
+      <a href="/maps/" class="mr-3 inline-flex items-center gap-x-1 text-sm/6 font-semibold text-gray-900 hovermenu" data-target="maps" aria-expanded="false">
+        {{ _("Resources") }}
+        <i class="fa fa-angle-down mt-1"></i>
+      </a>
+
+    </div>
+  </div>
+
+  <div id="dropdown-species" class="dropdown absolute inset-x-0 top-0 -z-10 bg-white pt-16 shadow-lg ring-1 ring-gray-900/5">
+    <div class="mx-auto grid max-w-7xl grid-cols-1 gap-x-8 gap-y-10 px-6 py-10 lg:grid-cols-2 lg:px-8">
+      <div class="grid grid-cols-2 gap-x-6 sm:gap-x-8">
+        <div>
+          <h3 class="text-sm/6 font-medium text-gray-500">View plant collections</h3>
+          <div class="mt-6 flow-root">
+            <div class="-my-2">
+              <a href="/species/" class="flex gap-x-4 py-2 text-sm/6 font-semibold text-gray-900">
+                <i class="fa fa-list fa-fw text-lg text-gray-400 mr-1"></i>
+                All species
+              </a>
+              <a href="/species/" class="flex gap-x-4 py-2 text-sm/6 font-semibold text-gray-900">
+                <i class="fa fa-seedling fa-fw text-lg text-gray-400 mr-1"></i>
+                Indigenous
+              </a>
+              <a href="/species/" class="flex gap-x-4 py-2 text-sm/6 font-semibold text-gray-900">
+                <i class="fa fa-triangle-exclamation fa-fw text-lg text-gray-400 mr-1"></i>
+                Invasives
+              </a>
+              <a href="/species/search/?feature=125" class="flex gap-x-4 py-2 text-sm/6 font-semibold text-gray-900">
+                <i class="fa fa-person-digging fa-fw text-lg text-gray-400 mr-1"></i>
+                Pioneers
+              </a>
+              <a href="/species/search/?feature=115" class="flex gap-x-4 py-2 text-sm/6 font-semibold text-gray-900">
+                <i class="fa fa-heart-pulse fa-fw text-lg text-gray-400 mr-1"></i>
+                Medicinal
+              </a>
+              <a href="/species/search/?feature=123" class="flex gap-x-4 py-2 text-sm/6 font-semibold text-gray-900">
+                <i class="fa fa-utensils fa-fw text-lg text-gray-400 mr-1"></i>
+                Edible
+              </a>
+              <a href="/species/search/?feature=126" class="flex gap-x-4 py-2 text-sm/6 font-semibold text-gray-900">
+                <i class="fa fa-utensils fa-fw text-lg text-gray-400 mr-1"></i>
+                Easy to grow
+              </a>
+            </div>
+          </div>
+        </div>
+        <div>
+          <h3 class="text-sm/6 font-medium text-gray-500">{{ _("Animal-friendly plants") }}</h3>
+          <div class="mt-6 mb-6 flow-root">
+            <div class="-my-2">
+              <a href="/species/search/?feature=111&feature=113&feature=133&search=any" class="flex gap-x-4 py-2 text-sm/6 font-semibold text-gray-900">
+                <i class="fa fa-feather fa-fw text-lg text-gray-400 mr-1"></i>
+                For sunbirds &amp; sugarbirds
+              </a>
+              <a href="/species/search/?feature=129" class="flex gap-x-4 py-2 text-sm/6 font-semibold text-gray-900">
+                <i class="fa fa-feather fa-fw text-lg text-gray-400 mr-1"></i>
+                For butterflies
+              </a>
+              <a href="/species/search/?feature=110" class="flex gap-x-4 py-2 text-sm/6 font-semibold text-gray-900">
+                <i class="fa fa-feather fa-fw text-lg text-gray-400 mr-1"></i>
+                For honey bees
+              </a>
+              <a href="/species/search/?feature=112" class="flex gap-x-4 py-2 text-sm/6 font-semibold text-gray-900">
+                <i class="fa fa-feather fa-fw text-lg text-gray-400 mr-1"></i>
+                For monkey beetles
+              </a>
+              <a href="/species/search/?feature=111&feature=113&feature=114&feature=133&feature=109&search=any" class="flex gap-x-4 py-2 text-sm/6 font-semibold text-gray-900">
+                <i class="fa fa-feather fa-fw text-lg text-gray-400 mr-1"></i>
+                For birds
+              </a>
+            </div>
+          </div>
+          <h3 class="text-sm/6 font-medium text-gray-500">{{ _("Additional info") }}</h3>
+          <div class="mt-6 flow-root">
+            <div class="-my-2">
+              <a href="{% url "species_sources" %}" class="flex gap-x-4 py-2 text-sm/6 font-semibold text-gray-900">
+                <i class="fa fa-feather fa-fw text-lg text-gray-400 mr-1"></i>
+                {{ _("Source documents") }}
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="grid grid-cols-1 gap-10 sm:gap-8 lg:grid-cols-2">
+        <h3 class="sr-only">Recent posts</h3>
+        <article class="relative isolate flex max-w-2xl flex-col gap-x-8 gap-y-6 sm:flex-row sm:items-start lg:flex-col lg:items-stretch">
+          <div class="relative flex-none">
+            <img class="aspect-[2/1] w-full rounded-lg bg-gray-100 object-cover sm:aspect-video sm:h-32 lg:h-auto" src="/media/temp.analysis.png" alt="">
+            <div class="absolute inset-0 rounded-lg ring-1 ring-inset ring-gray-900/10"></div>
+          </div>
+          <div>
+            <span class="float-right relative z-10 text-center rounded-full bg-gray-100 px-3 py-1.5 text-xs font-medium text-gray-600 hover:bg-gray-200">
+              Tool <br>recommendation
+            </span>
+            <h4 class="mt-2 text-sm/6 font-semibold text-gray-900">
+              <a href="#">
+                <span class="absolute inset-0"></span>
+                Species list generator
+              </a>
+            </h4>
+            <p class="mt-2 text-sm/6 text-gray-600">
+              Select the site of your garden on a map, indicate your objectives, and our system 
+              will generate a recommended species list for you!
+            </p>
+          </div>
+        </article>
+        <article class="relative isolate flex max-w-2xl flex-col gap-x-8 gap-y-6 sm:flex-row sm:items-start lg:flex-col lg:items-stretch">
+          <div class="relative flex-none">
+            <img class="aspect-[2/1] w-full rounded-lg bg-gray-100 object-cover sm:aspect-video sm:h-32 lg:h-auto" src="https://inaturalist-open-data.s3.amazonaws.com/photos/16112761/medium.jpg" alt="">
+            <div class="absolute inset-0 rounded-lg ring-1 ring-inset ring-gray-900/10"></div>
+          </div>
+          <div>
+            <span class="float-right relative z-10 rounded-full bg-gray-100 px-3 py-1.5 text-xs font-medium text-gray-600 hover:bg-gray-200">Monthly highlight</span>
+            <h4 class="mt-2 text-sm/6 font-semibold text-gray-900">
+              <a href="#">
+                <span class="absolute inset-0"></span>
+                Acacia caffra
+              </a>
+            </h4>
+            <p class="mt-2 text-sm/6 text-gray-600">A beautiful tree that brings support for pollinators, mammals, and shading to any garden!</p>
+          </div>
+        </article>
+      </div>
+    </div>
+  </div>
+
+  <div id="dropdown-gardens" class="dropdown absolute inset-x-0 top-0 -z-10 bg-white pt-16 shadow-lg ring-1 ring-gray-900/5">
+    <div class="mx-auto grid max-w-7xl grid-cols-1 gap-x-8 gap-y-10 px-6 py-10 lg:grid-cols-2 lg:px-8">
+      <div class="grid grid-cols-2 gap-x-6 sm:gap-x-8">
+        <div>
+          <h3 class="text-sm/6 font-medium text-gray-500">View collections</h3>
+          <div class="mt-6 flow-root">
+            <div class="-my-2">
+              <a href="{% url "gardens_map" %}" class="flex gap-x-4 py-2 text-sm/6 font-semibold text-gray-900">
+                <i class="fa fa-location-dot fa-fw text-lg text-gray-400 mr-1"></i>
+                {{ _("Garden map") }}
+              </a>
+              <a href="{% url "gardens" %}" class="flex gap-x-4 py-2 text-sm/6 font-semibold text-gray-900">
+                <i class="fa fa-map fa-fw text-lg text-gray-400 mr-1"></i>
+                {{ _("All gardens") }}
+              </a>
+            </div>
+          </div>
+        </div>
+        <div>
+          <h3 class="text-sm/6 font-medium text-gray-500">Animal-friendly</h3>
+          <div class="mt-6 flow-root">
+            <div class="-my-2">
+              <a href="/maps/" class="flex gap-x-4 py-2 text-sm/6 font-semibold text-gray-900">
+                <i class="fa fa-feather fa-fw text-lg text-gray-400 mr-1"></i>
+                Sunbirds
+              </a>
+              <a href="/maps/" class="flex gap-x-4 py-2 text-sm/6 font-semibold text-gray-900">
+                <i class="fa fa-feather fa-fw text-lg text-gray-400 mr-1"></i>
+                Owls
+              </a>
+              <a href="/maps/" class="flex gap-x-4 py-2 text-sm/6 font-semibold text-gray-900">
+                <i class="fa fa-feather fa-fw text-lg text-gray-400 mr-1"></i>
+                Black sparrow-hawk
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="grid grid-cols-1 gap-10 sm:gap-8 lg:grid-cols-2">
+        <h3 class="sr-only">Recent posts</h3>
+        <article class="relative isolate flex max-w-2xl flex-col gap-x-8 gap-y-6 sm:flex-row sm:items-start lg:flex-col lg:items-stretch">
+          <div class="relative flex-none">
+            <img class="aspect-[2/1] w-full rounded-lg bg-gray-100 object-cover sm:aspect-video sm:h-32 lg:h-auto" src="/media/temp.analysis.png" alt="">
+            <div class="absolute inset-0 rounded-lg ring-1 ring-inset ring-gray-900/10"></div>
+          </div>
+          <div>
+            <span class="float-right relative z-10 text-center rounded-full bg-gray-100 px-3 py-1.5 text-xs font-medium text-gray-600 hover:bg-gray-200">
+              Tool <br>recommendation
+            </span>
+            <h4 class="mt-2 text-sm/6 font-semibold text-gray-900">
+              <a href="#">
+                <span class="absolute inset-0"></span>
+                Species list generator
+              </a>
+            </h4>
+            <p class="mt-2 text-sm/6 text-gray-600">
+              Select the site of your garden on a map, indicate your objectives, and our system 
+              will generate a recommended species list for you!
+            </p>
+          </div>
+        </article>
+        <article class="relative isolate flex max-w-2xl flex-col gap-x-8 gap-y-6 sm:flex-row sm:items-start lg:flex-col lg:items-stretch">
+          <div class="relative flex-none">
+            <img class="aspect-[2/1] w-full rounded-lg bg-gray-100 object-cover sm:aspect-video sm:h-32 lg:h-auto" src="https://inaturalist-open-data.s3.amazonaws.com/photos/16112761/medium.jpg" alt="">
+            <div class="absolute inset-0 rounded-lg ring-1 ring-inset ring-gray-900/10"></div>
+          </div>
+          <div>
+            <span class="float-right relative z-10 rounded-full bg-gray-100 px-3 py-1.5 text-xs font-medium text-gray-600 hover:bg-gray-200">Monthly highlight</span>
+            <h4 class="mt-2 text-sm/6 font-semibold text-gray-900">
+              <a href="#">
+                <span class="absolute inset-0"></span>
+                Acacia caffra
+              </a>
+            </h4>
+            <p class="mt-2 text-sm/6 text-gray-600">A beautiful tree that brings support for pollinators, mammals, and shading to any garden!</p>
+          </div>
+        </article>
+      </div>
+    </div>
+  </div>
+
+  <div id="dropdown-maps" class="dropdown absolute inset-x-0 top-0 -z-10 bg-white pt-16 shadow-lg ring-1 ring-gray-900/5">
+    <div class="mx-auto grid max-w-7xl grid-cols-1 gap-x-8 gap-y-10 px-6 py-10 lg:grid-cols-2 lg:px-8">
+      <div class="grid grid-cols-2 gap-x-6 sm:gap-x-8">
+        <div>
+          <h3 class="text-sm/6 font-medium text-gray-500">View collections</h3>
+          <div class="mt-6 flow-root">
+            <div class="-my-2">
+              <a href="/maps/" class="flex gap-x-4 py-2 text-sm/6 font-semibold text-gray-900">
+                <i class="fa fa-list fa-fw text-lg text-gray-400 mr-1"></i>
+                Corridor map
+              </a>
+              <a href="/maps/" class="flex gap-x-4 py-2 text-sm/6 font-semibold text-gray-900">
+                <i class="fa fa-seedling fa-fw text-lg text-gray-400 mr-1"></i>
+                Garden network
+              </a>
+            </div>
+          </div>
+        </div>
+        <div>
+          <h3 class="text-sm/6 font-medium text-gray-500">Animal-friendly</h3>
+          <div class="mt-6 flow-root">
+            <div class="-my-2">
+              <a href="/maps/" class="flex gap-x-4 py-2 text-sm/6 font-semibold text-gray-900">
+                <i class="fa fa-feather fa-fw text-lg text-gray-400 mr-1"></i>
+                Sunbirds
+              </a>
+              <a href="/maps/" class="flex gap-x-4 py-2 text-sm/6 font-semibold text-gray-900">
+                <i class="fa fa-feather fa-fw text-lg text-gray-400 mr-1"></i>
+                Owls
+              </a>
+              <a href="/maps/" class="flex gap-x-4 py-2 text-sm/6 font-semibold text-gray-900">
+                <i class="fa fa-feather fa-fw text-lg text-gray-400 mr-1"></i>
+                Black sparrow-hawk
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="grid grid-cols-1 gap-10 sm:gap-8 lg:grid-cols-2">
+        <h3 class="sr-only">Recent posts</h3>
+        <article class="relative isolate flex max-w-2xl flex-col gap-x-8 gap-y-6 sm:flex-row sm:items-start lg:flex-col lg:items-stretch">
+          <div class="relative flex-none">
+            <img class="aspect-[2/1] w-full rounded-lg bg-gray-100 object-cover sm:aspect-video sm:h-32 lg:h-auto" src="/media/temp.analysis.png" alt="">
+            <div class="absolute inset-0 rounded-lg ring-1 ring-inset ring-gray-900/10"></div>
+          </div>
+          <div>
+            <span class="float-right relative z-10 text-center rounded-full bg-gray-100 px-3 py-1.5 text-xs font-medium text-gray-600 hover:bg-gray-200">
+              Tool <br>recommendation
+            </span>
+            <h4 class="mt-2 text-sm/6 font-semibold text-gray-900">
+              <a href="#">
+                <span class="absolute inset-0"></span>
+                Species list generator
+              </a>
+            </h4>
+            <p class="mt-2 text-sm/6 text-gray-600">
+              Select the site of your garden on a map, indicate your objectives, and our system 
+              will generate a recommended species list for you!
+            </p>
+          </div>
+        </article>
+        <article class="relative isolate flex max-w-2xl flex-col gap-x-8 gap-y-6 sm:flex-row sm:items-start lg:flex-col lg:items-stretch">
+          <div class="relative flex-none">
+            <img class="aspect-[2/1] w-full rounded-lg bg-gray-100 object-cover sm:aspect-video sm:h-32 lg:h-auto" src="https://inaturalist-open-data.s3.amazonaws.com/photos/16112761/medium.jpg" alt="">
+            <div class="absolute inset-0 rounded-lg ring-1 ring-inset ring-gray-900/10"></div>
+          </div>
+          <div>
+            <span class="float-right relative z-10 rounded-full bg-gray-100 px-3 py-1.5 text-xs font-medium text-gray-600 hover:bg-gray-200">Monthly highlight</span>
+            <h4 class="mt-2 text-sm/6 font-semibold text-gray-900">
+              <a href="#">
+                <span class="absolute inset-0"></span>
+                Acacia caffra
+              </a>
+            </h4>
+            <p class="mt-2 text-sm/6 text-gray-600">A beautiful tree that brings support for pollinators, mammals, and shading to any garden!</p>
+          </div>
+        </article>
+      </div>
+    </div>
+  </div>
+
+  <div id="dropdown-join" class="dropdown absolute inset-x-0 top-0 -z-10 bg-white pt-16 shadow-lg ring-1 ring-gray-900/5">
+    <div class="mx-auto grid max-w-7xl grid-cols-1 gap-x-8 gap-y-10 px-6 py-10 lg:grid-cols-2 lg:px-8">
+      <div class="grid grid-cols-2 gap-x-6 sm:gap-x-8">
+        <div>
+          <h3 class="text-sm/6 font-medium text-gray-500">{{ _("Create a new garden") }}</h3>
+          <div class="mt-6 flow-root">
+            <div class="-my-2">
+              <a href="/maps/" class="flex gap-x-4 py-2 text-sm/6 font-semibold text-gray-900">
+                <i class="fa fa-list fa-fw text-lg text-gray-400 mr-1"></i>
+                {{ _("Introduction") }}
+              </a>
+              <a href="/maps/" class="flex gap-x-4 py-2 text-sm/6 font-semibold text-gray-900">
+                <i class="fa fa-seedling fa-fw text-lg text-gray-400 mr-1"></i>
+                {{ _("Sample gardens") }}
+              </a>
+              <a href="/maps/" class="flex gap-x-4 py-2 text-sm/6 font-semibold text-gray-900">
+                <i class="fa fa-seedling fa-fw text-lg text-gray-400 mr-1"></i>
+                {{ _("Species selector tool") }}
+              </a>
+              <a href="/maps/" class="flex gap-x-4 py-2 text-sm/6 font-semibold text-gray-900">
+                <i class="fa fa-seedling fa-fw text-lg text-gray-400 mr-1"></i>
+                {{ _("Add your garden") }}
+              </a>
+            </div>
+          </div>
+        </div>
+        <div>
+          <h3 class="text-sm/6 font-medium text-gray-500">{{ _("Support existing gardens") }}</h3>
+          <div class="mt-6 flow-root">
+            <div class="-my-2">
+              <a href="/maps/" class="flex gap-x-4 py-2 text-sm/6 font-semibold text-gray-900">
+                <i class="fa fa-feather fa-fw text-lg text-gray-400 mr-1"></i>
+                {{ _("How to support our gardens") }}
+              </a>
+              <a href="/maps/" class="flex gap-x-4 py-2 text-sm/6 font-semibold text-gray-900">
+                <i class="fa fa-feather fa-fw text-lg text-gray-400 mr-1"></i>
+                {{ _("Upcoming events") }}
+              </a>
+              <a href="/maps/" class="flex gap-x-4 py-2 text-sm/6 font-semibold text-gray-900">
+                <i class="fa fa-feather fa-fw text-lg text-gray-400 mr-1"></i>
+                {{ _("Home nurseries") }}
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="grid grid-cols-1 gap-10 sm:gap-8 lg:grid-cols-2">
+        <h3 class="sr-only">Recent posts</h3>
+        <article class="relative isolate flex max-w-2xl flex-col gap-x-8 gap-y-6 sm:flex-row sm:items-start lg:flex-col lg:items-stretch">
+          <div class="relative flex-none">
+            <img class="aspect-[2/1] w-full rounded-lg bg-gray-100 object-cover sm:aspect-video sm:h-32 lg:h-auto" src="/media/temp.analysis.png" alt="">
+            <div class="absolute inset-0 rounded-lg ring-1 ring-inset ring-gray-900/10"></div>
+          </div>
+          <div>
+            <span class="float-right relative z-10 text-center rounded-full bg-gray-100 px-3 py-1.5 text-xs font-medium text-gray-600 hover:bg-gray-200">
+              Tool <br>recommendation
+            </span>
+            <h4 class="mt-2 text-sm/6 font-semibold text-gray-900">
+              <a href="#">
+                <span class="absolute inset-0"></span>
+                Species list generator
+              </a>
+            </h4>
+            <p class="mt-2 text-sm/6 text-gray-600">
+              Select the site of your garden on a map, indicate your objectives, and our system 
+              will generate a recommended species list for you!
+            </p>
+          </div>
+        </article>
+        <article class="relative isolate flex max-w-2xl flex-col gap-x-8 gap-y-6 sm:flex-row sm:items-start lg:flex-col lg:items-stretch">
+          <div class="relative flex-none">
+            <img class="aspect-[2/1] w-full rounded-lg bg-gray-100 object-cover sm:aspect-video sm:h-32 lg:h-auto" src="https://inaturalist-open-data.s3.amazonaws.com/photos/16112761/medium.jpg" alt="">
+            <div class="absolute inset-0 rounded-lg ring-1 ring-inset ring-gray-900/10"></div>
+          </div>
+          <div>
+            <span class="float-right relative z-10 rounded-full bg-gray-100 px-3 py-1.5 text-xs font-medium text-gray-600 hover:bg-gray-200">Monthly highlight</span>
+            <h4 class="mt-2 text-sm/6 font-semibold text-gray-900">
+              <a href="#">
+                <span class="absolute inset-0"></span>
+                Acacia caffra
+              </a>
+            </h4>
+            <p class="mt-2 text-sm/6 text-gray-600">A beautiful tree that brings support for pollinators, mammals, and shading to any garden!</p>
+          </div>
+        </article>
+      </div>
+    </div>
+  </div>
+
+</nav>
+
+  <div class="{{ SITE.meta_data.header }} pb-32">
+
+    <header class="py-10">
+      <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+
+        <h1 class="text-3xl font-bold tracking-tight text-white">
+          {{ SITE }}
+        </h1>
+      </div>
+    </header>
+
+  </div>
+

@@ -15,10 +15,15 @@
     <div class="alert alert-warning">
       <h4>Filters</h4>
       <p>
-        Showing species that match {% if request.GET.search == "all" %}ALL{% else %}ANY{% endif %}
+        {% if features.count > 1 %}
+        Showing species that match 
+        {% if request.GET.search == "all" %}ALL{% else %}ANY{% endif %}
         of the following filters:
+        {% else %}
+          {{ _("Showing species that match the following filter:") }}
+        {% endif %}
       </p>
-      <ul class="list-unstyled mb-3">
+      <ul class="mb-3 list-disc ml-4 mt-3">
       {% for each in features %}
         <li>
           <i class="fa fa-check"></i> {{ each }}
@@ -30,12 +35,12 @@
         <p>Vegetation type: <a href="{{ vegetation_type.get_absolute_url }}">{{ vegetation_type }}</a></p>
       {% endif %}
 
-      <p>
+      <p class="right">
         {% if vegetation_type %}
         <a class="btn btn-secondary" href="{% url "vegetation_type_species" vegetation_type.slug %}">New search</a>
         {% else %}
-          <a class="btn btn-secondary" href="{% url "species" %}">New search</a>
-          <a class="btn btn-secondary" href="{% url "species_full_list" %}">View all species</a>
+          <a href="{% url "species" %}">New search</a> | 
+          <a href="{% url "species_full_list" %}">View all species</a>
         {% endif %}
       </p>
     </div>

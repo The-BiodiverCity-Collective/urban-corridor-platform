@@ -63,7 +63,9 @@
 {% if controlpanel %}
   {% include "_nav.controlpanel.html" %}
 {% else %}
-  {% include "_nav.html" %}
+  {% with nav="_nav."|add:SITE.meta_data.nav|add:".html" %}
+    {% include nav %}
+  {% endwith %}
 {% endif %}
 
   <main class="-mt-32">
