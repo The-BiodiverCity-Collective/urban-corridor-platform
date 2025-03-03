@@ -17,7 +17,7 @@
         <i class="fa fa-angle-down mt-1"></i>
       </a>
 
-      <a href="/species/" class="mr-3 inline-flex items-center gap-x-1 text-sm/6 font-semibold {% if menu == "species" %}text-sky-600{% else %}text-gray-900{% endif %} hovermenu" data-target="species" aria-expanded="false">
+      <a href="/species/" class="mr-3 inline-flex items-center gap-x-1 text-sm/6 font-semibold {% if menu == "species" %}text-sky-600 active{% else %}text-gray-900{% endif %} hovermenu" data-target="species" aria-expanded="false">
         {{ _("Species") }}
           <i class="fa fa-angle-down mt-1 {% if menu == "species" %}text-sky-600{% endif %}"></i>
       </a>
@@ -47,33 +47,37 @@
           <h3 class="text-sm/6 font-medium text-gray-500">View plant collections</h3>
           <div class="mt-6 flow-root">
             <div class="-my-2">
-              <a href="/species/" class="flex gap-x-4 py-2 text-sm/6 font-semibold text-gray-900">
+              <a href="/species/" class="flex gap-x-4 py-2 text-sm/6 font-semibold hover:text-sky-600 {% if page == "all_species" %}text-sky-600{% else %}text-gray-900{% endif %}">
                 <i class="fa fa-list fa-fw text-lg text-gray-400 mr-1"></i>
                 All species
               </a>
-              <a href="/species/" class="flex gap-x-4 py-2 text-sm/6 font-semibold text-gray-900">
+              <a href="/species/" class="flex gap-x-4 py-2 text-sm/6 font-semibold text-gray-900 hover:text-sky-600">
                 <i class="fa fa-seedling fa-fw text-lg text-gray-400 mr-1"></i>
                 Indigenous
               </a>
-              <a href="/species/" class="flex gap-x-4 py-2 text-sm/6 font-semibold text-gray-900">
-                <i class="fa fa-triangle-exclamation fa-fw text-lg text-gray-400 mr-1"></i>
-                Invasives
-              </a>
-              <a href="/species/search/?feature=125" class="flex gap-x-4 py-2 text-sm/6 font-semibold text-gray-900">
-                <i class="fa fa-person-digging fa-fw text-lg text-gray-400 mr-1"></i>
+              <a href="/species/search/?feature=125&page=pioneers" 
+              class="flex gap-x-4 py-2 text-sm/6 font-semibold hover:text-sky-600 {% if page == "pioneers" %}text-sky-600{% else %}text-gray-900{% endif %}">
+                <i class="fa fa-shovel fa-fw text-lg text-gray-400 mr-1"></i>
                 Pioneers
               </a>
-              <a href="/species/search/?feature=115" class="flex gap-x-4 py-2 text-sm/6 font-semibold text-gray-900">
-                <i class="fa fa-heart-pulse fa-fw text-lg text-gray-400 mr-1"></i>
+              <a href="/species/search/?feature=115&page=medicinal" 
+              class="flex gap-x-4 py-2 text-sm/6 font-semibold hover:text-sky-600 {% if page == "medicinal" %}text-sky-600{% else %}text-gray-900{% endif %}">
+                <i class="fa fa-heart fa-fw text-lg text-gray-400 mr-1"></i>
                 Medicinal
               </a>
-              <a href="/species/search/?feature=123" class="flex gap-x-4 py-2 text-sm/6 font-semibold text-gray-900">
+              <a href="/species/search/?feature=123&page=edible" 
+              class="flex gap-x-4 py-2 text-sm/6 font-semibold hover:text-sky-600 {% if page == "edible" %}text-sky-600{% else %}text-gray-900{% endif %}">
                 <i class="fa fa-utensils fa-fw text-lg text-gray-400 mr-1"></i>
                 Edible
               </a>
-              <a href="/species/search/?feature=126" class="flex gap-x-4 py-2 text-sm/6 font-semibold text-gray-900">
-                <i class="fa fa-utensils fa-fw text-lg text-gray-400 mr-1"></i>
+              <a href="/species/search/?feature=126&page=easy" 
+              class="flex gap-x-4 py-2 text-sm/6 font-semibold hover:text-sky-600 {% if page == "easy" %}text-sky-600{% else %}text-gray-900{% endif %}">
+                <i class="fa fa-check fa-fw text-lg text-gray-400 mr-1"></i>
                 Easy to grow
+              </a>
+              <a href="/species/" class="flex gap-x-4 py-2 text-sm/6 font-semibold text-gray-900 hover:text-sky-600">
+                <i class="fa fa-exclamation-triangle fa-fw text-lg text-gray-400 mr-1"></i>
+                Invasives
               </a>
             </div>
           </div>
@@ -82,24 +86,29 @@
           <h3 class="text-sm/6 font-medium text-gray-500">{{ _("Animal-friendly plants") }}</h3>
           <div class="mt-6 mb-6 flow-root">
             <div class="-my-2">
-              <a href="/species/search/?feature=111&feature=113&feature=133&search=any" class="flex gap-x-4 py-2 text-sm/6 font-semibold text-gray-900">
+              <a href="/species/search/?feature=111&feature=113&feature=114&feature=133&search=any&page=sunbirds" 
+              class="flex gap-x-4 py-2 text-sm/6 font-semibold hover:text-sky-600 {% if page == "sunbirds" %}text-sky-600{% else %}text-gray-900{% endif %}">
                 <i class="fa fa-feather fa-fw text-lg text-gray-400 mr-1"></i>
                 For sunbirds &amp; sugarbirds
               </a>
-              <a href="/species/search/?feature=129" class="flex gap-x-4 py-2 text-sm/6 font-semibold text-gray-900">
-                <i class="fa fa-feather fa-fw text-lg text-gray-400 mr-1"></i>
+              <a href="/species/search/?feature=129&page=butterflies" 
+              class="flex gap-x-4 py-2 text-sm/6 font-semibold hover:text-sky-600 {% if page == "butterflies" %}text-sky-600{% else %}text-gray-900{% endif %}">
+                <i class="fa fa-flower fa-fw text-lg text-gray-400 mr-1"></i>
                 For butterflies
               </a>
-              <a href="/species/search/?feature=110" class="flex gap-x-4 py-2 text-sm/6 font-semibold text-gray-900">
-                <i class="fa fa-feather fa-fw text-lg text-gray-400 mr-1"></i>
+              <a href="/species/search/?feature=110&page=bees" 
+              class="flex gap-x-4 py-2 text-sm/6 font-semibold hover:text-sky-600 {% if page == "bees" %}text-sky-600{% else %}text-gray-900{% endif %}">
+                <i class="fa fa-flower-tulip fa-fw text-lg text-gray-400 mr-1"></i>
                 For honey bees
               </a>
-              <a href="/species/search/?feature=112" class="flex gap-x-4 py-2 text-sm/6 font-semibold text-gray-900">
-                <i class="fa fa-feather fa-fw text-lg text-gray-400 mr-1"></i>
+              <a href="/species/search/?feature=112&page=beetles" 
+              class="flex gap-x-4 py-2 text-sm/6 font-semibold hover:text-sky-600 {% if page == "beetles" %}text-sky-600{% else %}text-gray-900{% endif %}">
+                <i class="fa fa-bug fa-fw text-lg text-gray-400 mr-1"></i>
                 For monkey beetles
               </a>
-              <a href="/species/search/?feature=111&feature=113&feature=114&feature=133&feature=109&search=any" class="flex gap-x-4 py-2 text-sm/6 font-semibold text-gray-900">
-                <i class="fa fa-feather fa-fw text-lg text-gray-400 mr-1"></i>
+              <a href="/species/search/?feature=111&feature=113&feature=114&feature=133&feature=109&search=any&page=birds" 
+              class="flex gap-x-4 py-2 text-sm/6 font-semibold hover:text-sky-600 {% if page == "birds" %}text-sky-600{% else %}text-gray-900{% endif %}">
+                <i class="fa fa-crow fa-fw text-lg text-gray-400 mr-1"></i>
                 For birds
               </a>
             </div>
@@ -107,8 +116,9 @@
           <h3 class="text-sm/6 font-medium text-gray-500">{{ _("Additional info") }}</h3>
           <div class="mt-6 flow-root">
             <div class="-my-2">
-              <a href="{% url "species_sources" %}" class="flex gap-x-4 py-2 text-sm/6 font-semibold text-gray-900">
-                <i class="fa fa-feather fa-fw text-lg text-gray-400 mr-1"></i>
+              <a href="{% url "species_sources" %}" 
+              class="flex gap-x-4 py-2 text-sm/6 font-semibold hover:text-sky-600 {% if page == "sources" %}text-sky-600{% else %}text-gray-900{% endif %}">
+                <i class="fa fa-books fa-fw text-lg text-gray-400 mr-1"></i>
                 {{ _("Source documents") }}
               </a>
             </div>
@@ -124,10 +134,10 @@
           </div>
           <div>
             <span class="float-right relative z-10 text-center rounded-full bg-gray-100 px-3 py-1.5 text-xs font-medium text-gray-600 hover:bg-gray-200">
-              Tool <br>recommendation
+              Online tool
             </span>
             <h4 class="mt-2 text-sm/6 font-semibold text-gray-900">
-              <a href="#">
+              <a href="#" class="hover:text-sky-600">
                 <span class="absolute inset-0"></span>
                 Species list generator
               </a>
@@ -140,18 +150,22 @@
         </article>
         <article class="relative isolate flex max-w-2xl flex-col gap-x-8 gap-y-6 sm:flex-row sm:items-start lg:flex-col lg:items-stretch">
           <div class="relative flex-none">
-            <img class="aspect-[2/1] w-full rounded-lg bg-gray-100 object-cover sm:aspect-video sm:h-32 lg:h-auto" src="https://inaturalist-open-data.s3.amazonaws.com/photos/16112761/medium.jpg" alt="">
+            <img class="aspect-[2/1] w-full rounded-lg bg-gray-100 object-cover sm:aspect-video sm:h-32 lg:h-auto" src="https://inaturalist-open-data.s3.amazonaws.com/photos/161477582/large.jpeg" alt="">
             <div class="absolute inset-0 rounded-lg ring-1 ring-inset ring-gray-900/10"></div>
           </div>
           <div>
             <span class="float-right relative z-10 rounded-full bg-gray-100 px-3 py-1.5 text-xs font-medium text-gray-600 hover:bg-gray-200">Monthly highlight</span>
             <h4 class="mt-2 text-sm/6 font-semibold text-gray-900">
-              <a href="#">
+              <a href="/species/11877/" class="hover:text-sky-600">
                 <span class="absolute inset-0"></span>
-                Acacia caffra
+                <em>
+                Ferraria crispa
+                </em>
               </a>
             </h4>
-            <p class="mt-2 text-sm/6 text-gray-600">A beautiful tree that brings support for pollinators, mammals, and shading to any garden!</p>
+            <p class="mt-2 text-sm/6 text-gray-600">
+              A stunning flower from the Iridaceae family - good for insects and a stunning sight.
+            </p>
           </div>
         </article>
       </div>
@@ -205,7 +219,7 @@
           </div>
           <div>
             <span class="float-right relative z-10 text-center rounded-full bg-gray-100 px-3 py-1.5 text-xs font-medium text-gray-600 hover:bg-gray-200">
-              Tool <br>recommendation
+              Online tool
             </span>
             <h4 class="mt-2 text-sm/6 font-semibold text-gray-900">
               <a href="#">

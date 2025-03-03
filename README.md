@@ -6,10 +6,9 @@ The following technologies are used:
 
 - Django 5
 - Python 3
-- PostgreSQL 
-- PostGIS
+- PostgreSQL/PostGIS
 - Docker
-- Node
+- NodeJS
 - TailwindCSS
 
 In order to meaningfully contribute to this project (or clone it and use it for your own purposes), you should ideally be comfortable with (or willing to learn about) the aforementioned technologies. You can make a meaningful contribution if you know either about python/Django, or about HTML/CSS/Javascript (allowing you to contribute with back-end or front-end programming, respectively).
@@ -57,3 +56,6 @@ NOTE: there may be additional database migrations that are not yet applied to th
 
 From the root directory of the project. This is a shortcut to migrate any unapplied migrations in the docker container (check out the file contents to see what commands it runs).
 
+# CSS
+
+We use [TailwindCSS](https://tailwindcss.com/). The CSS is generated based on the classes that we use. This means that if you apply new classes, you should re-generate the CSS. To do so, run `./csscreate` which will create a new `output.css` based on the new set of css styles required. In addition to analyzing the styles used in your HTML files, this script will also merge the content of any custom CSSthat is defined in `static/ucp.css`. Please use that particular file if you want to add custom classes.

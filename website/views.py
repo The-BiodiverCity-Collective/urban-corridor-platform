@@ -666,6 +666,7 @@ def species_overview(request, vegetation_type=None):
         "veg_link": f"?vegetation_type={vegetation_type.id}" if vegetation_type else "",
         "menu": "species",
         "show_total_box": True,
+        "page": "all_species",
     }
     return render(request, "species.overview.html", context)
 
@@ -724,6 +725,7 @@ def species_full_list(request):
         "features": features,
         "vegetation_type": vegetation_type,
         "menu": "species",
+        "page": request.GET.get("page"),
     }
     return render(request, "species.all.html", context)
 
@@ -800,6 +802,7 @@ def species_sources(request):
         "menu": "species",
         "documents": Document.objects.filter(site=site, doc_type="SPECIES_LIST"),
         "title": _("Species source document"),
+        "page": "sources",
     }
     return render(request, "species.sources.html", context)
 
