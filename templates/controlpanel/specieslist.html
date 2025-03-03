@@ -29,7 +29,7 @@
   {% for each in species %}
     <tr {% if each.meta_data.inat %}class="inat"{% endif %}>
       <td><a href="{% url "controlpanel_species" each.id %}">{{ each.name }}</a></td>
-      <td>{% if each.meta_data.inat %}<i class="fa fa-check"></i>{% else %}<i class="fa fa-minus-circle" data-id="{{ each.id }}"></i>{% endif %}</td>
+      <td data-sort="{% if each.meta_data.inat %}1{% else %}0{% endif %}">{% if each.meta_data.inat %}<i class="fa fa-check"></i>{% else %}<i class="fa fa-minus-circle" data-id="{{ each.id }}"></i>{% endif %}</td>
       <td>{{ each.get_conservation_status|default_if_none:"" }}</td>
       <td>{{ each.get_sanbi_conservation_status|default_if_none:"" }}</td>
       {% if request.GET.photos %}

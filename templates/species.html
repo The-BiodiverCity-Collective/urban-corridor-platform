@@ -28,6 +28,7 @@
             <span id="credit" class="absolute text-sm bg-gray-50 opacity-90 p-1 rounded-tr-md" style="bottom:0;">{{ photos.0.credit }}</span>
           </div>
         </div>
+
       </div>
 
       <div class="mt-10 px-4 sm:mt-16 sm:px-0 lg:mt-0">
@@ -59,16 +60,37 @@
           </ul>
         {% endif %}
 
-        <h3 class="mt-10">{{ _("Sources and references") }}</h3>
-        <ul class="flex flex-wrap list-none">
-        {% for each in info.links %}
-          <li><a href="{{ each }}" class="no-underline rounded-md bg-sky-600 px-3.5 py-2.5 text-sm font-semibold text-white shadow-sm hover:text-white hover:bg-sky-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-sky-600 flex mb-3 mr-3">{{ each|domain }}</a></li>
-        {% endfor %}
-        </ul>
-
       </div>
     </div>
   </div>
+
+  {% if details.propagation_seed or details.propagation_cutting %}
+    <div class="lg:grid lg:grid-cols-2 lg:items-start lg:gap-x-8 bg-gray-100 p-5">
+      {% if details.propagation_seed %}
+        <section>
+          <h3>{{ _("Propagation by seed") }}</h3>
+          {{ details.propagation_seed|linebreaksbr }}
+        </section>
+      {% endif %}
+
+      {% if details.propagation_cutting %}
+        <section>
+          <h3>{{ _("Propagation by cutting") }}</h3>
+          {{ details.propagation_cutting|linebreaksbr }}
+        </section>
+      {% endif %}
+    </div>
+  {% endif %}
+
+  <section>
+    <h3 class="mt-10">{{ _("Sources and references") }}</h3>
+    <ul class="flex flex-wrap list-none">
+    {% for each in info.links %}
+      <li><a href="{{ each }}" class="no-underline rounded-md bg-sky-600 px-3.5 py-2.5 text-sm font-semibold text-white shadow-sm hover:text-white hover:bg-sky-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-sky-600 flex mb-3 mr-3">{{ each|domain }}</a></li>
+    {% endfor %}
+    </ul>
+  </section>
+
 </div>
 
 {% if request.user.is_staff %}
