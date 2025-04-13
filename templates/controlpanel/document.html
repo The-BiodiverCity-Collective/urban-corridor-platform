@@ -16,28 +16,28 @@
           <div class="col-span-full">
             <label for="name" class="block text-sm/6 font-medium text-gray-900">{{ _("Name") }}</label>
             <div class="mt-2">
-              <input type="text" name="name" id="name" class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-sky-600 sm:text-sm/6" value="{{ info.name }}" required>
+              <input type="text" name="name" id="name" class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-xs ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-sky-600 sm:text-sm/6" value="{{ info.name }}" required>
             </div>
           </div>
 
           <div class="sm:col-span-3">
             <label for="author" class="block text-sm/6 font-medium text-gray-900">{{ _("Author") }}</label>
             <div class="mt-2">
-              <input type="text" name="author" id="author" class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-sky-600 sm:text-sm/6" value="{{ info.author }}" required>
+              <input type="text" name="author" id="author" class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-xs ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-sky-600 sm:text-sm/6" value="{{ info.author }}" required>
             </div>
           </div>
 
           <div class="sm:col-span-3">
             <label for="url" class="block text-sm/6 font-medium text-gray-900">{{ _("URL") }}</label>
             <div class="mt-2">
-              <input type="url" name="url" id="url" class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-sky-600 sm:text-sm/6" value="{{ info.url|default_if_none:"" }}">
+              <input type="url" name="url" id="url" class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-xs ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-sky-600 sm:text-sm/6" value="{{ info.url|default_if_none:"" }}">
             </div>
           </div>
 
           <div class="sm:col-span-3">
             <label for="doc_type" class="block text-sm/6 font-medium text-gray-900">{{ _("Type") }}</label>
             <div class="mt-2">
-              <select id="doc_type" name="doc_type" class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-sky-600 sm:max-w-xs sm:text-sm/6" required>
+              <select id="doc_type" name="doc_type" class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-xs ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-sky-600 sm:max-w-xs sm:text-sm/6" required>
                 <option value=""></option>
                 {% for key,value in doc_types %}
                   <option {% if key == info.doc_type %}selected{% endif %} value="{{ key }}">{{ value }}</option>
@@ -54,7 +54,7 @@
               </span>
             {% endif %}
             <div class="mt-2">
-              <input id="file" name="file" type="file" class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-sky-600 sm:text-sm/6" multiple>
+              <input id="file" name="file" type="file" class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-xs ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-sky-600 sm:text-sm/6" multiple>
             </div>
           </div>
 
@@ -91,7 +91,7 @@
               <img src="{{ info.cover_image.thumbnail.url }}" style="max-height:300px" class="rounded-2xl" />
             {% endif %}
             <div class="mt-2">
-              <input id="cover" name="cover" type="file" accept="image/png, image/gif, image/jpeg" class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-sky-600 sm:text-sm/6" multiple>
+              <input id="cover" name="cover" type="file" accept="image/png, image/gif, image/jpeg" class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-xs ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-sky-600 sm:text-sm/6" multiple>
             </div>
           </div>
 
@@ -99,7 +99,7 @@
           <div class="col-span-full">
             <label for="description" class="block text-sm/6 font-medium text-gray-900">Description</label>
             <div class="mt-2">
-              <textarea name="description" id="description" class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-sky-600 sm:text-sm/6">{{ info.description|default_if_none:"" }}</textarea>
+              <textarea name="description" id="description" class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-xs ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-sky-600 sm:text-sm/6">{{ info.description|default_if_none:"" }}</textarea>
             </div>
           </div>
 
@@ -131,7 +131,7 @@
     </div>
 
     <div class="mt-6 flex items-center justify-end gap-x-6">
-      <button type="submit" class="px-4 py-2 bg-lime-600 hover:bg-lime-700 text-white font-bold rounded-md focus:outline-none focus:ring focus:ring-lime-300">Submit</button>
+      <button type="submit" class="px-4 py-2 bg-lime-600 hover:bg-lime-700 text-white font-bold rounded-md focus:outline-hidden focus:ring-3 focus:ring-lime-300">Submit</button>
     </div>
     {% csrf_token %}
   </form>

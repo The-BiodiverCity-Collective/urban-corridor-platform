@@ -68,7 +68,7 @@
     <form method="post" class="mt-5">
       <input type="hidden" name="create_shapefile_plot" value="true" />
       {% csrf_token %}
-      <button type="submit" class="px-4 py-2 bg-lime-600 hover:bg-lime-700 text-white font-bold rounded-md focus:outline-none focus:ring focus:ring-lime-300">
+      <button type="submit" class="px-4 py-2 bg-lime-600 hover:bg-lime-700 text-white font-bold rounded-md focus:outline-hidden focus:ring-3 focus:ring-lime-300">
         {% if info.meta_data.shapefile_plot %}
           Re-generate plot
         {% else %}
@@ -212,7 +212,7 @@
     <form method="post">
       <div class="mt-6">
         {% if not info.shpinfo %}
-          <button type="submit" class="px-4 py-2 bg-lime-600 hover:bg-lime-700 text-white font-bold rounded-md focus:outline-none focus:ring focus:ring-lime-300" name="load_shapefile_info" value="true">
+          <button type="submit" class="px-4 py-2 bg-lime-600 hover:bg-lime-700 text-white font-bold rounded-md focus:outline-hidden focus:ring-3 focus:ring-lime-300" name="load_shapefile_info" value="true">
             Load shapefile info
           </button>
         {% endif %}
@@ -230,11 +230,11 @@
         {% endif %}
 
         {% if not info.shpinfo %}
-          <button type="submit" class="px-4 py-2 bg-gray-500 text-gray-200 font-bold rounded-md focus:outline-none focus:ring focus:ring-gray-300 cursor-not-allowed" name="convert_shapefile" value="true" disabled>
+          <button type="submit" class="px-4 py-2 bg-gray-500 text-gray-200 font-bold rounded-md focus:outline-hidden focus:ring-3 focus:ring-gray-300 cursor-not-allowed" name="convert_shapefile" value="true" disabled>
             Classify and import
           </button>
         {% else %}
-          <button type="submit" class="px-4 py-2 bg-lime-600 hover:bg-lime-700 text-white font-bold rounded-md focus:outline-none focus:ring focus:ring-lime-300" name="convert_shapefile" value="true">
+          <button type="submit" class="px-4 py-2 bg-lime-600 hover:bg-lime-700 text-white font-bold rounded-md focus:outline-hidden focus:ring-3 focus:ring-lime-300" name="convert_shapefile" value="true">
             Classify and import
           </button>
         {% endif %}
@@ -252,13 +252,13 @@
       <p>Do you want to clip the shapefile so it only shows elements within your corridor? This is especially useful 
       if the shapefile covers a much larger area.</p>
 
-      <select name="clip" class="mt-4 block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-sky-600 sm:max-w-xs sm:text-sm/6" required>
+      <select name="clip" class="mt-4 block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-xs ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-sky-600 sm:max-w-xs sm:text-sm/6" required>
         <option value=""></option>
         {% for each in corridors %}
           <option value="{{ each.id }}">{{ each }}</option>
         {% endfor %}
       </select>
-      <button type="submit" class="px-4 py-2 mt-4 bg-lime-600 hover:bg-lime-700 text-white font-bold rounded-md focus:outline-none focus:ring focus:ring-lime-300" name="convert_shapefile" value="true">
+      <button type="submit" class="px-4 py-2 mt-4 bg-lime-600 hover:bg-lime-700 text-white font-bold rounded-md focus:outline-hidden focus:ring-3 focus:ring-lime-300" name="convert_shapefile" value="true">
         Clip to these borders
       </button>
     {% csrf_token %}

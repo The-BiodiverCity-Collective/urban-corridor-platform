@@ -16,12 +16,12 @@
   <h1>{{ page }}</h1>
   {{ page.get_content }}
 
-  <div class="border rounded bg-white shadow-sm p-3 d-inline-block mb-4">
+  <div class="border rounded-sm bg-white shadow-xs p-3 d-inline-block mb-4">
     <i class="fal fa-fw fa-info-circle me-1"></i> We currently have <strong>{{ all.count }}</strong> gardens in our network.
   </div>
 
   <div>
-    <div id="map" class="rounded shadow-sm"></div>
+    <div id="map" class="rounded-sm shadow-xs"></div>
   </div>
 
   {% if not request.GET.area %}

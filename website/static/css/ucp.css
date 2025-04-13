@@ -1,22 +1,128 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import 'tailwindcss';
 
-.leaflet-map {
-  box-shadow: 1px 1px 2px 0px rgba(0, 0, 0, 0.2);
-  border-radius: .25rem;
-  height: 100%;
-  min-height: 300px;
-  width: 100%;
-  font-family: Lato, "Helvetica Neue", Arial, Helvetica, sans-serif; }
+@utility table {
+  @apply w-full border-collapse bg-white;
+
+  & th {
+    @apply bg-gray-100 text-left font-semibold p-3 border-b;
+  }
+
+  & td {
+    @apply p-3 border-b;
+  }
+
+  & tbody tr:nth-child(even) {
+    @apply bg-gray-50;
+  }
+}
+
+@utility btn-blue {
+  @apply bg-sky-700 shadow-inner shadow-md text-white py-2 px-4 rounded-sm hover:bg-sky-600 focus:outline-hidden font-bold focus:ring-sky-300 no-underline hover:text-white;
+}
+
+@utility btn-green {
+  @apply bg-lime-600 shadow-inner shadow-md text-white py-2 px-4 rounded-sm hover:bg-lime-700 focus:outline-hidden font-bold focus:ring-lime-300 no-underline hover:text-white;
+}
+
+@utility btn-danger {
+  @apply bg-red-600 shadow-inner shadow-md text-white py-2 px-4 rounded-sm hover:bg-red-700 focus:outline-hidden font-bold focus:ring-red-300 no-underline hover:text-white;
+}
+
+@utility btn-add {
+  @apply bg-orange-600 shadow-inner shadow-md text-white py-2 px-4 rounded-sm hover:bg-orange-700 focus:outline-hidden font-bold focus:ring-orange-300 no-underline hover:text-white;
+}
+
+@utility btn-edit {
+  @apply bg-amber-300 shadow-inner shadow-md text-white py-2 px-4 rounded-sm hover:bg-amber-400 focus:outline-hidden font-bold focus:ring-orange-300 no-underline hover:text-white;
+}
+
+@utility badge {
+  @apply inline-flex items-center rounded-md bg-gray-50 px-2 py-1 text-xs font-medium text-gray-600 ring-1 ring-inset ring-gray-500/10;
+}
+
+@utility badge-success {
+  @apply inline-flex items-center rounded-md bg-green-50 px-2 py-1 text-xs font-medium text-green-700 ring-1 ring-inset ring-green-600/20;
+}
+
+@utility badge-danger {
+  @apply inline-flex items-center rounded-md bg-red-50 px-2 py-1 text-xs font-medium text-red-700 ring-1 ring-inset ring-red-600/10;
+}
+
+@utility badge-warning {
+  @apply inline-flex items-center rounded-md bg-yellow-50 px-2 py-1 text-xs font-medium text-yellow-800 ring-1 ring-inset ring-yellow-600/20;
+}
+
+@utility badge-info {
+  @apply inline-flex items-center rounded-md bg-blue-50 px-2 py-1 text-xs font-medium text-blue-700 ring-1 ring-inset ring-blue-700/10;
+}
+
+@utility alert {
+  @apply p-4 border mb-2 rounded-sm;
+}
+
+@utility alert-icon {
+  @apply flex items-center p-4 border;
+}
+
+@utility alert-success {
+  @apply bg-lime-50 border-lime-500 text-lime-700;
+}
+
+@utility alert-info {
+  @apply bg-sky-100 border-sky-500 text-sky-700;
+}
+
+@utility alert-warning {
+  @apply bg-amber-50 border-amber-500 text-amber-700;
+}
+
+@utility alert-danger {
+  @apply bg-red-100 border-red-500 text-red-700;
+}
+
+@utility tab {
+  main & {
+    @apply no-underline whitespace-nowrap border-b-2 py-4 px-1 text-sm font-medium;
+  }
+  main &.active {
+    @apply border-indigo-500 text-indigo-600;
+  }
+  main &.inactive {
+    @apply border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700;
+  }
+}
+
+@utility active {
+  main &.tab {
+    @apply border-indigo-500 text-indigo-600;
+  }
+}
+
+@utility inactive {
+  main &.tab {
+    @apply border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700;
+  }
+}
+
+@layer utilities {
+  .leaflet-map {
+    box-shadow: 1px 1px 2px 0px rgba(0, 0, 0, 0.2);
+    border-radius: 0.25rem;
+    height: 100%;
+    min-height: 300px;
+    width: 100%;
+    font-family: Lato, 'Helvetica Neue', Arial, Helvetica, sans-serif;
+  }
   .leaflet-map a.btn-primary {
-    color: #fff; }
+    color: #fff;
+  }
   .leaflet-map .period-toggles,
   .leaflet-map .download-map-wrapper,
   .leaflet-map .clear-map-wrapper {
     border: 2px solid rgba(0, 0, 0, 0.2);
     background-clip: padding-box;
-    border-radius: .25rem; }
+    border-radius: 0.25rem;
+  }
   .leaflet-map .switch-period,
   .leaflet-map .download-map,
   .leaflet-map .clear-map {
@@ -28,28 +134,33 @@
     text-align: center;
     font-size: 1rem;
     color: #404040;
-    border-radius: .25rem; }
-    .leaflet-map .switch-period:hover,
-    .leaflet-map .download-map:hover,
-    .leaflet-map .clear-map:hover {
-      background-color: #f4f4f4; }
+    border-radius: 0.25rem;
+  }
+  .leaflet-map .switch-period:hover,
+  .leaflet-map .download-map:hover,
+  .leaflet-map .clear-map:hover {
+    background-color: #f4f4f4;
+  }
   .leaflet-map .switch-period.prev {
     display: inline-block;
-    border-radius: .25rem 0 0 .25rem; }
+    border-radius: 0.25rem 0 0 0.25rem;
+  }
   .leaflet-map .switch-period.next {
     display: inline-block;
-    border-radius: 0 .25rem .25rem 0; }
+    border-radius: 0 0.25rem 0.25rem 0;
+  }
   .leaflet-map .switch-period.disabled {
     color: #efefef;
     cursor: not-allowed;
-    background-color: #fff; }
+    background-color: #fff;
+  }
   .leaflet-map .current-period {
     background-color: #f4f4f4;
     display: inline-block;
     border-left: 1px solid #ccc;
     border-right: 1px solid #ccc;
-    font-size: .75rem;
-    padding: 0 .75rem;
+    font-size: 0.75rem;
+    padding: 0 0.75rem;
     vertical-align: top;
     height: 30px;
     line-height: 30px;
@@ -57,7 +168,8 @@
     text-align: center;
     white-space: nowrap;
     overflow: hidden;
-    text-overflow: ellipsis; }
+    text-overflow: ellipsis;
+  }
   .leaflet-map .show-world.button {
     width: 30px;
     height: 30px;
@@ -67,171 +179,96 @@
     box-shadow: 0px 0px 0px 2px rgba(0, 0, 0, 0.2);
     background-color: #fff;
     cursor: pointer;
-    font-family: "Font Awesome 5 Pro";
+    font-family: 'Font Awesome 5 Pro';
     text-align: center;
-    font-size: 14px; }
-    .leaflet-map .show-world.button:hover {
-      background-color: #f4f4f4; }
-    .leaflet-map .show-world.button::before {
-      content: "\f7a2"; }
+    font-size: 14px;
+  }
+  .leaflet-map .show-world.button:hover {
+    background-color: #f4f4f4;
+  }
+  .leaflet-map .show-world.button::before {
+    content: '\f7a2';
+  }
   .leaflet-map .legend {
     line-height: 18px;
     color: #212529;
     background-color: #fbfbfb;
-    padding: .5rem;
+    padding: 0.5rem;
     border: 2px solid rgba(0, 0, 0, 0.2);
-    border-radius: .25rem;
-    max-width: 250px; }
+    border-radius: 0.25rem;
+    max-width: 250px;
+  }
   .leaflet-map .legend i {
     width: 16px;
     height: 16px;
     float: left;
     margin-right: 8px;
-    opacity: 0.7; }
+    opacity: 0.7;
+  }
 
-.leaflet-popup-content-wrapper {
-  border-radius: .25rem !important; }
+  .leaflet-popup-content-wrapper {
+    border-radius: 0.25rem !important;
+  }
   .leaflet-popup-content-wrapper .leaflet-popup-content {
-    line-height: 1 !important; }
+    line-height: 1 !important;
+  }
   .leaflet-popup-content-wrapper .title {
-    font-size: 1.25rem; }
+    font-size: 1.25rem;
+  }
   .leaflet-popup-content-wrapper hr {
     margin: 13px 0 13px -19px;
-    width: calc(100% + 38px); }
+    width: calc(100% + 38px);
+  }
   .leaflet-popup-content-wrapper img {
-    border-radius: .25rem;
+    border-radius: 0.25rem;
     min-width: 200px;
-    width: 100%; }
+    width: 100%;
+  }
 
-.dt-length select{width:auto} /* Data-tables select should NOT be 100% */
-.fixed-thumb {
-  object-fit: cover;
-  height: 200px;
-}
-dl.dl-horizontal {
+  .dt-length select {
+    width: auto;
+  } /* Data-tables select should NOT be 100% */
+  .fixed-thumb {
+    object-fit: cover;
+    height: 200px;
+  }
+  dl.dl-horizontal {
     display: flex;
     flex-direction: column;
     margin: 0;
-}
+  }
 
-dl.dl-horizontal dt, dl.dl-horizontal dd {
+  dl.dl-horizontal dt,
+  dl.dl-horizontal dd {
     display: inline-block;
     margin: 0;
-}
+  }
 
-dl.dl-horizontal dt {
+  dl.dl-horizontal dt {
     font-weight: bold;
     width: 200px; /* Adjust this width as necessary */
     margin-bottom: 5px;
-}
+  }
 
-dl.dl-horizontal dd {
+  dl.dl-horizontal dd {
     margin-left: 0;
     margin-bottom: 10px;
     width: auto;
     flex: 1;
-}
-.btn-edit {
-  position: fixed;
-  bottom: 10px;
-  left: 10px;
-}
-.mainnav .dropdown {
-  visibility: hidden;
-  opacity: 0;
-  transition: opacity 0.2s ease-out, transform 0.2s ease-out;
-  position: absolute;
-}
-
-@layer components {
-
-  .table{
-    @apply w-full border-collapse bg-white;
   }
-
-  .table th {
-    @apply bg-gray-100 text-left font-semibold p-3 border-b;
-  }
-
-  .table td {
-    @apply p-3 border-b;
-  }
-
-  .table tbody tr:nth-child(even) {
-    @apply bg-gray-50;
-  }
-
-  .btn-blue {
-    @apply bg-sky-700 shadow-inner shadow-md text-white py-2 px-4 rounded hover:bg-sky-600 focus:outline-none font-bold focus:ring-sky-300 no-underline hover:text-white;
-  }
-
-  .btn-green {
-    @apply bg-lime-600 shadow-inner shadow-md text-white py-2 px-4 rounded hover:bg-lime-700 focus:outline-none font-bold focus:ring-lime-300 no-underline hover:text-white;
-  }
-
-  .btn-danger {
-    @apply bg-red-600 shadow-inner shadow-md text-white py-2 px-4 rounded hover:bg-red-700 focus:outline-none font-bold focus:ring-red-300 no-underline hover:text-white;
-  }
-
-  .btn-add {
-    @apply bg-orange-600 shadow-inner shadow-md text-white py-2 px-4 rounded hover:bg-orange-700 focus:outline-none font-bold focus:ring-orange-300 no-underline hover:text-white;
-  }
-
   .btn-edit {
-    @apply bg-amber-300 shadow-inner shadow-md text-white py-2 px-4 rounded hover:bg-amber-400 focus:outline-none font-bold focus:ring-orange-300 no-underline hover:text-white;
+    position: fixed;
+    bottom: 10px;
+    left: 10px;
   }
-
-  .badge {
-    @apply inline-flex items-center rounded-md bg-gray-50 px-2 py-1 text-xs font-medium text-gray-600 ring-1 ring-inset ring-gray-500/10;
+  .mainnav .dropdown {
+    visibility: hidden;
+    opacity: 0;
+    transition:
+      opacity 0.2s ease-out,
+      transform 0.2s ease-out;
+    position: absolute;
   }
-
-  .badge-success {
-    @apply inline-flex items-center rounded-md bg-green-50 px-2 py-1 text-xs font-medium text-green-700 ring-1 ring-inset ring-green-600/20;
-  }
-  
-  .badge-danger {
-    @apply inline-flex items-center rounded-md bg-red-50 px-2 py-1 text-xs font-medium text-red-700 ring-1 ring-inset ring-red-600/10;
-  }
-  .badge-warning {
-    @apply inline-flex items-center rounded-md bg-yellow-50 px-2 py-1 text-xs font-medium text-yellow-800 ring-1 ring-inset ring-yellow-600/20;
-  }
-  .badge-info {
-    @apply inline-flex items-center rounded-md bg-blue-50 px-2 py-1 text-xs font-medium text-blue-700 ring-1 ring-inset ring-blue-700/10
-  }
-
-  .alert {
-    @apply p-4 border mb-2 rounded;
-  }
-  .alert-icon {
-    @apply flex items-center p-4 border;
-  }
-
-  .alert-success {
-    @apply bg-lime-50 border-lime-500 text-lime-700;
-  }
-
-  .alert-info {
-    @apply bg-sky-100 border-sky-500 text-sky-700;
-  }
-
-  .alert-warning {
-    @apply bg-amber-50 border-amber-500 text-amber-700;
-  }
-
-  .alert-danger {
-    @apply bg-red-100 border-red-500 text-red-700;
-  }
-
-  main .tab {
-    @apply no-underline whitespace-nowrap border-b-2 py-4 px-1 text-sm font-medium;
-  }
-  main .tab.active {
-    @apply border-indigo-500 text-indigo-600;
-  }
-  main .tab.inactive {
-    @apply border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700;
-  }
-
 }
 
 @layer base {
@@ -257,13 +294,13 @@ dl.dl-horizontal dd {
   }
 
   main input:not([type="radio"]):not([type="checkbox"]) {
-    @apply w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500;
+    @apply w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-hidden focus:ring-2 focus:ring-blue-500;
   }
   main select {
-    @apply w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500;
+    @apply w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-hidden focus:ring-2 focus:ring-blue-500;
   }
   main textarea {
-    @apply w-full px-4 py-2 mt-1 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500;
+    @apply w-full px-4 py-2 mt-1 border border-gray-300 rounded-lg focus:outline-hidden focus:ring-2 focus:ring-blue-500;
   }
 
 }

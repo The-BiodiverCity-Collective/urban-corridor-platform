@@ -92,21 +92,21 @@
             <div class="sm:col-span-3">
               <label for="opacity" class="block text-sm/6 font-medium text-gray-900">Opacity (0-100)</label>
               <div class="mt-2">
-                <input type="number" name="opacity" id="opacity" class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-sky-600 sm:text-sm/6" value="{{ info.opacity }}" required>
+                <input type="number" name="opacity" id="opacity" class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-xs ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-sky-600 sm:text-sm/6" value="{{ info.opacity }}" required>
               </div>
             </div>
 
             <div class="sm:col-span-3">
               <label for="fill_opacity" class="block text-sm/6 font-medium text-gray-900">Fill Opacity</label>
               <div class="mt-2">
-                <input type="number" name="fill_opacity" id="fill_opacity" class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-sky-600 sm:text-sm/6" value="{{ info.fill_opacity }}">
+                <input type="number" name="fill_opacity" id="fill_opacity" class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-xs ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-sky-600 sm:text-sm/6" value="{{ info.fill_opacity }}">
               </div>
             </div>
 
             <div class="sm:col-span-3">
               <label for="line_width" class="block text-sm/6 font-medium text-gray-900">Line width</label>
               <div class="mt-2">
-                <input type="number" name="line_width" id="line_width" class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-sky-600 sm:text-sm/6" value="{{ info.line_width }}">
+                <input type="number" name="line_width" id="line_width" class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-xs ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-sky-600 sm:text-sm/6" value="{{ info.line_width }}">
               </div>
             </div>
 
@@ -136,7 +136,7 @@
 
   <div class="mt-6 flex items-center justify-end gap-x-6">
     <a href="javascript:history.back(1)" class="text-sm/6 font-semibold text-gray-900">Cancel</a>
-    <button type="submit" class="px-4 py-2 bg-lime-600 hover:bg-lime-700 text-white font-bold rounded-md focus:outline-none focus:ring focus:ring-lime-300">Submit</button>
+    <button type="submit" class="px-4 py-2 bg-lime-600 hover:bg-lime-700 text-white font-bold rounded-md focus:outline-hidden focus:ring-3 focus:ring-lime-300">Submit</button>
   </div>
 
   {% csrf_token %}

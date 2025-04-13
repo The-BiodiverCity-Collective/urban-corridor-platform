@@ -42,21 +42,21 @@
     <div class="sm:col-span-3">
       <label for="author" class="block text-sm/6 font-medium text-gray-900">{{ _("Photographer") }}</label>
       <div class="mt-2">
-        <input type="text" name="author" id="author" class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-sky-600 sm:text-sm/6" value="{{ info.author|default_if_none:"" }}" required>
+        <input type="text" name="author" id="author" class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-xs ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-sky-600 sm:text-sm/6" value="{{ info.author|default_if_none:"" }}" required>
       </div>
     </div>
 
     <div class="sm:col-span-3">
       <label for="position" class="block text-sm/6 font-medium text-gray-900">{{ _("Position") }}</label>
       <div class="mt-2">
-        <input type="text" name="position" id="position" class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-sky-600 sm:text-sm/6" value="{{ info.position|default_if_none:"" }}" required>
+        <input type="text" name="position" id="position" class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-xs ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-sky-600 sm:text-sm/6" value="{{ info.position|default_if_none:"" }}" required>
       </div>
     </div>
 
     <div class="sm:col-span-3">
       <label for="license" class="block text-sm/6 font-medium text-gray-900">{{ _("License") }}</label>
       <div class="mt-2">
-        <select id="license" name="license" class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-sky-600 sm:max-w-xs sm:text-sm/6" required>
+        <select id="license" name="license" class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-xs ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-sky-600 sm:max-w-xs sm:text-sm/6" required>
           <option value=""></option>
           {% for key,value in licenses %}
             <option {% if key == info.license_code %}selected{% endif %} value="{{ key }}">{{ value }}</option>
@@ -68,12 +68,12 @@
     <div class="col-span-full">
       <label for="description" class="block text-sm/6 font-medium text-gray-900">{{ _("Description") }}</label>
       <div class="mt-2">
-        <textarea name="description" id="description" class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-sky-600 sm:text-sm/6">{{ info.description|default_if_none:"" }}</textarea>
+        <textarea name="description" id="description" class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-xs ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-sky-600 sm:text-sm/6">{{ info.description|default_if_none:"" }}</textarea>
       </div>
     </div>
 
       <div class="mt-6 flex items-center justify-end gap-x-6">
-        <button type="submit" class="px-4 py-2 bg-lime-600 hover:bg-lime-700 text-white font-bold rounded-md focus:outline-none focus:ring focus:ring-lime-300">
+        <button type="submit" class="px-4 py-2 bg-lime-600 hover:bg-lime-700 text-white font-bold rounded-md focus:outline-hidden focus:ring-3 focus:ring-lime-300">
           {{ _("Save") }}
         </button>
       </div>
