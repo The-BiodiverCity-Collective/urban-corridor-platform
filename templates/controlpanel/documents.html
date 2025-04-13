@@ -2,29 +2,48 @@
 
 {% block content %}
 
-<h1 class="text-3xl">Documents</h1>
+<h1 class="text-3xl">
+  {{ _("Documents") }}
+</h1>
 
-<table class="table mb-5">
-  <thead>
-    <tr>
-      <th>Name</th>
-      <th>Type</th>
-      <th>Edit</th>
-    </tr>
-  </thead>
-  <tbody>
-  {% for each in documents %}
-    <tr>
-      <td><a class="btn btn-info" href="{% url "controlpanel_document" each.id %}">{{ each }}</a></td>
-      <td>{{ each.get_doc_type_display }}</td>
-      <td>
-        <a class="btn btn-info" href="{% url "controlpanel_document" each.id %}"><i class="fa fa-pencil"></i> Edit</a>
-        <a class="btn btn-info" href="{% url "species_source" each.id %}"><i class="fa fa-file"></i> View</a>
-      </td>
-    </tr>
+<nav class="mb-3 flex space-x-8" aria-label="Tabs">
+  <a href="?" class="tab {% if not request.GET %}active {% else %}inactive {% endif %}">{{ _("All") }}</a>
+  {% for key,value in doc_types %}
+    <a 
+      href="?type={{ key }}" 
+      class="tab 
+      {% if request.GET.type == key %}active {% else %}inactive {% endif %}"
+    >
+      {{ value }}
+    </a>
   {% endfor %}
-  </tbody>
-</table>
+</nav>
+
+{% if not documents %}
+  <div class="alert alert-info mb-5">{{ _("No documents found") }}</div>
+{% else %}
+  <table class="table mb-5">
+    <thead>
+      <tr>
+        <th>{{ _("Name") }}</th>
+        <th>{{ _("Type") }}</th>
+        <th>{{ _("Edit") }}</th>
+      </tr>
+    </thead>
+    <tbody>
+    {% for each in documents %}
+      <tr>
+        <td><a class="btn btn-info" href="{% url "controlpanel_document" each.id %}">{{ each }}</a></td>
+        <td>{{ each.get_doc_type_display }}</td>
+        <td>
+          <a class="btn btn-info" href="{% url "controlpanel_document" each.id %}"><i class="fa fa-pencil"></i> Edit</a>
+          <a class="btn btn-info" href="{% url "species_source" each.id %}"><i class="fa fa-file"></i> View</a>
+        </td>
+      </tr>
+    {% endfor %}
+    </tbody>
+  </table>
+{% endif %}
 
 <a class="btn-add" href="{% url "controlpanel_document" %}"><i class="fa fa-plus"></i> Add document</a>
 

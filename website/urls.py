@@ -8,6 +8,7 @@ urlpatterns = [
     path("design/", views.design),
     path("gardens/", views.gardens, name="gardens"),
     path("gardens/map/", views.gardens_map, name="gardens_map"),
+    path("gardens/add/", views.garden_form, name="garden_form"),
     path("gardens/<int:id>/", views.garden, name="garden"),
     path("gardens/<int:garden>/photos/", views.photos, name="garden_photos"),
     path("gardens/<int:garden>/photos/<int:photo>/", views.photos, name="garden_photo"),
@@ -50,7 +51,7 @@ urlpatterns = [
     path("about/", RedirectView.as_view(url="/about/introduction", permanent=True)),
     path("about/<slug:slug>/", views.page, name="about"),
     path("join/<slug:slug>/", views.page, name="join"),
-    path("resources/<slug:slug>/", views.page, name="resources"),
+    path("resources/<slug:slug>/", views.resources, name="resources"),
     path("page/<slug:slug>/", views.page, name="page"),
 
     path("fynbos-rehabilitation/", views.page, {"slug": "fynbos-rehabilitation"}),

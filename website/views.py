@@ -9,7 +9,6 @@ from django.contrib.admin.views.decorators import staff_member_required
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from django.contrib.gis import geos
-from django.contrib.gis.geos import Polygon
 from django.contrib.gis.measure import D
 from django.core import serializers
 from django.core.files import File
@@ -162,7 +161,7 @@ def map(request, id):
     geom_type = None
 
     size = 0
-    # If the file is larger than 3MB, then we simplify
+    # If the file is larger than 20/10/5MB, then we simplify
     if not "show_full" in request.GET:
         if size > 1024*1024*20:
             simplify_factor = 0.05
@@ -1007,7 +1006,7 @@ def garden_form(request, id=None, token=None, uuid=None):
         "info": info,
         "form": GardenForm(),
     }
-    return render(request, "website/garden.form.html", context)
+    return render(request, "garden.form.html", context)
 
 def garden_manager(request, id):
     info = Garden.objects.get(pk=id)
@@ -1489,6 +1488,19 @@ def corridors(request):
     }
     return render(request, "website/corridors.introduction.html", context)
 
+def resources(request, slug=None):
+
+    site = get_site(request)
+    documents = Document.objects.filter(is_shapefile=False, site=site)
+    if slug:
+        documents = documents.filter(doc_type=slug.upper())
+
+    context = {
+        "documents": documents,
+        "title": slug.capitalize(),
+    }
+    return render(request, "documents.html", context)
+
 def user_login(request):
     redirect_url = "index"
     if request.GET.get("next"):
@@ -1650,7 +1662,7 @@ def controlpanel_garden(request, id=None):
                     coords = [(float(c.split(',')[0]), float(c.split(',')[1])) for c in coordinates]
 
                     # Create geometry (assuming it's a polygon)
-                    polygon = Polygon(coords)
+                    polygon = geos.Polygon(coords)
 
                     # Save the geometry in the model
                     info.geometry = polygon
@@ -1765,6 +1777,13 @@ def controlpanel_documents(request):
         "controlpanel": True,
         "menu": "documents",
         "documents": documents,
+        "title": _("Documents"),
+        "doc_types": [
+            ("CONTEXT", _("Context")),
+            ("TEACHING", _("Teaching resources")),
+            ("GENERAL", _("General document repository")),
+            ("SPECIES_LIST", _("Species lists")),
+        ],
     }
     return render(request, "controlpanel/documents.html", context)
 
@@ -1956,11 +1975,15 @@ def controlpanel_ajax_get_wikipedia(request, id):
 def controlpanel_shapefiles(request):
 
     site = get_site(request)
+    files = Document.objects.filter(is_shapefile=True, site=site)
+
     context = {
         "controlpanel": True,
         "menu": "shapefiles",
-        "shapefiles": Document.objects.filter(is_shapefile=True, site=site),
+        "shapefiles": files,
+        "title": _("Shapefiles"),
     }
+
     return render(request, "controlpanel/shapefiles.html", context)
 
 @staff_member_required
@@ -2036,6 +2059,7 @@ def controlpanel_shapefile_form(request, id=None):
     site = get_site(request)
     info = Document()
     action = Log.LogAction.CREATE
+
     if id:
         info = Document.objects.filter(Q(site=site) | Q(site__isnull=True)).get(pk=id, is_shapefile=True)
         action = Log.LogAction.UPDATE
@@ -2359,4 +2383,3 @@ def controlpanel_species(request, id=None):
     }
 
     return render(request, "controlpanel/species.html", context)
-

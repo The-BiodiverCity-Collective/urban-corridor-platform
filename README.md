@@ -58,4 +58,9 @@ From the root directory of the project. This is a shortcut to migrate any unappl
 
 # CSS
 
-We use [TailwindCSS](https://tailwindcss.com/). The CSS is generated based on the classes that we use. This means that if you apply new classes, you should re-generate the CSS. To do so, run `./csscreate` which will create a new `output.css` based on the new set of css styles required. In addition to analyzing the styles used in your HTML files, this script will also merge the content of any custom CSSthat is defined in `static/ucp.css`. Please use that particular file if you want to add custom classes.
+This repository uses TailwindCSS (https://tailwindcss.com/). In general terms, here is how this works:
+
+- There is a node package installed (note that Node is included in the Dockerfile), called `tailwindcss`. Also included are `postcss-cli`, `postcss` and `autoprefixer`. These packages all work together to get the CSS properly set up. See more at: https://tailwindcss.com/docs/installation/tailwind-cli
+- Have a look at `package.json` for which files exactly are included. 
+- Tailwind includes a ton of predefined styles. However, only the styles that are actually used on the website are included in the CSS file. This is done by running a script that checks which files are used and that then creates the static CSS file corresponding to those styles. 
+- Run `csscreate` to re-generate the CSS file. The configuration of what file is created is included in the `package.json` file. At present, `output.css` is the name of the final CSS. There is an intermediate CSS called `ucp.css` that includes details on which Tailwind features to load, AND it includes additional CSS to embed in `output.css`
