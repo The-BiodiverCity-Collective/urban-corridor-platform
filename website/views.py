@@ -1583,6 +1583,11 @@ def set_cookie(request):
     response.set_cookie("site", request.GET["site"])
     return response
 
+def favicon(request):
+    site = get_site(request)
+    with open(settings.MEDIA_ROOT + site.logo.thumbnail.path, "rb") as logo_file:
+        return HttpResponse(logo_file.read(), content_type="image/png")
+
 # CONTROL PANEL
 
 @staff_member_required

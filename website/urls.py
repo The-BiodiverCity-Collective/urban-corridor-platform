@@ -4,6 +4,7 @@ from django.views.generic.base import RedirectView
 from . import views
 
 urlpatterns = [
+
     path("", views.index, name="index"),
     path("design/", views.design),
     path("gardens/", views.gardens, name="gardens"),
@@ -78,6 +79,7 @@ urlpatterns = [
 
     path("shapefiles/<int:id>/zip/", views.shapefile_zip, name="shapefile_zip"),
     path("setcookie/", views.set_cookie, name="set_cookie"),
+    path("favicon.ico", views.favicon),
 
     # Control Panel
     path("controlpanel/", views.controlpanel, name="controlpanel"),

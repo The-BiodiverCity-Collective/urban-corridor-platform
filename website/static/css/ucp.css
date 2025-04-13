@@ -5,15 +5,22 @@
 
   & th {
     @apply bg-gray-100 text-left font-semibold p-3 border-b;
+    border-color: #dedede;
   }
 
   & td {
     @apply p-3 border-b;
+    border-color: #dedede;
   }
 
   & tbody tr:nth-child(even) {
     @apply bg-gray-50;
   }
+
+}
+
+.dt-container table.dataTable > tbody > tr:nth-child(even) {
+  @apply bg-gray-50;
 }
 
 @utility btn-blue {
@@ -225,9 +232,10 @@
     width: 100%;
   }
 
+  /* Data-tables select should NOT be 100% */
   .dt-length select {
     width: auto;
-  } /* Data-tables select should NOT be 100% */
+  } 
   .fixed-thumb {
     object-fit: cover;
     height: 200px;
@@ -294,13 +302,13 @@
   }
 
   main input:not([type="radio"]):not([type="checkbox"]) {
-    @apply w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-hidden focus:ring-2 focus:ring-blue-500;
+    @apply w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-hidden focus:ring-2 focus:ring-blue-500 bg-white;
   }
   main select {
-    @apply w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-hidden focus:ring-2 focus:ring-blue-500;
+    @apply w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-hidden focus:ring-2 focus:ring-blue-500 bg-gray-50;
   }
   main textarea {
-    @apply w-full px-4 py-2 mt-1 border border-gray-300 rounded-lg focus:outline-hidden focus:ring-2 focus:ring-blue-500;
+    @apply w-full px-4 py-2 mt-1 border border-gray-300 rounded-lg focus:outline-hidden focus:ring-2 focus:ring-blue-500 bg-white;
   }
 
 }

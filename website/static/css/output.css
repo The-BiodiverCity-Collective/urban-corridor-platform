@@ -632,11 +632,13 @@
       text-align: left;
       --tw-font-weight: var(--font-weight-semibold);
       font-weight: var(--font-weight-semibold);
+      border-color: #dedede;
     }
     & td {
       border-bottom-style: var(--tw-border-style);
       border-bottom-width: 1px;
       padding: calc(var(--spacing) * 3);
+      border-color: #dedede;
     }
     & tbody tr:nth-child(even) {
       background-color: var(--color-gray-50);
@@ -2745,6 +2747,9 @@
     }
   }
 }
+.dt-container table.dataTable > tbody > tr:nth-child(even) {
+  background-color: var(--color-gray-50);
+}
 @layer utilities {
   .leaflet-map {
     box-shadow: 1px 1px 2px 0px rgba(0, 0, 0, 0.2);
@@ -2946,6 +2951,7 @@
     border-style: var(--tw-border-style);
     border-width: 1px;
     border-color: var(--color-gray-300);
+    background-color: var(--color-white);
     padding-inline: calc(var(--spacing) * 4);
     padding-block: calc(var(--spacing) * 2);
     &:focus {
@@ -2970,6 +2976,7 @@
     border-style: var(--tw-border-style);
     border-width: 1px;
     border-color: var(--color-gray-300);
+    background-color: var(--color-gray-50);
     padding-inline: calc(var(--spacing) * 4);
     padding-block: calc(var(--spacing) * 2);
     &:focus {
@@ -2995,6 +3002,7 @@
     border-style: var(--tw-border-style);
     border-width: 1px;
     border-color: var(--color-gray-300);
+    background-color: var(--color-white);
     padding-inline: calc(var(--spacing) * 4);
     padding-block: calc(var(--spacing) * 2);
     &:focus {
