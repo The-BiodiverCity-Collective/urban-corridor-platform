@@ -24,23 +24,23 @@
 }
 
 @utility btn-blue {
-  @apply bg-sky-700 shadow-inner shadow-md text-white py-2 px-4 rounded-sm hover:bg-sky-600 focus:outline-hidden font-bold focus:ring-sky-300 no-underline hover:text-white;
+  @apply bg-sky-600 shadow-inner shadow-md text-white py-2 px-4 rounded-sm hover:bg-sky-700 focus:outline-hidden font-bold focus:ring-sky-300 no-underline hover:text-white inline-block;
 }
 
 @utility btn-green {
-  @apply bg-lime-600 shadow-inner shadow-md text-white py-2 px-4 rounded-sm hover:bg-lime-700 focus:outline-hidden font-bold focus:ring-lime-300 no-underline hover:text-white;
+  @apply bg-lime-600 shadow-inner shadow-md text-white py-1 px-4 rounded-sm hover:bg-lime-700 focus:outline-hidden font-bold focus:ring-lime-300 no-underline hover:text-white inline-block;
 }
 
 @utility btn-danger {
-  @apply bg-red-600 shadow-inner shadow-md text-white py-2 px-4 rounded-sm hover:bg-red-700 focus:outline-hidden font-bold focus:ring-red-300 no-underline hover:text-white;
+  @apply bg-red-600 shadow-inner shadow-md text-white py-1 px-4 rounded-sm hover:bg-red-700 focus:outline-hidden font-bold focus:ring-red-300 no-underline hover:text-white inline-block;
 }
 
 @utility btn-add {
-  @apply bg-orange-600 shadow-inner shadow-md text-white py-2 px-4 rounded-sm hover:bg-orange-700 focus:outline-hidden font-bold focus:ring-orange-300 no-underline hover:text-white;
+  @apply bg-orange-600 shadow-inner shadow-md text-white py-1 px-4 rounded-sm hover:bg-orange-700 focus:outline-hidden font-bold focus:ring-orange-300 no-underline hover:text-white inline-block;
 }
 
 @utility btn-edit {
-  @apply bg-amber-300 shadow-inner shadow-md text-white py-2 px-4 rounded-sm hover:bg-amber-400 focus:outline-hidden font-bold focus:ring-orange-300 no-underline hover:text-white;
+  @apply bg-amber-300 shadow-inner shadow-md text-white py-1 px-4 rounded-sm hover:bg-amber-400 focus:outline-hidden font-bold focus:ring-orange-300 no-underline hover:text-white inline-block;
 }
 
 @utility badge {

@@ -1498,6 +1498,7 @@ def resources(request, slug=None):
     context = {
         "documents": documents,
         "title": slug.capitalize(),
+        "hide_main_container": True,
     }
     return render(request, "documents.html", context)
 
