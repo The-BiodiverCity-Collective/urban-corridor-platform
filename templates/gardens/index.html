@@ -21,7 +21,7 @@
   <h1>{{ page }}</h1>
   {{ page.get_content }}
 
-  <div class="border rounded-sm bg-white shadow-xs p-3 d-inline-block mb-4">
+  <div class="alert alert-info">
     <i class="fal fa-fw fa-info-circle me-1"></i> We currently have <strong>{{ gardens.count }}</strong> gardens in our network.
   </div>
 
@@ -38,38 +38,5 @@
     </li>
   {% endfor %}
   </ul>
-
-  <div class="mt-4 pt-5">
-    <table class="table datatable mt-4">
-      <thead>
-        <tr>
-          <th>Name</th>
-          <th>Suburb</th>
-          <th>Vegetation type</th>
-          <th>Organisation(s)</th>
-        </tr>
-      </thead>
-      <tbody>
-      {% for each in gardens %}
-        <tr>
-          <td><a class="text-decoration-none" href="{% url 'garden' each.id %}">{{ each }}</a></td>
-          <td>{{ each.suburb }}</td>
-          <td>{{ each.vegetation_type }}</td>
-          <td>
-            <ul class="list-unstyled">
-            {% for org in each.organizations.gardens %}
-              <li>
-              <span class="badge bg-secondary">
-                {{ org }}
-              </span>
-              </li>
-            {% endfor %}
-            </ul>
-          </td>
-        </tr>
-      {% endfor %}
-      </tbody>
-    </table>
-  </div>
 
 {% endblock %}

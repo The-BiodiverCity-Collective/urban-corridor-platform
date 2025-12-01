@@ -16,7 +16,7 @@
   <h1>{{ page }}</h1>
   {{ page.get_content }}
 
-  <div class="border rounded-sm bg-white shadow-xs p-3 d-inline-block mb-4">
+  <div class="alert alert-info mt-4">
     <i class="fal fa-fw fa-info-circle me-1"></i> We currently have <strong>{{ all.count }}</strong> gardens in our network.
   </div>
 
@@ -27,6 +27,40 @@
   {% if not request.GET.area %}
     <a href="?area=true">Show area</a>
   {% endif %}
+
+  <h2 class="mt-5">{{ _("Gardens") }}</h2>
+
+  <table class="table datatable mt-4">
+    <thead>
+      <tr>
+        <th>{{ _("Name") }}</th>
+        <th>{{ _("Area") }}</th>
+        <th>{{ _("Vegetation type") }}</th>
+        <th>{{ _("Organisation(s)") }}</th>
+      </tr>
+    </thead>
+    <tbody>
+    {% for each in gardens %}
+      <tr>
+        <td><a class="text-decoration-none" href="{% url 'garden' each.id %}">{{ each }}</a></td>
+        <td>{{ each.suburb }}</td>
+        <td>{{ each.vegetation_type }}</td>
+        <td>
+          <ul class="list-unstyled">
+          {% for org in each.organizations.gardens %}
+            <li>
+            <span class="badge bg-secondary">
+              {{ org }}
+            </span>
+            </li>
+          {% endfor %}
+          </ul>
+        </td>
+      </tr>
+    {% endfor %}
+    </tbody>
+  </table>
+
 
 {% endblock %}
 

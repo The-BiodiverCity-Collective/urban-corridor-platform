@@ -348,7 +348,7 @@ def maps(request):
             hits[each[0]] = []
             type_list[each[0]] = each[1]
 
-    documents = Document.objects.filter(is_active=True, doc_type__in=relevant_types, is_shapefile=True).order_by("doc_type")
+    documents = Document.objects.filter(site=site, is_active=True, doc_type__in=relevant_types, is_shapefile=True).order_by("doc_type")
     for each in documents:
         t = each.doc_type
         hits[t].append(each)
@@ -838,6 +838,7 @@ def gardens_map(request):
         "load_map": True,
         "mapstyle": MapStyle.objects.get(pk=3),
         "swapped_corridor_coords": get_swapped_corridor_coords(site),
+        "load_datatables": True,
     }
     return render(request, "gardens/map.html", context)
 
@@ -1460,9 +1461,10 @@ def page(request, slug):
 
     info = get_object_or_404(Page, slug=slug)
     context = {
-        "page": info,
+        "info": info,
+        "title": info.name,
     }
-    return render(request, "website/page.html", context)
+    return render(request, "page.html", context)
 
 def corridors_rivers(request):
     context = {
@@ -1586,7 +1588,8 @@ def set_cookie(request):
 
 def favicon(request):
     site = get_site(request)
-    with open(settings.MEDIA_ROOT + site.logo.thumbnail.path, "rb") as logo_file:
+    logo = site.logo.thumbnail.path
+    with open(logo, "rb") as logo_file:
         return HttpResponse(logo_file.read(), content_type="image/png")
 
 # CONTROL PANEL
@@ -1598,6 +1601,56 @@ def controlpanel(request):
         "menu": "index",
     }
     return render(request, "controlpanel/index.html", context)
+
+@staff_member_required
+def controlpanel_pages(request):
+
+    site = get_site(request)
+    pages = Page.objects.filter(site=site)
+
+    context = {
+        "controlpanel": True,
+        "menu": "pages",
+        "pages": pages,
+    }
+    return render(request, "controlpanel/pages.html", context)
+
+@staff_member_required
+def controlpanel_page(request, id=None):
+
+    info = Page()
+    if id:
+        info = Page.objects.get(pk=id)
+        action = Log.LogAction.UPDATE
+
+    site = get_site(request)
+    action = Log.LogAction.CREATE
+
+    if request.method == "POST":
+        info.name = request.POST["name"]
+        info.content = request.POST.get("description")
+        info.slug = request.POST.get("slug")
+        info.position = 0
+        info.format = "HTML"
+        info.is_active = True if request.POST.get("is_active") == "1" else False
+        if request.FILES.get("image"):
+            info.image = request.FILES.get("image")
+        info.site = site
+
+        info.save()
+        log_action(request, action, f"Page: {info.name}")
+        messages.success(request, _("Information was saved."))
+        return redirect(reverse("controlpanel_pages"))
+
+    context = {
+        "controlpanel": True,
+        "menu": "pages",
+        "info": info,
+        "title": _("Edit page") + ": " + info.name if info.id else _("Add page"),
+        "quill": True,
+    }
+    return render(request, "controlpanel/page.html", context)
+
 
 @staff_member_required
 def controlpanel_gardens(request):
@@ -1818,7 +1871,6 @@ def controlpanel_document(request, id=None):
         info.save()
         log_action(request, action, f"Document: {info.name}")
 
-
         uploaded_files = request.FILES.getlist("file")
 
         if uploaded_files:
@@ -1828,7 +1880,10 @@ def controlpanel_document(request, id=None):
                 Attachment.objects.create(file=uploaded_file, attached_to=info)
 
         messages.success(request, "Information was saved.")
-        return redirect(reverse("controlpanel_documents"))
+        if info.doc_type == "SPECIES_LIST":
+            return redirect(reverse("controlpanel_document", args=[info.id]))
+        else:
+            return redirect(reverse("controlpanel_documents"))
 
     context = {
         "controlpanel": True,
@@ -1850,44 +1905,50 @@ def controlpanel_document_species(request, id):
     if request.method == "POST":
         vegetation_type = VegetationType.objects.get(pk=request.POST["vegetation_type"])
         SpeciesVegetationTypeLink.objects.filter(file=file_info).delete()
-        for _,row in df.iterrows():
 
-            name = row["Name"].strip()
+        try:
+            #for _,row in df.iterrows(): this gave an error so renamed to below; check that this is indeed right
+            for unused_var,row in df.iterrows():
 
-            # Only process if there are at least 2 words
-            if len(name.split()) >= 2:
+                name = row["Name"].strip()
 
-                genus = Genus.objects.filter(name=name.split()[0])
-                if genus:
-                    genus = genus[0]
-                else:
-                    genus = Genus.objects.create(name=name.split()[0])
+                # Only process if there are at least 2 words
+                if len(name.split()) >= 2:
 
-                species = Species.objects.filter(name=name)
-                if species:
-                    species = species[0]
-                else:
-                    species = Species.objects.create(
-                        name = name,
-                        genus = genus,
+                    genus = Genus.objects.filter(name=name.split()[0])
+                    if genus:
+                        genus = genus[0]
+                    else:
+                        genus = Genus.objects.create(name=name.split()[0])
+
+                    species = Species.objects.filter(name=name)
+                    if species:
+                        species = species[0]
+                    else:
+                        species = Species.objects.create(
+                            name = name,
+                            genus = genus,
+                        )
+
+                    # We store this link in a table so we can trace it back...
+                    SpeciesVegetationTypeLink.objects.create(
+                        species = species,
+                        vegetation_type = vegetation_type,
+                        file = file_info,
                     )
 
-                # We store this link in a table so we can trace it back...
-                SpeciesVegetationTypeLink.objects.create(
-                    species = species,
-                    vegetation_type = vegetation_type,
-                    file = file_info,
-                )
+                    # And we mark the actual species as belonging to this vegetation type
+                    species.vegetation_types.add(vegetation_type)
 
-                # And we mark the actual species as belonging to this vegetation type
-                species.vegetation_types.add(vegetation_type)
+                    # And make sure this is activated for the current site
+                    species.site.add(site)
 
-                # And make sure this is activated for the current site
-                species.site.add(site)
+            messages.success(request, "The species were linked to the selected vegetation type.")
+            return redirect(reverse("controlpanel_specieslist") + "?file=" + request.GET["file"])
 
-        messages.success(request, "The species were linked to the selected vegetation type.")
-        return redirect(reverse("controlpanel_specieslist") + "?file=" + request.GET["file"])
-
+        except Exception as e:
+            error = _("There was a problem with this file. Are you sure it is formatted correctly? See below the error: ") + str(e)
+            messages.error(request, error)
 
     results = []
     alerts = []
@@ -1896,15 +1957,16 @@ def controlpanel_document_species(request, id):
         for index, row in df.iterrows():
             # We take the name row, and we check if each species exists. We then add a column with the result.
             name = row["Name"]
-            name_words = name.split()
+            if name: # Check how to deal with NaN fields of empty rows TODO
+                name_words = name.split()
 
-            if len(name_words) < 2:
-                alerts.append(_("Species names must contain genus + species. This row is invalid and will NOT be added."))
-                results.append("✖️")
-            else:
-                alerts.append("")
-                exists = Species.objects.filter(name=name.strip()).exists()
-            results.append("✓" if exists else "✖️")
+                if len(name_words) < 2:
+                    alerts.append(_("Species names must contain genus + species. This row is invalid and will NOT be added."))
+                    results.append("✖️")
+                else:
+                    alerts.append("")
+                    exists = Species.objects.filter(name=name.strip()).exists()
+                results.append("✓" if exists else "✖️")
 
         df["Exists"] = results
         df["Details"] = alerts
@@ -1912,7 +1974,9 @@ def controlpanel_document_species(request, id):
         html_table = df.to_html(classes="table", escape=False)
 
     except Exception as e:
-        error = _("No column named 'Name' found - please make sure it is present")
+        error = _("There was a problem with your file. TIP: Make sure the 'Name' column is present.")
+        messages.error(request, error)
+        error = _("Specific error: ") + str(e)
         messages.error(request, error)
 
     context = {

@@ -59,6 +59,8 @@ class Page(models.Model):
     image = StdImageField(upload_to="pages", variations={"thumbnail": (350, 350), "medium": (800, 600), "large": (1280, 1024)}, null=True, blank=True)
     position = models.PositiveSmallIntegerField(db_index=True)
     slug = models.SlugField(max_length=255)
+    site = models.ForeignKey(Site, on_delete=models.CASCADE, null=True, blank=True, related_name="pages")
+    is_active = models.BooleanField(default=True, db_index=True)
     FORMATS = (
         ("HTML", "HTML"),
         ("MARK", "Markdown"),
@@ -68,6 +70,9 @@ class Page(models.Model):
 
     def __str__(self):
         return self.name
+
+    def get_absolute_url(self):
+        return "/about/" + self.slug
 
     def get_content(self):
         # The content field is already sanitized, according to the settings (see the save() function below)

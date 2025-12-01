@@ -1,0 +1,28 @@
+{% extends "_base.html" %}
+
+{% block content %}
+
+<h1 class="text-3xl">{{ _("Pages") }}</h1>
+
+<table class="table mb-5">
+  <thead>
+    <tr>
+      <th>{{ _("Title") }}</th>
+      <th>{{ _("View page") }}</th>
+      <th>{{ _("Active") }}</th>
+    </tr>
+  </thead>
+  <tbody>
+  {% for each in pages %}
+    <tr>
+      <td><a href="{% url "controlpanel_page" each.id %}">{{ each.name }}</td>
+      <td><a href="{{ each.get_absolute_url }}">View page</a></td>
+      <td>{{ each.is_active }}</td>
+    </tr>
+  {% endfor %}
+  </tbody>
+</table>
+
+<a class="btn-add" href="{% url "controlpanel_page" %}"><i class="fa fa-plus"></i> {{ _("Add page") }}</a>
+
+{% endblock %}

@@ -35,6 +35,25 @@
   {% endif %}
   <link rel="icon" href="{{ SITE.logo.thumbnail.url }}" type="image/png">
 
+  {% if quill %}
+    <link href="https://cdn.jsdelivr.net/npm/quill@2.0.3/dist/quill.snow.css" rel="stylesheet" />
+    <script src="https://cdn.jsdelivr.net/npm/quill@2.0.3/dist/quill.js"></script>
+    <script src="{% static "js/quill.js" %}"></script>
+
+    <style type="text/css">
+    .ql-container {
+      background-color: white !important;
+      font-size:16px;
+    }
+    .show-code {
+      float:right;
+      position:relative;
+      top:10px;
+      right:19px;
+    }
+    </style>
+  {% endif %}
+
   <script type="text/javascript">
   $(function(){
     $("textarea").each(function() {

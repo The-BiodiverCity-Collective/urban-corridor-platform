@@ -397,30 +397,32 @@
       $(this).removeClass("inactive").addClass("active");
     });
 
-    $("#wiki_refresh").click(function(){
-      $("#wiki_modal").show("fast");
-      $.ajax({
-        url: "{% url "controlpanel_ajax_get_wikipedia" info.id %}",
-        method: "GET",
-        success: function(response) {
-          if (response.success) {
-            $("#wiki_modal .fa-spinner").removeClass("fa-spinner fa-spin").addClass("fa-times-check text-lime-500");
-            $("textarea[name=description_wikipedia_1]").val(response.description);
-            $("#wiki_modal").hide("fast");
-          } else {
+    {% if info.id %}
+      $("#wiki_refresh").click(function(){
+        $("#wiki_modal").show("fast");
+        $.ajax({
+          url: "{% url "controlpanel_ajax_get_wikipedia" info.id %}",
+          method: "GET",
+          success: function(response) {
+            if (response.success) {
+              $("#wiki_modal .fa-spinner").removeClass("fa-spinner fa-spin").addClass("fa-times-check text-lime-500");
+              $("textarea[name=description_wikipedia_1]").val(response.description);
+              $("#wiki_modal").hide("fast");
+            } else {
+              $("#wiki_modal .fa-spinner").removeClass("fa-spinner fa-spin").addClass("fa-times-circle text-red-500");
+              $("#wiki_modal div.bg-amber-100").removeClass("bg-amber-100").addClass("bg-gray-200");
+              $("#wiki_modal h3").html("{{ _("Sorry, we could not update the information. The error is shown below:") }}" + "<br>" + response.error);
+            }
+          },
+          error: function() {
             $("#wiki_modal .fa-spinner").removeClass("fa-spinner fa-spin").addClass("fa-times-circle text-red-500");
             $("#wiki_modal div.bg-amber-100").removeClass("bg-amber-100").addClass("bg-gray-200");
             $("#wiki_modal h3").html("{{ _("Sorry, we could not update the information. The error is shown below:") }}" + "<br>" + response.error);
+            $("#wiki_modal h3").html("{{ _("Sorry, we could not update the information. Check the API/connection") }}");
           }
-        },
-        error: function() {
-          $("#wiki_modal .fa-spinner").removeClass("fa-spinner fa-spin").addClass("fa-times-circle text-red-500");
-          $("#wiki_modal div.bg-amber-100").removeClass("bg-amber-100").addClass("bg-gray-200");
-          $("#wiki_modal h3").html("{{ _("Sorry, we could not update the information. The error is shown below:") }}" + "<br>" + response.error);
-          $("#wiki_modal h3").html("{{ _("Sorry, we could not update the information. Check the API/connection") }}");
-        }
+        });
       });
-    });
+    {% endif %}
 
   });
 </script>
