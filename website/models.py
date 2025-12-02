@@ -106,6 +106,7 @@ class Organization(models.Model):
     description = models.TextField(null=True, blank=True)
     logo = StdImageField(upload_to="pages", variations={"thumbnail": (350, 350), "medium": (800, 600), "large": (1280, 1024)}, delete_orphans=True)
     url = models.CharField(max_length=255, null=True, blank=True)
+    site = models.ForeignKey(Site, on_delete=models.CASCADE, related_name="organizations")
 
     def __str__(self):
         return self.name

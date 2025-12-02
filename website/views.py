@@ -1459,7 +1459,13 @@ def page(request, slug):
         if not check:
             Page.objects.create(name="Fynbos rehabilitation", position=0, format="MARK")
 
-    info = get_object_or_404(Page, slug=slug)
+    if request.user.is_authenticated:
+        info = get_object_or_404(Page, slug=slug)
+        if not info.is_active:
+            messages.warning(request, "This page is not currently published and not publicly available.")
+    else:
+        info = get_object_or_404(Page, slug=slug, is_active=True)
+
     context = {
         "info": info,
         "title": info.name,
@@ -1550,10 +1556,12 @@ def newsletter(request):
         return redirect("index")
 
 def organizations(request):
+    site = get_site(request)
     context = {
-        "organizations": Organization.objects.filter(part_of_ucp=True),
+        "info": Page.objects.get(site=site, slug="our-organisations"),
+        "organizations": Organization.objects.filter(site=site),
     }
-    return render(request, "website/organizations.html", context)
+    return render(request, "organizations.html", context)
 
 def documents(request):
     context = {
@@ -1640,7 +1648,10 @@ def controlpanel_page(request, id=None):
         info.save()
         log_action(request, action, f"Page: {info.name}")
         messages.success(request, _("Information was saved."))
-        return redirect(reverse("controlpanel_pages"))
+        if request.GET.get("redirect"):
+            return redirect(request.GET.get("redirect"))
+        else:
+            return redirect(reverse("controlpanel_pages"))
 
     context = {
         "controlpanel": True,
