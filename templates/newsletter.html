@@ -1,0 +1,42 @@
+{% extends "_base.html" %}
+
+{% block head %}
+  <style type="text/css">
+  main p{margin-bottom:1em}
+  </style>
+{% endblock %}
+
+{% block content %}
+
+<div class="bg-white py-24 md:py-32 lg:py-40 dark:bg-gray-900">
+  <div class="mx-auto grid max-w-7xl grid-cols-1 gap-20 px-6 lg:px-8 xl:grid-cols-3">
+    <div class="mx-auto max-w-2xl lg:mx-0">
+      <h2 class="text-4xl font-semibold tracking-tight text-pretty text-gray-900 sm:text-5xl dark:text-white">{{ info }}</h2>
+      <div class="mt-6 text-lg/8 text-gray-600 dark:text-gray-400">
+        {{ info.get_content }}
+      </div>
+    </div>
+
+    {% if request.method == "POST" %}
+      <div class="alert alert-success">
+        Thanks for your signup!
+        NOTE: signup failed, please verify settings.
+      </div>
+    {% else %}
+      <form method="post" action="/about/newsletter/">
+        {% csrf_token %}
+        <label for="email-address" class="sr-only">Email address</label>
+        <input id="email-address" name="email" type="email" autocomplete="email" required class="min-w-0 flex-auto rounded-md border-0 bg-gray/5 px-3.5 py-2 text-gray shadow-xs ring-1 ring-inset ring-gray/10 focus:ring-2 focus:ring-inset focus:ring-indigo-500 sm:text-sm/6" placeholder="Enter your email">
+        <button type="submit" class="flex-none mt-2 rounded-md bg-indigo-500 px-3.5 py-2.5 text-sm font-semibold text-white shadow-xs hover:bg-indigo-400 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-500">Subscribe</button>
+      </form>
+    {% endif %}
+  </div>
+</div>
+
+{% if request.user.is_staff %}
+  <a class="btn-warning btn-edit" href="{% url "controlpanel_page" info.id %}?redirect={{ request.get_full_path }}">
+    <i class="fa fa-pencil"></i>
+  </a>
+{% endif %}
+
+{% endblock %}

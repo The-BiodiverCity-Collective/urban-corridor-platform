@@ -741,10 +741,6 @@
     width: calc(var(--spacing) * 4);
     height: calc(var(--spacing) * 4);
   }
-  .size-5 {
-    width: calc(var(--spacing) * 5);
-    height: calc(var(--spacing) * 5);
-  }
   .size-6 {
     width: calc(var(--spacing) * 6);
     height: calc(var(--spacing) * 6);
@@ -1227,6 +1223,11 @@
     border-color: var(--color-sky-500);
     background-color: var(--color-sky-100);
     color: var(--color-sky-700);
+  }
+  .alert-success {
+    border-color: var(--color-lime-500);
+    background-color: var(--color-lime-50);
+    color: var(--color-lime-700);
   }
   .alert-warning {
     border-color: var(--color-amber-500);

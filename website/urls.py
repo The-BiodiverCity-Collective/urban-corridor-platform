@@ -49,8 +49,9 @@ urlpatterns = [
     path("accounts/logout/", views.user_logout, name="logout"),
 
     path("about/our-organisations/", views.organizations, name="organizations"),
+    path("about/newsletter/", views.newsletter, name="newsletter"),
     path("about/", RedirectView.as_view(url="/about/introduction", permanent=True)),
-    path("about/<slug:slug>/", views.page, name="about"),
+    path("about/<slug:slug>/", views.page, {"menu": "about"}, name="about"),
     path("join/<slug:slug>/", views.page, name="join"),
     path("resources/<slug:slug>/", views.resources, name="resources"),
     path("page/<slug:slug>/", views.page, name="page"),

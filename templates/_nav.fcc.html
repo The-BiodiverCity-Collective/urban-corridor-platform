@@ -4,7 +4,7 @@
     <div class="mx-auto max-w-7xl px-6 lg:px-8">
       <a href="/" class="mr-4"><i class="fa fa-home"></i></a>
 
-      <a href="/gardens/" class="mr-3 inline-flex items-center gap-x-1 text-sm/6 font-semibold text-gray-900 hovermenu" data-target="about" aria-expanded="false">
+      <a href="/gardens/" class="mr-3 inline-flex items-center gap-x-1 text-sm/6 font-semibold {% if menu == "about" %}text-sky-600{% else %}text-gray-900{% endif %} hovermenu" data-target="about" aria-expanded="false">
         {{ _("About Us") }}
         <i class="fa fa-angle-down mt-1"></i>
       </a>
@@ -44,11 +44,13 @@
           <h3 class="text-sm/6 font-medium text-gray-500">View plant collections</h3>
           <div class="mt-6 flow-root">
             <div class="-my-2">
-              <a href="/species/" class="flex gap-x-4 py-2 text-sm/6 font-semibold hover:text-sky-600 {% if page == "all_species" %}text-sky-600{% else %}text-gray-900{% endif %}">
+              <a href="/species/" class="flex gap-x-4 py-2 text-sm/6 font-semibold hover:text-sky-600 {% if page == "all_species" and not "indigenous" in request.GET %}text-sky-600{% else %}text-gray-900{% endif %}">
                 <i class="fa fa-list fa-fw text-lg text-gray-400 mr-1"></i>
                 All species
               </a>
-              <a href="/species/" class="flex gap-x-4 py-2 text-sm/6 font-semibold text-gray-900 hover:text-sky-600">
+              <a href="/species/?indigenous" class="flex gap-x-4 py-2 text-sm/6 font-semibold hover:text-sky-600
+                {% if "indigenous" in request.GET %}text-sky-600{% else %}text-gray-900{% endif %}
+              ">
                 <i class="fa fa-seedling fa-fw text-lg text-gray-400 mr-1"></i>
                 Indigenous
               </a>
@@ -72,7 +74,7 @@
                 <i class="fa fa-check fa-fw text-lg text-gray-400 mr-1"></i>
                 Easy to grow
               </a>
-              <a href="/species/" class="flex gap-x-4 py-2 text-sm/6 font-semibold text-gray-900 hover:text-sky-600">
+              <a href="/species/" class="flex gap-x-4 py-2 text-sm/6 font-semibold text-gray-900 hover:text-sky-600" hidden>
                 <i class="fa fa-exclamation-triangle fa-fw text-lg text-gray-400 mr-1"></i>
                 Invasives
               </a>
@@ -176,19 +178,23 @@
           <h3 class="text-sm/6 font-medium text-gray-500">Who we are</h3>
           <div class="mt-6 flow-root">
             <div class="-my-2">
-              <a href="{% url "about" "introduction" %}" class="flex gap-x-4 py-2 text-sm/6 font-semibold text-gray-900 hover:text-sky-600">
+              <a href="{% url "about" "introduction" %}" class="flex gap-x-4 py-2 text-sm/6 font-semibold 
+              {% if slug == "introduction" %}text-sky-600{% else %}text-gray-900{% endif %} hover:text-sky-600">
                 <i class="fa fa-info-circle fa-fw text-lg text-gray-400 mr-1"></i>
                 Introduction
               </a>
-              <a href="{% url "about" "history" %}" class="flex gap-x-4 py-2 text-sm/6 font-semibold text-gray-900 hover:text-sky-600">
+              <a href="{% url "about" "history" %}" class="flex gap-x-4 py-2 text-sm/6 font-semibold 
+              {% if slug == "history" %}text-sky-600{% else %}text-gray-900{% endif %} hover:text-sky-600">
                 <i class="fa fa-file-alt fa-fw text-lg text-gray-400 mr-1"></i>
                 History
               </a>
-              <a href="{% url "about" "our-organisations" %}" class="flex gap-x-4 py-2 text-sm/6 font-semibold text-gray-900 hover:text-sky-600">
+              <a href="{% url "about" "our-organisations" %}" class="flex gap-x-4 py-2 text-sm/6 font-semibold 
+              {% if page == "organizations" %}text-sky-600{% else %}text-gray-900{% endif %} hover:text-sky-600">
                 <i class="fa fa-list fa-fw text-lg text-gray-400 mr-1"></i>
                 Our organisations
               </a>
-              <a href="{% url "about" "community-engagement-team" %}" class="flex gap-x-4 py-2 text-sm/6 font-semibold text-gray-900 hover:text-sky-600">
+              <a href="{% url "about" "community-engagement-team" %}" class="flex gap-x-4 py-2 text-sm/6 font-semibold 
+              {% if slug == "community-engagement-team" %}text-sky-600{% else %}text-gray-900{% endif %} hover:text-sky-600">
                 <i class="fa fa-users fa-fw text-lg text-gray-400 mr-1"></i>
                 Community engagement team
               </a>
@@ -203,15 +209,16 @@
                 <i class="fa fa-envelope fa-fw text-lg text-gray-400 mr-1"></i>
                 Contact us
               </a>
-              <a href="/maps/" class="flex gap-x-4 py-2 text-sm/6 font-semibold text-gray-900">
+              <a href="/about/newsletter/" class="flex gap-x-4 py-2 text-sm/6 font-semibold 
+              {% if page == "newsletter" %}text-sky-600{% else %}text-gray-900{% endif %} hover:text-sky-600">
                 <i class="fa fa-newspaper fa-fw text-lg text-gray-400 mr-1"></i>
                 Newsletter
               </a>
-              <a href="/maps/" class="flex gap-x-4 py-2 text-sm/6 font-semibold text-gray-900">
+              <a href="#" class="flex gap-x-4 py-2 text-sm/6 font-semibold text-gray-900">
                 <i class="fab fa-facebook fa-fw text-lg text-gray-400 mr-1"></i>
                 Facebook
               </a>
-              <a href="/maps/" class="flex gap-x-4 py-2 text-sm/6 font-semibold text-gray-900">
+              <a href="#" class="flex gap-x-4 py-2 text-sm/6 font-semibold text-gray-900">
                 <i class="fab fa-youtube fa-fw text-lg text-gray-400 mr-1"></i>
                 Youtube
               </a>

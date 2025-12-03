@@ -1452,7 +1452,7 @@ def update_map(request):
 
     return render(request, "website/map.update.html")
 
-def page(request, slug):
+def page(request, slug, menu=None):
 
     if slug == "fynbos-rehabilitation":
         check = Page.objects.filter(slug=slug)
@@ -1469,6 +1469,8 @@ def page(request, slug):
     context = {
         "info": info,
         "title": info.name,
+        "menu": menu,
+        "slug": slug,
     }
     return render(request, "page.html", context)
 
@@ -1560,8 +1562,19 @@ def organizations(request):
     context = {
         "info": Page.objects.get(site=site, slug="our-organisations"),
         "organizations": Organization.objects.filter(site=site),
+        "page": "organizations",
+        "menu": "about",
     }
     return render(request, "organizations.html", context)
+
+def newsletter(request):
+    site = get_site(request)
+    context = {
+        "info": Page.objects.get(site=site, slug="newsletter"),
+        "page": "newsletter",
+        "menu": "about",
+    }
+    return render(request, "newsletter.html", context)
 
 def documents(request):
     context = {

@@ -37,12 +37,10 @@
   </div>
 </div>
 
-
 {% if request.user.is_staff %}
   <a class="btn-warning btn-edit" href="{% url "controlpanel_page" info.id %}?redirect={{ request.get_full_path }}">
     <i class="fa fa-pencil"></i>
   </a>
 {% endif %}
-
 
 {% endblock %}
