@@ -2,7 +2,23 @@
 
 {% block content %}
 
-<h1 class="text-3xl">Species list</h1>
+<h1 class="text-3xl">Search entire species list</h1>
+
+<form method="get" action="" class="space-y-6 p-6">
+
+  <div class="mb-4">
+    <input type="text" placeholder="Species name" name="name" id="id_name" value="{{ request.GET.name }}" class="mt-1" required>
+  </div>
+
+  <div class="mt-6 flex items-center justify-end gap-x-6">
+    <button type="submit" class="px-4 py-2 bg-lime-600 hover:bg-lime-700 text-white font-bold rounded-md focus:outline-hidden focus:ring-3 focus:ring-lime-300">
+      {{ _("Search") }}
+    </button>
+  </div>
+</form>
+
+{% if not request.GET.name %}
+<h1>Active plant list</h1>
 
 <button id="process-btn" class="btn-blue flex items-center">
   <span id="btn-text">Process</span>
@@ -12,6 +28,9 @@
   </svg>
   <span id="pending-count" class="ml-2 hidden"></span>
 </button>
+{% else %}
+<h1>Results</h1>
+{% endif %}
 
 <table class="table mb-5 datatable">
   <thead>

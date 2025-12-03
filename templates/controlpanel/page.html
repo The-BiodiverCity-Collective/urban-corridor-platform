@@ -94,4 +94,43 @@
   </div>
 </form>
 
+<form method="post">
+  {% csrf_token %}
+  <div class="space-y-12">
+    <div class="border-b border-gray-900/10 pb-12">
+      <h2 class="text-base/7 font-semibold text-gray-900">Photos linked to this page</h2>
+
+        {% if info.photos.count %}
+          <div class="grid grid-cols-12 gap-2 mb-6">
+            {% for each in info.photos.all %}
+              <div class="relative overflow-hidden rounded-lg shadow-lg aspect-w-16 aspect-h-9">
+                <a href="?delete_photo={{ each.id }}">
+                  <img src="{{ each.thumbnail }}" alt="" class="object-cover w-full h-full" onclick="javascript:return confirm('Delete from page?')">
+                </a>
+              </div>
+            {% endfor %}
+          </div>
+        {% endif %}
+
+      <div class="mt-10 grid grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6">
+        <div class="sm:col-span-4">
+          <label for="photo" class="block text-sm/6 font-medium text-gray-900">Photo</label>
+          <div class="mt-2">
+              <input id="photo" type="number" required name="photo" placeholder="Photo #" class="block min-w-0 grow bg-white py-1.5 pr-3 pl-2 text-base text-gray-900 placeholder:text-gray-400 focus:outline-none sm:text-sm/6" />
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+  </div>
+
+  <div class="mt-6 flex items-center justify-end gap-x-6">
+    <button type="submit" class="px-4 py-2 bg-lime-600 hover:bg-lime-700 text-white font-bold rounded-md focus:outline-hidden focus:ring-3 focus:ring-lime-300">
+      {{ _("Add photo to page") }}
+    </button>
+  </div>
+</form>
+
+
 {% endblock %}

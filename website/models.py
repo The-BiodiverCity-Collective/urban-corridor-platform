@@ -61,6 +61,7 @@ class Page(models.Model):
     slug = models.SlugField(max_length=255)
     site = models.ForeignKey(Site, on_delete=models.CASCADE, null=True, blank=True, related_name="pages")
     is_active = models.BooleanField(default=True, db_index=True)
+    photos = models.ManyToManyField("Photo", blank=True)
     FORMATS = (
         ("HTML", "HTML"),
         ("MARK", "Markdown"),

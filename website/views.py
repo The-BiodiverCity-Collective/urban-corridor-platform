@@ -718,6 +718,18 @@ def species_full_list(request):
 
     species = species.distinct()
 
+    info = None
+    photo = None
+
+    if "page" in request.GET:
+        try:
+            info = Page.objects.get(site=site, slug=request.GET["page"])
+            photos = info.photos.all()
+            if photos:
+                photo = info.photos.all()[0]
+        except:
+            info = None
+
     context = {
         "species_list": species,
         "load_datatables": True,
@@ -725,6 +737,8 @@ def species_full_list(request):
         "vegetation_type": vegetation_type,
         "menu": "species",
         "page": request.GET.get("page"),
+        "info": info,
+        "photo": photo,
     }
     return render(request, "species.all.html", context)
 
@@ -1647,7 +1661,19 @@ def controlpanel_page(request, id=None):
     site = get_site(request)
     action = Log.LogAction.CREATE
 
+    if "delete_photo" in request.GET:
+        photo = Photo.objects.get(pk=request.GET["delete_photo"])
+        info.photos.remove(photo)
+        messages.success(request, "Photo was removed from the page.")
+        return redirect(request.path)
+
     if request.method == "POST":
+
+        if "photo" in request.POST:
+            info.photos.add(Photo.objects.get(pk=request.POST["photo"]))
+            messages.success(request, "Photo was added to the page.")
+            return redirect(request.get_full_path())
+
         info.name = request.POST["name"]
         info.content = request.POST.get("description")
         info.slug = request.POST.get("slug")
@@ -2333,6 +2359,10 @@ def controlpanel_specieslist(request):
         site = Site.objects.get(pk=request.GET["site"])
         species = species.filter(site=site)
 
+    if "name" in request.GET:
+        name = request.GET["name"].strip()
+        species = Species.objects.filter(name__icontains=name)
+
     context = {
         "controlpanel": True,
         "menu": "species",
@@ -2477,3 +2507,27 @@ def controlpanel_species(request, id=None):
     }
 
     return render(request, "controlpanel/species.html", context)
+
+@staff_member_required
+def controlpanel_photos(request):
+
+    site = get_site(request)
+
+    context = {
+        "controlpanel": True,
+        "menu": "photos",
+    }
+    return render(request, "controlpanel/photos.html", context)
+
+@staff_member_required
+def controlpanel_photo(request, id):
+
+    site = get_site(request)
+    info = Photo.objects.get(pk=id)
+
+    context = {
+        "controlpanel": True,
+        "menu": "photos",
+        "info": info,
+    }
+    return render(request, "controlpanel/photo.html", context)

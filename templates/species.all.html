@@ -1,8 +1,24 @@
 {% extends "_base.html" %}
 
+{% block title %}Species list{% endblock %}
+
 {% block content %}
 
-  <h1>{% block title %}Species list{% endblock %}</h1>
+  {% if info %}
+    <div class="grid grid-cols-5 gap-4 mb-4">
+      <div class="{% if photo %}col-span-3{% else %}col-span-5{% endif %}">
+        <h1>Species List - {{ info }}</h1>
+        {{ info.get_content }}
+      </div>
+      {% if photo %}
+        <div class="col-span-2">
+          <img src="{{ photo.medium }}" alt="" class="w-full h-auto object-cover border border-gray-300 rounded-sm" />
+        </div>
+      {% endif %}
+    </div>
+  {% else %}
+    <h1>Species List</h1>
+  {% endif %}
 
   <div class="alert alert-info">
     <i class="fa fa-info-circle fa-fw mr-3"></i>
@@ -11,7 +27,7 @@
     </span>
   </div>
 
-  {% if features %}
+  {% if features and not info %}
     <div class="alert alert-warning">
       <h4>Filters</h4>
       <p>

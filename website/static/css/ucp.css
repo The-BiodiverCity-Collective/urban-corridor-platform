@@ -63,6 +63,10 @@
   @apply inline-flex items-center rounded-md bg-blue-50 px-2 py-1 text-xs font-medium text-blue-700 ring-1 ring-inset ring-blue-700/10;
 }
 
+@utility stdimg {
+  @apply p-2 border border-gray-500 rounded-sm;
+}
+
 @utility alert {
   @apply p-4 border mb-2 rounded-sm;
 }
@@ -300,6 +304,10 @@
 
   main h4 {
     @apply font-bold mb-2;
+  }
+
+  main p {
+    @apply mb-2;
   }
 
   main input:not([type="radio"]):not([type="checkbox"]) {

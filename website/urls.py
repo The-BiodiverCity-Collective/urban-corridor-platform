@@ -105,6 +105,9 @@ urlpatterns = [
     path("controlpanel/pages/<int:id>/", views.controlpanel_page, name="controlpanel_page"),
     path("controlpanel/pages/create/", views.controlpanel_page, name="controlpanel_page"),
 
+    path("controlpanel/photos/", views.controlpanel_photos, name="controlpanel_photos"),
+    path("controlpanel/photos/<int:id>/", views.controlpanel_photo, name="controlpanel_photo"),
+
     path("controlpanel/gardens/", views.controlpanel_gardens, name="controlpanel_gardens"),
     path("controlpanel/gardens/<int:id>/", views.controlpanel_garden, name="controlpanel_garden"),
     path("controlpanel/gardens/<int:id>/photos/", views.controlpanel_garden_photos, name="controlpanel_garden_photos"),
