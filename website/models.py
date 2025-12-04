@@ -619,6 +619,7 @@ class VegetationType(models.Model):
     slug = models.SlugField(max_length=255)
     spaces = models.ManyToManyField(ReferenceSpace, blank=True, limit_choices_to={"source_id": 983172})
     site = models.ForeignKey(Site, on_delete=models.CASCADE)
+    meta_data = models.JSONField(null=True, blank=True)
 
     def __str__(self):
         return self.name

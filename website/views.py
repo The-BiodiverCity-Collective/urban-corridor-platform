@@ -1072,9 +1072,17 @@ def garden_manager(request, id):
 
 
 def vegetation_types(request):
+                
     site = get_site(request)
     info = site.vegetation_types_map
     spaces = info.spaces.all()
+
+    # We want to redirect to a particular vegetation type. The ID of the Space is passed in the
+    # url so we have to figure out to which vegetation type this corresponds
+    if "redirect" in request.GET:
+        space = spaces.get(pk=request.GET["redirect"])
+        vegetation_type = VegetationType.objects.get(spaces=space)
+        return redirect(vegetation_type.get_absolute_url())
 
     features = []
     simplify_factor = None
@@ -1094,23 +1102,16 @@ def vegetation_types(request):
 
         # If we need separate colors we'll itinerate over them one by one
         if show_individual_colors:
-            if color_features:
-                relevant_feature = each.meta_data["features"][get_feature]
-                if relevant_feature in color_features:
-                    color = color_features[relevant_feature]
-                else:
-                    color = "purple"
-            else:
-                try:
-                    color = colors[count]
-                    count += 1
-                except:
-                    color = colors[0]
-                    count = 0
+            try:
+                color = colors[count]
+                count += 1
+            except:
+                color = colors[0]
+                count = 0
             legend[color] = each.name
 
         content = ""
-        content = content + f"<a href='{url}'>View details</a>"
+        content = content + f"<a href='?redirect={each.id}'>View details</a>"
 
         try:
             features.append({

@@ -11,3 +11,4 @@ oldtemplates/*
 *csv
 templates/index.html
 node_modules/*
+exportdb

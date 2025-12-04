@@ -29,10 +29,10 @@
     {% for each in all %}
       <tr>
         <td><a href="{% url "vegetation_type" each.slug %}">{{ each }}</a></td>
-        <td>{{ each.historical_cover }}</td>
-        <td>{{ each.cape_town_cover }}</td>
-        <td>{{ each.current_cape_town_area }}</td>
-        <td>{{ each.conserved_cape_town }}</td>
+        <td>{{ each.meta_data.historical_cover }}</td>
+        <td>{{ each.meta_data.cape_town_cover }}</td>
+        <td>{{ each.meta_data.current_cape_town_area }}</td>
+        <td>{{ each.meta_data.conserved_cape_town }}</td>
         <td>{{ each.redlist.get_code }}</td>
       </tr>
     {% endfor %}
