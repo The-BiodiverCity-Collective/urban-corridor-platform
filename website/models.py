@@ -44,10 +44,11 @@ class Site(models.Model):
     url = models.CharField(max_length=255)
     email = models.EmailField(null=True)
     language = models.ForeignKey(Language, on_delete=models.PROTECT)
-    corridor = models.ForeignKey("Document", on_delete=models.SET_NULL, null=True, blank=True, limit_choices_to={"doc_type":"CORRIDOR"}, related_name="primary_site")
+    corridor = models.ForeignKey("Document", on_delete=models.PROTECT, null=True, blank=True, limit_choices_to={"doc_type":"CORRIDOR"}, related_name="primary_site")
     logo = StdImageField(upload_to="logos", variations={"thumbnail": (350, 350), "medium": (800, 600)}, null=True, blank=True)
     vegetation_types = models.ManyToManyField("VegetationType", blank=True, related_name="sites")
     meta_data = models.JSONField(null=True, blank=True)
+    vegetation_types_map = models.ForeignKey("Document", on_delete=models.PROTECT, null=True, blank=True, related_name="primary_site_vegetation")
 
     def __str__(self):
         return self.name
@@ -617,6 +618,7 @@ class VegetationType(models.Model):
     redlist = models.ForeignKey(Redlist, on_delete=models.SET_NULL, null=True)
     slug = models.SlugField(max_length=255)
     spaces = models.ManyToManyField(ReferenceSpace, blank=True, limit_choices_to={"source_id": 983172})
+    site = models.ForeignKey(Site, on_delete=models.CASCADE)
 
     def __str__(self):
         return self.name

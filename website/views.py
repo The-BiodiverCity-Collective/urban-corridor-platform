@@ -838,8 +838,10 @@ def gardens(request):
     gardens = Garden.objects.prefetch_related("organizations").filter(is_active=True, site=site)
     context = {
         "gardens": gardens,
-        "page": Page.objects.get(pk=2),
+        "info": Page.objects.get(pk=2),
         "load_datatables": True,
+        "page": "gardens",
+        "menu": "gardens",
     }
     return render(request, "gardens/index.html", context)
 
@@ -848,11 +850,13 @@ def gardens_map(request):
     gardens = Garden.objects.prefetch_related("organizations").filter(is_active=True, site=site)
     context = {
         "gardens": gardens,
-        "page": Page.objects.get(pk=2),
+        "info": Page.objects.get(pk=2),
+        "page": "gardens_map",
         "load_map": True,
         "mapstyle": MapStyle.objects.get(pk=3),
         "swapped_corridor_coords": get_swapped_corridor_coords(site),
         "load_datatables": True,
+        "menu": "gardens",
     }
     return render(request, "gardens/map.html", context)
 
@@ -908,6 +912,7 @@ def garden(request, id):
         "info": info,
         "photos": photos,
         "title": info.name,
+        "menu": "gardens",
     }
     return render(request, "gardens/garden.html", context)
 
@@ -1067,11 +1072,84 @@ def garden_manager(request, id):
 
 
 def vegetation_types(request):
-    context = {
-        "all": VegetationType.objects.all(),
-        "page": Page.objects.get(pk=1),
+    site = get_site(request)
+    info = site.vegetation_types_map
+    spaces = info.spaces.all()
+
+    features = []
+    simplify_factor = None
+
+    colors = ["green", "blue", "red", "orange", "brown", "navy", "teal", "purple", "pink", "maroon", "chocolate", "gold", "ivory", "snow"]
+    color_features = {}
+
+    count = 0
+    legend = {}
+    properties = None
+    show_individual_colors = True
+
+    for each in spaces:
+        geom_type = each.geometry.geom_type
+        geo = each.geometry
+        url = each.get_absolute_url
+
+        # If we need separate colors we'll itinerate over them one by one
+        if show_individual_colors:
+            if color_features:
+                relevant_feature = each.meta_data["features"][get_feature]
+                if relevant_feature in color_features:
+                    color = color_features[relevant_feature]
+                else:
+                    color = "purple"
+            else:
+                try:
+                    color = colors[count]
+                    count += 1
+                except:
+                    color = colors[0]
+                    count = 0
+            legend[color] = each.name
+
+        content = ""
+        content = content + f"<a href='{url}'>View details</a>"
+
+        try:
+            features.append({
+                "type": "Feature",
+                "geometry": json.loads(geo.json),
+                "properties": {
+                    "name": str(each),
+                    "id": each.id,
+                    "content": content,
+                    "color": color if color else "",
+                },
+            })
+        except Exception as e:
+            messages.error(request, f"We had an issue reading one of the items which had an invalid geometry ({each}). Error: {str(e)}")
+
+    data = {
+        "type":"FeatureCollection",
+        "features": features,
+        "geom_type": geom_type,
     }
-    return render(request, "website/vegetationtypes.html", context)
+
+    context = {
+        "all": VegetationType.objects.filter(site=site),
+        "info": Page.objects.get(pk=1),
+        "page": "vegetation_types",
+        "menu": "maps",
+
+        "load_map": True,
+        "load_leaflet_item": True,
+        "load_datatables": True,
+        "data": data,
+        "properties": properties,
+        "show_individual_colors": show_individual_colors,
+        "colors": colors,
+        "features": features,
+        "mapstyle": properties.mapstyle if properties else None,
+
+    }
+    return render(request, "fcc/vegetationtypes.html", context)
 
 def vegetation_type(request, slug):
 
@@ -1103,8 +1181,11 @@ def vegetation_type(request, slug):
     context = {
         "info": info,
         "map": map._repr_html_(),
+        "menu": "maps",
+        "page": "vegetation_types",
+        "title": str(info),
     }
-    return render(request, "website/vegetationtype.html", context)
+    return render(request, "fcc/vegetationtype.html", context)
 
 def profile(request, section=None, lat=None, lng=None, id=None, subsection=None):
 

@@ -281,6 +281,7 @@
       opacity 0.2s ease-out,
       transform 0.2s ease-out;
     position: absolute;
+    z-index:10000;
   }
 }
 

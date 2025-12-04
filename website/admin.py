@@ -21,6 +21,7 @@ class SearchAdmin(admin.ModelAdmin):
     exclude = ["content_html"]
 
 class VegTypeAdmin(admin.ModelAdmin):
+    list_display = ["name"]
     autocomplete_fields = ["spaces"]
 
 class DocAdmin(SearchAdmin):

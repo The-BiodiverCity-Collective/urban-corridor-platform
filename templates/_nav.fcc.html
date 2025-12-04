@@ -1,7 +1,7 @@
-<nav class="mainnav relative isolate z-50 shadow-sm {{ SITE.meta_data.header }}">
+<nav class="mainnav relative isolate z-10000 shadow-sm {{ SITE.meta_data.header }}">
 
   <div class="bg-white py-5">
-    <div class="mx-auto max-w-7xl px-6 lg:px-8">
+    <div class="mx-auto max-w-7xl px-6 lg:px-8 z-10001 relative">
       <a href="/" class="mr-4"><i class="fa fa-home"></i></a>
 
       <a href="/gardens/" class="mr-3 inline-flex items-center gap-x-1 text-sm/6 font-semibold {% if menu == "about" %}text-sky-600{% else %}text-gray-900{% endif %} hovermenu" data-target="about" aria-expanded="false">
@@ -9,7 +9,7 @@
         <i class="fa fa-angle-down mt-1"></i>
       </a>
 
-      <a href="/gardens/" class="mr-3 inline-flex items-center gap-x-1 text-sm/6 font-semibold text-gray-900 hovermenu" data-target="gardens" aria-expanded="false">
+      <a href="/gardens/" class="mr-3 inline-flex items-center gap-x-1 text-sm/6 font-semibold {% if menu == "gardens" %}text-sky-600{% else %}text-gray-900{% endif %} hovermenu" data-target="gardens" aria-expanded="false">
         {{ _("Garden network") }}
         <i class="fa fa-angle-down mt-1"></i>
       </a>
@@ -19,9 +19,9 @@
           <i class="fa fa-angle-down mt-1 {% if menu == "species" %}text-sky-600{% endif %}"></i>
       </a>
 
-      <a href="/maps/" class="mr-3 inline-flex items-center gap-x-1 text-sm/6 font-semibold text-gray-900 hovermenu" data-target="maps" aria-expanded="false">
+      <a href="/maps/" class="mr-3 inline-flex items-center gap-x-1 text-sm/6 font-semibold {% if menu == "maps" %}text-sky-600 active{% else %}text-gray-900{% endif %} hovermenu" data-target="maps" aria-expanded="false">
         {{ _("Maps") }}
-        <i class="fa fa-angle-down mt-1"></i>
+          <i class="fa fa-angle-down mt-1 {% if menu == "maps" %}text-sky-600{% endif %}"></i>
       </a>
 
       <a href="/join/" class="mr-3 inline-flex items-center gap-x-1 text-sm/6 font-semibold text-gray-900 hovermenu" data-target="join" aria-expanded="false">
@@ -279,7 +279,8 @@
           <h3 class="text-sm/6 font-medium text-gray-500">Fynbos corridors</h3>
           <div class="mt-6 flow-root">
             <div class="-my-2">
-              <a href="{% url "gardens_map" %}" class="flex gap-x-4 py-2 text-sm/6 font-semibold text-gray-900">
+              <a href="{% url "gardens_map" %}" class="flex gap-x-4 py-2 text-sm/6 font-semibold text-gray-900
+              {% if page == "gardens_introduction" %}text-sky-600{% else %}text-gray-900{% endif %} hover:text-sky-600">
                 <i class="fa fa-info-circle fa-fw text-lg text-gray-400 mr-1"></i>
                 Introduction
               </a>
@@ -291,11 +292,13 @@
                 <i class="fa fa-map-marker-alt fa-fw text-lg text-gray-400 mr-1"></i>
                 High-impact strategic river corridors
               </a>
-              <a href="{% url "gardens_map" %}" class="flex gap-x-4 py-2 text-sm/6 font-semibold text-gray-900">
+              <a href="{% url "gardens_map" %}" class="flex gap-x-4 py-2 text-sm/6 font-semibold
+              {% if page == "gardens_map" %}text-sky-600{% else %}text-gray-900{% endif %} hover:text-sky-600">
                 <i class="fa fa-map-marker-alt fa-fw text-lg text-gray-400 mr-1"></i>
                 {{ _("Garden map") }}
               </a>
-              <a href="{% url "gardens" %}" class="flex gap-x-4 py-2 text-sm/6 font-semibold text-gray-900">
+              <a href="{% url "gardens" %}" class="flex gap-x-4 py-2 text-sm/6 font-semibold
+              {% if page == "gardens" %}text-sky-600{% else %}text-gray-900{% endif %} hover:text-sky-600">
                 <i class="fa fa-map fa-fw text-lg text-gray-400 mr-1"></i>
                 {{ _("Stepping-stone gardens") }} (41)
               </a>
@@ -306,17 +309,17 @@
           <h3 class="text-sm/6 font-medium text-gray-500">Recently updated</h3>
           <div class="mt-6 flow-root">
             <div class="-my-2">
-              <a href="/maps/" class="flex gap-x-4 py-2 text-sm/6 font-semibold text-gray-900">
+              <a href="/gardens/1003481/" class="flex gap-x-4 py-2 text-sm/6 font-semibold text-gray-900 hover:text-sky-600">
                 <i class="fa fa-feather fa-fw text-lg text-gray-400 mr-1"></i>
                 Alicedale Primary School  
               </a>
-              <a href="/maps/" class="flex gap-x-4 py-2 text-sm/6 font-semibold text-gray-900">
+              <a href="/gardens/1003489/" class="flex gap-x-4 py-2 text-sm/6 font-semibold text-gray-900 hover:text-sky-600">
                 <i class="fa fa-feather fa-fw text-lg text-gray-400 mr-1"></i>
                 Goodwood wild food garden  
               </a>
-              <a href="/maps/" class="flex gap-x-4 py-2 text-sm/6 font-semibold text-gray-900">
+              <a href="/gardens/1003487/" class="flex gap-x-4 py-2 text-sm/6 font-semibold text-gray-900 hover:text-sky-600">
                 <i class="fa fa-feather fa-fw text-lg text-gray-400 mr-1"></i>
-                Wilderoosmaryn Patch 
+                Little Mowbray ZenDen 
               </a>
             </div>
           </div>
@@ -333,8 +336,8 @@
             <span class="float-right relative z-10 text-center rounded-full bg-gray-100 px-3 py-1.5 text-xs font-medium text-gray-600 hover:bg-gray-200">
               Garden highlight
             </span>
-            <h4 class="mt-2 text-sm/6 font-semibold text-gray-900">
-              <a href="#">
+            <h4 class="mt-2 text-sm/6 font-semibold text-gray-900 hover:text-sky-600">
+              <a href="/gardens/128/">
                 <span class="absolute inset-0"></span>
                 Newlands Triangle Gardens
               </a>
@@ -348,8 +351,8 @@
           </div>
           <div>
             <span class="float-right relative z-10 rounded-full bg-gray-100 px-3 py-1.5 text-xs font-medium text-gray-600 hover:bg-gray-200">Monthly highlight</span>
-            <h4 class="mt-2 text-sm/6 font-semibold text-gray-900">
-              <a href="#">
+            <h4 class="mt-2 text-sm/6 font-semibold text-gray-900 hover:text-sky-600">
+              <a href="/gardens/1003511/">
                 <span class="absolute inset-0"></span>
                 Plumstead Community Gardens
               </a>
@@ -370,6 +373,11 @@
               <a href="/maps/" class="flex gap-x-4 py-2 text-sm/6 font-semibold text-gray-900">
                 <i class="fa fa-list fa-fw text-lg text-gray-400 mr-1"></i>
                 Corridor map
+              </a>
+              <a href="{% url "vegetation_types" %}" class="flex gap-x-4 py-2 text-sm/6 font-semibold hover:text-sky-600
+                {% if page == "vegetation_types" %}text-sky-600{% else %}text-gray-900{% endif %}">
+                <i class="fa fa-list fa-fw text-lg text-gray-400 mr-1"></i>
+                Vegetation types
               </a>
               <a href="/maps/" class="flex gap-x-4 py-2 text-sm/6 font-semibold text-gray-900">
                 <i class="fa fa-seedling fa-fw text-lg text-gray-400 mr-1"></i>

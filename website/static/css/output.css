@@ -334,6 +334,12 @@
   .z-50 {
     z-index: 50;
   }
+  .z-10000 {
+    z-index: 10000;
+  }
+  .z-10001 {
+    z-index: 10001;
+  }
   .col-span-2 {
     grid-column: span 2 / span 2;
   }
@@ -2915,6 +2921,7 @@
     opacity: 0;
     transition: opacity 0.2s ease-out, transform 0.2s ease-out;
     position: absolute;
+    z-index: 10000;
   }
 }
 @layer base {
