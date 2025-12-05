@@ -20,7 +20,7 @@ import requests
 from django.utils import timezone
 
 # To create the sample shapefile images
-import geopandas
+#import geopandas # TEMP DEACTIVATE DURING INSTALL ON SERVER
 import contextily as ctx
 
 # For our shapefile work
