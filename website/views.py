@@ -1070,7 +1070,6 @@ def garden_manager(request, id):
     }
     return render(request, "website/garden.manager.html", context)
 
-
 def vegetation_types(request):
                 
     site = get_site(request)
@@ -1605,6 +1604,8 @@ def resources(request, slug=None):
         "documents": documents,
         "title": slug.capitalize(),
         "hide_main_container": True,
+        "menu": "resources",
+        "page": slug,
     }
     return render(request, "documents.html", context)
 
@@ -1678,6 +1679,44 @@ def documents(request):
     }
     return render(request, "website/documents.html", context)
 
+def blogs(request):
+    site = get_site(request)
+    context = {
+        "blogs": Page.objects.filter(is_active=True, site=site, page_type=2).order_by("-date"),
+        "info": Page.objects.get(site=site, slug="blog"),
+        "menu": "resources",
+        "page": "blog",
+    }
+    return render(request, "blogs.html", context)
+
+def blog(request, slug):
+    info = Page.objects.get(slug=slug, is_active=True, site=get_site(request))
+    context = {
+        "info": info,
+        "menu": "resources",
+        "page": "blog",
+    }
+    return render(request, "blog.html", context)
+
+def events(request):
+    site = get_site(request)
+    context = {
+        "events": Page.objects.filter(is_active=True, site=site, page_type=3).order_by("-date"),
+        "info": Page.objects.get(site=site, slug="events"),
+        "menu": "join",
+        "page": "events",
+    }
+    return render(request, "events.html", context)
+
+def event(request, slug):
+    info = Page.objects.get(slug=slug, is_active=True, site=get_site(request))
+    context = {
+        "info": info,
+        "menu": "join",
+        "page": "event",
+    }
+    return render(request, "event.html", context)
+
 def shapefile_zip(request, id):
     info = Document.objects.get(pk=id)
 
@@ -1723,22 +1762,29 @@ def controlpanel(request):
 def controlpanel_pages(request):
 
     site = get_site(request)
-    pages = Page.objects.filter(site=site)
+    page_type = int(request.GET["type"])
+    pages = Page.objects.filter(site=site, page_type=page_type)
 
     context = {
         "controlpanel": True,
         "menu": "pages",
+        "page_type": page_type,
         "pages": pages,
+        "title": Page.PageType(page_type).label,
     }
     return render(request, "controlpanel/pages.html", context)
 
 @staff_member_required
 def controlpanel_page(request, id=None):
 
+    menu = "pages"
     info = Page()
     if id:
         info = Page.objects.get(pk=id)
         action = Log.LogAction.UPDATE
+        page_type = info.page_type
+    else:
+        page_type = int(request.GET["type"])
 
     site = get_site(request)
     action = Log.LogAction.CREATE
@@ -1762,6 +1808,8 @@ def controlpanel_page(request, id=None):
         info.position = 0
         info.format = "HTML"
         info.is_active = True if request.POST.get("is_active") == "1" else False
+        if "date" in request.POST and request.POST["date"]:
+            info.date = request.POST["date"]
         if request.FILES.get("image"):
             info.image = request.FILES.get("image")
         info.site = site
@@ -1772,14 +1820,15 @@ def controlpanel_page(request, id=None):
         if request.GET.get("redirect"):
             return redirect(request.GET.get("redirect"))
         else:
-            return redirect(reverse("controlpanel_pages"))
+            return redirect(reverse("controlpanel_pages") + "?type=" + str(page_type))
 
     context = {
         "controlpanel": True,
-        "menu": "pages",
+        "menu": menu,
         "info": info,
-        "title": _("Edit page") + ": " + info.name if info.id else _("Add page"),
+        "title": Page.PageType(page_type).label,
         "quill": True,
+        "page_type": page_type,
     }
     return render(request, "controlpanel/page.html", context)
 

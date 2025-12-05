@@ -62,6 +62,14 @@ class Page(models.Model):
     slug = models.SlugField(max_length=255)
     site = models.ForeignKey(Site, on_delete=models.CASCADE, null=True, blank=True, related_name="pages")
     is_active = models.BooleanField(default=True, db_index=True)
+    date = models.DateField(null=True)
+
+    class PageType(models.IntegerChoices):
+        REGULAR = 1, "Regular page"
+        BLOG = 2, "Blog"
+        EVENT = 3, "Event"
+    page_type = models.IntegerField(choices=PageType.choices, db_index=True, default=1)
+
     photos = models.ManyToManyField("Photo", blank=True)
     FORMATS = (
         ("HTML", "HTML"),
@@ -74,7 +82,16 @@ class Page(models.Model):
         return self.name
 
     def get_absolute_url(self):
-        return "/about/" + self.slug
+        if self.page_type == 2:
+            return "/blog/" + self.slug
+        else:
+            return "/about/" + self.slug
+
+    def photo(self):
+        if self.photos:
+            return self.photos.all()[0]
+        else:
+            return None
 
     def get_content(self):
         # The content field is already sanitized, according to the settings (see the save() function below)

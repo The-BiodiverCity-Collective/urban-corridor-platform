@@ -76,6 +76,12 @@ urlpatterns = [
     path("newsletter/", views.newsletter, name="newsletter"),
     path("documents/", views.documents, name="documents"),
 
+    path("blog/", views.blogs, name="blogs"),
+    path("blog/<slug:slug>/", views.blog, name="blog"),
+
+    path("events/", views.events, name="events"),
+    path("events/<slug:slug>/", views.event, name="event"),
+
     path("contact/", views.page, {"slug": "contact-form"}, name="contact"),
 
     path("shapefiles/<int:id>/zip/", views.shapefile_zip, name="shapefile_zip"),

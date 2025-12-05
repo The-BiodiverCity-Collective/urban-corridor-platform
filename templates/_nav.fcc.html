@@ -24,14 +24,14 @@
           <i class="fa fa-angle-down mt-1 {% if menu == "maps" %}text-sky-600{% endif %}"></i>
       </a>
 
-      <a href="/join/" class="mr-3 inline-flex items-center gap-x-1 text-sm/6 font-semibold text-gray-900 hovermenu" data-target="join" aria-expanded="false">
+      <a href="/join/" class="mr-3 inline-flex items-center gap-x-1 text-sm/6 font-semibold {% if menu == "join" %}text-sky-600 active{% else %}text-gray-900{% endif %} hovermenu" data-target="join" aria-expanded="false">
         {{ _("Join Us") }}
-        <i class="fa fa-angle-down mt-1"></i>
+          <i class="fa fa-angle-down mt-1 {% if menu == "join" %}text-sky-600{% endif %}"></i>
       </a>
 
-      <a href="/resources/" class="mr-3 inline-flex items-center gap-x-1 text-sm/6 font-semibold text-gray-900 hovermenu" data-target="resources" aria-expanded="false">
+      <a href="/resources/" class="mr-3 inline-flex items-center gap-x-1 text-sm/6 font-semibold {% if menu == "resources" %}text-sky-600 active{% else %}text-gray-900{% endif %} hovermenu" data-target="resources" aria-expanded="false">
         {{ _("Resources") }}
-        <i class="fa fa-angle-down mt-1"></i>
+          <i class="fa fa-angle-down mt-1 {% if menu == "resources" %}text-sky-600{% endif %}"></i>
       </a>
 
     </div>
@@ -456,15 +456,17 @@
           <h3 class="text-sm/6 font-medium text-gray-500">Documents</h3>
           <div class="mt-6 flow-root">
             <div class="-my-2">
-              <a href="/resources/teaching/" class="flex gap-x-4 py-2 text-sm/6 font-semibold text-gray-900">
+              <a href="/resources/teaching/" class="flex gap-x-4 py-2 text-sm/6 font-semibold hover:text-sky-600
+                {% if page == "teaching" and menu == "resources" %}text-sky-600{% else %}text-gray-900{% endif %}">
                 <i class="fa fa-list fa-fw text-lg text-gray-400 mr-1"></i>
                 Teaching resources
               </a>
-              <a href="/resources/general/" class="flex gap-x-4 py-2 text-sm/6 font-semibold text-gray-900">
+              <a href="/resources/general/" class="flex gap-x-4 py-2 text-sm/6 font-semibold hover:text-sky-600
+                {% if page == "general" and menu == "resources" %}text-sky-600{% else %}text-gray-900{% endif %}">
                 <i class="fa fa-seedling fa-fw text-lg text-gray-400 mr-1"></i>
                 Useful documents
               </a>
-              <a href="/resources/general/" class="flex gap-x-4 py-2 text-sm/6 font-semibold text-gray-900">
+              <a href="#" class="flex gap-x-4 py-2 text-sm/6 font-semibold text-gray-500">
                 <i class="fa fa-download fa-fw text-lg text-gray-400 mr-1"></i>
                 Download maps
               </a>
@@ -475,17 +477,10 @@
           <h3 class="text-sm/6 font-medium text-gray-500">Additional resources</h3>
           <div class="mt-6 flow-root">
             <div class="-my-2">
-              <a href="/resources/teaching/" class="flex gap-x-4 py-2 text-sm/6 font-semibold text-gray-900">
+              <a href="/blog/" class="flex gap-x-4 py-2 text-sm/6 font-semibold hover:text-sky-600
+                {% if page == "blog" and menu == "resources" %}text-sky-600{% else %}text-gray-900{% endif %}">
                 <i class="fa fa-edit fa-fw text-lg text-gray-400 mr-1"></i>
                 Our blog
-              </a>
-              <a href="/resources/general/" class="flex gap-x-4 py-2 text-sm/6 font-semibold text-gray-900">
-                <i class="fa fa-seedling fa-fw text-lg text-gray-400 mr-1"></i>
-                Useful documents
-              </a>
-              <a href="/resources/general/" class="flex gap-x-4 py-2 text-sm/6 font-semibold text-gray-900">
-                <i class="fa fa-download fa-fw text-lg text-gray-400 mr-1"></i>
-                Download maps
               </a>
             </div>
           </div>
@@ -568,9 +563,10 @@
                 <i class="fa fa-feather fa-fw text-lg text-gray-400 mr-1"></i>
                 {{ _("How to support our gardens") }}
               </a>
-              <a href="/maps/" class="flex gap-x-4 py-2 text-sm/6 font-semibold text-gray-900">
-                <i class="fa fa-feather fa-fw text-lg text-gray-400 mr-1"></i>
-                {{ _("Upcoming events") }}
+              <a href="{% url "events" %}" class="flex gap-x-4 py-2 text-sm/6 font-semibold hover:text-sky-600
+                {% if page == "events" and menu == "join" %}text-sky-600{% else %}text-gray-900{% endif %}">
+                <i class="fa fa-seedling fa-fw text-lg text-gray-400 mr-1"></i>
+                Upcoming events
               </a>
               <a href="/maps/" class="flex gap-x-4 py-2 text-sm/6 font-semibold text-gray-900">
                 <i class="fa fa-feather fa-fw text-lg text-gray-400 mr-1"></i>

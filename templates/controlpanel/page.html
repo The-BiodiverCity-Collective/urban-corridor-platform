@@ -2,7 +2,7 @@
 
 {% block content %}
 
-<h1 class="text-3xl">{% block title %}{% if info.id %}{{ _("Edit page") }}: {{ info }}{% else %}{{ _("Add page") }}{% endif %}{% endblock %}</h1>
+<h1 class="text-3xl">{{ title }}</h1>
 
 <form method="post" enctype="multipart/form-data">
 
@@ -32,6 +32,15 @@
               <input type="text" name="slug" id="slug" class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-xs ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-sky-600 sm:text-sm/6" value="{{ info.slug|default_if_none:"" }}" required>
             </div>
           </div>
+
+          {% if page_type != 1 %}
+            <div class="col-span-full mt-2">
+              <label for="date" class="block text-sm/6 font-medium text-gray-900">{{ _("Date") }}</label>
+              <div class="mt-2">
+                <input type="date" name="date" id="date" class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-xs ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-sky-600 sm:text-sm/6" value="{{ info.date|date:"Y-m-d"|default_if_none:"" }}" required>
+              </div>
+            </div>
+          {% endif %}
 
           <div class="col-span-full mt-4">
             <label for="file" class="block text-sm/6 font-medium text-gray-900">{{ _("Image") }}</label>
@@ -100,7 +109,7 @@
     <div class="border-b border-gray-900/10 pb-12">
       <h2 class="text-base/7 font-semibold text-gray-900">Photos linked to this page</h2>
 
-        {% if info.photos.count %}
+        {% if info.id and info.photos.count %}
           <div class="grid grid-cols-12 gap-2 mb-6">
             {% for each in info.photos.all %}
               <div class="relative overflow-hidden rounded-lg shadow-lg aspect-w-16 aspect-h-9">
@@ -133,4 +142,22 @@
 </form>
 
 
+{% endblock %}
+
+{% block js %}
+  {% if not info.id %}
+    <script type="text/javascript">
+    $(function(){
+      $("input[name='name']").on("input", function() {
+        var slug = $(this).val()
+          .toLowerCase()
+          .replace(/[^a-z0-9\s-]/g, "")
+          .trim()
+          .replace(/\s+/g, "-")
+          .replace(/--+/g, "-");
+        $("input[name='slug']").val(slug);
+      });
+    });
+    </script>
+  {% endif %}
 {% endblock %}

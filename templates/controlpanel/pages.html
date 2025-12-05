@@ -2,7 +2,9 @@
 
 {% block content %}
 
-<h1 class="text-3xl">{{ _("Pages") }}</h1>
+<h1 class="text-3xl">
+  {{ title }}
+</h1>
 
 <table class="table mb-5">
   <thead>
@@ -23,6 +25,8 @@
   </tbody>
 </table>
 
-<a class="btn-add" href="{% url "controlpanel_page" %}"><i class="fa fa-plus"></i> {{ _("Add page") }}</a>
+<a class="btn-add" href="{% url "controlpanel_page" %}?type={{ page_type }}"><i class="fa fa-plus"></i> 
+  {{ _("Add") }}
+</a>
 
 {% endblock %}
