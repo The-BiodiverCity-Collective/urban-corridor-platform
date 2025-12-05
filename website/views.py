@@ -138,7 +138,11 @@ def index(request):
         #"garden": Garden.objects.filter(is_active=True).order_by("?")[0],
         "garden": Garden(),
     }
-    return render(request, "index.html", context)
+    site = get_site(request)
+    if site.id == 2:
+        return render(request, "fcc/index.html", context)
+    else:
+        return render(request, "index.html", context)
 
 def design(request):
     return render(request, "design.html")
