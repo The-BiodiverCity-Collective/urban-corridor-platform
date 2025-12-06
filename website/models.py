@@ -498,14 +498,14 @@ class ReferenceSpace(models.Model):
         if self.photo:
             return self.photo.image.medium.url
         else:
-            return settings.MEDIA_URL + "/placeholder.jpg"
+            return settings.MEDIA_URL + "placeholder.png"
 
     @property
     def thumbnail(self):
         if self.photo:
             return self.photo.image.medium.url
         else:
-            return settings.MEDIA_URL + "/placeholder.jpg"
+            return settings.MEDIA_URL + "placeholder.png"
 
     @property
     def suburb(self):
@@ -697,14 +697,14 @@ class Species(models.Model):
         if self.photo:
             return self.photo.image.medium.url
         else:
-            return settings.MEDIA_URL + "/placeholder.jpg"
+            return settings.MEDIA_URL + "placeholder.png"
 
     @property
     def thumbnail(self):
         if self.photo:
             return self.photo.thumbnail
         else:
-            return settings.MEDIA_URL + "/placeholder.jpg"
+            return settings.MEDIA_URL + "placeholder.png"
 
     @property
     def old(self):

@@ -95,36 +95,30 @@ def log_action(request, action, name):
 # Regular views
 def index(request):
     if "photos" in request.GET:
-        return None
         import csv
         from django.core.files.uploadedfile import UploadedFile
         from dateutil.parser import parse
-        a = Photo.objects.filter(old_id__isnull=False).order_by("-old_id")
-        if a:
-            max_id = a[0].old_id
-        count = 0
-        with open(settings.MEDIA_ROOT + "/import/photos.csv", "r", encoding="utf-8-sig") as csvfile:
+        with open(settings.MEDIA_ROOT + "/import/photos1000.csv", "r", encoding="utf-8-sig") as csvfile:
             contents = csv.DictReader(csvfile)
             for row in contents:
-                id = int(row["id"])
-                if id > max_id:
-                    count += 1
-                    folder = row["folder"]
-                    file = row["file"]
-                    path = settings.MEDIA_ROOT + f"/old/photos/{folder}/{file}/large.jpg"
+                path = settings.MEDIA_ROOT + "/" + row["image"]
+                garden = row["garden_id"]
+                try:
+                    info = Garden.objects.get(original__contains={"id": garden})
+                    print(info, row["image"])
+                except:
+                    pass
+                if False:
                     g = Photo.objects.create(
                         description = row["description"],
-                        original = row,
-                        date = parse(row["created_at"]),
-                        upload_date = parse(row["updated_at"]),
+                        position = row["position"],
+                        author = row["author"],
+                        date = parse(row["date"]),
+                        upload_date = parse(row["upload_date"]),
                         image = UploadedFile(file=open(path, "rb")),
-                        garden_id = row["site_id"] if row["site_id"] else None,
-                        old_id = row["id"],
+                        garden_id = row["garden_id"],
                     )
 
-                if count == 500:
-                    return None
-        
     if "photo_update" in request.GET:
         return None
         from dateutil.parser import parse
@@ -1843,10 +1837,21 @@ def controlpanel_gardens(request):
     site = get_site(request)
     gardens = Garden.objects.filter(site=site)
 
+    for each in gardens:
+        if each.photo:
+            print(each, each.photo.id, each.photo.garden)
+            photo = each.photo
+            if not photo.garden:
+                photo.garden = each
+                photo.save()
+        else:
+            print(each, "No photo")
+
     context = {
         "controlpanel": True,
         "menu": "gardens",
         "gardens": gardens,
+        "load_datatables": True,
     }
     return render(request, "controlpanel/gardens.html", context)
 
