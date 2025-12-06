@@ -34,7 +34,7 @@
 
         <div class="flex flex-col-reverse">
 
-          {% if photos.count > 1 %}
+          {% if info.photos.count > 1 %}
             <div class="mx-auto mt-6 w-full max-w-2xl sm:block lg:max-w-none">
               <div class="grid grid-cols-4 gap-6 gallery" aria-orientation="horizontal" role="tablist">
 
@@ -52,25 +52,29 @@
           {% endif %}
 
           <div>
-            <div id="headshot" aria-labelledby="headshot" tabindex="0" class="relative">
-              <img src="{{ photos.0.large }}" alt="" class="aspect-square w-full object-cover sm:rounded-lg">
-              <span id="credit" class="absolute text-sm bg-gray-50 opacity-90 p-1 rounded-tr-md" style="bottom:0;">{{ photos.0.credit }}</span>
-            </div>
+
+            {% if info.photo %}
+              <div id="headshot" aria-labelledby="headshot" tabindex="0" class="relative">
+                <img src="{{ info.photo.large }}" alt="" class="aspect-square w-full object-cover sm:rounded-lg">
+                <span id="credit" class="absolute text-sm bg-gray-50 opacity-90 p-1 rounded-tr-md" style="bottom:0;">{{ info.photo.credit }}</span>
+              </div>
+            {% endif %}
+
           </div>
 
         </div>
 
         <h2 class="mt-4">{{ _("Support") }}</h2>
         <ul class="flex space-x-4">
-          <a href="/contact/" class="flex-fill text-center border-purple bg-pink action p-4 rounded-sm shadow-md">
+          <a href="/contact/" class="flex-fill text-center bg-gray-100 action p-4 rounded-sm text-gray-800 no-underline">
             <i class="fal fa-handshake fa-2x fa-fw my-2"></i> <br>
             {{ _("I would like to link my nearby garden to this one") }}
           </a>
-          <a href="/contact/" class="flex-fill text-center border-purple bg-pink action p-4 rounded-sm shadow-md">
+          <a href="/contact/" class="flex-fill text-center bg-gray-100 action p-4 rounded-sm text-gray-800 no-underline">
             <i class="fal fa-heart-circle fa-2x fa-fw my-2"></i> <br>
             {{ _("I would like to support this garden") }}
           </a>
-          <a href="/contact/" class="flex-fill text-center border-purple bg-pink action p-4 rounded-sm shadow-md">
+          <a href="/contact/" class="flex-fill text-center bg-gray-100 action p-4 rounded-sm text-gray-800 no-underline">
             <i class="fal fa-edit fa-2x fa-fw my-2"></i> <br>
             {{ _("I would like to register my own garden") }}
           </a>
@@ -100,16 +104,16 @@
 
         <h2 class="mt-4">{{ _("More information") }}</h2>
 
-        <div class="w-1/2">
-          <div class="flex flex-wrap">
-            <div class="w-full sm:w-1/2">
+        <div class="w">
+          <div class="flex flex-wrap -mx-2">
+            <div class="w-full sm:w-1/2 px-2">
 
-              <div class="border rounded-sm shadow-xs bg-white p-3 text-center mb-3">
+              <div class="rounded-sm bg-gray-100 p-3 text-center mb-3">
                 <i class="fal fa-fw fa-map mr-2"></i> {{ _("Suburb") }}
                 <h5 class="mt-2 mb-0 font-bold">{{ info.suburb }}</h5>
               </div>
 
-              <div class="border rounded-sm shadow-xs bg-white p-3 text-center relative mb-3">
+              <div class="rounded-sm bg-gray-100 p-3 text-center relative mb-3">
                 <i class="fal fa-fw fa-leaf mr-2"></i> {{ _("Vegetation type") }}
                 <a class="text-blue-500 hover:underline" href="{{ info.vegetation_type.get_absolute_url }}">
                   <h5 class="mt-2 mb-0 font-bold">{{ info.vegetation_type }}</h5>
@@ -117,7 +121,7 @@
               </div>
 
               {% if info.organizations.count %}
-                <div class="border rounded-sm shadow-xs bg-white p-3 text-center mb-3">
+                <div class="rounded-sm bg-gray-100 p-3 text-center mb-3">
                   <i class="fal fa-fw fa-users-class mr-2"></i> {{ _("Involved organisations") }}
                   <ul class="list-none mb-0 mt-2">
                     {% for each in info.organizations.all %}
@@ -133,7 +137,7 @@
             </div>
 
             <div class="w-full sm:w-1/2">
-              <div class="border rounded-sm shadow-xs bg-white p-3 text-center mb-3 relative">
+              <div class="rounded-sm shadow-xs bg-gray-100 p-3 text-center mb-3 relative">
                 <i class="fal fa-fw fa-clipboard-list mr-2"></i> {{ _("Species list analysis") }}
                 <h5 class="my-2 font-bold">
                   <a class="text-blue-500 hover:underline" href="{% url 'profile' info.get_lat info.get_lng %}">{{ _("Location plant profile") }}</a>
@@ -141,7 +145,7 @@
                 <small>{{ _("Lists the plants that are most appropriate for this location") }}</small>
               </div>
 
-              <div class="border rounded-sm shadow-xs bg-white p-3 text-center mb-3 relative">
+              <div class="rounded-sm shadow-xs bg-gray-100 p-3 text-center mb-3 relative">
                 <i class="fal fa-fw fa-bullseye mr-2"></i> {{ _("Site analysis") }}
                 <h5 class="my-2 font-bold">
                   <a class="text-blue-500 hover:underline" href="{% url 'report' info.get_lat info.get_lng %}">{{ _("Site analysis profile") }}</a>

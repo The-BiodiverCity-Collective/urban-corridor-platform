@@ -461,7 +461,6 @@ class ReferenceSpace(models.Model):
     name = models.CharField(max_length=255, db_index=True, null=True)
     description = models.TextField(null=True, blank=True)
     geometry = models.GeometryField(null=True, blank=True)
-    photo = models.ForeignKey("Photo", on_delete=models.CASCADE, null=True, blank=True, related_name="referencespace")
     source = models.ForeignKey(Document, on_delete=models.CASCADE, null=True, blank=True, related_name="spaces")
     meta_data = models.JSONField(null=True, blank=True)
 
@@ -483,6 +482,20 @@ class ReferenceSpace(models.Model):
             return None
 
     @property
+    def photo(self):
+        if self.photos.all():
+            return self.photos.all()[0]
+        else:
+            return None
+
+    @property
+    def thumbnail(self):
+        if self.photos.all():
+            return self.photos.all()[0].thumbnail
+        else:
+            return settings.MEDIA_URL + "placeholder.png"
+
+    @property
     def get_lng(self):
         try:
             return self.geometry.centroid[0]
@@ -492,20 +505,6 @@ class ReferenceSpace(models.Model):
     def get_vegetation_type(self):
         v = VegetationType.objects.filter(spaces=self)
         return v[0] if v else None
-
-    @property
-    def get_photo_medium(self):
-        if self.photo:
-            return self.photo.image.medium.url
-        else:
-            return settings.MEDIA_URL + "placeholder.png"
-
-    @property
-    def thumbnail(self):
-        if self.photo:
-            return self.photo.image.medium.url
-        else:
-            return settings.MEDIA_URL + "placeholder.png"
 
     @property
     def suburb(self):

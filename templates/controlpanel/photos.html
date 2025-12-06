@@ -1,0 +1,67 @@
+{% extends "_base.html" %}
+
+{% block title %}
+  {{ _("Photos") }}
+{% endblock %}
+{% block content %}
+
+{% block js %}
+  <script type="text/javascript">
+  $(function(){
+    $("select").change(function() {
+      // Get the data-name and the selected value
+      var table = $(this).data("name");
+      var id = $(this).val();
+      window.location.href = "?table=" + encodeURIComponent(table) + "&id=" + id;
+    });
+  });
+  </script>
+{% endblock %}
+
+<h1 class="text-3xl">{{ _("Photos") }}</h1>
+
+<form class="mb-5 max-w-md mx-auto p-6 border border-gray-300 rounded-lg shadow-md">
+
+  <div class="mb-4">
+    <label for="city" class="block text-sm font-medium text-gray-700 mb-2">{{ _("Garden") }}</label>
+    <select data-name="garden" class="block w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring focus:ring-blue-300">
+      <option value=""></option>
+      {% for each in gardens %}
+        <option value="{{ each.id }}" {% if request.GET.table == "garden" and request.GET.id == each.id|slugify %}selected{% endif %}>{{ each }}</option>
+      {% endfor %}
+    </select>
+  </div>
+
+  <div class="mb-4">
+    <label for="city" class="block text-sm font-medium text-gray-700 mb-2">{{ _("Species") }}</label>
+    <select data-name="species" class="block w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring focus:ring-blue-300">
+      <option value=""></option>
+      {% for each in species %}
+        <option value="{{ each.id }}" {% if request.GET.table == "species" and request.GET.id == each.id|slugify %}selected{% endif %}>{{ each }}</option>
+      {% endfor %}
+    </select>
+  </div>
+
+  <div class="mb-4">
+    <label for="city" class="block text-sm font-medium text-gray-700 mb-2">{{ _("Page") }}</label>
+    <select data-name="page" class="block w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring focus:ring-blue-300">
+      <option value=""></option>
+      {% for each in pages %}
+        <option value="{{ each.id }}" {% if request.GET.table == "page" and request.GET.id == each.id|slugify %}selected{% endif %}>{{ each }}</option>
+      {% endfor %}
+    </select>
+  </div>
+</form>
+
+{% if "id" in request.GET %}
+  <div class="alert alert-info">{{ photos.count }} {{ _("photos found") }}</div>
+  <div class="grid grid-cols-12 gap-2 mb-6">
+    {% for each in photos %}
+      <div class="overflow-hidden rounded-lg shadow-lg aspect-w-16 aspect-h-9">
+        <a href="{% url "controlpanel_photo" each.id %}"><img src="{{ each.thumbnail }}" alt="" class="object-cover w-full h-full" /></a>
+      </div>
+    {% endfor %}
+  </div>
+{% endif %}
+
+{% endblock %}

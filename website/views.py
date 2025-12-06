@@ -1837,16 +1837,6 @@ def controlpanel_gardens(request):
     site = get_site(request)
     gardens = Garden.objects.filter(site=site)
 
-    for each in gardens:
-        if each.photo:
-            print(each, each.photo.id, each.photo.garden)
-            photo = each.photo
-            if not photo.garden:
-                photo.garden = each
-                photo.save()
-        else:
-            print(each, "No photo")
-
     context = {
         "controlpanel": True,
         "menu": "gardens",
@@ -2652,10 +2642,25 @@ def controlpanel_species(request, id=None):
 def controlpanel_photos(request):
 
     site = get_site(request)
+    photos = None
+
+    if "id" in request.GET:
+        table = request.GET["table"]
+        if table == "garden":
+            photos = Photo.objects.filter(garden_id=request.GET["id"])
+        if table == "species":
+            photos = Photo.objects.filter(species_id=request.GET["id"])
+        if table == "page":
+            info = Page.objects.get(id=request.GET["id"], site=site)
+            photos = info.photos.all()
 
     context = {
         "controlpanel": True,
         "menu": "photos",
+        "gardens": Garden.objects.filter(site=site),
+        "species": Species.objects.all(),
+        "pages": Page.objects.filter(site=site),
+        "photos": photos
     }
     return render(request, "controlpanel/photos.html", context)
 
