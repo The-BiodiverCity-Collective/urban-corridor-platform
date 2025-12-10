@@ -78,7 +78,7 @@ def get_site(request):
 # This checks to make sure the garden either belongs to the logged-in user, or the user has the right cookie set
 def get_garden(request, id):
     if request.user.is_authenticated:
-        garden = Garden.objects.filter(pk=id, user=request.user)
+        garden = Garden.objects_unfiltered.filter(pk=id, user=request.user)
         if garden:
             return garden[0]
     if request.COOKIES.get("garden"):
@@ -1729,8 +1729,17 @@ def event(request, slug):
     return render(request, "event.html", context)
 
 # Restoration Garden Manager
-def rgm(request):
+def rgm(request, id=None):
     info = Page.objects.get(slug="rgm", is_active=True, site=get_site(request))
+
+    if not request.user.is_authenticated and "garden" in request.COOKIES:
+        cookie_garden = Garden.objects.filter(uuid=request.COOKIES["garden"])
+        if cookie_garden:
+            cookie_garden = cookie_garden[0]
+            garden = get_garden(request, cookie_garden.id)
+
+    if id:
+        garden = get_garden(request, id)
 
     if request.method == "POST" and "garden" in request.POST:
         garden = Garden.objects.create(
@@ -1747,6 +1756,7 @@ def rgm(request):
     context = {
         "info": info,
         "menu": "join",
+        "garden": garden,
     }
     return render(request, "rgm/index.html", context)
 
@@ -1789,17 +1799,10 @@ def rgm_target_species(request, id):
     if not (garden := get_garden(request, id)):
         return redirect("rgm")
 
-    if "lat" in request.GET and "lng" in request.GET:
-        lat = float(request.GET.get("lat"))
-        lng = float(request.GET.get("lng"))
-        garden.geometry = geos.Point(lng, lat)
-        garden.save()
-        messages.success(request, _("Your garden location was saved."))
-
     context = {
         "menu": "join",
         "page": Page.objects.get(site=site, slug="rgm-target-species"),
-        "features": SpeciesFeatures.objects.filter(species_type=SpeciesFeatures.SpeciesType.ANIMALS),
+        "targets": Page.objects.filter(site=site, page_type=Page.PageType.TARGET),
     }
     return render(request, "rgm/target_species.html", context)
 

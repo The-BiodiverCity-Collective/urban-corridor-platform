@@ -13,11 +13,11 @@
         </div>
       </div>
 
-      {% if request.method == "POST" %}
-        <div class="alert alert-success">
-          Thanks for your signup!
-          NOTE: signup failed, please verify settings.
-        </div>
+      {% if garden %}
+        <ul>
+          <li><a href="/rgm/{{ garden.id }}/location/">Location</a></li>
+          <li><a href="/rgm/{{ garden.id }}/targetspecies/">Target species</a></li>
+        </ul>
       {% else %}
         <form method="post">
           {% csrf_token %}

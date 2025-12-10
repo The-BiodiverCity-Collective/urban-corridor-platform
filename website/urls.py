@@ -90,6 +90,7 @@ urlpatterns = [
 
     # Garden Manager
     path("rgm/", views.rgm, name="rgm"),
+    path("rgm/<int:id>/", views.rgm, name="rgm"),
     path("rgm/<int:id>/location/", views.rgm_location, name="rgm_location"),
     path("rgm/<int:id>/targetspecies/", views.rgm_target_species, name="rgm_target_species"),
 

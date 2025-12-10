@@ -46,8 +46,14 @@ class SFAdmin(admin.ModelAdmin):
     list_display = ["name", "species_type"]
     list_filter = ["species_type"]
 
+class PageAdmin(admin.ModelAdmin):
+    search_fields = ["name"]
+    exclude = ["content_html"]
+    list_filter = ["site", "is_active", "page_type"]
+    autocomplete_fields = ["photos"]
+
 admin_site.register(Photo, SearchAdmin)
-admin_site.register(Page, SearchAdmin)
+admin_site.register(Page, PageAdmin)
 admin_site.register(Garden, GardenAdmin)
 admin_site.register(Document, DocAdmin)
 admin_site.register(ReferenceSpace, SpaceAdmin)

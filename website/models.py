@@ -70,15 +70,25 @@ class Page(models.Model):
     slug = models.SlugField(max_length=255)
     site = models.ForeignKey(Site, on_delete=models.CASCADE, null=True, blank=True, related_name="pages")
     is_active = models.BooleanField(default=True, db_index=True)
-    date = models.DateField(null=True)
+    date = models.DateField(null=True, blank=True)
 
     class PageType(models.IntegerChoices):
         REGULAR = 1, "Regular page"
         BLOG = 2, "Blog"
         EVENT = 3, "Event"
+        TARGET = 4, "Target species"
     page_type = models.IntegerField(choices=PageType.choices, db_index=True, default=1)
 
     photos = models.ManyToManyField("Photo", blank=True)
+
+    # This is relevant for the pages that are Target Species, which 
+    # can be linked to multiple specific SpeciesFeatures (e.g. "Insect Supporting Gardens" can 
+    # link to Butterflies, Bees, etc)
+    features = models.ManyToManyField("SpeciesFeatures", blank=True)
+
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
     FORMATS = (
         ("HTML", "HTML"),
         ("MARK", "Markdown"),
