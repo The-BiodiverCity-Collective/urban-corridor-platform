@@ -1,0 +1,64 @@
+{% extends "_base.html" %}
+{% block title %}
+  {{ info }}
+{% endblock %}
+
+{% block css %}
+<style>
+  .list-group-item.active {
+    background-color: #efefef;
+    border-color: #00000020;
+    color: #212529;
+  }
+
+  .icon-square {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 3rem;
+      height: 3rem;
+      font-size: 1.5rem;
+      border-radius: .75rem;
+  }
+
+  .fadeout {
+    opacity:0.4;
+  }
+
+  #map {
+    height: 800px;
+  }
+
+  .leaflet-container .leaflet-popup-content a {
+    color:#fff
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+
+
+<h1>{{ info }}</h1>
+<div class="border rounded bg-white shadow-sm p-3 mb-4 d-inline-block">
+  {{ info.get_content }}
+</div>
+
+<div class="mb-4 rounded shadow-sm" id="map">
+</div>
+
+{% endblock %}
+
+{% block js %}
+<script type="text/javascript">
+	var popup = L.popup();
+
+	function onMapClick(e) {
+		popup
+			.setLatLng(e.latlng)
+			.setContent("Confirm location?<br><br><a href='./?lat=" + e.latlng.lat + "&amp;lng=" + e.latlng.lng + "' class='btn btn-green'>Confirm</a>")
+			.openOn(map);
+	}
+
+	map.on('click', onMapClick);
+</script>
+{% endblock %}

@@ -41,6 +41,11 @@ class UserAdmin(admin.ModelAdmin):
      list_filter = ["is_staff", "is_active"]
      search_fields = ["username", "email"]
 
+class SFAdmin(admin.ModelAdmin):
+    search_fields = ["name"]
+    list_display = ["name", "species_type"]
+    list_filter = ["species_type"]
+
 admin_site.register(Photo, SearchAdmin)
 admin_site.register(Page, SearchAdmin)
 admin_site.register(Garden, GardenAdmin)
@@ -49,7 +54,7 @@ admin_site.register(ReferenceSpace, SpaceAdmin)
 admin_site.register(Event, SearchAdmin)
 admin_site.register(Genus, SearchAdmin)
 admin_site.register(Species, SearchAdmin)
-admin_site.register(SpeciesFeatures, SearchAdmin)
+admin_site.register(SpeciesFeatures, SFAdmin)
 admin_site.register(Corridor, SearchAdmin)
 admin_site.register(Redlist, SearchAdmin)
 admin_site.register(Organization, SearchAdmin)

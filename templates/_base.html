@@ -112,6 +112,12 @@
         {% block content %}
         {% endblock %}
 
+        {% if page and request.user.is_staff and not hide_edit_button %}
+          <a class="btn-warning btn-edit" href="{% url "controlpanel_page" page.id %}?redirect={{ request.get_full_path }}">
+            <i class="fa fa-pencil"></i>
+          </a>
+        {% endif %}
+
     {% if not hide_main_container %}
       </div>
     </div>

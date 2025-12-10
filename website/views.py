@@ -75,6 +75,19 @@ def get_site(request):
     except:
         return None
 
+# This checks to make sure the garden either belongs to the logged-in user, or the user has the right cookie set
+def get_garden(request, id):
+    if request.user.is_authenticated:
+        garden = Garden.objects.filter(pk=id, user=request.user)
+        if garden:
+            return garden[0]
+    if request.COOKIES.get("garden"):
+        garden = Garden.objects_unfiltered.filter(pk=id, is_user_created=True, user__isnull=True, uuid=request.COOKIES["garden"])
+        if garden:
+            return garden[0]
+    messages.warning(request, _("Garden not found. Please log in to access your saved gardens."))
+    return None
+
 # To show the corridor by blacking out everything that is NOT the corridor, we need to 
 # get the 'swapped around' coordinates and blacken those out. This function returns exactly that.
 def get_swapped_corridor_coords(site):
@@ -1714,6 +1727,82 @@ def event(request, slug):
         "page": "event",
     }
     return render(request, "event.html", context)
+
+# Restoration Garden Manager
+def rgm(request):
+    info = Page.objects.get(slug="rgm", is_active=True, site=get_site(request))
+
+    if request.method == "POST" and "garden" in request.POST:
+        garden = Garden.objects.create(
+            name = request.POST["garden"],
+            is_user_created = True,
+            is_active = False,
+            site = get_site(request),
+        )
+
+        response = redirect(reverse("rgm_location", args=[garden.id]))
+        response.set_cookie("garden", garden.uuid)
+        return response
+
+    context = {
+        "info": info,
+        "menu": "join",
+    }
+    return render(request, "rgm/index.html", context)
+
+def rgm_location(request, id):
+
+    site = get_site(request)
+
+    if not (garden := get_garden(request, id)):
+        return redirect("rgm")
+
+    if "lat" in request.GET and "lng" in request.GET:
+        lat = float(request.GET.get("lat"))
+        lng = float(request.GET.get("lng"))
+        garden.geometry = geos.Point(lng, lat)
+        garden.save()
+        messages.success(request, _("Your garden location was saved."))
+        return redirect(reverse("rgm_target_species", args=[garden.id]))
+
+    map = folium.Map(
+        location=[site.lat, site.lng],
+        zoom_start=10,
+        scrollWheelZoom=True,
+        tiles=STREET_TILES,
+        attr="Mapbox",
+    )
+
+    context = {
+        "menu": "join",
+        "load_map": True,
+        "lat": site.lat,
+        "lng": site.lng,
+        "info": Page.objects.get(site=site, slug="rgm-location"),
+    }
+    return render(request, "rgm/location.html", context)
+
+def rgm_target_species(request, id):
+
+    site = get_site(request)
+
+    if not (garden := get_garden(request, id)):
+        return redirect("rgm")
+
+    if "lat" in request.GET and "lng" in request.GET:
+        lat = float(request.GET.get("lat"))
+        lng = float(request.GET.get("lng"))
+        garden.geometry = geos.Point(lng, lat)
+        garden.save()
+        messages.success(request, _("Your garden location was saved."))
+
+    context = {
+        "menu": "join",
+        "page": Page.objects.get(site=site, slug="rgm-target-species"),
+        "features": SpeciesFeatures.objects.filter(species_type=SpeciesFeatures.SpeciesType.ANIMALS),
+    }
+    return render(request, "rgm/target_species.html", context)
+
 
 def shapefile_zip(request, id):
     info = Document.objects.get(pk=id)

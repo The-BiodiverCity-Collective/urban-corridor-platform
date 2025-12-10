@@ -53,6 +53,14 @@ class Site(models.Model):
     def __str__(self):
         return self.name
 
+    @property
+    def lat(self):
+        return self.meta_data["lat"]
+
+    @property
+    def lng(self):
+        return self.meta_data["lng"]
+
 class Page(models.Model):
     name = models.CharField(max_length=255, db_index=True)
     content = models.TextField(null=True, blank=True)
@@ -532,6 +540,7 @@ class ActiveRecordManager(models.Manager):
 
 class Garden(ReferenceSpace):
     is_active = models.BooleanField(default=True, db_index=True)
+    is_user_created = models.BooleanField(default=False, db_index=True)
     original = models.JSONField(null=True, blank=True)
     site = models.ForeignKey(Site, on_delete=models.CASCADE)
 
@@ -551,10 +560,14 @@ class Garden(ReferenceSpace):
     phase_birdsinsects = models.IntegerField(_("Planting of bird and insect species"), choices=PhaseStatus.choices, db_index=True, null=True)
     phase_specialists = models.IntegerField(_("Planting of specialist species"), choices=PhaseStatus.choices, db_index=True, null=True)
     phase_placemaking = models.IntegerField(_("Placemaking"), choices=PhaseStatus.choices, db_index=True, null=True)
+
     organizations = models.ManyToManyField(Organization, blank=True)
     vegetation_type = models.ForeignKey("VegetationType", on_delete=models.CASCADE, null=True, blank=True, related_name="gardens")
     uuid = models.UUIDField(default=uuid.uuid4, editable=False, null=True, blank=True)
     location_file = models.FileField(upload_to="gardenlocations", null=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+    user = models.ForeignKey(User, null=True, blank=True, on_delete=models.SET_NULL, related_name="gardens")
 
     objects = ActiveRecordManager()
     objects_unfiltered = models.Manager()
@@ -656,6 +669,7 @@ class SpeciesFeatures(models.Model):
         OTHER = 4, "Other"
 
     species_type = models.IntegerField(choices=SpeciesType.choices, db_index=True, default=0)
+    site = models.ManyToManyField(Site, blank=True)
 
     def __str__(self):
         return self.name

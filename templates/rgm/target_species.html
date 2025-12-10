@@ -1,0 +1,18 @@
+{% extends "_base.html" %}
+{% block title %}
+  {{ page }}
+{% endblock %}
+
+{% block content %}
+
+
+<h1>{{ page }}</h1>
+<div class="border rounded bg-white shadow-sm p-3 mb-4 d-inline-block">
+  {{ page.get_content }}
+</div>
+
+{% for each in features %}
+<p>{{ each }}</p>
+{% endfor %}
+
+{% endblock %}
