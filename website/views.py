@@ -1729,8 +1729,9 @@ def event(request, slug):
     return render(request, "event.html", context)
 
 # Restoration Garden Manager
-def rgm(request, id=None):
-    info = Page.objects.get(slug="rgm", is_active=True, site=get_site(request))
+def planner(request, id=None):
+    info = Page.objects.get(slug="planner", is_active=True, site=get_site(request))
+    garden = {"id": 0}
 
     if not request.user.is_authenticated and "garden" in request.COOKIES:
         cookie_garden = Garden.objects.filter(uuid=request.COOKIES["garden"])
@@ -1749,23 +1750,23 @@ def rgm(request, id=None):
             site = get_site(request),
         )
 
-        response = redirect(reverse("rgm_location", args=[garden.id]))
+        response = redirect(reverse("planner_location", args=[garden.id]))
         response.set_cookie("garden", garden.uuid)
         return response
 
     context = {
-        "info": info,
-        "menu": "join",
+        "page": info,
+        "menu": "planner",
         "garden": garden,
     }
-    return render(request, "rgm/index.html", context)
+    return render(request, "planner/index.html", context)
 
-def rgm_location(request, id):
+def planner_location(request, id):
 
     site = get_site(request)
 
     if not (garden := get_garden(request, id)):
-        return redirect("rgm")
+        return redirect("planner")
 
     if "lat" in request.GET and "lng" in request.GET:
         lat = float(request.GET.get("lat"))
@@ -1773,7 +1774,7 @@ def rgm_location(request, id):
         garden.geometry = geos.Point(lng, lat)
         garden.save()
         messages.success(request, _("Your garden location was saved."))
-        return redirect(reverse("rgm_target_species", args=[garden.id]))
+        return redirect(reverse("planner_target_species", args=[garden.id]))
 
     map = folium.Map(
         location=[site.lat, site.lng],
@@ -1783,28 +1784,37 @@ def rgm_location(request, id):
         attr="Mapbox",
     )
 
+    if garden.geometry:
+        folium.Marker(
+            location=[garden.geometry.centroid.y, garden.geometry.centroid.x],
+            popup=_("Garden location"),
+            icon=folium.Icon(color="blue")
+        ).add_to(map)
+
     context = {
         "menu": "join",
         "load_map": True,
         "lat": site.lat,
         "lng": site.lng,
-        "info": Page.objects.get(site=site, slug="rgm-location"),
+        "info": Page.objects.get(site=site, slug="planner-location"),
+        "garden": garden,
     }
-    return render(request, "rgm/location.html", context)
+    return render(request, "planner/location.html", context)
 
-def rgm_target_species(request, id):
+def planner_target_species(request, id):
 
     site = get_site(request)
 
     if not (garden := get_garden(request, id)):
-        return redirect("rgm")
+        return redirect("planner")
 
     context = {
         "menu": "join",
-        "page": Page.objects.get(site=site, slug="rgm-target-species"),
+        "page": Page.objects.get(site=site, slug="planner-target-species"),
         "targets": Page.objects.filter(site=site, page_type=Page.PageType.TARGET),
+        "garden": garden,
     }
-    return render(request, "rgm/target_species.html", context)
+    return render(request, "planner/target_species.html", context)
 
 
 def shapefile_zip(request, id):
