@@ -1731,7 +1731,7 @@ def event(request, slug):
 # Restoration Garden Manager
 def planner(request, id=None):
     info = Page.objects.get(slug="planner", is_active=True, site=get_site(request))
-    garden = {"id": 0}
+    garden = None
 
     if not request.user.is_authenticated and "garden" in request.COOKIES:
         cookie_garden = Garden.objects.filter(uuid=request.COOKIES["garden"])
@@ -1758,6 +1758,7 @@ def planner(request, id=None):
         "page": info,
         "menu": "planner",
         "garden": garden,
+        "garden_id": garden.id if garden else 0,
     }
     return render(request, "planner/index.html", context)
 
@@ -1804,14 +1805,23 @@ def planner_location(request, id):
 def planner_target_species(request, id):
 
     site = get_site(request)
+    targets = Page.objects.filter(site=site, page_type=Page.PageType.TARGET)
 
     if not (garden := get_garden(request, id)):
         return redirect("planner")
 
+    if request.method == "POST":
+        if "target" in request.POST:
+            for each in targets.filter(pk__in=request.POST.getlist("target")):
+                garden.targets.add(each)
+            garden.save()
+            messages.success(request, "Your target animal species have been saved. Explore our tools below to learn more about how to start and improve your garden!")
+            return redirect(reverse("planner", args=[garden.id]))
+
     context = {
         "menu": "join",
         "page": Page.objects.get(site=site, slug="planner-target-species"),
-        "targets": Page.objects.filter(site=site, page_type=Page.PageType.TARGET),
+        "targets": targets,
         "garden": garden,
     }
     return render(request, "planner/target_species.html", context)
