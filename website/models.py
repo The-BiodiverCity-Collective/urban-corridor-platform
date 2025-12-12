@@ -578,7 +578,8 @@ class Garden(ReferenceSpace):
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     user = models.ForeignKey(User, null=True, blank=True, on_delete=models.SET_NULL, related_name="gardens")
-    targets = models.ManyToManyField("Page", blank=True)
+    targets = models.ManyToManyField("Page", blank=True, related_name="garden_targets")
+    site_features = models.ManyToManyField("Page", blank=True, related_name="garden_site_features")
 
     objects = ActiveRecordManager()
     objects_unfiltered = models.Manager()

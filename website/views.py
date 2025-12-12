@@ -808,6 +808,14 @@ def species(request, id):
     details = fetch_species_text(request, info)
     sources = SpeciesVegetationTypeLink.objects.filter(species=info, vegetation_type__sites=site)
 
+    # Needs work
+    garden = None
+    if "garden" in request.COOKIES:
+        cookie_garden = Garden.objects_unfiltered.filter(uuid=request.COOKIES["garden"])
+        if cookie_garden:
+            garden = cookie_garden[0]
+    # END
+
     context = {
         "info": info,
         "details": details,
@@ -815,6 +823,7 @@ def species(request, id):
         "title": info.name,
         "menu": "species",
         "sources": sources,
+        "garden": garden,
     }
 
     return render(request, "species.html", context)
@@ -1733,8 +1742,8 @@ def planner(request, id=None):
     info = Page.objects.get(slug="planner", is_active=True, site=get_site(request))
     garden = None
 
-    if not request.user.is_authenticated and "garden" in request.COOKIES:
-        cookie_garden = Garden.objects.filter(uuid=request.COOKIES["garden"])
+    if not id and "garden" in request.COOKIES and not "new" in request.GET:
+        cookie_garden = Garden.objects_unfiltered.filter(uuid=request.COOKIES["garden"])
         if cookie_garden:
             cookie_garden = cookie_garden[0]
             garden = get_garden(request, cookie_garden.id)
@@ -1825,6 +1834,31 @@ def planner_target_species(request, id):
         "garden": garden,
     }
     return render(request, "planner/target_species.html", context)
+
+def planner_site(request, id):
+
+    site = get_site(request)
+    targets = Page.objects.filter(site=site, page_type=Page.PageType.TARGET)
+
+    if not (garden := get_garden(request, id)):
+        return redirect("planner")
+
+    if request.method == "POST":
+        if "target" in request.POST:
+            for each in targets.filter(pk__in=request.POST.getlist("target")):
+                garden.targets.add(each)
+            garden.save()
+            messages.success(request, "Your target animal species have been saved. Explore our tools below to learn more about how to start and improve your garden!")
+            return redirect(reverse("planner", args=[garden.id]))
+
+    context = {
+        "menu": "join",
+        "page": Page.objects.get(site=site, slug="planner-site"),
+        "targets": targets,
+        "garden": garden,
+        "features": ["Sandy soils", "Clay soil", "Wetland/moist soil", "Windy conditions", "Heavily shaded"],
+    }
+    return render(request, "planner/site.html", context)
 
 
 def shapefile_zip(request, id):

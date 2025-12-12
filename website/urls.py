@@ -93,6 +93,7 @@ urlpatterns = [
     path("planner/<int:id>/", views.planner, name="planner"),
     path("planner/<int:id>/location/", views.planner_location, name="planner_location"),
     path("planner/<int:id>/targetspecies/", views.planner_target_species, name="planner_target_species"),
+    path("planner/<int:id>/site/", views.planner_site, name="planner_site"),
 
     # Control Panel
     path("controlpanel/", views.controlpanel, name="controlpanel"),

@@ -49,7 +49,7 @@
       <div class="relative flex h-full flex-col overflow-hidden rounded-[calc(var(--radius-lg)+1px)]">
         <img src="/media/planner.soil.jpg" title="Photo by Nicolas Postiglioni: https://www.pexels.com/photo/gray-sands-closeup-photo-943500/" class="h-40 object-cover object-center" />
         <div class="p-10 pt-4">
-          <p class="mt-2 text-lg font-medium tracking-tight text-gray-950">{{ _("Soil type") }}</p>
+          <p class="mt-2 text-lg font-medium tracking-tight text-gray-950">{{ _("Site features") }}</p>
           <p class="mt-2 mb-5 max-w-lg text-sm/6 text-gray-600 font-normal">{{ _("Select soil type and other typology options for your garden.") }}</p>
           {% if garden and garden.geometry %}
             <h3 class="text-sm/4 font-semibold text-lime-600"><i class="fa fa-check"></i> {{ _("Saved") }}</h3>
@@ -88,8 +88,8 @@
     <h2>{{ _("To start using our tools, enter your garden name") }}</h2>
     {% csrf_token %}
     <label for="garden" class="sr-only">{{ _("Garden name") }}</label>
-    <input id="garden" name="garden" type="text" required class="min-w-0 flex-auto rounded-md border-0 bg-gray/5 px-3.5 py-2 text-gray shadow-xs ring-1 ring-inset ring-gray/10 focus:ring-2 focus:ring-inset focus:ring-indigo-500 sm:text-sm/6" placeholder="{{ _("Enter a name for your garden") }}">
-    <button type="submit" class="btn-green mt-2">{{ _("Load garden restoration tools") }}</button>
+    <input id="garden" name="garden" type="text" required class="min-w-0 flex-auto rounded-md border-0 bg-gray/5 px-3.5 py-2 text-gray shadow-xs ring-1 ring-inset ring-gray/10 focus:ring-2 focus:ring-inset focus:ring-lime-500 sm:text-sm/6" placeholder="{{ _("Enter a name for your garden") }}">
+    <button type="submit" class="btn-green mt-2">{{ _("Next &raquo;") }}</button>
   </form>
 {% endif %}
 
@@ -115,7 +115,7 @@
             <p class="mt-2 text-sm text-gray-500">
               Find out what species are most appropriate for your garden's conditions.
             </p>
-            <a href="http://" class="no-underline hover:underline">View species &raquo;</a>
+            <a href="/species/search/?vegetation_type=6&feature=112&feature=133&feature=114&search=any" class="no-underline hover:underline">View species &raquo;</a>
           </div>
         </div>
         <div class="sm:flex lg:block">
