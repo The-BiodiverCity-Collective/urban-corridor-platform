@@ -1030,6 +1030,16 @@ class Newsletter(models.Model):
     class Meta:
         ordering = ["email"]
 
+class GardenSpecies(models.Model):
+    garden = models.ForeignKey(Garden, on_delete=models.CASCADE)
+    species = models.ForeignKey(Species, on_delete=models.CASCADE)
+    created_at = models.DateTimeField(auto_now_add=True)
+    STATUS_OPTIONS = [
+        ("PRESENT", _("Currently present")),
+        ("FUTURE", _("Future wish-list")),
+    ]
+    status = models.CharField(choices=STATUS_OPTIONS, db_index=True, max_length=10)
+
 class GardenManager(models.Model):
     name = models.CharField(max_length=255)
     email = models.CharField(max_length=255)

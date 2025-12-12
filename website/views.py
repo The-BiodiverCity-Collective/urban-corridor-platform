@@ -23,6 +23,7 @@ from django.utils import timezone
 from django.utils.safestring import mark_safe
 from django.utils.translation import gettext_lazy as _
 from folium.plugins import Fullscreen
+from django.views.decorators.csrf import csrf_exempt
 
 import folium
 import io
@@ -805,19 +806,21 @@ def fetch_species_text(request, species):
     else:
         return SpeciesText()
 
+@csrf_exempt
 def species(request, id):
     site = get_site(request)
     info = get_object_or_404(Species, pk=id)
     details = fetch_species_text(request, info)
     sources = SpeciesVegetationTypeLink.objects.filter(species=info, vegetation_type__sites=site)
 
-    # Needs work
     garden = None
-    if "garden" in request.COOKIES:
-        cookie_garden = Garden.objects_unfiltered.filter(uuid=request.COOKIES["garden"])
-        if cookie_garden:
-            garden = cookie_garden[0]
-    # END
+    if "garden_id" in request.COOKIES:
+        garden = get_garden(request, request.COOKIES.get("garden_id"))
+
+    if request.method == "POST":
+        status = "PRESENT"
+        GardenSpecies.objects.create(garden=garden, species=info, status=status)
+        return JsonResponse({"success": True})
 
     context = {
         "info": info,
