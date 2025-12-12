@@ -1,6 +1,6 @@
 {% extends "_base.html" %}
 
-{% block title %}{{ page }}{% endblock %}
+{% block title %}{{ page_info }}{% endblock %}
 
 {% block content %}
 
@@ -9,11 +9,11 @@
 
     <div class="flex-2 pt-10 pl-10 pr-2">
       <h1 class="text-4xl font-semibold tracking-tight text-pretty text-gray-900 sm:text-5xl">
-        {{ page }}
+        {{ page_info }}
         <i class="fas fa-shovel"></i>
       </h1>
       <div class="mt-6 text-lg/8 text-gray-600">
-        {{ page.get_content }}
+        {{ page_info.get_content }}
       </div>
       <div class="mt-6 text-lg/8 text-gray-600">
         Your garden: 
@@ -27,7 +27,7 @@
       </div>
     </div>
 
-    <a {% if garden %} href="{% url "planner_location" garden_id %}" {% endif %} class="flex-1 relative no-underline {% if garden %} hover:opacity-75{% endif %}">
+    <a {% if garden %} href="{% url "planner_location" GARDEN %}" {% endif %} class="flex-1 relative no-underline {% if garden %} hover:opacity-75{% else %}opacity-40{% endif %}">
       <div class="absolute inset-0 rounded-lg bg-white lg:rounded-bl-4xl"></div>
       <div class="relative flex h-full flex-col overflow-hidden rounded-[calc(var(--radius-lg)+1px)] lg:rounded-bl-[calc(2rem+1px)]">
         <img src="/media/planner.location.jpg" alt="" class="h-40 object-cover object-center" />
@@ -44,14 +44,14 @@
       <div class="pointer-events-none absolute inset-0 rounded-lg shadow-sm outline outline-black/5 lg:rounded-bl-4xl"></div>
     </a>
 
-    <a {% if garden %} href="{% url "planner_location" garden_id %}" {% endif %} class="flex-1 relative no-underline {% if garden %} hover:opacity-75{% endif %}">
+    <a {% if garden %} href="{% url "planner_site" GARDEN %}" {% endif %} class="flex-1 relative no-underline {% if garden %} hover:opacity-75{% else %}opacity-40{% endif %}">
       <div class="absolute inset-0 rounded-lg bg-white"></div>
       <div class="relative flex h-full flex-col overflow-hidden rounded-[calc(var(--radius-lg)+1px)]">
         <img src="/media/planner.soil.jpg" title="Photo by Nicolas Postiglioni: https://www.pexels.com/photo/gray-sands-closeup-photo-943500/" class="h-40 object-cover object-center" />
         <div class="p-10 pt-4">
           <p class="mt-2 text-lg font-medium tracking-tight text-gray-950">{{ _("Site features") }}</p>
           <p class="mt-2 mb-5 max-w-lg text-sm/6 text-gray-600 font-normal">{{ _("Select soil type and other typology options for your garden.") }}</p>
-          {% if garden and garden.geometry %}
+          {% if garden and garden.site_features.count %}
             <h3 class="text-sm/4 font-semibold text-lime-600"><i class="fa fa-check"></i> {{ _("Saved") }}</h3>
           {% else %}
             <h3 class="text-sm/4 font-semibold text-orange-600"><i class="fa fa-dot-circle"></i> {{ _("Pending") }}</h3>
@@ -61,7 +61,7 @@
       <div class="pointer-events-none absolute inset-0 rounded-lg shadow-sm outline outline-black/5"></div>
     </a>
 
-    <a {% if garden %} href="{% url "planner_target_species" garden_id %}" {% endif %} class="flex-1 relative no-underline {% if garden %} hover:opacity-75{% endif %}">
+    <a {% if garden %} href="{% url "planner_target_species" GARDEN %}" {% endif %} class="flex-1 relative no-underline {% if garden %} hover:opacity-75{% else %}opacity-40{% endif %}">
       <div class="absolute inset-0 rounded-lg bg-white"></div>
       <div class="relative flex h-full flex-col overflow-hidden rounded-[calc(var(--radius-lg)+1px)]">
         <img src="https://inaturalist-open-data.s3.amazonaws.com/photos/118240906/medium.jpeg" alt="" class="h-40 object-cover object-center" />
@@ -186,7 +186,7 @@
 <div class="container pl-10 {% if not garden %}opacity-40 cursor-not-allowed{% endif %}">
   <div class="flex gap-4">
 
-    <a href="{% url "planner_location" garden_id %}" class="flex-1 relative no-underline hover:opacity-75">
+    <a href="{% url "planner_location" GARDEN %}" class="flex-1 relative no-underline hover:opacity-75">
       <div class="absolute inset-0 rounded-lg bg-white lg:rounded-bl-4xl"></div>
       <div class="relative flex h-full flex-col overflow-hidden rounded-[calc(var(--radius-lg)+1px)] lg:rounded-bl-[calc(2rem+1px)]">
         <img src="/media/planner.current.jpg" alt="" class="h-40 object-cover object-center" />
@@ -199,7 +199,7 @@
       <div class="pointer-events-none absolute inset-0 rounded-lg shadow-sm outline outline-black/5 lg:rounded-bl-4xl"></div>
     </a>
 
-    <a href="{% url "planner_target_species" garden_id %}" class="flex-1 relative no-underline hover:opacity-75">
+    <a href="{% url "planner_target_species" GARDEN %}" class="flex-1 relative no-underline hover:opacity-75">
       <div class="absolute inset-0 rounded-lg bg-white"></div>
       <div class="relative flex h-full flex-col overflow-hidden rounded-[calc(var(--radius-lg)+1px)]">
         <img src="/media/planner.future.jpg" alt="" class="h-40 object-cover object-center" />
@@ -426,7 +426,7 @@
 <div class="container pl-10 {% if not garden %}opacity-40 cursor-not-allowed{% endif %}">
   <div class="flex gap-4">
 
-    <a href="{% url "planner_location" garden_id %}" class="flex-1 relative no-underline hover:opacity-75">
+    <a href="{% url "planner_location" GARDEN %}" class="flex-1 relative no-underline hover:opacity-75">
       <div class="absolute inset-0 rounded-lg bg-white lg:rounded-bl-4xl"></div>
       <div class="relative flex h-full flex-col overflow-hidden rounded-[calc(var(--radius-lg)+1px)] lg:rounded-bl-[calc(2rem+1px)]">
         <img src="/media/planner.ecologicalwheel.png" alt="" class="h-40 object-cover object-center" />
@@ -438,7 +438,7 @@
       <div class="pointer-events-none absolute inset-0 rounded-lg shadow-sm outline outline-black/5 lg:rounded-bl-4xl"></div>
     </a>
 
-    <a href="{% url "planner_target_species" garden_id %}" class="flex-1 relative no-underline hover:opacity-75">
+    <a href="{% url "planner_target_species" GARDEN %}" class="flex-1 relative no-underline hover:opacity-75">
       <div class="absolute inset-0 rounded-lg bg-white"></div>
       <div class="relative flex h-full flex-col overflow-hidden rounded-[calc(var(--radius-lg)+1px)]">
         <img src="/media/planner.socialwheel.png" alt="" class="h-40 object-cover object-center" />
@@ -450,7 +450,7 @@
       <div class="pointer-events-none absolute inset-0 rounded-lg shadow-sm outline outline-black/5"></div>
     </a>
 
-    <a href="{% url "planner_target_species" garden_id %}" class="flex-1 relative no-underline hover:opacity-75">
+    <a href="{% url "planner_target_species" GARDEN %}" class="flex-1 relative no-underline hover:opacity-75">
       <div class="absolute inset-0 rounded-lg bg-white"></div>
       <div class="relative flex h-full flex-col overflow-hidden rounded-[calc(var(--radius-lg)+1px)]">
         <img src="/media/planner.design.jpg" alt="" class="h-40 object-cover object-center" />
@@ -462,7 +462,7 @@
       <div class="pointer-events-none absolute inset-0 rounded-lg shadow-sm outline outline-black/5"></div>
     </a>
 
-    <a href="{% url "planner_target_species" garden_id %}" class="flex-1 relative no-underline hover:opacity-75">
+    <a href="{% url "planner_target_species" GARDEN %}" class="flex-1 relative no-underline hover:opacity-75">
       <div class="absolute inset-0 rounded-lg bg-white"></div>
       <div class="relative flex h-full flex-col overflow-hidden rounded-[calc(var(--radius-lg)+1px)]">
         <img src="/media/planner.certify.jpg" alt="" class="h-40 object-cover object-center" />

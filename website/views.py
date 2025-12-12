@@ -81,11 +81,14 @@ def get_garden(request, id):
         garden = Garden.objects_unfiltered.filter(pk=id, user=request.user)
         if garden:
             return garden[0]
-    if request.COOKIES.get("garden"):
-        garden = Garden.objects_unfiltered.filter(pk=id, is_user_created=True, user__isnull=True, uuid=request.COOKIES["garden"])
+    if "garden_id" in request.COOKIES and "garden_uuid" in request.COOKIES:
+        garden = Garden.objects_unfiltered.filter(pk=request.COOKIES.get("garden_id"), is_user_created=True, user__isnull=True, uuid=request.COOKIES["garden_uuid"])
         if garden:
             return garden[0]
-    messages.warning(request, _("Garden not found. Please log in to access your saved gardens."))
+    if id == 0:
+        messages.warning(request, _("Please create your own garden to get started."))
+    else:
+        messages.warning(request, _("Garden not found. Please log in to access your saved gardens."))
     return None
 
 # To show the corridor by blacking out everything that is NOT the corridor, we need to 
@@ -1742,7 +1745,7 @@ def planner(request, id=None):
     info = Page.objects.get(slug="planner", is_active=True, site=get_site(request))
     garden = None
 
-    if not id and "garden" in request.COOKIES and not "new" in request.GET:
+    if not id and "garden_uuid" in request.COOKIES and not "new" in request.GET:
         cookie_garden = Garden.objects_unfiltered.filter(uuid=request.COOKIES["garden"])
         if cookie_garden:
             cookie_garden = cookie_garden[0]
@@ -1759,15 +1762,16 @@ def planner(request, id=None):
             site = get_site(request),
         )
 
-        response = redirect(reverse("planner_location", args=[garden.id]))
-        response.set_cookie("garden", garden.uuid)
+        response = redirect(reverse("planner_location", args=[garden.id]) + "?new_garden")
+        response.set_cookie("garden_uuid", garden.uuid)
+        response.set_cookie("garden_id", garden.id)
         return response
 
     context = {
-        "page": info,
+        "page_info": info,
+        "page": "dashboard",
         "menu": "planner",
         "garden": garden,
-        "garden_id": garden.id if garden else 0,
     }
     return render(request, "planner/index.html", context)
 
@@ -1784,7 +1788,10 @@ def planner_location(request, id):
         garden.geometry = geos.Point(lng, lat)
         garden.save()
         messages.success(request, _("Your garden location was saved."))
-        return redirect(reverse("planner_target_species", args=[garden.id]))
+        if "new_garden" in request.GET:
+            return redirect(reverse("planner_site", args=[garden.id]) + "?new_garden")
+        else:
+            return redirect(reverse("planner", args=[garden.id]))
 
     map = folium.Map(
         location=[site.lat, site.lng],
@@ -1802,7 +1809,8 @@ def planner_location(request, id):
         ).add_to(map)
 
     context = {
-        "menu": "join",
+        "menu": "planner",
+        "page": "location",
         "load_map": True,
         "lat": site.lat,
         "lng": site.lng,
@@ -1838,25 +1846,31 @@ def planner_target_species(request, id):
 def planner_site(request, id):
 
     site = get_site(request)
-    targets = Page.objects.filter(site=site, page_type=Page.PageType.TARGET)
+    features = Page.objects.filter(site=site, page_type=Page.PageType.FEATURES)
 
     if not (garden := get_garden(request, id)):
         return redirect("planner")
 
-    if request.method == "POST":
-        if "target" in request.POST:
-            for each in targets.filter(pk__in=request.POST.getlist("target")):
-                garden.targets.add(each)
-            garden.save()
-            messages.success(request, "Your target animal species have been saved. Explore our tools below to learn more about how to start and improve your garden!")
+    if request.method == "POST" and "feature" in request.POST:
+        for each in features.filter(pk__in=request.POST.getlist("feature")):
+            garden.site_features.add(each)
+        garden.save()
+        messages.success(
+            request, 
+            "<i class='fa fa-check mr-2'></i>" + \
+            _("Your site features have been saved.")
+        )
+
+        if "new_garden" in request.GET:
+            return redirect(reverse("planner_target_species", args=[garden.id]) + "?new_garden")
+        else:
             return redirect(reverse("planner", args=[garden.id]))
 
     context = {
         "menu": "join",
         "page": Page.objects.get(site=site, slug="planner-site"),
-        "targets": targets,
         "garden": garden,
-        "features": ["Sandy soils", "Clay soil", "Wetland/moist soil", "Windy conditions", "Heavily shaded"],
+        "features": features,
     }
     return render(request, "planner/site.html", context)
 
@@ -1950,6 +1964,7 @@ def controlpanel_page(request, id=None):
         info.content = request.POST.get("description")
         info.slug = request.POST.get("slug")
         info.position = 0
+        info.page_type = page_type
         info.format = "HTML"
         info.is_active = True if request.POST.get("is_active") == "1" else False
         if "date" in request.POST and request.POST["date"]:

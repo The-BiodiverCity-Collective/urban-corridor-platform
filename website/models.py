@@ -77,6 +77,7 @@ class Page(models.Model):
         BLOG = 2, "Blog"
         EVENT = 3, "Event"
         TARGET = 4, "Target species"
+        FEATURES = 5, "Site features"
     page_type = models.IntegerField(choices=PageType.choices, db_index=True, default=1)
 
     photos = models.ManyToManyField("Photo", blank=True)

@@ -5,27 +5,15 @@
 
 {% block content %}
 
+{% with this_page=_("Target animals") %}
+  {% include "planner/_breadcrumbs.html" %}
+{% endwith %}
+
+<div>
+  {{ page.get_content }}
+</div>
+
 <form method="post">
-
-  <div class="relative">
-    <div class="mt-3 flex md:absolute md:top-3 md:right-0 md:mt-0">
-      <a href="../" class="btn-white">{{ _("Back") }}</a>
-      <button type="submit" class="ml-4 btn-green cursor-pointer">{{ _("Save") }}</button>
-    </div>
-
-    <h2 class="mb-0">
-      <a href="{% url "planner" garden.id %}" class="text-gray-500 opacity-70"><i class="fas fa-shovel"></i> Garden Planner</a>
-    </h2>
-    <h1 class="mb-10 ml-5"> 
-    <i class="fas fa-chevron-right"></i>
-    Target Species</h1>
-
-  </div>
-
-  <div>
-    {{ page.get_content }}
-  </div>
-
   <fieldset>
 
       <div class="mt-6 grid lg:grid-cols-4 gap-y-6 gap-x-4 sm:grid-cols-2">
@@ -46,6 +34,10 @@
     </div>
 
   </fieldset>
+
+  <div class="mt-10">
+    <button type="submit" class="btn-green cursor-pointer">{{ _("Save") }}</button>
+  </div>
   
   {% csrf_token %}
 </form>

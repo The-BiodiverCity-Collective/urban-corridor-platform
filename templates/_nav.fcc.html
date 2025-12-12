@@ -632,21 +632,23 @@
           <div class="mt-6 flow-root">
             <div class="-my-2">
               <a href="{% url "planner" %}" class="flex gap-x-4 py-2 text-sm/6 font-semibold hover:text-sky-600
-                {% if page == "teaching" and menu == "resources" %}text-sky-600{% else %}text-gray-900{% endif %}">
+                {% if page == "dashboard" and menu == "planner" %}text-sky-600{% else %}text-gray-900{% endif %}">
                 <i class="fa fa-home fa-fw text-lg text-gray-400 mr-1"></i>
                 Homepage
               </a>
-              <a href="/resources/general/" class="flex gap-x-4 py-2 text-sm/6 font-semibold hover:text-sky-600
-                {% if page == "general" and menu == "resources" %}text-sky-600{% else %}text-gray-900{% endif %}">
+              <a href="{% url "planner_location" GARDEN %}" class="flex gap-x-4 py-2 text-sm/6 font-semibold hover:text-sky-600
+                {% if page == "location" and menu == "planner" %}text-sky-600{% else %}text-gray-900{% endif %}">
                 <i class="fa fa-map fa-fw text-lg text-gray-400 mr-1"></i>
                 My Location
               </a>
-              <a href="#" class="flex gap-x-4 py-2 text-sm/6 font-semibold text-gray-500">
-                <i class="fa fa-download fa-fw text-lg text-gray-400 mr-1"></i>
-                My Site Details
+              <a href="{% url "planner_site" GARDEN %}" class="flex gap-x-4 py-2 text-sm/6 font-semibold hover:text-sky-600
+                {% if page == "site" and menu == "planner" %}text-sky-600{% else %}text-gray-900{% endif %}">
+                <i class="fa fa-cog fa-fw text-lg text-gray-400 mr-1"></i>
+                My Site Features
               </a>
-              <a href="#" class="flex gap-x-4 py-2 text-sm/6 font-semibold text-gray-500">
-                <i class="fa fa-download fa-fw text-lg text-gray-400 mr-1"></i>
+              <a href="{% url "planner_target_species" GARDEN %}" class="flex gap-x-4 py-2 text-sm/6 font-semibold hover:text-sky-600
+                {% if page == "target" and menu == "planner" %}text-sky-600{% else %}text-gray-900{% endif %}">
+                <i class="fa fa-crow fa-fw text-lg text-gray-400 mr-1"></i>
                 My Target Animals
               </a>
             </div>

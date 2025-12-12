@@ -526,9 +526,6 @@
   .ml-4 {
     margin-left: calc(var(--spacing) * 4);
   }
-  .ml-5 {
-    margin-left: calc(var(--spacing) * 5);
-  }
   .badge {
     display: inline-flex;
     align-items: center;
@@ -1967,9 +1964,6 @@
   .opacity-40 {
     opacity: 40%;
   }
-  .opacity-70 {
-    opacity: 70%;
-  }
   .opacity-90 {
     opacity: 90%;
   }
@@ -2862,26 +2856,6 @@
     @media (width >= 40rem) {
       font-size: var(--text-sm);
       line-height: calc(var(--spacing) * 6);
-    }
-  }
-  .md\:absolute {
-    @media (width >= 48rem) {
-      position: absolute;
-    }
-  }
-  .md\:top-3 {
-    @media (width >= 48rem) {
-      top: calc(var(--spacing) * 3);
-    }
-  }
-  .md\:right-0 {
-    @media (width >= 48rem) {
-      right: calc(var(--spacing) * 0);
-    }
-  }
-  .md\:mt-0 {
-    @media (width >= 48rem) {
-      margin-top: calc(var(--spacing) * 0);
     }
   }
   .md\:grid-cols-2 {

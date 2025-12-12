@@ -23,10 +23,16 @@ def site(request):
     if settings.DEBUG:
         sites = Site.objects.all()
 
+    # If this user is managing a garden, we can get that ID and use it to create planner-related
+    # URLs. However, we want the URL to use 0 as a variable so it doesn't fail to work if no 
+    # garden is being actively managed
+    garden = request.COOKIES.get("garden_id", 0)
+
     return {
         "DEBUG": settings.DEBUG,
         "WORK_OFFLINE": True if work_offline else False,
         "MAPBOX_API_KEY": "pk.eyJ1IjoiY29tbXVuaXRyZWUiLCJhIjoiY2lzdHZuanl1MDAwODJvcHR1dzU5NHZrbiJ9.0ETJ3fXYJ_biD7R7FiwAEg",
         "SITE": site,
         "SITES": sites,
+        "GARDEN": garden,
     }

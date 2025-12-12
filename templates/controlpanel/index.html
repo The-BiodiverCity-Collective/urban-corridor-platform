@@ -4,7 +4,11 @@
 
 <h1 class="text-3xl">Control Panel</h1>
 
-<a href="{% url "controlpanel_shapefiles" %}">Shapefiles</a>
+<h2>{{ _("Configuration") }}</h2>
 
+<ul>
+  <li><a href="{% url "controlpanel_pages" %}?type=4">{{ _("Target animal species") }}</a></li>
+  <li><a href="{% url "controlpanel_pages" %}?type=5">{{ _("Site features") }}</a></li>
+</ul>
 
 {% endblock %}
