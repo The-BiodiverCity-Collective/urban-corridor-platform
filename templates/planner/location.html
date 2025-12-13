@@ -57,10 +57,16 @@
 	function onMapClick(e) {
 		popup
 			.setLatLng(e.latlng)
-			.setContent("{{ _("Confirm location?") }}?<br><br><a href='./?lat=" + e.latlng.lat + "&amp;lng=" + e.latlng.lng + "{% if "new_garden" in request.GET %}&amp;new_garden{% endif %}' class='btn btn-green'>Confirm</a>")
+			.setContent("{{ _("Confirm location?") }}<br><br><a href='./?lat=" + e.latlng.lat + "&amp;lng=" + e.latlng.lng + "{% if "new_garden" in request.GET %}&amp;new_garden{% endif %}' class='btn btn-green'>Confirm</a>")
 			.openOn(map);
 	}
 
 	map.on('click', onMapClick);
+
+  {% if garden.geometry %}
+    L.marker([{{ garden.geometry.centroid.y }}, {{ garden.geometry.centroid.x }}]).addTo(map);
+  {% endif %}
+
+
 </script>
 {% endblock %}

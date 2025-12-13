@@ -126,4 +126,8 @@ urlpatterns = [
     path("controlpanel/gardens/<int:id>/photos/", views.controlpanel_garden_photos, name="controlpanel_garden_photos"),
     path("controlpanel/gardens/<int:garden>/photos/<int:id>/", views.controlpanel_garden_photo, name="controlpanel_garden_photo"),
     path("controlpanel/gardens/create/", views.controlpanel_garden, name="controlpanel_garden"),
+
+    path("controlpanel/vegetation_types/", views.controlpanel_vegetation_types, name="controlpanel_vegetation_types"),
+    path("controlpanel/vegetation_types/<int:id>/", views.controlpanel_vegetation_type, name="controlpanel_vegetation_type"),
+
 ]

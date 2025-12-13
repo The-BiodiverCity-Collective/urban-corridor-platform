@@ -1,0 +1,106 @@
+{% extends "_base.html" %}
+
+{% block title %}
+  {{ info }}
+{% endblock %}
+
+{% block content %}
+
+<div class="text-center mb-12">
+  <h1 class="text-4xl font-bold text-gray-900 mb-4">{{ info.name }}</h1>
+  <p class="text-lg opacity-90 font-medium">{{ info.slug }}</p>
+  <div class="w-24 h-1 bg-gradient-to-r from-green-500 to-blue-500 mx-auto rounded-full"></div>
+</div>
+
+  <div class="p-8 lg:p-12">
+    
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-10">
+      
+      <div>
+        
+        <div class="mb-8">
+          <h3 class="text-xl font-semibold text-gray-900 mb-4 flex items-center gap-3">
+            <svg class="w-6 h-6 text-emerald-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+            </svg>
+            Description
+          </h3>
+          <div class="prose prose-lg max-w-none text-gray-700 leading-relaxed bg-gray-50 p-6 rounded-2xl border border-gray-100">
+            {{ info.description|safe|truncatewords_html:100 }}
+          </div>
+        </div>
+
+      </div>
+
+      <div>
+        
+        <div class="mb-8">
+          <h3 class="text-xl font-semibold text-gray-900 mb-4 flex items-center gap-3">
+            <svg class="w-6 h-6 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path>
+            </svg>
+            Redlist Status
+          </h3>
+          {% if info.redlist %}
+          <div class="bg-gradient-to-r from-red-50 to-orange-50 p-6 rounded-2xl border border-red-100">
+            <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-red-100 text-red-800 mb-3">
+              {{ info.redlist.category|default:"Redlist" }}
+            </span>
+            <p class="text-lg font-semibold text-gray-900">{{ info.redlist.name|default:"Redlist details" }}</p>
+          </div>
+          {% else %}
+          <div class="bg-gradient-to-r from-gray-50 to-gray-100 p-6 rounded-2xl border border-gray-200 text-center">
+            <p class="text-gray-500">No Redlist data available</p>
+          </div>
+          {% endif %}
+        </div>
+
+        <div>
+          <h3 class="text-xl font-semibold text-gray-900 mb-4 flex items-center gap-3">
+            <svg class="w-6 h-6 text-purple-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"></path>
+            </svg>
+            Reference Spaces
+          </h3>
+          <div class="bg-gradient-to-r from-purple-50 to-violet-50 p-6 rounded-2xl border border-purple-100 space-y-2 max-h-64 overflow-y-auto">
+            {% for space in info.spaces.all %}
+            <div class="flex items-center justify-between py-2 border-b border-purple-100 last:border-b-0">
+              <span class="text-sm text-gray-600"><a href="{{ space.get_absolute_url }}">{{ space.name|default:space.id }}</a></span>
+              <span class="px-3 py-1 bg-purple-100 text-purple-800 text-xs rounded-full font-medium">Active</span>
+            </div>
+            {% empty %}
+            <div class="text-center py-8 text-gray-500">No reference spaces</div>
+            {% endfor %}
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <div>
+      <h3 class="text-xl font-semibold text-gray-900 mb-6 flex items-center gap-3">
+        <svg class="w-6 h-6 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
+        </svg>
+        Meta Data
+      </h3>
+      {% if info.meta_data %}
+      <div class="bg-gray-50 p-8 rounded-2xl border border-gray-100">
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {% for key, value in info.meta_data.items %}
+          <div class="text-center p-4 bg-white rounded-xl shadow-sm hover:shadow-md transition-shadow">
+            <div class="text-2xl font-bold text-gray-900 mb-1">{{ value }}</div>
+            <div class="text-sm text-gray-500 uppercase tracking-wide">{{ key }}</div>
+          </div>
+          {% endfor %}
+        </div>
+      </div>
+      {% else %}
+      <div class="bg-gray-50 p-8 rounded-2xl border border-gray-100 text-center">
+        <p class="text-gray-500">No meta data available</p>
+      </div>
+      {% endif %}
+    </div>
+
+  </div>
+{% endblock %}

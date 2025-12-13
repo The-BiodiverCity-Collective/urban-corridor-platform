@@ -1,0 +1,36 @@
+{% extends "_base.html" %}
+
+{% block content %}
+
+<h1 class="text-3xl">
+  {{ _("Vegetation types") }}
+</h1>
+
+<table class="table mb-5">
+  <thead>
+    <tr>
+      <th>{{ _("Name") }}</th>
+      <th>{{ _("Spaces") }}</th>
+      <th>{{ _("Description") }}</th>
+    </tr>
+  </thead>
+  <tbody>
+  {% for each in vegetation_types %}
+    <tr>
+      <td><a href="{% url "controlpanel_vegetation_type" each.id %}">{{ each.name }}</td>
+      <td>
+        {% for space in each.spaces.all %}
+          <span class="badge">{{ space }}</span>
+        {% endfor %}
+      </td>
+      <td>
+        {% if each.description %}
+          <i class="fa fa-check"></i>
+        {% endif %}
+      </td>
+    </tr>
+  {% endfor %}
+  </tbody>
+</table>
+
+{% endblock %}

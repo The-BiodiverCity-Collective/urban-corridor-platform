@@ -82,16 +82,18 @@
     downloadLink.click();
   }
 
-  // define the download button's details
-  L.Control.Download = L.Control.extend({
-    onAdd: function(map) {
-      var downloadButtonWrapper = L.DomUtil.create("div", "download-map-wrapper");
-      var downloadButton = L.DomUtil.create("div", "download-map");
-      downloadButton.innerHTML = "<i class='fas fa-fw fa-save'></i>";
-      downloadButtonWrapper.appendChild(downloadButton);
-      return downloadButtonWrapper;
-    }
-  });
+  {% if not map_hide_save %}
+    // define the download button's details
+    L.Control.Download = L.Control.extend({
+      onAdd: function(map) {
+        var downloadButtonWrapper = L.DomUtil.create("div", "download-map-wrapper");
+        var downloadButton = L.DomUtil.create("div", "download-map");
+        downloadButton.innerHTML = "<i class='fas fa-fw fa-save'></i>";
+        downloadButtonWrapper.appendChild(downloadButton);
+        return downloadButtonWrapper;
+      }
+    });
+  {% endif %}
 
   // create a new leaflet control and apply download button details
   L.control.Download = function(opts) {

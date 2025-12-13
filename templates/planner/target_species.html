@@ -1,6 +1,6 @@
 {% extends "_base.html" %}
 {% block title %}
-  {{ page }}
+  {{ page_info }}
 {% endblock %}
 
 {% block content %}
@@ -10,7 +10,7 @@
 {% endwith %}
 
 <div>
-  {{ page.get_content }}
+  {{ page_info.get_content }}
 </div>
 
 <form method="post">

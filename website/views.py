@@ -1749,7 +1749,7 @@ def planner(request, id=None):
     garden = None
 
     if not id and "garden_uuid" in request.COOKIES and not "new" in request.GET:
-        cookie_garden = Garden.objects_unfiltered.filter(uuid=request.COOKIES["garden"])
+        cookie_garden = Garden.objects_unfiltered.filter(uuid=request.COOKIES["garden_uuid"])
         if cookie_garden:
             cookie_garden = cookie_garden[0]
             garden = get_garden(request, cookie_garden.id)
@@ -1789,36 +1789,32 @@ def planner_location(request, id):
         lat = float(request.GET.get("lat"))
         lng = float(request.GET.get("lng"))
         garden.geometry = geos.Point(lng, lat)
+
+        try:
+            vegetation = site.vegetation_types_map
+            point = geos.Point(x=lng, y=lat)
+            veg = vegetation.spaces.get(geometry__intersects=point)
+            veg = veg.get_vegetation_type()
+            garden.vegetation_type = veg
+            garden.save()
+        except:
+            veg = None
+
         garden.save()
         messages.success(request, _("Your garden location was saved."))
+
         if "new_garden" in request.GET:
             return redirect(reverse("planner_site", args=[garden.id]) + "?new_garden")
         else:
             return redirect(reverse("planner", args=[garden.id]))
 
-    map = folium.Map(
-        location=[site.lat, site.lng],
-        zoom_start=10,
-        scrollWheelZoom=True,
-        tiles=STREET_TILES,
-        attr="Mapbox",
-    )
-
-    if garden.geometry:
-        folium.Marker(
-            location=[garden.geometry.centroid.y, garden.geometry.centroid.x],
-            popup=_("Garden location"),
-            icon=folium.Icon(color="blue")
-        ).add_to(map)
-
     context = {
         "menu": "planner",
         "page": "location",
         "load_map": True,
-        "lat": site.lat,
-        "lng": site.lng,
         "info": Page.objects.get(site=site, slug="planner-location"),
         "garden": garden,
+        "map_hide_save": True,
     }
     return render(request, "planner/location.html", context)
 
@@ -1839,8 +1835,9 @@ def planner_target_species(request, id):
             return redirect(reverse("planner", args=[garden.id]))
 
     context = {
-        "menu": "join",
-        "page": Page.objects.get(site=site, slug="planner-target-species"),
+        "menu": "planner",
+        "page": "target",
+        "page_info": Page.objects.get(site=site, slug="planner-target-species"),
         "targets": targets,
         "garden": garden,
     }
@@ -1870,8 +1867,9 @@ def planner_site(request, id):
             return redirect(reverse("planner", args=[garden.id]))
 
     context = {
-        "menu": "join",
-        "page": Page.objects.get(site=site, slug="planner-site"),
+        "menu": "planner",
+        "page": "site",
+        "page_info": Page.objects.get(site=site, slug="planner-site"),
         "garden": garden,
         "features": features,
     }
@@ -2840,3 +2838,29 @@ def controlpanel_photo(request, id):
         "info": info,
     }
     return render(request, "controlpanel/photo.html", context)
+
+@staff_member_required
+def controlpanel_vegetation_types(request):
+
+    site = get_site(request)
+    vegetation_types = VegetationType.objects.filter(site=site)
+
+    context = {
+        "controlpanel": True,
+        "menu": "vegetation_types",
+        "vegetation_types": vegetation_types
+    }
+    return render(request, "controlpanel/vegetation_types.html", context)
+
+@staff_member_required
+def controlpanel_vegetation_type(request, id):
+
+    site = get_site(request)
+    info = VegetationType.objects.get(site=site, pk=id)
+
+    context = {
+        "controlpanel": True,
+        "menu": "vegetation_types",
+        "info": info,
+    }
+    return render(request, "controlpanel/vegetation_type.html", context)
