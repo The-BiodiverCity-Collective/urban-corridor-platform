@@ -1828,6 +1828,7 @@ def planner_target_species(request, id):
 
     if request.method == "POST":
         if "target" in request.POST:
+            garden.targets.clear()
             for each in targets.filter(pk__in=request.POST.getlist("target")):
                 garden.targets.add(each)
             garden.save()
@@ -1852,6 +1853,7 @@ def planner_site(request, id):
         return redirect("planner")
 
     if request.method == "POST" and "feature" in request.POST:
+        garden.site_features.clear()
         for each in features.filter(pk__in=request.POST.getlist("feature")):
             garden.site_features.add(each)
         garden.save()
@@ -1875,6 +1877,47 @@ def planner_site(request, id):
     }
     return render(request, "planner/site.html", context)
 
+def planner_suggestions(request, id):
+
+    site = get_site(request)
+
+    if not (garden := get_garden(request, id)):
+        return redirect("planner")
+
+    species = Species.objects.filter(site=site)
+
+    vegetation_type = garden.vegetation_type
+    if vegetation_type:
+        species = species.filter(vegetation_types=vegetation_type)
+
+    # Check which features are linked to this garden
+    features = SpeciesFeatures.objects.filter(Q(page__garden_targets=garden)|Q(page__garden_site_features=garden))
+
+    # Only filter species that have these features, and annotate to count the number of features per species
+    species = species.filter(features__in=features).annotate(num_features=Count("features")).filter(num_features__gt=0).order_by("-num_features")
+
+    # We use this to create bars showing relative score
+    max_features = species.aggregate(Max("num_features"))["num_features__max"]
+    if vegetation_type:
+        max_features += 1 # Add one because it will also meet the vegetation type parameter
+
+    context = {
+        "menu": "planner",
+        "page": "suggestions",
+        #"page_info": Page.objects.get(site=site, slug="planner-site"),
+        "garden": garden,
+        "species_list": species,
+        "load_datatables": True,
+        "vegetation_type": vegetation_type,
+        "features": features,
+        "max_features": max_features,
+        "table_hide_vegetation": True,
+        "table_show_score": True,
+    }
+    return render(request, "planner/plants.suggestions.html", context)
+
+
+# END OF PLANNER
 
 def shapefile_zip(request, id):
     info = Document.objects.get(pk=id)

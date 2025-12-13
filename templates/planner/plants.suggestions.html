@@ -1,0 +1,62 @@
+{% extends "_base.html" %}
+{% block title %}
+  {{ page_info }}
+{% endblock %}
+
+{% block content %}
+
+{% with this_page=_("Suggested plants") %}
+  {% include "planner/_breadcrumbs.html" %}
+{% endwith %}
+
+<form method="post">
+
+  <div>
+    {{ page_info.get_content }}
+  </div>
+
+  <div class="alert alert-info">
+    <i class="fa fa-info-circle fa-fw mr-3"></i>
+    <span>
+      <strong>{{ species_list.count }}</strong> species found
+    </span>
+  </div>
+
+  {% if features or vegetation_type %}
+    <div class="alert alert-warning">
+      <h4>Filters</h4>
+      <p>
+        {% if features.count > 1 %}
+        Showing species that match 
+        {% if request.GET.search == "all" %}ALL{% else %}ANY{% endif %}
+        of the following filters:
+        {% else %}
+          {{ _("Showing species that match the following filter:") }}
+        {% endif %}
+      </p>
+      <ul class="mb-3 ml-4 mt-3">
+      {% for each in features %}
+        <li>
+          <i class="fa fa-check"></i> {{ each }}
+        </li>
+      {% endfor %}
+      </ul>
+
+      {% if vegetation_type %}
+        <p>Vegetation type: <a href="{{ vegetation_type.get_absolute_url }}">{{ vegetation_type }}</a></p>
+      {% endif %}
+
+    </div>
+  {% endif %}
+
+  {% include "_species.grid.html" %}
+
+
+  <div class="mt-10">
+    <button type="submit" class="btn-green cursor-pointer">{{ _("Save") }}</button>
+  </div>
+
+  {% csrf_token %}
+</form>
+
+{% endblock %}

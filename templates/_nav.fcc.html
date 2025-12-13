@@ -639,17 +639,17 @@
               <a href="{% url "planner_location" GARDEN %}" class="flex gap-x-4 py-2 text-sm/6 font-semibold hover:text-sky-600
                 {% if page == "location" and menu == "planner" %}text-sky-600{% else %}text-gray-900{% endif %}">
                 <i class="fa fa-map fa-fw text-lg text-gray-400 mr-1"></i>
-                My Location
+                My location
               </a>
               <a href="{% url "planner_site" GARDEN %}" class="flex gap-x-4 py-2 text-sm/6 font-semibold hover:text-sky-600
                 {% if page == "site" and menu == "planner" %}text-sky-600{% else %}text-gray-900{% endif %}">
                 <i class="fa fa-cog fa-fw text-lg text-gray-400 mr-1"></i>
-                My Site Features
+                My site features
               </a>
               <a href="{% url "planner_target_species" GARDEN %}" class="flex gap-x-4 py-2 text-sm/6 font-semibold hover:text-sky-600
                 {% if page == "target" and menu == "planner" %}text-sky-600{% else %}text-gray-900{% endif %}">
                 <i class="fa fa-crow fa-fw text-lg text-gray-400 mr-1"></i>
-                My Target Animals
+                My target animals
               </a>
             </div>
           </div>
@@ -658,24 +658,24 @@
           <h3 class="text-sm/6 font-medium text-gray-500">Start your garden</h3>
           <div class="mt-6 flow-root">
             <div class="-my-2">
-              <a href="/blog/" class="flex gap-x-4 py-2 text-sm/6 font-semibold hover:text-sky-600
-                {% if page == "blog" and menu == "planner" %}text-sky-600{% else %}text-gray-900{% endif %}">
-                <i class="fa fa-edit fa-fw text-lg text-gray-400 mr-1"></i>
+              <a href="{% url "planner_suggestions" GARDEN %}" class="flex gap-x-4 py-2 text-sm/6 font-semibold hover:text-sky-600
+                {% if page == "suggestions" and menu == "planner" %}text-sky-600{% else %}text-gray-900{% endif %}">
+                <i class="fa fa-seedling fa-fw text-lg text-gray-400 mr-1"></i>
                 Suggested plants
               </a>
               <a href="/blog/" class="flex gap-x-4 py-2 text-sm/6 font-semibold hover:text-sky-600
                 {% if page == "blog" and menu == "planner" %}text-sky-600{% else %}text-gray-900{% endif %}">
-                <i class="fa fa-edit fa-fw text-lg text-gray-400 mr-1"></i>
+                <i class="fa fa-calendar-alt fa-fw text-lg text-gray-400 mr-1"></i>
                 Planting &amp; maintenance calendar
               </a>
               <a href="/blog/" class="flex gap-x-4 py-2 text-sm/6 font-semibold hover:text-sky-600
                 {% if page == "blog" and menu == "planner" %}text-sky-600{% else %}text-gray-900{% endif %}">
-                <i class="fa fa-edit fa-fw text-lg text-gray-400 mr-1"></i>
+                <i class="fa fa-hand-holding-seedling fa-fw text-lg text-gray-400 mr-1"></i>
                 Plant sourcing
               </a>
               <a href="/blog/" class="flex gap-x-4 py-2 text-sm/6 font-semibold hover:text-sky-600
                 {% if page == "blog" and menu == "planner" %}text-sky-600{% else %}text-gray-900{% endif %}">
-                <i class="fa fa-edit fa-fw text-lg text-gray-400 mr-1"></i>
+                <i class="fa fa-clipboard-list-check fa-fw text-lg text-gray-400 mr-1"></i>
                 Monitoring plan
               </a>
             </div>

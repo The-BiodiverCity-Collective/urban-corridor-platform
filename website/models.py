@@ -683,12 +683,25 @@ class SpeciesFeatures(models.Model):
 
     species_type = models.IntegerField(choices=SpeciesType.choices, db_index=True, default=0)
     site = models.ManyToManyField(Site, blank=True)
+    icon = models.CharField(max_length=50, null=True, blank=True, help_text="Enter all the classes we need to add to the <i> tag")
 
     def __str__(self):
         return self.name
 
     class Meta:
-        ordering = ["name"]
+        ordering = ["species_type", "name"]
+
+    @property
+    def get_icon(self):
+        colors = {
+            1: "gray-800",
+            2: "sky-700",
+            3: "gray-800",
+            4: "pink-700",
+        }
+        color = colors[self.species_type]
+        color = ""
+        return mark_safe(f'<i class="{self.icon} text-{color}" title="{self.name}"></i><span class="sr-only">{self.name}</span>')
 
 class Species(models.Model):
     name = models.CharField(max_length=255, unique=True, db_index=True)

@@ -1,10 +1,15 @@
-<table class="table datatable">
+<table class="table datatable" style="table-layout: fixed">
   <thead>
     <tr>
       <th style="width:250px">{{ _("Scientific name") }}</th>
       <th style="width:200px">{{ _("Common name") }}</th>
-      <th>{{ _("Features") }}</th>
-      <th>{{ _("Vegetation type(s)") }}</th>
+      {% if not table_hide_vegetation %}
+        <th>{{ _("Vegetation type(s)") }}</th>
+      {% endif %}
+      <th style="white-space:nowrap; min-width:0; flex:none">{{ _("Features") }}</th>
+      {% if table_show_score %}
+        <th>{{ _("Species relevance") }}</th>
+      {% endif %}
     </tr>
   </thead>
   <tbody>
@@ -14,18 +19,31 @@
       <td>
         {{ each.name_en }}
       </td>
+      {% if not table_hide_vegetation %}
+        <td>
+          <ul>
+          {% for veg in each.vegetation_types.all %}
+            <li><span class="badge bg-success">{{ veg }}</span></li>
+          {% endfor %}
+          </ul>
+        </td>
+      {% endif %}
       <td>
-        <ul>
         {% for feature in each.features.all %}
-          <li class="badge bg-lime-50">{{ feature }}</li>
-        {% endfor %}
-        </ul>
-      </td>
-      <td>
-        {% for veg in each.vegetation_types.all %}
-          <span class="badge bg-success">{{ veg }}</span>
+          <span class="p-1 mr-1 {% if feature in features %}bg-yellow-100{% endif %}">
+            {{ feature.get_icon }}
+          </span>
         {% endfor %}
       </td>
+      {% if table_show_score %}
+        <td>
+          <div aria-hidden="true">
+            <div class="overflow-hidden rounded-full bg-gray-200">
+              <div style="width: calc(({{ each.num_features }} + 1) / {{ max_features }} * 100%)" class="h-2 rounded-full bg-lime-600"></div>
+            </div>
+          </div>
+        </td>
+      {% endif %}
     </tr>
   {% endfor %}
   </tbody>

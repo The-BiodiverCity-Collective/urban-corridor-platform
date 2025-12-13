@@ -22,7 +22,7 @@
         <label aria-label="{{ each }}" class="group relative rounded-lg border border-gray-300 bg-white has-checked:outline-2 has-checked:-outline-offset-2 has-checked:outline-lime-600 has-focus-visible:outline-3 has-focus-visible:-outline-offset-1 has-checked:bg-lime-50">
           <img src="{{ each.photo.medium }}" alt="" class="block aspect-3/2 w-full bg-gray-200 object-cover group-hover:opacity-75">
 
-          <input type="checkbox" name="target" value="{{ each.id }}" class="absolute inset-0 appearance-none focus:outline-none cursor-pointer" />
+          <input type="checkbox" name="target" {% if each in garden.targets.all %}checked{% endif %} value="{{ each.id }}" class="absolute inset-0 appearance-none focus:outline-none cursor-pointer" />
           <div class="flex-1 p-4">
             <span class="block text-sm font-medium text-gray-900 dark:text-white">{{ each }}</span>
           <svg viewBox="0 0 20 20" fill="currentColor" data-slot="icon" aria-hidden="true" class="invisible size-5 text-lime-600 group-has-checked:visible dark:text-lime-500">
