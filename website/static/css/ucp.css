@@ -24,27 +24,27 @@
 }
 
 @utility btn-blue {
-  @apply text-sm bg-sky-600 shadow-inner shadow-md text-white px-3.5 py-2.5  rounded-sm hover:bg-sky-700 focus:outline-hidden font-semibold focus:ring-sky-300 no-underline hover:text-white inline-block;
+  @apply text-sm bg-sky-600 text-white px-3.5 py-2.5  rounded-sm hover:bg-sky-700 focus:outline-hidden font-semibold focus:ring-sky-300 no-underline hover:text-white inline-block cursor-pointer;
 }
 
 @utility btn-green {
-  @apply text-sm bg-lime-600 shadow-inner shadow-md text-white px-3.5 py-2.5 rounded-sm hover:bg-lime-700 focus:outline-hidden font-semibold focus:ring-lime-300 no-underline hover:text-white inline-block;
+  @apply text-sm bg-lime-600 text-white px-3.5 py-2.5 rounded-sm hover:bg-lime-700 focus:outline-hidden font-semibold focus:ring-lime-300 no-underline hover:text-white inline-block cursor-pointer;
 }
 
 @utility btn-danger {
-  @apply text-sm bg-red-600 shadow-inner shadow-md text-white px-3.5 py-2.5 rounded-sm hover:bg-red-700 focus:outline-hidden font-semibold focus:ring-red-300 no-underline hover:text-white inline-block;
+  @apply text-sm bg-red-600 text-white px-3.5 py-2.5 rounded-sm hover:bg-red-700 focus:outline-hidden font-semibold focus:ring-red-300 no-underline hover:text-white inline-block cursor-pointer;
 }
 
-@utility btn-add {
-  @apply text-sm bg-orange-600 shadow-inner shadow-md text-white px-3.5 py-2.5 rounded-sm hover:bg-orange-700 focus:outline-hidden font-semibold focus:ring-orange-300 no-underline hover:text-white inline-block;
+@utility btn-orange {
+  @apply text-sm bg-orange-600 text-white px-3.5 py-2.5 rounded-sm hover:bg-orange-500 focus:outline-hidden font-semibold focus:ring-orange-300 no-underline hover:text-white inline-block cursor-pointer;
 }
 
 @utility btn-edit {
-  @apply text-sm bg-amber-300 shadow-inner shadow-md text-white px-3.5 py-2.5 rounded-sm hover:bg-amber-400 focus:outline-hidden font-semibold focus:ring-orange-300 no-underline hover:text-white inline-block;
+  @apply text-sm bg-amber-300 text-white px-3.5 py-2.5 rounded-sm hover:bg-amber-400 focus:outline-hidden font-semibold focus:ring-orange-300 no-underline hover:text-white inline-block cursor-pointer;
 }
 
 @utility btn-white {
-  @apply text-sm bg-white border border-gray-200 text-gray-500 px-3.5 py-2.5  rounded-sm hover:bg-gray-50 focus:outline-hidden font-semibold focus:ring-sky-300 no-underline inline-block;
+  @apply text-sm bg-white border border-gray-200 text-gray-500 px-3.5 py-2.5  rounded-sm hover:bg-gray-50 focus:outline-hidden font-semibold focus:ring-sky-300 no-underline inline-block cursor-pointer;
 }
 
 
@@ -121,6 +121,7 @@
 }
 
 @layer utilities {
+  table.species svg{width:23px;height:23px;display:inline-block}
   .leaflet-map {
     box-shadow: 1px 1px 2px 0px rgba(0, 0, 0, 0.2);
     border-radius: 0.25rem;

@@ -815,9 +815,14 @@ def species(request, id):
     garden = None
     if "garden_id" in request.COOKIES:
         garden = get_garden(request, request.COOKIES.get("garden_id"))
+        in_garden = GardenSpecies.objects.filter(garden=garden, species=info).first()
 
     if request.method == "POST":
-        GardenSpecies.objects.create(garden=garden, species=info, status=request.POST["action"])
+        if in_garden:
+            in_garden.status = request.POST["action"]
+            in_garden.save()
+        else:
+            GardenSpecies.objects.create(garden=garden, species=info, status=request.POST["action"])
         return JsonResponse({"success": True})
 
     context = {
@@ -828,6 +833,7 @@ def species(request, id):
         "menu": "species",
         "sources": sources,
         "garden": garden,
+        "in_garden": in_garden,
     }
 
     return render(request, "species.html", context)
@@ -1832,8 +1838,11 @@ def planner_target_species(request, id):
             for each in targets.filter(pk__in=request.POST.getlist("target")):
                 garden.targets.add(each)
             garden.save()
-            messages.success(request, "Your target animal species have been saved. Explore our tools below to learn more about how to start and improve your garden!")
-            return redirect(reverse("planner", args=[garden.id]))
+            if "new_garden" in request.GET:
+                return redirect(reverse("planner_suggestions", args=[garden.id]))
+            else:
+                messages.success(request, "Your target animal species have been saved. Explore our tools below to learn more about how to start and improve your garden!")
+                return redirect(reverse("planner", args=[garden.id]))
 
     context = {
         "menu": "planner",
@@ -1894,7 +1903,7 @@ def planner_suggestions(request, id):
     features = SpeciesFeatures.objects.filter(Q(page__garden_targets=garden)|Q(page__garden_site_features=garden))
 
     # Only filter species that have these features, and annotate to count the number of features per species
-    species = species.annotate(num_features=Count("features")).order_by("-num_features")
+    species = species.annotate(num_features=Count("features", filter=Q(features__in=features))).order_by("-num_features")
 
     # We use this to create bars showing relative score
     max_features = species.aggregate(Max("num_features"))["num_features__max"]
@@ -1902,23 +1911,77 @@ def planner_suggestions(request, id):
         max_features += 1 # Add one because it will also meet the vegetation type parameter
 
     # Get the top 50 species only
-    if species:
-        species = species[:50]
+    more_species_available = False
+    species_count = species.count()
+    if species_count > 50 and not "view_all" in request.GET:
+        species_count = 50
+        species = species[:species_count]
+        more_species_available = True
+
+    if "add_all" in request.GET:
+        for each in species.all():
+            try:
+                GardenSpecies.objects.create(garden=garden, species=each, status="FUTURE")
+            except:
+                # If the species is already in the list there will be an error but it seems
+                # too much to report this to the user.
+                pass
+        messages.success(request, _("The species have been added to your planting list."))
+        return redirect(request.path)
 
     context = {
         "menu": "planner",
         "page": "suggestions",
-        #"page_info": Page.objects.get(site=site, slug="planner-site"),
+        "title": _("Suggested plants"),
         "garden": garden,
         "species_list": species,
+        "species_count": species_count,
         "load_datatables": True,
         "vegetation_type": vegetation_type,
         "features": features,
         "max_features": max_features,
         "table_hide_vegetation": True,
         "table_show_score": True,
+        "more_species_available": more_species_available,
+        "species_present": Species.objects.filter(garden_plants__garden=garden, garden_plants__status="PRESENT"),
+        "species_future": Species.objects.filter(garden_plants__garden=garden, garden_plants__status="FUTURE"),
     }
     return render(request, "planner/plants.suggestions.html", context)
+
+def planner_plants(request, id, status):
+
+    site = get_site(request)
+
+    if not (garden := get_garden(request, id)):
+        return redirect("planner")
+
+    plants = Species.objects.filter(garden_plants__garden=garden, garden_plants__status=status)
+
+    if "delete" in request.POST:
+        plant = Species.objects.get(pk=request.POST["delete"])
+        GardenSpecies.objects.filter(garden=garden, species=plant, status=status).delete()
+        msg = _("%(plant)s has been deleted.") % { "plant": str(plant) }
+        msg += f" <a href='?undo_delete={plant.id}'>" + _("Undo") + "</a>"
+        messages.success(request, msg)
+        return redirect(request.path)
+
+    if "undo_delete" in request.GET:
+        plant = Species.objects.get(pk=request.GET["undo_delete"])
+        GardenSpecies.objects.create(garden=garden, species=plant, status=status)
+        messages.success(request, _("%(plant)s has been added.") % { "plant": str(plant) })
+        return redirect(request.path)
+
+    context = {
+        "menu": "planner",
+        "page": status,
+        "title": _("Future plants") if status == "FUTURE" else _("Current plants"),
+        "garden": garden,
+        "species_list": plants,
+        "table_hide_vegetation": True,
+        "table_show_actions": True,
+        "load_datatables": True,
+    }
+    return render(request, "planner/plants.html", context)
 
 
 # END OF PLANNER

@@ -1,0 +1,34 @@
+{% extends "_base.html" %}
+{% block title %}
+  {{ page_info }}
+{% endblock %}
+
+{% block content %}
+
+{% with this_page=title %}
+  {% include "planner/_breadcrumbs.html" %}
+{% endwith %}
+
+<form method="post">
+
+  <div>
+    {{ page_info.get_content }}
+  </div>
+
+  <div class="alert alert-info">
+    <i class="fa fa-info-circle fa-fw mr-3"></i>
+    <span>
+      <strong>{{ species_list.count }}</strong> species found
+    </span>
+  </div>
+
+  {% include "_species.grid.html" %}
+
+<div class="mt-10">
+  {% include "planner/_returnlink.html" %}
+</div>
+
+  {% csrf_token %}
+</form>
+
+{% endblock %}

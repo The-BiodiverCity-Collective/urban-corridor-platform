@@ -2,7 +2,7 @@
   <ol role="list" class="mb-10 flex space-x-4 rounded-md bg-gray-200 px-6">
     <li class="flex">
       <div class="flex items-center">
-        <a href="{% url "planner" garden.id %}" class="text-gray-700 no-underline hover:underline">
+        <a href="{% url "planner" garden.id %}" class="text-gray-500 no-underline hover:underline">
           <i class="fas fa-shovel mr-2"></i>
           {{ garden }}
         </a>
@@ -13,7 +13,7 @@
         <svg viewBox="0 0 24 44" fill="currentColor" preserveAspectRatio="none" aria-hidden="true" class="h-full w-6 shrink-0 text-white">
           <path d="M.293 0l22 22-22 22h1.414l22-22-22-22H.293z" />
         </svg>
-        <span aria-current="page" class="ml-4 text-sm font-medium text-gray-500">
+        <span aria-current="page" class="ml-4 text-lg font-bold text-gray-700">
           {{ this_page }}
         </span>
       </div>

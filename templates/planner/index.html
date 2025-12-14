@@ -187,7 +187,7 @@
 <div class="container pl-10 {% if not garden %}opacity-40 cursor-not-allowed{% endif %}">
   <div class="flex gap-4">
 
-    <a href="{% url "planner_location" GARDEN %}" class="flex-1 relative no-underline hover:opacity-75">
+    <a href="{% url "planner_plants_present" GARDEN %}" class="flex-1 relative no-underline hover:opacity-75">
       <div class="absolute inset-0 rounded-lg bg-white lg:rounded-bl-4xl"></div>
       <div class="relative flex h-full flex-col overflow-hidden rounded-[calc(var(--radius-lg)+1px)] lg:rounded-bl-[calc(2rem+1px)]">
         <img src="/media/planner.current.jpg" alt="" class="h-40 object-cover object-center" />
@@ -206,7 +206,7 @@
       <div class="pointer-events-none absolute inset-0 rounded-lg shadow-sm outline outline-black/5 lg:rounded-bl-4xl"></div>
     </a>
 
-    <a href="{% url "planner_target_species" GARDEN %}" class="flex-1 relative no-underline hover:opacity-75">
+    <a href="{% url "planner_plants_future" GARDEN %}" class="flex-1 relative no-underline hover:opacity-75">
       <div class="absolute inset-0 rounded-lg bg-white"></div>
       <div class="relative flex h-full flex-col overflow-hidden rounded-[calc(var(--radius-lg)+1px)]">
         <img src="/media/planner.future.jpg" alt="" class="h-40 object-cover object-center" />

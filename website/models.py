@@ -684,6 +684,7 @@ class SpeciesFeatures(models.Model):
     species_type = models.IntegerField(choices=SpeciesType.choices, db_index=True, default=0)
     site = models.ManyToManyField(Site, blank=True)
     icon = models.CharField(max_length=50, null=True, blank=True, help_text="Enter all the classes we need to add to the <i> tag")
+    icon_svg = models.TextField(null=True, blank=True)
 
     def __str__(self):
         return self.name
@@ -701,7 +702,10 @@ class SpeciesFeatures(models.Model):
         }
         color = colors[self.species_type]
         color = ""
-        return mark_safe(f'<i class="{self.icon} text-{color}" title="{self.name}"></i><span class="sr-only">{self.name}</span>')
+        if self.icon:
+            return mark_safe(f'<i class="{self.icon} text-{color}" title="{self.name}"></i><span class="sr-only">{self.name}</span>')
+        elif self.icon_svg:
+            return mark_safe(self.icon_svg)
 
 class Species(models.Model):
     name = models.CharField(max_length=255, unique=True, db_index=True)
@@ -1044,14 +1048,17 @@ class Newsletter(models.Model):
         ordering = ["email"]
 
 class GardenSpecies(models.Model):
-    garden = models.ForeignKey(Garden, on_delete=models.CASCADE)
-    species = models.ForeignKey(Species, on_delete=models.CASCADE)
+    garden = models.ForeignKey(Garden, on_delete=models.CASCADE, related_name="plants")
+    species = models.ForeignKey(Species, on_delete=models.CASCADE, related_name="garden_plants")
     created_at = models.DateTimeField(auto_now_add=True)
     STATUS_OPTIONS = [
         ("PRESENT", _("Currently present")),
         ("FUTURE", _("Future wish-list")),
     ]
     status = models.CharField(choices=STATUS_OPTIONS, db_index=True, max_length=10)
+
+    class Meta:
+        unique_together = ["garden", "species"]
 
 class GardenManager(models.Model):
     name = models.CharField(max_length=255)
