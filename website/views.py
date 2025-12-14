@@ -347,7 +347,6 @@ def space(request, id):
     }
     return render(request, "space.html", context)
 
-
 def maps(request):
     site = get_site(request)
     types = Document.DOC_TYPES
@@ -818,8 +817,7 @@ def species(request, id):
         garden = get_garden(request, request.COOKIES.get("garden_id"))
 
     if request.method == "POST":
-        status = "PRESENT"
-        GardenSpecies.objects.create(garden=garden, species=info, status=status)
+        GardenSpecies.objects.create(garden=garden, species=info, status=request.POST["action"])
         return JsonResponse({"success": True})
 
     context = {
@@ -1775,6 +1773,8 @@ def planner(request, id=None):
         "page": "dashboard",
         "menu": "planner",
         "garden": garden,
+        "species_present": GardenSpecies.objects.filter(garden=garden, status="PRESENT").count(),
+        "species_future": GardenSpecies.objects.filter(garden=garden, status="FUTURE").count(),
     }
     return render(request, "planner/index.html", context)
 
@@ -1894,12 +1894,16 @@ def planner_suggestions(request, id):
     features = SpeciesFeatures.objects.filter(Q(page__garden_targets=garden)|Q(page__garden_site_features=garden))
 
     # Only filter species that have these features, and annotate to count the number of features per species
-    species = species.filter(features__in=features).annotate(num_features=Count("features")).filter(num_features__gt=0).order_by("-num_features")
+    species = species.annotate(num_features=Count("features")).order_by("-num_features")
 
     # We use this to create bars showing relative score
     max_features = species.aggregate(Max("num_features"))["num_features__max"]
     if vegetation_type:
         max_features += 1 # Add one because it will also meet the vegetation type parameter
+
+    # Get the top 50 species only
+    if species:
+        species = species[:50]
 
     context = {
         "menu": "planner",

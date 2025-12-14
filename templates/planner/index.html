@@ -1,4 +1,5 @@
 {% extends "_base.html" %}
+{% load i18n %}
 
 {% block title %}{{ page_info }}{% endblock %}
 
@@ -191,7 +192,13 @@
       <div class="relative flex h-full flex-col overflow-hidden rounded-[calc(var(--radius-lg)+1px)] lg:rounded-bl-[calc(2rem+1px)]">
         <img src="/media/planner.current.jpg" alt="" class="h-40 object-cover object-center" />
         <div class="p-10 pt-4">
-          <h3 class="text-sm/4 font-semibold text-lime-600"><i class="fa fa-check"></i> {{ _("25 species saved") }}</h3>
+          {% if species_present %}
+            <h3 class="text-sm/4 font-semibold text-lime-600"><i class="fa fa-check"></i> 
+              {% blocktranslate %}{{ species_present }} species saved{% endblocktranslate %}
+            </h3>
+          {% else %}
+            <h3 class="text-sm/4 font-semibold text-orange-600"><i class="fa fa-dot-circle"></i> {{ _("Pending") }}</h3>
+          {% endif %}
           <p class="mt-2 text-lg font-medium tracking-tight text-gray-950">{{ _("Current plants") }}</p>
           <p class="mt-2 max-w-lg text-sm/6 text-gray-600 font-normal">{{ _("Record the species that are currently present in your garden.") }}</p>
         </div>
@@ -204,7 +211,13 @@
       <div class="relative flex h-full flex-col overflow-hidden rounded-[calc(var(--radius-lg)+1px)]">
         <img src="/media/planner.future.jpg" alt="" class="h-40 object-cover object-center" />
         <div class="p-10 pt-4">
-          <h3 class="text-sm/4 font-semibold text-lime-600"><i class="fa fa-check"></i> {{ _("17 species saved") }}</h3>
+          {% if species_future %}
+            <h3 class="text-sm/4 font-semibold text-lime-600"><i class="fa fa-check"></i> 
+              {% blocktranslate %}{{ species_future }} species saved{% endblocktranslate %}
+            </h3>
+          {% else %}
+            <h3 class="text-sm/4 font-semibold text-orange-600"><i class="fa fa-dot-circle"></i> {{ _("Pending") }}</h3>
+          {% endif %}
           <p class="mt-2 text-lg font-medium tracking-tight text-gray-950">{{ _("Future plants") }}</p>
           <p class="mt-2 max-w-lg text-sm/6 text-gray-600 font-normal">{{ _("Record the species that you plan to add to your garden.") }}</p>
         </div>
@@ -215,6 +228,8 @@
     <div class="flex-1 pt-3 pl-10 pr-2">
       <h2 class="mb-1">Current score</h2>
       <p class="mb-8">Based on the species currently in your garden.</p>
+
+      {% if species_present %}
 
       <div class="mb-3">
         <p class="text-sm font-medium text-gray-900 flex justify-between mb-1">
@@ -266,61 +281,80 @@
 
       <a class="btn-white mt-4" href="">Full report</a>
 
+      {% else %}
+
+        <div class="rounded-sm bg-gray-100 text-gray-600 p-3 text-center mt-10">
+          <strong class="block mb-2">{{ _("No score available yet") }}</strong>
+          {{ _("Please save current species to your garden to create a scorecard.") }}
+        </div>
+
+      {% endif %}
+
     </div>
 
     <div class="flex-1 pt-3 pl-10 pr-2">
       <h2 class="mb-1">Future score</h2>
       <p class="mb-8">After you have planted all your future species.</p>
 
-      <div class="mb-3">
-        <p class="text-sm font-medium text-gray-900 flex justify-between mb-1">
-          <span>Sunbirds &amp; Sugarbirds</span>
-          <span>92</span>
-        </p>
-        <div aria-hidden="true">
-          <div class="overflow-hidden rounded-full bg-gray-200">
-            <div style="width: 92%" class="h-2 rounded-full bg-lime-500"></div>
+      {% if species_future %}
+        <div class="mb-3">
+          <p class="text-sm font-medium text-gray-900 flex justify-between mb-1">
+            <span>Sunbirds &amp; Sugarbirds</span>
+            <span>92</span>
+          </p>
+          <div aria-hidden="true">
+            <div class="overflow-hidden rounded-full bg-gray-200">
+              <div style="width: 92%" class="h-2 rounded-full bg-lime-500"></div>
+            </div>
           </div>
         </div>
-      </div>
 
-      <div class="mb-3">
-        <p class="text-sm font-medium text-gray-900 flex justify-between mb-1">
-          <span>Butterflies</span>
-          <span>85</span>
-        </p>
-        <div aria-hidden="true">
-          <div class="overflow-hidden rounded-full bg-gray-200">
-            <div style="width: 85%" class="h-2 rounded-full bg-lime-400"></div>
+        <div class="mb-3">
+          <p class="text-sm font-medium text-gray-900 flex justify-between mb-1">
+            <span>Butterflies</span>
+            <span>85</span>
+          </p>
+          <div aria-hidden="true">
+            <div class="overflow-hidden rounded-full bg-gray-200">
+              <div style="width: 85%" class="h-2 rounded-full bg-lime-400"></div>
+            </div>
           </div>
         </div>
-      </div>
 
-      <div class="mb-3">
-        <p class="text-sm font-medium text-gray-900 flex justify-between mb-1">
-          <span>Species composition</span>
-          <span>88</span>
-        </p>
-        <div aria-hidden="true">
-          <div class="overflow-hidden rounded-full bg-gray-200">
-            <div style="width: 88%" class="h-2 rounded-full bg-lime-500"></div>
+        <div class="mb-3">
+          <p class="text-sm font-medium text-gray-900 flex justify-between mb-1">
+            <span>Species composition</span>
+            <span>88</span>
+          </p>
+          <div aria-hidden="true">
+            <div class="overflow-hidden rounded-full bg-gray-200">
+              <div style="width: 88%" class="h-2 rounded-full bg-lime-500"></div>
+            </div>
           </div>
         </div>
-      </div>
 
-      <div class="mb-3">
-        <p class="text-sm font-medium text-gray-900 flex justify-between mb-1">
-          <span>Structural diversity</span>
-          <span>80</span>
-        </p>
-        <div aria-hidden="true">
-          <div class="overflow-hidden rounded-full bg-gray-200">
-            <div style="width:80%" class="h-2 rounded-full bg-lime-200"></div>
+        <div class="mb-3">
+          <p class="text-sm font-medium text-gray-900 flex justify-between mb-1">
+            <span>Structural diversity</span>
+            <span>80</span>
+          </p>
+          <div aria-hidden="true">
+            <div class="overflow-hidden rounded-full bg-gray-200">
+              <div style="width:80%" class="h-2 rounded-full bg-lime-200"></div>
+            </div>
           </div>
         </div>
-      </div>
 
-      <a class="btn-white mt-4" href="">Full report</a>
+        <a class="btn-white mt-4" href="">Full report</a>
+
+      {% else %}
+
+        <div class="rounded-sm bg-gray-100 text-gray-600 p-3 text-center mt-10">
+          <strong class="block mb-2">{{ _("No score available yet") }}</strong>
+          {{ _("Please save future species to your garden to create a scorecard.") }}
+        </div>
+
+      {% endif %}
 
     </div>
 

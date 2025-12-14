@@ -87,21 +87,21 @@
       <h3 class="mt-10"><i class="fas fa-shovel"></i> {{ _("Garden planner") }} - {{ garden }}</h3>
       <ul class="flex flex-wrap list-none">
         <li>
-        <a href="{{ each }}" class="no-underline rounded-md text-orange-800 bg-orange-300 px-3.5 py-2.5 text-sm font-semibold shadow-xs hover:text-white hover:bg-orange-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-orange-600 flex mb-3 mr-3">
-          <i class="fa fa-check-circle mr-2 relative" style="top:2px"></i>
-          I have this in my garden
-        </a>
+          <button data-action="PRESENT" class="planner-action btn-white mb-3 mr-3 cursor-pointer">
+            <i class="fa fa-certificate mr-1"></i>
+            I have this in my garden
+          </button>
         </li>
         <li>
-        <button  command="show-modal" commandfor="dialog" class="no-underline rounded-md text-orange-800 bg-orange-300 px-3.5 py-2.5 text-sm font-semibold shadow-xs hover:text-white hover:bg-orange-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-orange-600 flex mb-3 mr-3 cursor-pointer">
-          <i class="fa fa-certificate mr-2 relative" style="top:2px"></i>
-          I want this in my garden
-        </button>
+          <button data-action="FUTURE" class="planner-action btn-white mb-3 mr-3 cursor-pointer">
+            <i class="fa fa-certificate mr-1"></i>
+            I want this in my garden
+          </button>
         </li>
         <li>
         <a href="/planner/" class="no-underline rounded-md bg-orange-600 px-3.5 py-2.5 text-sm font-semibold text-white shadow-xs hover:text-white hover:bg-orange-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-orange-600 flex mb-3 mr-3">
           <i class="fa fa-shovel mr-2 relative" style="top:2px"></i>
-          Garden planner
+          Go to garden planner
         </a>
         </li>
       </ul>
@@ -192,19 +192,19 @@
     });
 
 
-  $("[command='show-modal']").on("click", function(e) {
-    e.preventDefault();
-    e.stopPropagation();
+  $("button.planner-action").on("click", function(e) {
     
-    var $button = $(this);
-    
+    var action = $(this).data("action");
     $.ajax({
       url: "{{ request.get_full_path }}",
       method: "POST",
+      data: {
+        action: action,
+      },
       dataType: "json",
       success: function(response) {
         if (response.success) {
-          # SHOW DIALOG
+          $("#dialog").show();
         } else {
           alert("Failed: " + (response.message || "Request failed"));
         }
