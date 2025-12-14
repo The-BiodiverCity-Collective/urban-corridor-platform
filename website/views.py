@@ -1807,11 +1807,11 @@ def planner_location(request, id):
             veg = None
 
         garden.save()
-        messages.success(request, _("Your garden location was saved."))
 
         if "new_garden" in request.GET:
             return redirect(reverse("planner_site", args=[garden.id]) + "?new_garden")
         else:
+            messages.success(request, _("Your garden location was saved."))
             return redirect(reverse("planner", args=[garden.id]))
 
     context = {
@@ -1821,6 +1821,7 @@ def planner_location(request, id):
         "info": Page.objects.get(site=site, slug="planner-location"),
         "garden": garden,
         "map_hide_save": True,
+        "step": 1,
     }
     return render(request, "planner/location.html", context)
 
@@ -1850,6 +1851,7 @@ def planner_target_species(request, id):
         "page_info": Page.objects.get(site=site, slug="planner-target-species"),
         "targets": targets,
         "garden": garden,
+        "step": 3,
     }
     return render(request, "planner/target_species.html", context)
 
@@ -1866,15 +1868,15 @@ def planner_site(request, id):
         for each in features.filter(pk__in=request.POST.getlist("feature")):
             garden.site_features.add(each)
         garden.save()
-        messages.success(
-            request, 
-            "<i class='fa fa-check mr-2'></i>" + \
-            _("Your site features have been saved.")
-        )
 
         if "new_garden" in request.GET:
             return redirect(reverse("planner_target_species", args=[garden.id]) + "?new_garden")
         else:
+            messages.success(
+                request, 
+                "<i class='fa fa-check mr-2'></i>" + \
+                _("Your site features have been saved.")
+            )
             return redirect(reverse("planner", args=[garden.id]))
 
     context = {
@@ -1883,6 +1885,7 @@ def planner_site(request, id):
         "page_info": Page.objects.get(site=site, slug="planner-site"),
         "garden": garden,
         "features": features,
+        "step": 2,
     }
     return render(request, "planner/site.html", context)
 
