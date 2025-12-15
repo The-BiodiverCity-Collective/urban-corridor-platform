@@ -111,40 +111,6 @@ def log_action(request, action, name):
 
 # Regular views
 def index(request):
-    if "photos" in request.GET:
-        import csv
-        from django.core.files.uploadedfile import UploadedFile
-        from dateutil.parser import parse
-        with open(settings.MEDIA_ROOT + "/import/photos1000.csv", "r", encoding="utf-8-sig") as csvfile:
-            contents = csv.DictReader(csvfile)
-            for row in contents:
-                path = settings.MEDIA_ROOT + "/" + row["image"]
-                garden = row["garden_id"]
-                try:
-                    info = Garden.objects.get(original__contains={"id": garden})
-                    print(info, row["image"])
-                except:
-                    pass
-                if False:
-                    g = Photo.objects.create(
-                        description = row["description"],
-                        position = row["position"],
-                        author = row["author"],
-                        date = parse(row["date"]),
-                        upload_date = parse(row["upload_date"]),
-                        image = UploadedFile(file=open(path, "rb")),
-                        garden_id = row["garden_id"],
-                    )
-
-    if "photo_update" in request.GET:
-        return None
-        from dateutil.parser import parse
-        a = Photo.objects.filter(old_id__isnull=False)
-        for each in a:
-            each.date = parse(each.original["created_at"])
-            each.upload_date = parse(each.original["updated_at"])
-            each.save()
-
     context = {
         #"garden": Garden.objects.filter(is_active=True).order_by("?")[0],
         "garden": Garden(),
@@ -153,7 +119,7 @@ def index(request):
     if site.id == 2:
         return render(request, "fcc/index.html", context)
     else:
-        return render(request, "index.html", context)
+        return render(request, "braam/index.html", context)
 
 def design(request):
     return render(request, "design.html")
@@ -813,6 +779,7 @@ def species(request, id):
     sources = SpeciesVegetationTypeLink.objects.filter(species=info, vegetation_type__sites=site)
 
     garden = None
+    in_garden = None
     if "garden_id" in request.COOKIES:
         garden = get_garden(request, request.COOKIES.get("garden_id"))
         in_garden = GardenSpecies.objects.filter(garden=garden, species=info).first()
@@ -1579,17 +1546,14 @@ def update_map(request):
 
 def page(request, slug, menu=None):
 
-    if slug == "fynbos-rehabilitation":
-        check = Page.objects.filter(slug=slug)
-        if not check:
-            Page.objects.create(name="Fynbos rehabilitation", position=0, format="MARK")
+    site = get_site(request)
 
     if request.user.is_authenticated:
-        info = get_object_or_404(Page, slug=slug)
+        info = get_object_or_404(Page, slug=slug, site=site)
         if not info.is_active:
             messages.warning(request, "This page is not currently published and not publicly available.")
     else:
-        info = get_object_or_404(Page, slug=slug, is_active=True)
+        info = get_object_or_404(Page, slug=slug, is_active=True, site=site)
 
     context = {
         "info": info,

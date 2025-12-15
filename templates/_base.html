@@ -90,7 +90,7 @@
 {% if controlpanel %}
   {% include "_nav.controlpanel.html" %}
 {% else %}
-  {% with nav="_nav."|add:SITE.meta_data.nav|add:".html" %}
+  {% with nav=SITE.meta_data.nav|add:"/_nav.html" %}
     {% include nav %}
   {% endwith %}
 {% endif %}

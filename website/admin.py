@@ -44,7 +44,7 @@ class UserAdmin(admin.ModelAdmin):
 class SFAdmin(admin.ModelAdmin):
     search_fields = ["name"]
     list_display = ["name", "species_type", "icon"]
-    list_filter = ["species_type"]
+    list_filter = ["species_type", "site"]
 
 class PageAdmin(admin.ModelAdmin):
     search_fields = ["name"]
