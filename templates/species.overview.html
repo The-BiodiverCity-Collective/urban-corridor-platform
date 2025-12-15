@@ -28,27 +28,25 @@
       <input type="hidden" name="vegetation_type" value="{{ vegetation_type.id }}" />
     {% endif %}
 
-    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-
-      {% for each in features %}
-
-        <div class="flex gap-3">
-          <div class="flex h-6 shrink-0 items-center">
-            <div class="group grid size-4 grid-cols-1">
-              <input id="feature_{{ each.id }}" aria-describedby="comments-description" name="feature" type="checkbox" value="{{ each.id }}" class="col-start-1 row-start-1 appearance-none rounded-sm border border-gray-300 bg-white checked:border-sky-800 checked:bg-sky-800 indeterminate:border-sky-800 indeterminate:bg-sky-800 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-sky-800 disabled:border-gray-300 disabled:bg-gray-100 disabled:checked:bg-gray-100 forced-colors:appearance-auto">
-              <svg class="pointer-events-none col-start-1 row-start-1 size-3.5 self-center justify-self-center stroke-white group-has-disabled:stroke-gray-950/25" viewBox="0 0 14 14" fill="none">
-                <path class="opacity-0 group-has-checked:opacity-100" d="M3 8L6 11L11 3.5" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
-                <path class="opacity-0 group-has-indeterminate:opacity-100" d="M3 7H11" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
-              </svg>
-            </div>
-          </div>
-          <div class="text-sm/6">
-            <label for="feature_{{ each.id }}" class="font-medium text-gray-900 cursor-pointer hover:text-sky-800">{{ each }}</label>
-          </div>
+    <div class="mb-4 bg-gray-100 p-4">
+      <div class="container mx-auto">
+        <div class="grid grid-cols-3 gap-4">
+          {% for feature in features %}
+            {% ifchanged feature.species_type %}
+              {% if not forloop.first %}
+              </div>
+              {% endif %}
+              <div>
+                <h4>{{ feature.get_species_type_display }}</h4>
+            {% endifchanged %}
+            <span class="flex items-center">
+              <input type="checkbox" name="feature" id="id_features_{{ feature.id }}" value="{{ feature.id }}" class="form-checkbox h-5 w-5 text-blue-500" {% if feature in info.features.all %} checked {% endif %}>
+              <label for="id_features_{{ feature.id }}" class="ml-2 text-gray-700">{{ feature.name }}</label>
+            </span>
+          {% endfor %}
         </div>
-
-      {% endfor %}
-
+        </div>
+      </div>
     </div>
 
     <div class="mt-4 flex gap-2">

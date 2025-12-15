@@ -681,6 +681,7 @@ class SpeciesFeatures(models.Model):
         SITE = 2, "Tolerances & suitability"
         GROWTH = 3, "Growth features"
         OTHER = 4, "Social features"
+        ASPECT = 6, "Aspect"
 
     species_type = models.IntegerField(choices=SpeciesType.choices, db_index=True, default=0)
     site = models.ManyToManyField(Site, blank=True)
@@ -700,6 +701,7 @@ class SpeciesFeatures(models.Model):
             2: "sky-700",
             3: "gray-800",
             4: "pink-700",
+            5: "pink-700",
         }
         color = colors[self.species_type]
         color = ""
