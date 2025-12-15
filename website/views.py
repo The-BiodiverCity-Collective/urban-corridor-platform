@@ -1905,7 +1905,7 @@ def planner_suggestions(request, id):
     # Check which features are linked to this garden
     features = SpeciesFeatures.objects.filter(Q(page__garden_targets=garden)|Q(page__garden_site_features=garden))
 
-    # Only filter species that have these features, and annotate to count the number of features per species
+    # Then we annotate to count the number of features per species
     species = species.annotate(num_features=Count("features", filter=Q(features__in=features))).order_by("-num_features")
 
     # We use this to create bars showing relative score
@@ -1977,12 +1977,42 @@ def planner_plants(request, id, status):
     context = {
         "menu": "planner",
         "page": status,
-        "title": _("Future plants") if status == "FUTURE" else _("Current plants"),
+        "title": _("Plants overview"),
         "garden": garden,
         "species_list": plants,
         "table_hide_vegetation": True,
         "table_show_actions": True,
         "load_datatables": True,
+    }
+    return render(request, "planner/plants.html", context)
+
+def planner_calendar(request, id):
+
+    site = get_site(request)
+
+    if not (garden := get_garden(request, id)):
+        return redirect("planner")
+
+    context = {
+        "menu": "planner",
+        "page": status,
+        "title": _("Future plants") if status == "FUTURE" else _("Current plants"),
+        "garden": garden,
+    }
+    return render(request, "planner/plants.html", context)
+
+def planner_nurseries(request, id):
+
+    site = get_site(request)
+
+    if not (garden := get_garden(request, id)):
+        return redirect("planner")
+
+    context = {
+        "menu": "planner",
+        "page": status,
+        "title": _("Future plants") if status == "FUTURE" else _("Current plants"),
+        "garden": garden,
     }
     return render(request, "planner/plants.html", context)
 

@@ -1,0 +1,56 @@
+<table class="table datatable species" style="table-layout: fixed">
+  <thead>
+    <tr>
+      <th style="width:250px">{{ _("Name") }}</th>
+      <th style="white-space:nowrap; min-width:0; flex:none">{{ _("Features") }}</th>
+      {% if table_show_score %}
+        <th>{{ _("Species relevance") }}</th>
+      {% endif %}
+      {% if table_show_actions %}
+        <th>{{ _("Actions") }}</th>
+      {% endif %}
+    </tr>
+  </thead>
+  <tbody>
+  {% for each in species_list %}
+    <tr>
+      <td>
+        {% if species_present and each in species_present %}
+          <i class="fa fa-check-circle text-lime-700" title="{{ _("This species is currently present in your garden.") }}"></i>
+        {% elif species_future and each in species_future %}
+          <i class="fa fa-check-circle" title="{{ _("This species is in your list to be added to your garden.") }}"></i>
+        {% endif %}
+        <a href="{% url "species" each.id %}">{{ each.name }}</a>
+        <br>
+        {{ each.name_en|default_if_none:"" }}
+      </td>
+      <td>
+        {% for feature in each.features.all %}
+          <span class="p-1 mr-1 {% if feature in features %}bg-yellow-100{% endif %}">
+            {{ feature.get_icon }}
+          </span>
+        {% endfor %}
+      </td>
+      {% if table_show_score %}
+        <td>
+          <div aria-hidden="true">
+            <div class="overflow-hidden rounded-full bg-gray-200">
+              <div style="width: calc(({{ each.num_features }} + 1) / {{ max_features }} * 100%)" class="h-2 rounded-full bg-lime-600"></div>
+            </div>
+          </div>
+        </td>
+      {% endif %}
+      {% if table_show_actions %}
+        <td data-sort="{{ each.num_features }}">
+          <form method="post">
+            <button type="submit" class="btn-danger px-2 py-1" name="delete" value="{{ each.id }}">
+              {{ _("Delete") }}
+            </button>
+            {% csrf_token %}
+          </form>
+        </td>
+      {% endif %}
+    </tr>
+  {% endfor %}
+  </tbody>
+</table>

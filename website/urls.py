@@ -97,6 +97,9 @@ urlpatterns = [
     path("planner/<int:id>/plants/suggestions/", views.planner_suggestions, name="planner_suggestions"),
     path("planner/<int:id>/plants/present/", views.planner_plants, {"status": "PRESENT"}, name="planner_plants_present"),
     path("planner/<int:id>/plants/future/", views.planner_plants, {"status": "FUTURE"}, name="planner_plants_future"),
+    path("planner/<int:id>/plants/", views.planner_plants, {"status": "FUTURE"}, name="planner_plants"),
+    path("planner/<int:id>/calendar/", views.planner_calendar, name="planner_calendar"),
+    path("planner/<int:id>/plants/nurseries/", views.planner_nurseries, name="planner_nurseries"),
 
     # Control Panel
     path("controlpanel/", views.controlpanel, name="controlpanel"),

@@ -64,13 +64,19 @@
       <strong class="block mb-2 text-5xl">{{ species_count }}</strong>
       {{ _("recommended plant species") }}
     </div>
+    <div class="justify-end">
+      <a href="{% url "planner_plants" garden.id %}" class="btn-blue mt-10">{{ _("Plants overview") }} &raquo;</a>
+    </div>
   </div>
 </div>
 
 {% include "_species.grid.html" %}
 
-<div class="mt-10">
-  {% include "planner/_returnlink.html" %}
+<div class="flex justify-between">
+  <div class="mt-10">
+    {% include "planner/_returnlink.html" %}
+  </div>
+  <a href="{% url "planner_plants" garden.id %}" class="btn-blue mt-10">{{ _("Plants overview") }} &raquo;</a>
 </div>
 
 {% endblock %}

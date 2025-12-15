@@ -9,7 +9,11 @@
 
 <div class="tab_content">
   <section class="{% if photos_first %}hidden{% endif %}" id="table" role="tabpanel" aria-labelledby="table_view">
-    {% include "_species.table.html" %}
+    {% if "table_condensed" %}
+      {% include "_species.table.condensed.html" %}
+    {% else %}
+      {% include "_species.table.html" %}
+    {% endif %}
   </section>
 
   <section class="mt-2 {% if not photos_first %}hidden{% endif %}" id="photos" role="tabpanel" aria-labelledby="photos">

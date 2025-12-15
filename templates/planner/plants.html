@@ -22,7 +22,39 @@
     </span>
   </div>
 
-  {% include "_species.grid.html" %}
+  <div class="flex gap-8">
+    <div class="flex-4">
+      <div class="sm:block">
+        <div class="border-b border-gray-200">
+          <nav class="tabs -mb-px flex space-x-8" aria-label="Tabs">
+            <a href="{% url "planner_plants_future" garden.id %}" class="tab {% if page != "FUTURE" %}in{% endif %}active">{{ _("Future plants overview") }}</a>
+            <a href="{% url "planner_plants_present" garden.id %}" data-section="photos" class="tab  {% if page != "PRESENT" %}in{% endif %}active">{{ _("Current plants overview") }}</a>
+          </nav>
+        </div>
+      </div>
+
+      <div class="tab_content">
+        <section class="mt-2">
+          {% include "_species.list.html" %}
+        </section>
+      </div>
+       
+    </div>
+
+    <div class="flex-2 mt-10 pt-3 pr-2">
+      {% with species_score=species_list status=page %}
+        {% include "planner/_score.html" %}
+      {% endwith %}
+
+      <h2 class="mb-1 mt-10">{{ _("Next steps") }}</h2>
+      <p class="mb-8">{{ _("Did you finish improving your garden's restoration potential?") }}</p>
+      <a href="{% url "planner_calendar" garden.id %}" class="btn-blue mb-2"><i class="fa fa-calendar-alt mr-1"></i> {{ _("Garden calendar") }} &raquo;</a>
+      <br>
+      <a href="{% url "planner_nurseries" garden.id %}" class="btn-blue"><i class="fa fa-hand-holding-seedling mr-1"></i> {{ _("Indigenous nurseries") }} &raquo;</a>
+
+    </div>
+
+  </div>
 
 <div class="mt-10">
   {% include "planner/_returnlink.html" %}

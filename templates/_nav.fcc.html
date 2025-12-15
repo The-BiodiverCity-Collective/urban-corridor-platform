@@ -663,20 +663,20 @@
                 <i class="fa fa-seedling fa-fw text-lg text-gray-400 mr-1"></i>
                 Suggested plants
               </a>
-              <a href="/blog/" class="flex gap-x-4 py-2 text-sm/6 font-semibold hover:text-sky-600
-                {% if page == "blog" and menu == "planner" %}text-sky-600{% else %}text-gray-900{% endif %}">
-                <i class="fa fa-calendar-alt fa-fw text-lg text-gray-400 mr-1"></i>
-                Planting &amp; maintenance calendar
-              </a>
-              <a href="/blog/" class="flex gap-x-4 py-2 text-sm/6 font-semibold hover:text-sky-600
-                {% if page == "blog" and menu == "planner" %}text-sky-600{% else %}text-gray-900{% endif %}">
-                <i class="fa fa-hand-holding-seedling fa-fw text-lg text-gray-400 mr-1"></i>
-                Plant sourcing
-              </a>
-              <a href="/blog/" class="flex gap-x-4 py-2 text-sm/6 font-semibold hover:text-sky-600
-                {% if page == "blog" and menu == "planner" %}text-sky-600{% else %}text-gray-900{% endif %}">
+              <a href="{% url "planner_plants" GARDEN %}" class="flex gap-x-4 py-2 text-sm/6 font-semibold hover:text-sky-600
+                {% if page == "plants" and menu == "planner" %}text-sky-600{% else %}text-gray-900{% endif %}">
                 <i class="fa fa-clipboard-list-check fa-fw text-lg text-gray-400 mr-1"></i>
-                Monitoring plan
+                Plants overview
+              </a>
+              <a href="{% url "planner_calendar" GARDEN %}" class="flex gap-x-4 py-2 text-sm/6 font-semibold hover:text-sky-600
+                {% if page == "calendar" and menu == "planner" %}text-sky-600{% else %}text-gray-900{% endif %}">
+                <i class="fa fa-calendar-alt fa-fw text-lg text-gray-400 mr-1"></i>
+                Garden calendar
+              </a>
+              <a href="{% url "planner_nurseries" GARDEN %}" class="flex gap-x-4 py-2 text-sm/6 font-semibold hover:text-sky-600
+                {% if page == "nurseries" and menu == "planner" %}text-sky-600{% else %}text-gray-900{% endif %}">
+                <i class="fa fa-hand-holding-seedling fa-fw text-lg text-gray-400 mr-1"></i>
+                Plant nurseries
               </a>
             </div>
           </div>

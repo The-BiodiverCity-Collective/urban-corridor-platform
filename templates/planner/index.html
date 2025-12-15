@@ -102,8 +102,7 @@
           {{ _("Start your garden") }}
         </h2>
         <p class="mt-4 text-gray-500">
-          Planting appropriate plants for your local vegetation types, soil and your garden's objectives
-          is fundamental. The tools below guide you in this process.
+          {{ _("Planting appropriate plants for your local vegetation types, soil and your garden's objectives is fundamental. The tools below guide you in this process.") }}
         </p>
       </div>
       <div class="mt-16 grid grid-cols-1 gap-x-8 gap-y-10 lg:grid-cols-4">
@@ -114,37 +113,9 @@
           <div class="mt-4 sm:mt-0 sm:ml-6 lg:mt-6 lg:ml-0">
             <h3 class="text-sm font-medium text-gray-900">Suggested plants</h3>
             <p class="mt-2 text-sm text-gray-500">
-              Find out what species are most appropriate for your garden's conditions.
+              {{ _("Find out what species are most appropriate for your garden's conditions.") }}
             </p>
-            <a href="{% url "planner_suggestions" GARDEN %}" class="no-underline hover:underline">View species &raquo;</a>
-          </div>
-        </div>
-        <div class="sm:flex lg:block">
-          <div class="sm:shrink-0">
-            <i class="fa fa-calendar-alt text-5xl text-sky-700"></i>
-          </div>
-          <div class="mt-4 sm:mt-0 sm:ml-6 lg:mt-6 lg:ml-0">
-            <h3 class="text-sm font-medium text-gray-900">
-              Planting & maintenance calendar
-            </h3>
-            <p class="mt-2 text-sm text-gray-500">
-              Use our calendar tool to plan your year to plant, weed, and maintain at the right time.
-            </p>
-            <a href="http://" class="no-underline hover:underline">View calendar &raquo;</a>
-          </div>
-        </div>
-        <div class="sm:flex lg:block">
-          <div class="sm:shrink-0">
-            <i class="fa fa-hand-holding-seedling text-5xl text-sky-700"></i>
-          </div>
-          <div class="mt-4 sm:mt-0 sm:ml-6 lg:mt-6 lg:ml-0">
-            <h3 class="text-sm font-medium text-gray-900">
-              Plant sourcing
-            </h3>
-            <p class="mt-2 text-sm text-gray-500">
-              Find out which local nurseries stock indigenous plants.
-            </p>
-            <a href="http://" class="no-underline hover:underline">View nurseries &raquo;</a>
+            <a href="{% url "planner_suggestions" GARDEN %}" class="no-underline hover:underline">{{ _("View species") }} &raquo;</a>
           </div>
         </div>
         <div class="sm:flex lg:block">
@@ -153,12 +124,40 @@
           </div>
           <div class="mt-4 sm:mt-0 sm:ml-6 lg:mt-6 lg:ml-0">
             <h3 class="text-sm font-medium text-gray-900">
-              Monitoring plan
+              {{ _("Plants overview") }}
             </h3>
             <p class="mt-2 text-sm text-gray-500">
-              Monitor your garden from the beginning to track progress.
+              {{ _("Check out what your planned garden looks like from a restoration viewpoint.") }}
             </p>
-            <a href="http://" class="no-underline hover:underline">View plan &raquo;</a>
+            <a href="{% url "planner_plants" GARDEN %}" class="no-underline hover:underline">{{ _("View overview") }} &raquo;</a>
+          </div>
+        </div>
+        <div class="sm:flex lg:block">
+          <div class="sm:shrink-0">
+            <i class="fa fa-calendar-alt text-5xl text-sky-700"></i>
+          </div>
+          <div class="mt-4 sm:mt-0 sm:ml-6 lg:mt-6 lg:ml-0">
+            <h3 class="text-sm font-medium text-gray-900">
+              {{ _("Garden calendar") }}
+            </h3>
+            <p class="mt-2 text-sm text-gray-500">
+              {{ _("Check out a calendar for your planting, maintenance, and monitoring activities.") }}
+            </p>
+            <a href="{% url "planner_calendar" GARDEN %}" class="no-underline hover:underline">{{ _("View calendar") }} &raquo;</a>
+          </div>
+        </div>
+        <div class="sm:flex lg:block">
+          <div class="sm:shrink-0">
+            <i class="fa fa-hand-holding-seedling text-5xl text-sky-700"></i>
+          </div>
+          <div class="mt-4 sm:mt-0 sm:ml-6 lg:mt-6 lg:ml-0">
+            <h3 class="text-sm font-medium text-gray-900">
+              {{ _("Indigenous nurseries") }}
+            </h3>
+            <p class="mt-2 text-sm text-gray-500">
+              {{ _("Find out which local nurseries stock indigenous plants.") }}
+            </p>
+            <a href="{% url "planner_nurseries" GARDEN %}" class="no-underline hover:underline">{{ _("View nurseries") }} &raquo;</a>
           </div>
         </div>
       </div>
@@ -226,73 +225,18 @@
     </a>
 
     <div class="flex-1 pt-3 pl-10 pr-2">
-      <h2 class="mb-1">Current score</h2>
-      <p class="mb-8">Based on the species currently in your garden.</p>
-
-      {% if species_present %}
-
-      <div class="mb-3">
-        <p class="text-sm font-medium text-gray-900 flex justify-between mb-1">
-          <span>Sunbirds &amp; Sugarbirds</span>
-          <span>62</span>
-        </p>
-        <div aria-hidden="true">
-          <div class="overflow-hidden rounded-full bg-gray-200">
-            <div style="width: 62%" class="h-2 rounded-full bg-yellow-500"></div>
-          </div>
-        </div>
-      </div>
-
-      <div class="mb-3">
-        <p class="text-sm font-medium text-gray-900 flex justify-between mb-1">
-          <span>Butterflies</span>
-          <span>52</span>
-        </p>
-        <div aria-hidden="true">
-          <div class="overflow-hidden rounded-full bg-gray-200">
-            <div style="width: 52%" class="h-2 rounded-full bg-yellow-400"></div>
-          </div>
-        </div>
-      </div>
-
-      <div class="mb-3">
-        <p class="text-sm font-medium text-gray-900 flex justify-between mb-1">
-          <span>Species composition</span>
-          <span>28</span>
-        </p>
-        <div aria-hidden="true">
-          <div class="overflow-hidden rounded-full bg-gray-200">
-            <div style="width: 28%" class="h-2 rounded-full bg-red-600"></div>
-          </div>
-        </div>
-      </div>
-
-      <div class="mb-3">
-        <p class="text-sm font-medium text-gray-900 flex justify-between mb-1">
-          <span>Structural diversity</span>
-          <span>39</span>
-        </p>
-        <div aria-hidden="true">
-          <div class="overflow-hidden rounded-full bg-gray-200">
-            <div style="width:39%" class="h-2 rounded-full bg-orange-500"></div>
-          </div>
-        </div>
-      </div>
-
-      <a class="btn-white mt-4" href="">Full report</a>
-
-      {% else %}
-
-        <div class="rounded-sm bg-gray-100 text-gray-600 p-3 text-center mt-10">
-          <strong class="block mb-2">{{ _("No score available yet") }}</strong>
-          {{ _("Please register your current garden species to create a scorecard.") }}
-        </div>
-
-      {% endif %}
-
+      {% with species_score=species_current status="PRESENT" %}
+        {% include "planner/_score.html" %}
+      {% endwith %}
     </div>
 
     <div class="flex-1 pt-3 pl-10 pr-2">
+      {% with species_score=species_future status="FUTURE" %}
+        {% include "planner/_score.html" %}
+      {% endwith %}
+    </div>
+
+    <div class="flex-1 pt-3 pl-10 pr-2" hidden>
       <h2 class="mb-1">Future score</h2>
       <p class="mb-8">After you have planted all your future species.</p>
 
