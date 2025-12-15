@@ -2349,20 +2349,26 @@ def controlpanel_document_species(request, id):
     site = get_site(request)
 
     file = file_info.file
-    df = pd.read_excel(file, sheet_name=0)
+
+    # We assume 2 sheets; one Meta Data followed by Plants; we read the 2nd
+    df = pd.read_excel(file, sheet_name=1, header=1)
+
+    # We assume a top-row which is not actually the header; let's drop it
+    #df = df.drop(df.index[0]).reset_index(drop=True)
 
     if request.method == "POST":
         vegetation_type = VegetationType.objects.get(pk=request.POST["vegetation_type"])
         SpeciesVegetationTypeLink.objects.filter(file=file_info).delete()
 
         try:
-            #for _,row in df.iterrows(): this gave an error so renamed to below; check that this is indeed right
-            for unused_var,row in df.iterrows():
+            for index,row in df.iterrows():
 
                 name = row["Name"].strip()
 
                 # Only process if there are at least 2 words
-                if len(name.split()) >= 2:
+                if True:
+                    p(row)
+                elif len(name.split()) >= 2:
 
                     genus = Genus.objects.filter(name=name.split()[0])
                     if genus:
@@ -2417,8 +2423,8 @@ def controlpanel_document_species(request, id):
                     exists = Species.objects.filter(name=name.strip()).exists()
                 results.append("✓" if exists else "✖️")
 
-        df["Exists"] = results
-        df["Details"] = alerts
+        df.insert(1, "Exists", results)
+        df.insert(2, "Details", alerts)
         df = df.fillna("")
         html_table = df.to_html(classes="table", escape=False)
 
@@ -2434,7 +2440,7 @@ def controlpanel_document_species(request, id):
         "info": info,
         "file": file,
         "df": mark_safe(html_table) if not error else None,
-        "vegetation_types": VegetationType.objects.all(),
+        "vegetation_types": VegetationType.objects.filter(site=site),
     }
     return render(request, "controlpanel/document.species.html", context)
 

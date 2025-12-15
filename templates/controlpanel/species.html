@@ -103,15 +103,24 @@
       </div>
     </div>
 
-    <div class="mb-4">
-      <label class="block text-lg font-semibold text-gray-700">Features</label>
-      <div class="grid grid-cols-2 gap-4">
-        {% for feature in features_list %}
-          <div class="flex items-center">
-            <input type="checkbox" name="features" id="id_features_{{ feature.id }}" value="{{ feature.id }}" class="form-checkbox h-5 w-5 text-blue-500" {% if feature in info.features.all %} checked {% endif %}>
-            <label for="id_features_{{ feature.id }}" class="ml-2 text-gray-700">{{ feature.name }}</label>
-          </div>
-        {% endfor %}
+    <div class="mb-4 bg-gray-100 p-4">
+      <div class="container mx-auto">
+        <div class="grid grid-cols-2 gap-4">
+          {% for feature in features_list %}
+            {% ifchanged feature.species_type %}
+              {% if not forloop.first %}
+              </div>
+              {% endif %}
+              <div>
+                <h4>{{ feature.get_species_type_display }}</h4>
+            {% endifchanged %}
+            <span class="flex items-center">
+              <input type="checkbox" name="features" id="id_features_{{ feature.id }}" value="{{ feature.id }}" class="form-checkbox h-5 w-5 text-blue-500" {% if feature in info.features.all %} checked {% endif %}>
+              <label for="id_features_{{ feature.id }}" class="ml-2 text-gray-700">{{ feature.name }}</label>
+            </span>
+          {% endfor %}
+        </div>
+        </div>
       </div>
     </div>
 

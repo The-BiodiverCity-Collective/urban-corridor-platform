@@ -23,7 +23,7 @@
           <div class="sm:col-span-3">
             <label for="author" class="block text-sm/6 font-medium text-gray-900">{{ _("Author") }}</label>
             <div class="mt-2">
-              <input type="text" name="author" id="author" class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-xs ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-sky-600 sm:text-sm/6" value="{{ info.author }}" required>
+              <input type="text" name="author" id="author" class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-xs ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-sky-600 sm:text-sm/6" value="{{ info.author|default_if_none:"" }}" required>
             </div>
           </div>
 
@@ -47,7 +47,7 @@
           </div>
 
           <div class="sm:col-span-4">
-            <label for="file" class="block text-sm/6 font-medium text-gray-900">File(s)</label>
+            <label for="file" class="block text-sm/6 font-medium text-gray-900">{{ _("File(s)") }}</label>
             {% if info.id and info.attachments.all %}
               <span class="mt-2 bg-orange-100 text-orange-700 text-xs font-bold rounded-full px-2 py-1 inline-block">
                 <i class="fa fa-info-circle"></i> Existing files will be replaced when you upload a new file.
@@ -60,8 +60,8 @@
 
           {% if info.id and info.attachments.all %}
             <div class="col-span-full">
-              <label for="cover-photo" class="block text-sm/6 font-medium text-gray-900">Existing file(s)</label>
-              <div class="mt-2 flex rounded-lg border border-dashed border-gray-900/25 px-6 py-10">
+              <label for="cover-photo" class="block text-sm/6 font-medium text-gray-900">{{ _("Existing file(s)") }}</label>
+              <div class="mt-2 flex rounded-lg border border-dashed border-gray-900/25 px-6 py-10 overflow-hidden">
                 <ul>
                   {% for each in info.attachments.all %}
                     <li class="mb-5">
@@ -74,8 +74,14 @@
                       </span>
                     {% if info.doc_type == "SPECIES_LIST" and each.extension != "pdf" %}
                       <div class="mt-3">
-                      <a class="btn-blue" href="{% url "controlpanel_document_species" info.id %}?file={{ each.id }}"><i class="fa fa-folder-open fa-fw"></i> Extract species</a>
-                      <a class="ml-3 btn-blue" href="{% url "controlpanel_specieslist" %}?file={{ each.id }}"><i class="fa fa-folder-open fa-fw"></i> View species</a>
+                        <a class="btn-blue" href="{% url "controlpanel_document_species" info.id %}?file={{ each.id }}">
+                          <i class="fa fa-file-import fa-fw"></i> 
+                          {{ _("Import species") }}
+                        </a>
+                        <a class="ml-3 btn-blue" href="{% url "controlpanel_specieslist" %}?file={{ each.id }}">
+                          <i class="fa fa-folder-open fa-fw"></i> 
+                          {{ _("View imported species") }}
+                        </a>
                       </div>
                     {% endif %}
                   </li>
@@ -86,7 +92,7 @@
           {% endif %}
 
           <div class="sm:col-span-4">
-            <label for="cover" class="block text-sm/6 font-medium text-gray-900">Cover image</label>
+            <label for="cover" class="block text-sm/6 font-medium text-gray-900">{{ _("Cover image") }}</label>
             {% if info.cover_image %}
               <img src="{{ info.cover_image.thumbnail.url }}" style="max-height:300px" class="rounded-2xl" />
             {% endif %}
@@ -97,7 +103,7 @@
 
 
           <div class="col-span-full">
-            <label for="description" class="block text-sm/6 font-medium text-gray-900">Description</label>
+            <label for="description" class="block text-sm/6 font-medium text-gray-900">{{ _("Description") }}</label>
             <div class="mt-2">
               <textarea name="description" id="description" class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-xs ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-sky-600 sm:text-sm/6">{{ info.description|default_if_none:"" }}</textarea>
             </div>

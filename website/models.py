@@ -676,10 +676,11 @@ class SpeciesFeatures(models.Model):
     name = models.CharField(max_length=255, db_index=True)
 
     class SpeciesType(models.IntegerChoices):
+        HABITAT = 5, "Habitats & soils"
         ANIMALS = 1, "Animal-friendly"
-        SITE = 2, "Tolerances/sites"
+        SITE = 2, "Tolerances & suitability"
         GROWTH = 3, "Growth features"
-        OTHER = 4, "Other"
+        OTHER = 4, "Social features"
 
     species_type = models.IntegerField(choices=SpeciesType.choices, db_index=True, default=0)
     site = models.ManyToManyField(Site, blank=True)

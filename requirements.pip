@@ -13,4 +13,5 @@ contextily
 folium
 bleach
 openpyxl
+odfpy
 wikipedia-api

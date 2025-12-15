@@ -4,21 +4,21 @@
 
 <h1 class="text-3xl">{% block title %}Species management{% endblock %}</h1>
 
-<div class="flex items-center justify-center min-h-screen">
+<div class="items-center justify-center min-h-screen">
   <form method="post">
 
     <div class="space-y-12">
 
       <div class="border-b border-gray-900/10 pb-12">
         <h2 class="text-base/7 font-semibold text-gray-900">{{ info }}</h2>
-
-        <h2>{{ file }}</h2>
-        {{ df }}
+        <div class="overflow-x-auto overflow-y-auto w-full" style="max-height:70vh">
+          {{ df }}
+        </div>
       </div>
 
     </div>
 
-    <div class="sm:col-span-3 mb-10">
+    <div class="sm:col-span-3 mb-10 mt-10">
       <label for="doc_type" class="block text-sm/6 font-medium text-gray-900">Vegetation type</label>
       <div class="mt-2">
         <select name="vegetation_type" required>
@@ -31,7 +31,9 @@
     </div>
 
     <div class="mt-6 flex items-center justify-end gap-x-6">
-      <button type="submit" class="px-4 py-2 bg-lime-600 hover:bg-lime-700 text-white font-bold rounded-md focus:outline-hidden focus:ring-3 focus:ring-lime-300">Submit</button>
+      <button type="submit" class="btn-green">
+        {{ _("Import") }}
+      </button>
     </div>
     {% csrf_token %}
   </form>
