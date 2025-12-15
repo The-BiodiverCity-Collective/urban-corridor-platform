@@ -2752,6 +2752,26 @@ def controlpanel_specieslist(request):
 
     site = get_site(request)
     species = Species.objects.filter(site=site)
+
+    # TEMP LOADING
+
+    for each in species:
+        try:
+            inat = each.meta_data["inat"]
+            name = inat["preferred_common_name"]
+            if name != each.name_en:
+                old = each.name_en
+                old = str(old)
+                english = each.texts.get(language_id=1)
+                english.common_name = name
+                english.save()
+                messages.success(request, f"Species was changed from {old} to {name}")
+        except:
+            pass
+            #print("ERROR!", each)
+
+    # END temp LOADING
+
     if "file" in request.GET:
         species = species.filter(species_links__file_id=request.GET["file"])
     elif "site" in request.GET:

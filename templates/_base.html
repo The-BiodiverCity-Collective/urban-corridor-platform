@@ -126,7 +126,7 @@
 
 </div>
 
-  {% with nav="_footer."|add:SITE.meta_data.nav|add:".html" %}
+  {% with nav=SITE.meta_data.nav|add:"/_footer.html" %}
     {% include nav %}
   {% endwith %}
 
