@@ -33,11 +33,14 @@
     <tbody>
     {% for each in documents %}
       <tr>
-        <td><a class="btn btn-info" href="{% url "controlpanel_document" each.id %}">{{ each }}</a></td>
-        <td>{{ each.get_doc_type_display }}</td>
         <td>
-          <a class="btn btn-info" href="{% url "controlpanel_document" each.id %}"><i class="fa fa-pencil"></i> Edit</a>
-          <a class="btn btn-info" href="{% url "species_source" each.id %}"><i class="fa fa-file"></i> View</a>
+          <a {% if not each.is_active %}class="opacity-50"{% endif %} href="{% url "controlpanel_document" each.id %}">{{ each }}</a>
+          {% if not each.is_active %}<span class="badge-danger">{{ _("Inactive") }}</span>{% endif %}
+        </td>
+        <td>{{ each.get_doc_type_display }}</td>
+        <td class="whitespace-nowrap">
+          <a class="btn-blue btn-sm" href="{% url "controlpanel_document" each.id %}"><i class="fa fa-pencil"></i> Edit</a>
+          <a class="btn-blue btn-sm" href="{% url "species_source" each.id %}"><i class="fa fa-file"></i> View</a>
         </td>
       </tr>
     {% endfor %}

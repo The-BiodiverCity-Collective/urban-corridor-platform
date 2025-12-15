@@ -2753,25 +2753,6 @@ def controlpanel_specieslist(request):
     site = get_site(request)
     species = Species.objects.filter(site=site)
 
-    # TEMP LOADING
-
-    for each in species:
-        try:
-            inat = each.meta_data["inat"]
-            name = inat["preferred_common_name"]
-            if name != each.name_en:
-                old = each.name_en
-                old = str(old)
-                english = each.texts.get(language_id=1)
-                english.common_name = name
-                english.save()
-                messages.success(request, f"Species was changed from {old} to {name}")
-        except:
-            pass
-            #print("ERROR!", each)
-
-    # END temp LOADING
-
     if "file" in request.GET:
         species = species.filter(species_links__file_id=request.GET["file"])
     elif "site" in request.GET:
@@ -2781,6 +2762,32 @@ def controlpanel_specieslist(request):
     if "name" in request.GET:
         name = request.GET["name"].strip()
         species = Species.objects.filter(name__icontains=name)
+
+    if "check_names" in request.GET:
+        include_ids = []
+        for each in species:
+            try:
+                inat = each.meta_data["inat"]
+                name_inat = inat.get("preferred_common_name")
+                name_inat = name_inat.lower() if name_inat else name_inat
+                name_en = each.name_en
+                name_en = name_en.lower() if name_en else name_en
+                if name_inat != name_en:
+                    old = name_en
+                    old = str(old)
+                    include_ids.append(each.id)
+                    if request.method == "POST":
+                        english = each.texts.get(language_id=1)
+                        english.common_name = name_inat
+                        english.save()
+                        messages.success(request, f"Species was changed from {old} to {name_inat}")
+            except Exception as e:
+                messages.warning(request, f"Could not find inat info for: {each.name}")
+        if request.method == "POST":
+            return redirect(reverse("controlpanel_specieslist"))
+        species = species.filter(pk__in=include_ids)
+        if not species:
+            messages.success(request, _("All names are in sync with iNaturalist"))
 
     context = {
         "controlpanel": True,

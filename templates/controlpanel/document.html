@@ -2,7 +2,7 @@
 
 {% block content %}
 
-<h1 class="text-3xl">{% block title %}{% if info.id %}Edit document{% else %}Add document{% endif %}{% endblock %}</h1>
+<h1 class="text-3xl">{% block title %}{% if info.id %}{{ info }}{% else %}Add document{% endif %}{% endblock %}</h1>
 
 <div class="flex items-center justify-center min-h-screen">
   <form class="max-w-[700px]" method="post" enctype="multipart/form-data">

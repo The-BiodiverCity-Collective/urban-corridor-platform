@@ -46,7 +46,9 @@
 @utility btn-white {
   @apply text-sm bg-white border border-gray-200 text-gray-500 px-3.5 py-2.5  rounded-sm hover:bg-gray-50 focus:outline-hidden font-semibold focus:ring-sky-300 no-underline inline-block cursor-pointer;
 }
-
+@utility btn-sm {
+  @apply px-2 py-1 text-xs;
+}
 
 @utility badge {
   @apply inline-flex items-center rounded-md bg-gray-50 px-2 py-1 text-xs font-medium text-gray-600 ring-1 ring-inset ring-gray-500/10;
