@@ -69,6 +69,7 @@ admin_site.register(Redlist, SearchAdmin)
 admin_site.register(Organization, SearchAdmin)
 admin_site.register(VegetationType, VegTypeAdmin)
 admin_site.register(GardenManager, SearchAdmin)
+admin_site.register(Color, SearchAdmin)
 admin_site.register(PlantForm, PlantFormAdmin)
 
 admin_site.register(Newsletter)

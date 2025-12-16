@@ -2363,9 +2363,25 @@ def controlpanel_document_species(request, id):
     existing_features = []
     nonexisting_features = []
     features = {}
+    other_characteristics = ["Time (flowering)", "Name", "Colour (flower)", "Form"]
+
+    MONTH_NAME_TO_ID = {
+        "jan": 1,
+        "feb": 2,
+        "mar": 3,
+        "apr": 4,
+        "may": 5,
+        "jun": 6,
+        "jul": 7,
+        "aug": 8,
+        "sep": 9,
+        "oct": 10,
+        "nov": 11,
+        "dec": 12,
+    }
 
     for each in header_names:
-        if each == "Name" or each == "Form":
+        if each in other_characteristics:
             existing_features.append(each)
         elif feature := SpeciesFeatures.objects.filter(name__iexact=each).first():
             existing_features.append(each)
@@ -2383,6 +2399,12 @@ def controlpanel_document_species(request, id):
             plant_forms = {}
             for each in PlantForm.objects.all():
                 plant_forms[each.letter] = each
+
+        # Same for plant colors
+        if "Colour (flower)" in existing_features:
+            colors = {}
+            for each in Color.objects.all():
+                colors[each.name] = each
 
         try:
             for index,row in df.iterrows():
@@ -2420,26 +2442,52 @@ def controlpanel_document_species(request, id):
                     # And make sure this is activated for the current site
                     species.site.add(site)
 
+                    must_save = False
+
                     if "Form" in existing_features:
                         plant_form = row["Form"].strip()
                         if plant_form in plant_forms:
                             species.plant_form = plant_forms[plant_form]
-                            species.save()
+                            must_save = True
                         else:
                             messages.warning(request, _("The plant form was not found:") + " " + plant_form + " - " + species.name)
-                        existing_features.remove("Form")
+
+                    if "Colour (flower)" in existing_features and isinstance(row["Colour (flower)"], str):
+                        color_list = row["Colour (flower)"]
+                        for each in color_list.split(","):
+                            color = each.strip().lower()
+                        if color in colors:
+                            species.colors.add(colors[color])
+                        else:
+                            messages.warning(request, _("The color was not found:") + " " + color + " - " + species.name)
+
+                    if "Time (flowering)" in existing_features and isinstance(row["Time (flowering)"], str):
+                        months = []
+                        month_list = row["Time (flowering)"]
+                        for each in month_list.split(","):
+                            month = each.strip().lower()
+                            if month in MONTH_NAME_TO_ID:
+                                months.append(MONTH_NAME_TO_ID[month])
+                            else:
+                                messages.warning(request, _("The month was not found:") + " - <strong>" + month + "</strong> - " + species.name)
+
+                        if months:
+                            species.flowering = months
+                            must_save = True
+
+                    if must_save:
+                        species.save()
 
                     # We store all the features and log this
                     log = FileLog.objects.create(file=file_info, species=species)
-                    if "Name" in existing_features:
-                        existing_features.remove("Name") # Not a feature
                     for each in existing_features:
-                        feature = row[each];
-                        if isinstance(feature, str):
-                            feature = feature.strip().lower()
-                        if feature == "x":
-                            species.features.add(features[each])
-                            log.features.add(features[each])
+                        if each not in other_characteristics:
+                            feature = row[each];
+                            if isinstance(feature, str):
+                                feature = feature.strip().lower()
+                            if feature == "x":
+                                species.features.add(features[each])
+                                log.features.add(features[each])
 
             messages.success(request, "The species were linked to the selected vegetation type.")
             return redirect(reverse("controlpanel_species_list") + "?file=" + request.GET["file"])
