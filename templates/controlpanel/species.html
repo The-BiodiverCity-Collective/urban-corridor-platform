@@ -55,7 +55,7 @@
   {% endif %}
 
   <div class="mb-4">
-    <label for="id_name" class="block text-lg font-semibold text-gray-700">Species Name</label>
+    <label for="id_name" class="block text-lg font-semibold text-gray-700">{{ _("Species Name") }}</label>
     <input type="text" name="name" id="id_name" value="{{ info.name }}" class="mt-1" required>
   </div>
 
@@ -64,14 +64,14 @@
     <div class="mb-4 grid grid-cols-1 sm:grid-cols-2 gap-6">
       <div>
         <label for="id_genus" class="block text-lg font-semibold text-gray-700 flex justify-between items-center">
-          <span>Genus</span>
+          <span>{{ _("Genus") }}</span>
           <button type="button" id="add-genus-btn" class="text-blue-500 hover:text-blue-700">
             <i class="fas fa-plus-circle"></i>
           </button>
         </label>
         <div class="relative">
           <select name="genus" id="id_genus" class="mt-1">
-            <option value="" disabled {% if not info.genus %} selected {% endif %}>Select Genus</option>
+            <option value="" disabled {% if not info.genus %} selected {% endif %}>{{ _("Select Genus") }}</option>
             {% for genus in genus_list %}
               <option value="{{ genus.id }}" {% if genus == info.genus %} selected {% endif %}>{{ genus.name }}</option>
             {% endfor %}
@@ -84,14 +84,14 @@
 
       <div>
         <label for="id_family" class="block text-lg font-semibold text-gray-700 flex justify-between items-center">
-          <span>Family</span>
+          <span>{{ _("Family") }}</span>
           <button type="button" id="add-family-btn" class="text-blue-500 hover:text-blue-700">
             <i class="fas fa-plus-circle"></i>
           </button>
         </label>
         <div class="relative">
           <select name="family" id="id_family" class="mt-1">
-            <option value="" disabled {% if not info.family %} selected {% endif %}>Select Family</option>
+            <option value="" disabled {% if not info.family %} selected {% endif %}>{{ _("Select Family") }}</option>
             {% for family in family_list %}
               <option value="{{ family.id }}" {% if family == info.family %} selected {% endif %}>{{ family.name }}</option>
             {% endfor %}
@@ -101,6 +101,16 @@
           <input type="text" name="new_family" id="id_new_family" placeholder="Enter new family name">
         </div>
       </div>
+    </div>
+
+    <div class="mb-4">
+      <label class="block text-lg font-semibold text-gray-700">{{ _("Plant form") }}</label>
+      <select name="plant_form" class="mt-1">
+        <option></option>
+        {% for each in plant_forms %}
+          <option value="{{ each.id }}" {% if each == info.plant_form %} selected {% endif %}>{{ each }} ({{ each.description }})</option>
+        {% endfor %}
+      </select>
     </div>
 
     <div class="mb-4 bg-gray-100 p-4">

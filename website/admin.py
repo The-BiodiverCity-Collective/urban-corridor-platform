@@ -52,6 +52,9 @@ class PageAdmin(admin.ModelAdmin):
     list_filter = ["site", "is_active", "page_type"]
     autocomplete_fields = ["photos"]
 
+class PlantFormAdmin(admin.ModelAdmin):
+     list_display = ["letter", "name", "description"]
+
 admin_site.register(Photo, SearchAdmin)
 admin_site.register(Page, PageAdmin)
 admin_site.register(Garden, GardenAdmin)
@@ -66,6 +69,7 @@ admin_site.register(Redlist, SearchAdmin)
 admin_site.register(Organization, SearchAdmin)
 admin_site.register(VegetationType, VegTypeAdmin)
 admin_site.register(GardenManager, SearchAdmin)
+admin_site.register(PlantForm, PlantFormAdmin)
 
 admin_site.register(Newsletter)
 admin_site.register(User, UserAdmin)

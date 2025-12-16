@@ -2355,12 +2355,17 @@ def controlpanel_document_species(request, id):
     # We assume 2 sheets; one Meta Data followed by Plants; we read the 2nd
     # We assume a top-row which is not actually the header; let's drop it (header=1)
     df = pd.read_excel(file, sheet_name=1, header=1)
+
+    # Strip all the column names
+    df.columns = df.columns.str.strip()
+
     header_names = df.columns.tolist()
     existing_features = []
     nonexisting_features = []
     features = {}
+
     for each in header_names:
-        if each == "Name":
+        if each == "Name" or each == "Form":
             existing_features.append(each)
         elif feature := SpeciesFeatures.objects.filter(name__iexact=each).first():
             existing_features.append(each)
@@ -2372,6 +2377,12 @@ def controlpanel_document_species(request, id):
         vegetation_type = VegetationType.objects.get(pk=request.POST["vegetation_type"])
         SpeciesVegetationTypeLink.objects.filter(file=file_info).delete()
         FileLog.objects.filter(file=file_info).delete()
+
+        # If the Forms are present, then let's build a dictionary linking the letters to the records
+        if "Form" in existing_features:
+            plant_forms = {}
+            for each in PlantForm.objects.all():
+                plant_forms[each.letter] = each
 
         try:
             for index,row in df.iterrows():
@@ -2409,8 +2420,19 @@ def controlpanel_document_species(request, id):
                     # And make sure this is activated for the current site
                     species.site.add(site)
 
+                    if "Form" in existing_features:
+                        plant_form = row["Form"].strip()
+                        if plant_form in plant_forms:
+                            species.plant_form = plant_forms[plant_form]
+                            species.save()
+                        else:
+                            messages.warning(request, _("The plant form was not found:") + " " + plant_form + " - " + species.name)
+                        existing_features.remove("Form")
+
                     # We store all the features and log this
                     log = FileLog.objects.create(file=file_info, species=species)
+                    if "Name" in existing_features:
+                        existing_features.remove("Name") # Not a feature
                     for each in existing_features:
                         feature = row[each];
                         if isinstance(feature, str):
@@ -2792,7 +2814,10 @@ def controlpanel_species_overview(request):
         .values("vegetation_types__name", "vegetation_types__id").annotate(count=Count("id"))
     source_docs = SpeciesVegetationTypeLink.objects.filter(file__attached_to__site=site) \
         .values("file__attached_to__name", "file__attached_to__id").annotate(count=Count("id"))
-    features = SpeciesFeatures.objects.filter(site=site).annotate(
+    features = SpeciesFeatures.objects.filter(site=site).order_by("species_type", "name").annotate(
+        total=Count("species", filter=Q(species__site=site))
+    )
+    plant_forms = PlantForm.objects.all().annotate(
         total=Count("species", filter=Q(species__site=site))
     )
 
@@ -2806,6 +2831,7 @@ def controlpanel_species_overview(request):
         "veg_total": veg_total,
         "source_docs": source_docs,
         "features": features,
+        "plant_forms": plant_forms,
     }
     return render(request, "controlpanel/species.overview.html", context)
 
@@ -2830,6 +2856,14 @@ def controlpanel_species_list(request):
             vegetation_type = VegetationType.objects.get(pk=request.GET["vegetation"])
             filter_text.append(_("Vegetation type") + ": " + vegetation_type.name)
             species = species.filter(vegetation_types=vegetation_type)
+    elif "plant_form" in request.GET:
+        plant_form = PlantForm.objects.get(pk=request.GET["plant_form"])
+        species = species.filter(plant_form=plant_form)
+        filter_text.append(_("Plant form") + ": " + plant_form.name)
+    elif "feature" in request.GET:
+        feature = SpeciesFeatures.objects.get(pk=request.GET["feature"])
+        species = species.filter(features=feature)
+        filter_text.append(_("Feature") + ": " + feature.name)
     elif "inat" in request.GET:
         species = species.filter(meta_data__has_key="inat")
         filter_text.append(_("iNaturalist information available"))
@@ -2933,6 +2967,7 @@ def controlpanel_species(request, id=None):
         info.name = request.POST["name"].strip()
         info.genus_id = request.POST.get("genus")
         info.family_id = request.POST.get("family")
+        info.plant_form_id = request.POST.get("plant_form", None)
         links = [link.strip() for link in request.POST.getlist("links") if link.strip()]
         info.links = links if links else None
 
@@ -3009,6 +3044,7 @@ def controlpanel_species(request, id=None):
         "texts": texts,
         "title": info.name if info.name else "Add new species",
         "inat": inat,
+        "plant_forms": PlantForm.objects.all(),
     }
 
     return render(request, "controlpanel/species.html", context)
