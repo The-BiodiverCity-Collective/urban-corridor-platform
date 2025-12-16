@@ -702,6 +702,7 @@ class SpeciesFeatures(models.Model):
             3: "gray-800",
             4: "pink-700",
             5: "pink-700",
+            6: "pink-700",
         }
         color = colors[self.species_type]
         color = ""
@@ -709,6 +710,8 @@ class SpeciesFeatures(models.Model):
             return mark_safe(f'<i class="{self.icon} text-{color}" title="{self.name}"></i><span class="sr-only">{self.name}</span>')
         elif self.icon_svg:
             return mark_safe(self.icon_svg)
+        else:
+            return self.name
 
 class Species(models.Model):
     name = models.CharField(max_length=255, unique=True, db_index=True)

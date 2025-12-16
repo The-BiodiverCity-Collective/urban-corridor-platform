@@ -7,6 +7,7 @@
     button.planner-action.btn-green i.fa-certificate{display:none}
     button.planner-action:not(.btn-green) i.fa-certificate{display:inline-block}
     button.planner-action:not(.btn-green) i.fa-check-circle{display:none}
+    .features svg{max-height:24px;max-width:24px;color:#fff;display:inline}
   </style>
 {% endblock %}
 
@@ -14,7 +15,7 @@
 
 <div class="bg-white">
   <div class="mx-auto max-w-2xl px-4 py-16 sm:px-6 sm:py-24 lg:max-w-7xl lg:px-8">
-    <div class="lg:grid lg:grid-cols-2 lg:items-start lg:gap-x-8">
+    <div class="lg:grid lg:grid-cols-2 lg:items-start lg:gap-x-8 mb-10">
       <div class="flex flex-col-reverse">
         <div class="mx-auto mt-6 w-full max-w-2xl sm:block lg:max-w-none">
           <div class="grid grid-cols-4 gap-6 gallery" aria-orientation="horizontal" role="tablist">
@@ -46,6 +47,33 @@
         {% endif %}
         <p class="text-3xl tracking-tight text-gray-900"><em>{{ info }}</em></p>
 
+        {% if info.features %}
+          <div class="container mx-auto features mt-5">
+            <div class="grid grid-cols-2 gap-4">
+          {% for each in info.features.all %}
+            {% ifchanged each.species_type %}
+              {% if not forloop.first %}
+              </div>
+              {% endif %}
+              <div class="bg-gray-100 p-3 rounded">
+              <h3 class="text-sky-700">{{ each.get_species_type_display }}</h3>
+            {% endifchanged %}
+            <div>
+              {% if each.icon or each.icon_svg %}
+                <span class="mr-2">
+                  {{ each.get_icon }}
+                </span>
+              {% endif %}
+              <a href="/species/search/?feature={{ each.id }}" class="text-gray-700 hover:text-black hover:underline no-underline">
+                {{ each }}
+              </a>
+            </div>
+          {% endfor %}
+          </div>
+          </div>
+
+        {% endif %}
+
         <p class="mt-6 text-base/7 text-gray-600">
           {% if details.description %}
           {{ details.description|linebreaksbr }}
@@ -56,6 +84,7 @@
             {{ details.description_wikipedia|linebreaksbr }}
           {% endif %}
         </p>
+
 
         {% if sources %}
           <h3 class="mt-10">{{ _("Inclusion rationale") }}</h3>
