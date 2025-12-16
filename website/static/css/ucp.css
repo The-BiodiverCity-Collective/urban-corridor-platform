@@ -50,6 +50,10 @@
   @apply px-2 py-1 text-xs;
 }
 
+@utility colorbox {
+  @apply p-2.5 border inline-block border-gray-500 rounded;
+}
+
 @utility badge {
   @apply inline-flex items-center rounded-md bg-gray-50 px-2 py-1 text-xs font-medium text-gray-600 ring-1 ring-inset ring-gray-500/10;
 }

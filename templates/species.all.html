@@ -1,6 +1,6 @@
 {% extends "_base.html" %}
 
-{% block title %}Species list{% endblock %}
+{% block title %}{{ _("Species list") }}{% endblock %}
 
 {% block content %}
 
@@ -17,7 +17,14 @@
       {% endif %}
     </div>
   {% else %}
-    <h1>Species List</h1>
+    <div class="flex justify-between">
+      <h1>
+        {{ _("Species list") }}
+      </h1>
+      {% if not request.GET.expand %}
+        <a href="{% querystring expand=True %}">Expanded version</a>
+      {% endif %}
+    </div>
   {% endif %}
 
   <div class="alert alert-info">

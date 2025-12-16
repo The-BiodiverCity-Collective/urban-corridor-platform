@@ -860,6 +860,14 @@
     -webkit-box-orient: vertical;
     -webkit-line-clamp: 3;
   }
+  .colorbox {
+    display: inline-block;
+    border-radius: 0.25rem;
+    border-style: var(--tw-border-style);
+    border-width: 1px;
+    border-color: var(--color-gray-500);
+    padding: calc(var(--spacing) * 2.5);
+  }
   .block {
     display: block;
   }
@@ -1140,6 +1148,9 @@
   }
   .grid-cols-5 {
     grid-template-columns: repeat(5, minmax(0, 1fr));
+  }
+  .grid-cols-6 {
+    grid-template-columns: repeat(6, minmax(0, 1fr));
   }
   .grid-cols-12 {
     grid-template-columns: repeat(12, minmax(0, 1fr));

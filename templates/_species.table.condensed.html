@@ -6,6 +6,19 @@
       {% if table_show_score %}
         <th>{{ _("Species relevance") }}</th>
       {% endif %}
+
+      {% if table_show_form %}
+        <th>{{ _("Form") }}</th>
+      {% endif %}
+
+      {% if table_show_flowering %}
+        <th>{{ _("Flowering time") }}</th>
+      {% endif %}
+
+      {% if table_show_colors %}
+        <th>{{ _("Flower colour") }}</th>
+      {% endif %}
+
       {% if table_show_actions %}
         <th>{{ _("Actions") }}</th>
       {% endif %}
@@ -20,9 +33,13 @@
         {% elif species_future and each in species_future %}
           <i class="fa fa-check-circle" title="{{ _("This species is in your list to be added to your garden.") }}"></i>
         {% endif %}
-        <a href="{% url "species" each.id %}">{{ each.name }}</a>
-        <br>
-        {{ each.name_en|default_if_none:"" }}
+        <a href="{% url "species" each.id %}">
+          {% if each.name_en %}{{ each.name_en }}{% else %}<em>{{ each.name }}</em>{% endif %}
+        </a>
+        {% if each.name_en %}
+          <br>
+          <em>{{ each.name }}</em>
+        {% endif %}
       </td>
       <td>
         {% for feature in each.features.all %}
@@ -40,6 +57,31 @@
           </div>
         </td>
       {% endif %}
+
+      {% if table_show_form %}
+        <td>{{ each.plant_form|default_if_none:"" }}</td>
+      {% endif %}
+
+      {% if table_show_flowering %}
+        <td>
+          {% for month in each.flowering_months %}
+              <span class="badge-success">{{ month }}</span>
+          {% endfor %}
+        </td>
+      {% endif %}
+
+      {% if table_show_colors %}
+        <td>
+          <ul>
+            {% for color in each.colors.all %}
+              <li class="colorbox" style="background:{{ color.color }}" title="{{ color }}">
+                <span class="sr-only">{{ color }}</span>
+              </li>
+            {% endfor %}
+          </ul>
+        </td>
+      {% endif %}
+
       {% if table_show_actions %}
         <td data-sort="{{ each.num_features }}">
           <form method="post">
@@ -50,6 +92,7 @@
           </form>
         </td>
       {% endif %}
+
     </tr>
   {% endfor %}
   </tbody>

@@ -824,6 +824,10 @@ class Species(models.Model):
             return None
 
     @property
+    def flowering_months(self):
+        return [dict(self.MONTH_CHOICES)[month] for month in self.flowering]
+
+    @property
     def inat_id(self):
         try:
             return self.meta_data["inat"]["id"]

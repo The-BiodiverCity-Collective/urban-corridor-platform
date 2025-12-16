@@ -720,6 +720,13 @@ def species_full_list(request):
         "info": info,
         "photo": photo,
     }
+
+    if "expand" in request.GET:
+        context["table_show_flowering"] = True
+        context["table_show_colors"] = True
+        context["table_show_form"] = True
+        context["species"] = species.prefetch_related("colors").all()
+
     return render(request, "species.all.html", context)
 
 def rehabilitation_assessment(request, title="Assess and imagine"):
@@ -2021,6 +2028,7 @@ def controlpanel(request):
     context = {
         "controlpanel": True,
         "menu": "index",
+        "colors": Color.objects.all(),
     }
     return render(request, "controlpanel/index.html", context)
 
@@ -2456,10 +2464,10 @@ def controlpanel_document_species(request, id):
                         color_list = row["Colour (flower)"]
                         for each in color_list.split(","):
                             color = each.strip().lower()
-                        if color in colors:
-                            species.colors.add(colors[color])
-                        else:
-                            messages.warning(request, _("The color was not found:") + " " + color + " - " + species.name)
+                            if color in colors:
+                                species.colors.add(colors[color])
+                            else:
+                                messages.warning(request, _("The color was not found:") + " " + color + " - " + species.name)
 
                     if "Time (flowering)" in existing_features and isinstance(row["Time (flowering)"], str):
                         months = []
