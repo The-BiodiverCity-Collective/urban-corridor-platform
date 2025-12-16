@@ -11,7 +11,7 @@
               <div class="flex space-x-4">
                 <a href="{% url "controlpanel_shapefiles" %}" class="rounded-md {% if menu == "shapefiles" %}bg-gray-900{% endif %} px-3 py-2 text-sm font-medium text-white" aria-current="page">{{ _("Shapefiles") }}</a>
                 <a href="{% url "controlpanel_documents" %}" class="rounded-md {% if menu == "documents" %}bg-gray-900{% endif %} px-3 py-2 text-sm font-medium text-white" aria-current="page">{{ _("Documents") }}</a>
-                <a href="{% url "controlpanel_specieslist" %}" class="rounded-md {% if menu == "species" %}bg-gray-900{% endif %} px-3 py-2 text-sm font-medium text-white" aria-current="page">{{ _("Species") }}</a>
+                <a href="{% url "controlpanel_species_overview" %}" class="rounded-md {% if menu == "species" %}bg-gray-900{% endif %} px-3 py-2 text-sm font-medium text-white" aria-current="page">{{ _("Species") }}</a>
                 <a href="{% url "controlpanel_gardens" %}" class="rounded-md {% if menu == "gardens" %}bg-gray-900{% endif %} px-3 py-2 text-sm font-medium text-white" aria-current="page">{{ _("Gardens") }}</a>
                 <a href="{% url "controlpanel_pages" %}?type=1" class="rounded-md {% if menu == "pages" and page_type == 1 %}bg-gray-900{% endif %} px-3 py-2 text-sm font-medium text-white" aria-current="page">{{ _("Pages") }}</a>
                 <a href="{% url "controlpanel_photos" %}" class="rounded-md {% if menu == "photos" %}bg-gray-900{% endif %} px-3 py-2 text-sm font-medium text-white" aria-current="page">{{ _("Photos") }}</a>

@@ -2351,14 +2351,25 @@ def controlpanel_document_species(request, id):
     file = file_info.file
 
     # We assume 2 sheets; one Meta Data followed by Plants; we read the 2nd
+    # We assume a top-row which is not actually the header; let's drop it (header=1)
     df = pd.read_excel(file, sheet_name=1, header=1)
-
-    # We assume a top-row which is not actually the header; let's drop it
-    #df = df.drop(df.index[0]).reset_index(drop=True)
+    header_names = df.columns.tolist()
+    existing_features = []
+    nonexisting_features = []
+    features = {}
+    for each in header_names:
+        if each == "Name":
+            existing_features.append(each)
+        elif feature := SpeciesFeatures.objects.filter(name__iexact=each).first():
+            existing_features.append(each)
+            features[each] = feature
+        else:
+            nonexisting_features.append(each)
 
     if request.method == "POST":
         vegetation_type = VegetationType.objects.get(pk=request.POST["vegetation_type"])
         SpeciesVegetationTypeLink.objects.filter(file=file_info).delete()
+        FileLog.objects.filter(file=file_info).delete()
 
         try:
             for index,row in df.iterrows():
@@ -2366,9 +2377,7 @@ def controlpanel_document_species(request, id):
                 name = row["Name"].strip()
 
                 # Only process if there are at least 2 words
-                if True:
-                    p(row)
-                elif len(name.split()) >= 2:
+                if len(name.split()) >= 2:
 
                     genus = Genus.objects.filter(name=name.split()[0])
                     if genus:
@@ -2398,8 +2407,18 @@ def controlpanel_document_species(request, id):
                     # And make sure this is activated for the current site
                     species.site.add(site)
 
+                    # We store all the features and log this
+                    log = FileLog.objects.create(file=file_info, species=species)
+                    for each in existing_features:
+                        feature = row[each];
+                        if isinstance(feature, str):
+                            feature = feature.strip().lower()
+                        if feature == "x":
+                            species.features.add(features[each])
+                            log.features.add(features[each])
+
             messages.success(request, "The species were linked to the selected vegetation type.")
-            return redirect(reverse("controlpanel_specieslist") + "?file=" + request.GET["file"])
+            return redirect(reverse("controlpanel_species_list") + "?file=" + request.GET["file"])
 
         except Exception as e:
             error = _("There was a problem with this file. Are you sure it is formatted correctly? See below the error: ") + str(e)
@@ -2407,6 +2426,8 @@ def controlpanel_document_species(request, id):
 
     results = []
     alerts = []
+    new_species = []
+    species_count = 0
     error = None
     try:
         for index, row in df.iterrows():
@@ -2422,6 +2443,9 @@ def controlpanel_document_species(request, id):
                     alerts.append("")
                     exists = Species.objects.filter(name=name.strip()).exists()
                 results.append("✓" if exists else "✖️")
+                species_count += 1
+                if not exists:
+                    new_species.append(name)
 
         df.insert(1, "Exists", results)
         df.insert(2, "Details", alerts)
@@ -2441,6 +2465,10 @@ def controlpanel_document_species(request, id):
         "file": file,
         "df": mark_safe(html_table) if not error else None,
         "vegetation_types": VegetationType.objects.filter(site=site),
+        "existing_features": existing_features,
+        "nonexisting_features": nonexisting_features,
+        "new_species": new_species,
+        "species_count": species_count,
     }
     return render(request, "controlpanel/document.species.html", context)
 
@@ -2754,21 +2782,58 @@ def controlpanel_shapefile_classify(request, id):
     return render(request, "controlpanel/shapefile.classify.html", context)
 
 @staff_member_required
-def controlpanel_specieslist(request):
+def controlpanel_species_overview(request):
 
     site = get_site(request)
     species = Species.objects.filter(site=site)
+    veg_total = species.filter(Q(vegetation_types__in=site.vegetation_types.all())|Q(vegetation_types__isnull=True)) \
+        .values("vegetation_types__name", "vegetation_types__id").annotate(count=Count("id"))
+    source_docs = SpeciesVegetationTypeLink.objects.filter(file__attached_to__site=site) \
+        .values("file__attached_to__name", "file__attached_to__id").annotate(count=Count("id"))
+
+    context = {
+        "controlpanel": True,
+        "menu": "species",
+        "all": Species.objects.all().count(),
+        "site": species.count(),
+        "inat": species.filter(meta_data__has_key="inat").count(),
+        "non_inat": species.exclude(meta_data__has_key="inat").count(),
+        "veg_total": veg_total,
+        "source_docs": source_docs,
+    }
+    return render(request, "controlpanel/species.overview.html", context)
+
+
+@staff_member_required
+def controlpanel_species_list(request):
+
+    site = get_site(request)
+    species = Species.objects.filter(site=site)
+    filter_text = []
 
     if "file" in request.GET:
         species = species.filter(species_links__file_id=request.GET["file"])
     elif "site" in request.GET:
         site = Site.objects.get(pk=request.GET["site"])
         species = species.filter(site=site)
-
-    if "name" in request.GET:
+    elif "vegetation" in request.GET:
+        if request.GET["vegetation"] == "None":
+            species = species.filter(vegetation_types__isnull=True)
+            filter_text.append(_("Vegetation type") + ": " + _("not set"))
+        else:
+            vegetation_type = VegetationType.objects.get(pk=request.GET["vegetation"])
+            filter_text.append(_("Vegetation type") + ": " + vegetation_type.name)
+            species = species.filter(vegetation_types=vegetation_type)
+    elif "inat" in request.GET:
+        species = species.filter(meta_data__has_key="inat")
+        filter_text.append(_("iNaturalist information available"))
+    elif "no_inat" in request.GET:
+        species = species.filter(~Q(meta_data__has_key="inat"))
+        filter_text.append(_("iNaturalist information unavailable"))
+    elif "name" in request.GET:
         name = request.GET["name"].strip()
         species = Species.objects.filter(name__icontains=name)
-
+    
     if "check_names" in request.GET:
         include_ids = []
         for each in species:
@@ -2790,7 +2855,7 @@ def controlpanel_specieslist(request):
             except Exception as e:
                 messages.warning(request, f"Could not find inat info for: {each.name}")
         if request.method == "POST":
-            return redirect(reverse("controlpanel_specieslist"))
+            return redirect(reverse("controlpanel_species_list"))
         species = species.filter(pk__in=include_ids)
         if not species:
             messages.success(request, _("All names are in sync with iNaturalist"))
@@ -2801,27 +2866,29 @@ def controlpanel_specieslist(request):
         "species": species,
         "title": _("Species list"),
         "load_datatables": True,
+        "filter_text": filter_text,
     }
 
-    description_subquery = SpeciesText.objects.filter(
-        species=OuterRef("pk"),
-        language=Language.objects.get(name="English")
-    ).values("description_wikipedia")[:1]  # Get the first matching description
-
-    description_subquery_en = SpeciesText.objects.filter(
-        species=OuterRef("pk"),
-        language=Language.objects.get(name="English")
-    ).values("description")[:1]  # Get the first matching description
-
     if "descriptions" in request.GET:
+
+        description_subquery = SpeciesText.objects.filter(
+            species=OuterRef("pk"),
+            language=Language.objects.get(name="English")
+        ).values("description_wikipedia")[:1]  # Get the first matching description
+
+        description_subquery_en = SpeciesText.objects.filter(
+            species=OuterRef("pk"),
+            language=Language.objects.get(name="English")
+        ).values("description")[:1]  # Get the first matching description
+
         context["languages"] = Language.objects.all()
         context["species"] = species.annotate(
             description_wikipedia = Subquery(description_subquery, output_field=CharField()),
             description = Subquery(description_subquery_en, output_field=CharField())
         )
-        return render(request, "controlpanel/speciesdescriptions.html", context)
+        return render(request, "controlpanel/species.descriptions.html", context)
     else:
-        return render(request, "controlpanel/specieslist.html", context)
+        return render(request, "controlpanel/species.list.html", context)
 
 # Used while we migrate from the old system
 # Can be removed after completing migrations
@@ -2851,7 +2918,7 @@ def controlpanel_species(request, id=None):
         if "delete" in request.POST:
             info.delete()
             messages.success(request, "Species was removed from the database")
-            return redirect(reverse("controlpanel_specieslist"))
+            return redirect(reverse("controlpanel_species_list"))
 
         if id:
             info.features.clear()

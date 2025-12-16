@@ -1128,3 +1128,9 @@ class Dataviz(models.Model):
     def __str__(self):
         return f"Dataviz for {self.shapefile.name}"
 
+class FileLog(models.Model):
+    species = models.ForeignKey(Species, on_delete=models.CASCADE)
+    file = models.ForeignKey(Attachment, on_delete=models.CASCADE)
+    features = models.ManyToManyField(SpeciesFeatures, blank=True, related_name="log")
+    created_at = models.DateTimeField(auto_now_add=True)
+    meta_data = models.JSONField(null=True, blank=True)

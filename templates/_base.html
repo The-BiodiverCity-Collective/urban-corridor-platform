@@ -88,7 +88,7 @@
 <div class="min-h-full">
 
 {% if controlpanel %}
-  {% include "_nav.controlpanel.html" %}
+  {% include "controlpanel/_nav.html" %}
 {% else %}
   {% with nav=SITE.meta_data.nav|add:"/_nav.html" %}
     {% include nav %}

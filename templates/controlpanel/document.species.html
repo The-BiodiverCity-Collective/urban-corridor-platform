@@ -1,8 +1,58 @@
 {% extends "_base.html" %}
+{% load i18n %}
 
 {% block content %}
 
-<h1 class="text-3xl">{% block title %}Species management{% endblock %}</h1>
+<h1 class="text-3xl mb-0">{% block title %}{{ _("Import species from document") }}{% endblock %}</h1>
+<h2 class="font-normal">{{ info }}</h2>
+
+<div class="flex gap-4 mb-7">
+  <div class="flex-1 bg-lime-100 rounded p-3">
+    <h2>
+      <i class="fa fa-check-circle"></i>
+      {{ _("The following columns will be imported:") }}
+    </h2>
+    {% if existing_features %}
+    <ul class="pl-6 list-disc">
+      {% for each in existing_features %}
+      <li>{{ each }}</li>
+      {% endfor %}
+    </ul>
+    {% else %}
+      {{ _("No columns found.") }}
+    {% endif %}
+  </div>
+  <div class="flex-1 bg-red-100 rounded p-3">
+    <h2>
+      <i class="fa fa-times-circle"></i>
+      {{ _("The following columns will not be imported:") }}
+    </h2>
+    {% if nonexisting_features %}
+    <ul class="pl-6 list-disc">
+      {% for each in nonexisting_features %}
+      <li>{{ each }}</li>
+      {% endfor %}
+    </ul>
+    {% else %}
+      {{ _("No columns found.") }}
+    {% endif %}
+  </div>
+</div>
+
+{% if new_species %}
+  <div class="flex gap-4 mb-7">
+    <div class="flex-1 bg-gray-100 rounded p-3">
+      <h2>{{ _("New species") }}</h2>
+      <p>{% blocktranslate %}A total of {{ species_count }} species were found in the spreadsheet.{% endblocktranslate %}
+      {{ _("The following species will be created in our database. The rest already exists.") }}</p>
+      <ul class="pl-6 list-disc">
+      {% for each in new_species %}
+        <li>{{ each }}</li>
+      {% endfor %}
+      </ul>
+    </div>
+  </div>
+{% endif %}
 
 <div class="items-center justify-center min-h-screen">
   <form method="post">
@@ -10,7 +60,9 @@
     <div class="space-y-12">
 
       <div class="border-b border-gray-900/10 pb-12">
-        <h2 class="text-base/7 font-semibold text-gray-900">{{ info }}</h2>
+        <h2 class="font-semibold text-gray-900">
+          {{ _("Plant species from the spreadsheet") }}
+        </h2>
         <div class="overflow-x-auto overflow-y-auto w-full" style="max-height:70vh">
           {{ df }}
         </div>
