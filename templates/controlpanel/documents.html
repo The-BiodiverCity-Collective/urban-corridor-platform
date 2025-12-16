@@ -39,8 +39,8 @@
         </td>
         <td>{{ each.get_doc_type_display }}</td>
         <td class="whitespace-nowrap">
-          <a class="btn-blue btn-sm" href="{% url "controlpanel_document" each.id %}"><i class="fa fa-pencil"></i> Edit</a>
-          <a class="btn-blue btn-sm" href="{% url "species_source" each.id %}"><i class="fa fa-file"></i> View</a>
+          <a class="btn-blue btn-sm" href="{% url "controlpanel_document" each.id %}"><i class="fa fa-pencil"></i> {{ _("Edit") }}</a>
+          <a class="btn-blue btn-sm" href="{% url "species_source" each.id %}"><i class="fa fa-file"></i> {{ _("View") }}</a>
         </td>
       </tr>
     {% endfor %}
@@ -48,6 +48,6 @@
   </table>
 {% endif %}
 
-<a class="btn-add" href="{% url "controlpanel_document" %}"><i class="fa fa-plus"></i> Add document</a>
+<a class="btn-blue" href="{% url "controlpanel_document" %}?type={{ request.GET.type }}"><i class="fa fa-plus"></i> {{ _("Add document") }}</a>
 
 {% endblock %}

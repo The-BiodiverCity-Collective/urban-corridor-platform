@@ -24,7 +24,7 @@
 
 <h2 class="mb-5 mt-10">{{ _("Species database") }}</h2>
 <div class="container mx-auto mb-10">
-  <div class="grid grid-cols-4 gap-4">
+  <div class="grid lg:grid-cols-4 gap-4 sm:grid-cols-2">
     <div class="p-8 bg-white rounded-2xl">
       <p class="flex-none text-3xl font-bold tracking-tight text-gray-900 ">{{ all }}</p>
       <div class="sm:w-80 sm:shrink lg:w-auto lg:flex-none">
@@ -64,36 +64,16 @@
   </div>
 </div>
 
-<div class="bg-white " hidden>
-  <div class="mx-auto max-w-7xl px-6 lg:px-8">
-    <div class="mx-auto max-w-2xl lg:mx-0">
-      <h2 class="text-4xl font-semibold tracking-tight text-pretty text-gray-900 sm:text-5xl ">
-        {{ _("Our species database") }}
-      </h2>
-    </div>
-    <div class="mx-auto mt-16 flex max-w-2xl flex-col gap-8 lg:mx-0 lg:mt-20 lg:max-w-none lg:flex-row lg:items-end">
-      <div class="flex flex-col-reverse justify-between gap-x-16 gap-y-8 rounded-2xl bg-gray-50 p-8 sm:w-3/4 sm:max-w-md sm:flex-row-reverse sm:items-end lg:w-72 lg:max-w-none lg:flex-none lg:flex-col lg:items-start ">
-        <p class="flex-none text-3xl font-bold tracking-tight text-gray-900 ">{{ all }}</p>
+<div class="container mx-auto mb-10">
+  <div class="grid lg:grid-cols-6 gap-4 sm:grid-cols-4">
+    {% for each in features %}
+      <a href="{% url "controlpanel_species_list" %}?vegetation={{ each.vegetation_types__id }}" class="p-4 bg-gray-100 rounded-2xl no-underline hover:opacity-70">
+        <p class="flex-none text-3xl font-bold tracking-tight text-gray-900 ">{{ each.total }}</p>
         <div class="sm:w-80 sm:shrink lg:w-auto lg:flex-none">
-          <p class="text-lg font-semibold tracking-tight text-gray-900 ">{{ _("Total database") }}</p>
-          <p class="mt-2 text-base/7 text-gray-600 ">{{ _("Including species not activated") }}</p>
+          <p class="text-lg font-semibold tracking-tight text-gray-900 ">{{ each }}</p>
         </div>
-      </div>
-      <div class="flex flex-col-reverse justify-between gap-x-16 gap-y-8 rounded-2xl bg-gray-900 p-8 sm:flex-row-reverse sm:items-end lg:w-full lg:max-w-sm lg:flex-auto lg:flex-col lg:items-start lg:gap-y-44 ">
-        <p class="flex-none text-3xl font-bold tracking-tight text-white">{{ site }}</p>
-        <div class="sm:w-80 sm:shrink lg:w-auto lg:flex-none">
-          <p class="text-lg font-semibold tracking-tight text-white">{{ _("Species activated for the website") }}</p>
-        </div>
-      </div>
-      {% for each in veg_total %}
-      <div class="flex flex-col-reverse justify-between gap-x-16 gap-y-8 rounded-2xl bg-indigo-600 p-8 sm:w-11/12 sm:max-w-xl sm:flex-row-reverse sm:items-end lg:w-full lg:max-w-none lg:flex-auto lg:flex-col lg:items-start lg:gap-y-28 ">
-        <p class="flex-none text-3xl font-bold tracking-tight text-white"></p>
-        <div class="sm:w-80 sm:shrink lg:w-auto lg:flex-none">
-          <p class="text-lg font-semibold tracking-tight text-white"></p>
-        </div>
-      </div>
-      {% endfor %}
-    </div>
+      </a>
+    {% endfor %}
   </div>
 </div>
 

@@ -2302,6 +2302,8 @@ def controlpanel_document(request, id=None):
     if id:
         info = Document.objects.get(pk=id)
         action = Log.LogAction.UPDATE
+    elif "type" in request.GET:
+        info.doc_type = request.GET["type"]
 
     site = get_site(request)
     action = Log.LogAction.CREATE
@@ -2790,6 +2792,9 @@ def controlpanel_species_overview(request):
         .values("vegetation_types__name", "vegetation_types__id").annotate(count=Count("id"))
     source_docs = SpeciesVegetationTypeLink.objects.filter(file__attached_to__site=site) \
         .values("file__attached_to__name", "file__attached_to__id").annotate(count=Count("id"))
+    features = SpeciesFeatures.objects.filter(site=site).annotate(
+        total=Count("species", filter=Q(species__site=site))
+    )
 
     context = {
         "controlpanel": True,
@@ -2800,6 +2805,7 @@ def controlpanel_species_overview(request):
         "non_inat": species.exclude(meta_data__has_key="inat").count(),
         "veg_total": veg_total,
         "source_docs": source_docs,
+        "features": features,
     }
     return render(request, "controlpanel/species.overview.html", context)
 
