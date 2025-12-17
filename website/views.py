@@ -2519,7 +2519,6 @@ def controlpanel_document_species(request, id):
                                 species.features.add(features[each])
                                 log.features.add(features[each])
 
-            messages.success(request, _("The species were imported successfully."))
             return redirect(reverse("controlpanel_species_list") + "?import=true&file=" + request.GET["file"])
 
         except Exception as e:
@@ -2995,6 +2994,9 @@ def controlpanel_species_list(request):
         "filter_text": filter_text,
         "source": source,
     }
+
+    if "import" in request.GET:
+        context["inat_missing"] = species.filter(~Q(meta_data__has_key="inat")).count()
 
     if "descriptions" in request.GET:
 

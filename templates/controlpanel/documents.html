@@ -27,7 +27,7 @@
       <tr>
         <th>{{ _("Name") }}</th>
         <th>{{ _("Type") }}</th>
-        <th>{{ _("Edit") }}</th>
+        <th>{{ _("Options") }}</th>
       </tr>
     </thead>
     <tbody>
@@ -39,8 +39,9 @@
         </td>
         <td>{{ each.get_doc_type_display }}</td>
         <td class="whitespace-nowrap">
+          <a class="btn-blue btn-sm" href="{% url "controlpanel_document_files" each.id %}"><i class="fa fa-file"></i> {{ _("Files") }}</a>
           <a class="btn-blue btn-sm" href="{% url "controlpanel_document" each.id %}"><i class="fa fa-pencil"></i> {{ _("Edit") }}</a>
-          <a class="btn-blue btn-sm" href="{% url "species_source" each.id %}"><i class="fa fa-file"></i> {{ _("View") }}</a>
+          <a class="btn-orange btn-sm" href="{% url "species_source" each.id %}"><i class="fa fa-file"></i> {{ _("View") }}</a>
         </td>
       </tr>
     {% endfor %}

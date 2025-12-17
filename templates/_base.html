@@ -126,6 +126,20 @@
 
 </div>
 
+{% if request.user.is_authenticated and request.user.is_superuser %}
+  {% if controlpanel %}
+    <a href="/" class="btn-orange btn-sm fixed right-2 bottom-2 z-50">
+      <i class="fa fa-arrow-left mr-1"></i>
+      {{ _("Website") }}
+    </a>
+  {% else %}
+    <a href="{% url "controlpanel" %}" class="badge badge-warning fixed right-2 bottom-2 z-50">
+      <i class="fa fa-lock mr-1"></i>
+      {{ _("Control panel") }}
+    </a>
+  {% endif %}
+{% endif %}
+
   {% with nav=SITE.meta_data.nav|add:"/_footer.html" %}
     {% include nav %}
   {% endwith %}
