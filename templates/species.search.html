@@ -1,0 +1,81 @@
+{% extends "_base.html" %}
+
+{% block content %}
+
+{% if vegetation_type %}
+  <h2>
+    {{ vegetation_type }}
+  </h2>
+  <div class="alert alert-warning">
+    There are <strong>{{ all }}</strong> species found in this vegetation type.
+    Use the filters below to locate the species of your interest.
+    <br>
+    <br>
+    <a href="{% url "species_full_list" %}{{ veg_link }}">View all {{ all }} species</a><br>
+    <a href="{% url "species" %}">Back to main species list</a>
+  </div>
+{% endif %}
+
+<div class="">
+  <h2>{{ _("Search species list") }}</h2>
+  <form action="{% url "species_list" %}">
+    {% if vegetation_type %}
+      <input type="hidden" name="vegetation_type" value="{{ vegetation_type.id }}" />
+    {% endif %}
+
+    <div class="mb-4 bg-gray-100 p-4 rounded">
+      <div class="container mx-auto">
+        <div class="grid grid-cols-3 gap-4">
+          {% for feature in features %}
+            {% ifchanged feature.species_type %}
+              {% if not forloop.first %}
+              </div>
+              {% endif %}
+              <div>
+                <h4>{{ feature.get_species_type_display }}</h4>
+            {% endifchanged %}
+            <span class="flex items-center">
+              <input type="checkbox" name="feature" id="id_features_{{ feature.id }}" value="{{ feature.id }}" class="form-checkbox h-5 w-5 text-blue-500" {% if feature in info.features.all %} checked {% endif %}>
+              <label for="id_features_{{ feature.id }}" class="ml-2 text-gray-700">{{ feature.name }}</label>
+            </span>
+          {% endfor %}
+        </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="mt-4 flex gap-2">
+      <select name="search" class="w-5/6">
+        <option value="any">Match ANY one of these properties</option>
+        <option value="all">Match ALL of these properties</option>
+      </select>
+      <button type="submit" class="btn-blue bg-gray-600 w-1/6"><i class="fa fa-search fa-fw"></i> {{ _("Search") }}</button>
+    </div>
+
+  </form>
+
+</div>
+
+{% if vegetation_types.count > 1 %}
+  <div>
+    <h2>Browse by vegetation type</h2>
+    <table class="table table-striped datatable">
+      <thead>
+        <tr>
+          <th>Vegetation type</th>
+          <th>Species</th>
+        </tr>
+      </thead>
+      <tbody>
+      {% for each in vegetation_types %}
+        <tr {% if each == vegetation_type %}class="bg-primary text-light"{% endif %}>
+          <td><a href="{% url "vegetation_type_species" each.slug %}">{{ each }}</a></td>
+          <td>{{ each.total }}</td>
+        </tr>
+      {% endfor %}
+      </tbody>
+    </table>
+  </div>
+{% endif %}
+
+{% endblock %}

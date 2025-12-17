@@ -65,8 +65,8 @@
       <td>
         <div class="mb-1">
         {% for feature in each.features.all %}
-          {% ifchanged feature.species_type %}</div><div class="mb-1">{% endifchanged %}
-          {{ feature.get_icon }}
+          {% ifchanged feature.species_type %}</div><div>{% endifchanged %}
+          {{ feature.get_text_icon }}
         {% endfor %}
         </div>
       </td>
@@ -96,7 +96,7 @@
           </div>
         {% endif %}
         {% if each.plant_form %}
-        <div class="text-gray-700 font-bold mt-2">{{ each.plant_form }}</div>
+        <div class="text-gray-700 text-sm mt-2">{{ each.plant_form }}</div>
         {% endif %}
       </td>
 

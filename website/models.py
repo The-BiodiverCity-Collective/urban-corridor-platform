@@ -693,26 +693,45 @@ class SpeciesFeatures(models.Model):
         return self.name
 
     class Meta:
-        ordering = ["species_type", "name"]
+        ordering = ["species_type", "icon", "icon_svg", "name"]
 
     @property
-    def get_icon(self):
+    def color(self):
         colors = {
             1: "rose",
             2: "sky",
             3: "amber",
-            4: "pink",
+            4: "stone",
             5: "lime",
-            6: "stone",
+            6: "pink",
         }
-        color = colors[self.species_type]
+        return colors[self.species_type]
+        
+    def _generate_icon(self, label=False):
+        color = self.color
         if self.icon:
             icon = f'<i class="{self.icon} text-lg" title="{self.name}"></i>'
         elif self.icon_svg:
             icon = self.icon_svg
         else:
             icon = self.name
-        return mark_safe(f'<span class="badge bg-{color}-100 text-{color}-700">{icon}</span><span class="sr-only">{self.name}</span>')
+
+        if label:
+            label = f'<span class="pl-1">{self.name}</span>'
+            margin = "mb-1"
+        else:
+            label = ""
+            margin = ""
+
+        return mark_safe(f'<span class="badge bg-{color}-100 text-{color}-700 {margin}">{icon} {label}</span><span class="sr-only">{self.name}</span>')
+
+    @property
+    def get_icon(self):
+        return self._generate_icon()
+
+    @property
+    def get_text_icon(self):
+        return self._generate_icon(True)
 
 class PlantForm(models.Model):
     letter = models.CharField(max_length=2, unique=True, db_index=True)

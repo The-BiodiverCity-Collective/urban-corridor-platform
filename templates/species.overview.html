@@ -21,44 +21,35 @@
   {% include "species/_photos.html" %}
 {% endwith %}
 
-<div class="bg-gray-100 p-5 mt-10">
-  <h2>{{ _("Search species list") }}</h2>
-  <form action="{% url "species_search" %}">
-    {% if vegetation_type %}
-      <input type="hidden" name="vegetation_type" value="{{ vegetation_type.id }}" />
-    {% endif %}
-
-    <div class="mb-4 bg-gray-100 p-4">
-      <div class="container mx-auto">
-        <div class="grid grid-cols-3 gap-4">
-          {% for feature in features %}
-            {% ifchanged feature.species_type %}
-              {% if not forloop.first %}
-              </div>
-              {% endif %}
-              <div>
-                <h4>{{ feature.get_species_type_display }}</h4>
-            {% endifchanged %}
-            <span class="flex items-center">
-              <input type="checkbox" name="feature" id="id_features_{{ feature.id }}" value="{{ feature.id }}" class="form-checkbox h-5 w-5 text-blue-500" {% if feature in info.features.all %} checked {% endif %}>
-              <label for="id_features_{{ feature.id }}" class="ml-2 text-gray-700">{{ feature.name }}</label>
-            </span>
-          {% endfor %}
+<h2 class="mt-5">{{ _("Browse by form") }}</h2>
+<div class="container mx-auto mb-10">
+  <div class="grid lg:grid-cols-6 gap-4 sm:grid-cols-4">
+    {% for each in plant_forms %}
+      <a href="{% url "species_list" %}?plant_form={{ each.id }}" class="p-4 bg-gray-100 rounded-2xl no-underline hover:opacity-70">
+        <p class="flex-none text-3xl font-bold tracking-tight text-gray-900 ">{{ each.total }}</p>
+        <div class="sm:w-80 sm:shrink lg:w-auto lg:flex-none">
+          <p class="text-lg font-semibold tracking-tight text-gray-900 ">{{ each }}</p>
         </div>
+      </a>
+    {% endfor %}
+  </div>
+</div>
+
+<div class="flex justify-between">
+  <h2>{{ _("Browse by plant feature") }}</h2>
+  <a class="no-underline mr-2 hover:underline mt-2" href="{% url "species_search" %}"><i class="fa fa-search"></i> {{ _("Advanced search") }}</a>
+</div>
+<div class="container mx-auto mb-10">
+  <div class="grid lg:grid-cols-6 gap-4 sm:grid-cols-4">
+    {% for each in features %}
+      <a href="{% url "species_list" %}?feature={{ each.id }}" class="p-4 bg-{{ each.color }}-100 rounded-2xl no-underline hover:opacity-70">
+        <p class="flex-none text-3xl font-bold tracking-tight text-gray-900 ">{{ each.total }}</p>
+        <div class="sm:w-80 sm:shrink lg:w-auto lg:flex-none">
+          <p class="text-lg font-semibold tracking-tight text-gray-900 ">{{ each }}</p>
         </div>
-      </div>
-    </div>
-
-    <div class="mt-4 flex gap-2">
-      <select name="search" class="w-5/6">
-        <option value="all">Match ALL of these properties</option>
-        <option value="any">Match ANY one of these properties</option>
-      </select>
-      <button type="submit" class="btn-blue bg-gray-600 w-1/6"><i class="fa fa-search fa-fw"></i> Search</button>
-    </div>
-
-  </form>
-
+      </a>
+    {% endfor %}
+  </div>
 </div>
 
 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-4 mt-10">

@@ -1,6 +1,6 @@
 {% extends "_base.html" %}
 
-{% block title %}{{ _("Species list") }}{% endblock %}
+{% block title %}{{ _("Search results") }}{% endblock %}
 
 {% block content %}
 
@@ -17,25 +17,13 @@
       {% endif %}
     </div>
   {% else %}
-    <div class="flex justify-between">
       <h1>
-        {{ _("Species list") }}
+        {{ _("Search results") }}
       </h1>
-      {% if not request.GET.expand %}
-        <a href="{% querystring expand=True %}">Expanded version</a>
-      {% endif %}
-    </div>
   {% endif %}
 
-  <div class="alert alert-info">
-    <i class="fa fa-info-circle fa-fw mr-3"></i>
-    <span>
-      <strong>{{ species_list.count }}</strong> species found
-    </span>
-  </div>
-
-  {% if features and not info %}
-    <div class="alert alert-warning">
+  {% if features or plant_form and not info %}
+    <div class="alert alert-warning relative">
       <h4>Filters</h4>
       <p>
         {% if features.count > 1 %}
@@ -52,21 +40,36 @@
           <i class="fa fa-check"></i> {{ each }}
         </li>
       {% endfor %}
+      {% if plant_form %}
+        <li>
+          <i class="fa fa-check"></i> {{ _("Plant form") }}: <strong>{{ plant_form }}</strong>
+        </li>
+      {% endif %}
       </ul>
 
       {% if vegetation_type %}
         <p>Vegetation type: <a href="{{ vegetation_type.get_absolute_url }}">{{ vegetation_type }}</a></p>
       {% endif %}
 
-      <p class="right">
+      <p class="absolute top-2 right-2">
         {% if vegetation_type %}
         <a class="btn btn-secondary" href="{% url "vegetation_type_species" vegetation_type.slug %}">{{ _("New search") }}</a>
         {% else %}
-          <a href="{% url "species" %}">{{ _("New search") }}</a> | 
-          <a href="{% url "species_full_list" %}">{{ _("View all species") }}</a>
+          <a class="btn-orange btn-sm mr-2" href="{% url "species_search" %}"><i class="fa fa-search mr-1"></i> {{ _("New search") }}</a> 
+          <a class="btn-orange btn-sm "href="{% url "species" %}"><i class="fa fa-seedling mr-1"></i> {{ _("Explore species") }}</a>
         {% endif %}
       </p>
     </div>
+
+  {% else %}
+
+    <div class="alert alert-info">
+      <i class="fa fa-info-circle fa-fw mr-3"></i>
+      <span>
+        <strong>{{ species_list.count }}</strong> species found
+      </span>
+    </div>
+
   {% endif %}
 
   {% include "species/_grid.html" %}

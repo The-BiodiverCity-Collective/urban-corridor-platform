@@ -633,6 +633,59 @@ def species_overview(request, vegetation_type=None):
     except:
         samples = None
 
+    features = SpeciesFeatures.objects.filter(site=site).order_by("species_type", "name").annotate(
+        total=Count("species", filter=Q(species__site=site))
+    )
+    plant_forms = PlantForm.objects.all().annotate(
+        total=Count("species", filter=Q(species__site=site))
+    )
+
+    context = {
+        "genus": genus,
+        "family": families,
+        "load_datatables": True,
+        "samples": samples,
+        "all": species.count(),
+        "features": features.filter(total__gt=0),
+        "plant_forms": plant_forms.filter(total__gt=0),
+        "vegetation_types": veg_types,
+        "vegetation_type": vegetation_type,
+        "veg_link": f"?vegetation_type={vegetation_type.id}" if vegetation_type else "",
+        "menu": "species",
+        "show_total_box": True,
+        "page": "all_species",
+    }
+    return render(request, "species.overview.html", context)
+
+def species_search(request, vegetation_type=None):
+
+    site = get_site(request)
+    samples = Species.objects.values_list("id", flat=True).filter(site=site, photo__isnull=False)
+    genus = Genus.objects.filter(species__site=site)
+    families = Family.objects.filter(species__site=site)
+    species = Species.objects.filter(site=site)
+    veg_types = VegetationType.objects.filter(sites=site).annotate(
+        total=Count("species", filter=Q(species__site=site))
+    ).filter(total__gt=0)
+
+    if vegetation_type:
+        vegetation_type = VegetationType.objects.get(slug=vegetation_type)
+        species = species.filter(vegetation_types=vegetation_type)
+        samples = samples.filter(vegetation_types=vegetation_type)
+
+        genus = genus.annotate(total=Count("species", filter=Q(species__vegetation_types=vegetation_type))).filter(total__gt=0)
+        families = families.annotate(total=Count("species", filter=Q(species__vegetation_types=vegetation_type))).filter(total__gt=0)
+        features = SpeciesFeatures.objects.filter(species__vegetation_types=vegetation_type).distinct()
+    else:
+        genus = genus.annotate(total=Count("species"))
+        families = families.annotate(total=Count("species"))
+        features = SpeciesFeatures.objects.all()
+
+    try:
+        samples = Species.objects.filter(pk__in=random.sample(list(samples), 3))
+    except:
+        samples = None
+
     context = {
         "genus": genus,
         "family": families,
@@ -645,9 +698,9 @@ def species_overview(request, vegetation_type=None):
         "veg_link": f"?vegetation_type={vegetation_type.id}" if vegetation_type else "",
         "menu": "species",
         "show_total_box": True,
-        "page": "all_species",
+        "page": "search",
     }
-    return render(request, "species.overview.html", context)
+    return render(request, "species.search.html", context)
 
 def species_list(request, genus=None, family=None):
     site = get_site(request)
@@ -687,6 +740,11 @@ def species_full_list(request):
         vegetation_type = VegetationType.objects.get(pk=request.GET["vegetation_type"])
         species = species.filter(vegetation_types=vegetation_type)
 
+    plant_form = None
+    if "plant_form" in request.GET:
+        plant_form = PlantForm.objects.get(pk=request.GET["plant_form"])
+        species = species.filter(plant_form=plant_form)
+
     features = None
     if "feature" in request.GET:
         features = SpeciesFeatures.objects.filter(pk__in=request.GET.getlist("feature"))
@@ -715,6 +773,7 @@ def species_full_list(request):
         "load_datatables": True,
         "features": features,
         "vegetation_type": vegetation_type,
+        "plant_form": plant_form,
         "menu": "species",
         "page": request.GET.get("page"),
         "info": info,
@@ -799,15 +858,26 @@ def species(request, id):
             GardenSpecies.objects.create(garden=garden, species=info, status=request.POST["action"])
         return JsonResponse({"success": True})
 
+    photo = None
+    photos = Photo.objects.filter(species=info)
+    # TODO: CHECK ON position
+    #position__gte=1)
+    if photos:
+        if "photo" in request.GET:
+            photo = photos.get(pk=request.GET["photo"])
+        else:
+            photo = photos[0]
+
     context = {
         "info": info,
         "details": details,
-        "photos": Photo.objects.filter(species=info, position__gte=1),
+        "photos": photos,
         "title": info.name,
         "menu": "species",
         "sources": sources,
         "garden": garden,
         "in_garden": in_garden,
+        "photo": photo,
     }
 
     return render(request, "species.html", context)

@@ -25,7 +25,7 @@
                 <span class="absolute inset-0 rounded-md">
                   <img src="{{ each.thumbnail }}" alt="" class="size-full object-cover">
                 </span>
-                <span class="pointer-events-none absolute inset-0 rounded-md ring-2 {% if forloop.counter == 1 %}ring-sky-500{% else %}ring-transparent{% endif %} ring-offset-2" ></span>
+                <span class="pointer-events-none absolute inset-0 rounded-md ring-2 {% if each == photo %}ring-sky-500{% else %}ring-transparent{% endif %} ring-offset-2" ></span>
               </button>
             {% endfor %}
 
@@ -34,8 +34,8 @@
 
         <div>
           <div id="headshot" aria-labelledby="headshot" tabindex="0" class="relative">
-            <img src="{{ photos.0.large }}" alt="" class="aspect-square w-full object-cover sm:rounded-lg">
-            <span id="credit" class="absolute text-sm bg-gray-50 opacity-90 p-1 rounded-tr-md" style="bottom:0;">{{ photos.0.credit }}</span>
+            <img src="{{ photo.large }}" alt="" class="aspect-square w-full object-cover sm:rounded-lg">
+            <span id="credit" class="absolute text-sm bg-gray-50 opacity-90 p-1 rounded-tr-md" style="bottom:0;">{{ photo.credit }}</span>
           </div>
         </div>
 
@@ -48,29 +48,29 @@
         <p class="text-3xl tracking-tight text-gray-900"><em>{{ info }}</em></p>
 
         {% if info.features %}
-          <div class="container mx-auto features mt-5">
+          <section class="container mx-auto features mt-5">
             <div class="grid grid-cols-2 gap-4">
-          {% for each in info.features.all %}
-            {% ifchanged each.species_type %}
-              {% if not forloop.first %}
-              </div>
-              {% endif %}
-              <div class="bg-gray-100 p-3 rounded">
-              <h3 class="text-sky-700">{{ each.get_species_type_display }}</h3>
-            {% endifchanged %}
-            <div>
-              {% if each.icon or each.icon_svg %}
-                <span class="mr-2">
-                  {{ each.get_icon }}
-                </span>
-              {% endif %}
-              <a href="/species/search/?feature={{ each.id }}" class="text-gray-700 hover:text-black hover:underline no-underline">
-                {{ each }}
-              </a>
+              {% for each in info.features.all %}
+                {% ifchanged each.species_type %}
+                  {% if not forloop.first %}
+                  </div>
+                  {% endif %}
+                  <div class="bg-gray-100 p-3 rounded">
+                  <h3 class="text-sky-700">{{ each.get_species_type_display }}</h3>
+                {% endifchanged %}
+                <div class="mb-1">
+                  {% if each.icon or each.icon_svg %}
+                    <span class="mr-1 relative">
+                      {{ each.get_icon }}
+                    </span>
+                  {% endif %}
+                  <a href="/species/search/?feature={{ each.id }}" class="text-gray-700 hover:text-black font-normal hover:underline no-underline">
+                    {{ each }}
+                  </a>
+                </div>
+              {% endfor %}
             </div>
-          {% endfor %}
-          </div>
-          </div>
+          </section>
 
         {% endif %}
 
