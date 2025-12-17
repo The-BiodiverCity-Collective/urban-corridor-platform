@@ -72,6 +72,7 @@ class Page(models.Model):
     site = models.ForeignKey(Site, on_delete=models.CASCADE, null=True, blank=True, related_name="pages")
     is_active = models.BooleanField(default=True, db_index=True)
     date = models.DateField(null=True, blank=True)
+    meta_data = models.JSONField(null=True, blank=True)
 
     class PageType(models.IntegerChoices):
         REGULAR = 1, "Regular page"

@@ -1,0 +1,13 @@
+<div class="relative bg-gray-100 rounded-lg mb-20 mt-10">
+  <div class="group overflow-hidden rounded-t-lg bg-gray-100">
+    <img src="{{ photo.medium }}" alt="" class="pointer-events-none w-full h-full object-cover group-hover:opacity-75" style="height:310px">
+    <a class="absolute inset-0 focus:outline-hidden" href="{{ photo.species.get_absolute_url }}" title="{{ _("Image credits") }}: {{ photo.author }}">
+    </a>
+  </div>
+  <div class="m-3 pb-4">
+    {% if photo.species.name_en %}
+      <div class="mt-2 truncate text-sm font-medium text-gray-900">{{ photo.species.name_en }}</div>
+    {% endif %}
+    <div class="text-sm font-medium text-gray-500"><em>{{ photo.species.name }}</em></div>
+  </div>
+</div>

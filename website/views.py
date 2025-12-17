@@ -1645,6 +1645,7 @@ def page(request, slug, menu=None):
         "title": info.name,
         "menu": menu,
         "slug": slug,
+        "design": "multicol" if "multicol" in request.GET else None,
     }
     return render(request, "page.html", context)
 
@@ -2030,6 +2031,9 @@ def planner_plants(request, id, status):
         "garden": garden,
         "species_list": plants,
         "table_hide_vegetation": True,
+        "table_hide_form": True,
+        "table_hide_aspects": True,
+        "table_hide_habitats": True,
         "table_show_actions": True,
         "load_datatables": True,
     }

@@ -47,9 +47,10 @@ class SFAdmin(admin.ModelAdmin):
     list_filter = ["species_type", "site"]
 
 class PageAdmin(admin.ModelAdmin):
+    list_display = ["name", "site"]
     search_fields = ["name"]
     exclude = ["content_html"]
-    list_filter = ["site", "is_active", "page_type"]
+    list_filter = ["site", "is_active", "page_type", "site"]
     autocomplete_fields = ["photos"]
 
 class PlantFormAdmin(admin.ModelAdmin):

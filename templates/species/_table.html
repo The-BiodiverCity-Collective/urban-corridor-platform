@@ -3,28 +3,23 @@
     <tr>
       <th style="width:250px">{{ _("Name") }}</th>
 
-      <th>{{ _("Form") }}</th>
+      {% if not table_hide_form %}
+        <th>{{ _("Form") }}</th>
+      {% endif %}
 
       <th>{{ _("Animals") }}</th>
-      <th>{{ _("Aspect") }}</th>
-      <th>{{ _("Habitats") }}</th>
 
-      {% if table_show_score %}
-        <th>{{ _("Species relevance") }}</th>
+      {% if not table_hide_aspects %}
+        <th>{{ _("Aspect") }}</th>
+      {% endif %}
+
+
+      {% if not table_hide_habitats %}
+        <th>{{ _("Habitats") }}</th>
       {% endif %}
 
       {% if table_show_score %}
         <th>{{ _("Species relevance") }}</th>
-      {% endif %}
-
-      {% if table_show_score %}
-        <td>
-          <div aria-hidden="true">
-            <div class="overflow-hidden rounded-full bg-gray-200">
-              <div style="width: calc(({{ each.num_features }} + 1) / {{ max_features }} * 100%)" class="h-2 rounded-full bg-lime-600"></div>
-            </div>
-          </div>
-        </td>
       {% endif %}
 
       {% if table_show_actions %}
@@ -51,7 +46,9 @@
         {% endif %}
       </td>
 
-      <td class="text-sm text-gray-700">{{ each.plant_form|default_if_none:"" }}</td>
+      {% if not table_hide_form %}
+        <td class="text-sm text-gray-700">{{ each.plant_form|default_if_none:"" }}</td>
+      {% endif %}
 
       <td>
         {% for feature in each.features.all %}
@@ -61,21 +58,25 @@
         {% endfor %}
       </td>
 
-      <td>
-        {% for feature in each.features.all %}
-          {% if feature.species_type == 6 %}
-            {{ feature.get_icon }}
-          {% endif %}
-        {% endfor %}
-      </td>
+      {% if not table_hide_aspects %}
+        <td>
+          {% for feature in each.features.all %}
+            {% if feature.species_type == 6 %}
+              {{ feature.get_icon }}
+            {% endif %}
+          {% endfor %}
+        </td>
+      {% endif %}
 
-      <td>
-        {% for feature in each.features.all %}
-          {% if feature.species_type == 5 %}
-            {{ feature.get_text_icon }}
-          {% endif %}
-        {% endfor %}
-      </td>
+      {% if not table_hide_habitats %}
+        <td>
+          {% for feature in each.features.all %}
+            {% if feature.species_type == 5 %}
+              {{ feature.get_text_icon }}
+            {% endif %}
+          {% endfor %}
+        </td>
+      {% endif %}
 
       {% if table_show_score %}
         <td>

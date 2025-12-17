@@ -7,8 +7,43 @@
 {% endblock %}
 
 {% block content %}
-  <h1>{{ info.title }}</h1>
+
+{% if info.meta_data.design == "multicol" %}
+
+  <div class="flex gap-15 ml-10 mr-10">
+    <div class="flex-4">
+      <h1>{{ info }}</h1>
+      {{ info.get_content }}
+
+      {% if info.meta_data.next %}
+        <div class="mt-10">
+          <a class="btn-blue" href="{{ info.meta_data.next_link }}">{{ info.meta_data.next }} &raquo;</a>
+        </div>
+      {% endif %}
+
+    </div>
+    <div class="flex-2">
+
+      {% for photo in info.photos.all %}
+        {% include "_photo.html" %}
+      {% endfor %}
+      
+    </div>
+  </div>
+
+{% else %}
+
+  <h1>{{ info }}</h1>
   {{ info.get_content }}
+
+  {% if info.meta_data.next %}
+    <div class="mt-10">
+      <a href="btn-blue" href="{{ info.meta_data.next_link }}">{{ info.meta_data.next }}</a>
+    </div>
+  {% endif %}
+
+
+{% endif %}
 
 {% if request.user.is_staff %}
   <a class="btn-warning btn-edit" href="{% url "controlpanel_page" info.id %}?redirect={{ request.get_full_path }}">

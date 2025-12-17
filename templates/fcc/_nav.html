@@ -50,14 +50,14 @@
           <div class="mt-6 flow-root">
             <div class="-my-2">
               <a href="/species/" class="flex gap-x-4 py-2 text-sm/6 font-semibold hover:text-sky-600 {% if page == "all_species" and not "indigenous" in request.GET %}text-sky-600{% else %}text-gray-900{% endif %}">
-                <i class="fa fa-list fa-fw text-lg text-gray-400 mr-1"></i>
-                All species
-              </a>
-              <a href="/species/?indigenous" class="flex gap-x-4 py-2 text-sm/6 font-semibold hover:text-sky-600
-                {% if "indigenous" in request.GET %}text-sky-600{% else %}text-gray-900{% endif %}
-              ">
                 <i class="fa fa-seedling fa-fw text-lg text-gray-400 mr-1"></i>
-                Indigenous
+                Explore species
+              </a>
+              <a href="/species/search/" class="flex gap-x-4 py-2 text-sm/6 font-semibold hover:text-sky-600
+                {% if page == "search" %}text-sky-600{% else %}text-gray-900{% endif %}
+              ">
+                <i class="fa fa-search fa-fw text-lg text-gray-400 mr-1"></i>
+                Search species
               </a>
               <a href="/species/search/?feature=125&page=pioneers" 
               class="flex gap-x-4 py-2 text-sm/6 font-semibold hover:text-sky-600 {% if page == "pioneers" %}text-sky-600{% else %}text-gray-900{% endif %}">
