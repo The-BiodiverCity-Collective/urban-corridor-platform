@@ -7,10 +7,9 @@
 <table class="table mb-5">
   <thead>
     <tr>
-      <th>Name</th>
-      <th>Type</th>
-      <th>Uploaded</th>
-      <th>Options</th>
+      <th>{{ _("Name") }}</th>
+      <th>{{ _("Type") }}</th>
+      <th>{{ _("Options") }}</th>
     </tr>
   </thead>
   <tbody>
@@ -18,13 +17,15 @@
     <tr>
       <td>{{ each.name }}</td>
       <td>{{ each.get_doc_type_display }}</td>
-      <td><a class="btn btn-info" href="{% url "controlpanel_shapefile" each.id %}"><i class="fa fa-gear"></i> Manage</a></td>
-      <td><a class="btn btn-info" href="{% url "controlpanel_shapefile_form" each.id %}"><i class="fa fa-pencil"></i> Edit</a></td>
+      <td>
+        <a class="btn-blue btn-sm" href="{% url "controlpanel_shapefile" each.id %}"><i class="fa fa-gear"></i> {{ _("Manage") }}</a>
+        <a class="btn-blue btn-sm" href="{% url "controlpanel_shapefile_form" each.id %}"><i class="fa fa-pencil"></i> {{ _("Edit") }}</a>
+      </td>
     </tr>
   {% endfor %}
   </tbody>
 </table>
 
-<a class="btn-add" href="{% url "controlpanel_shapefile_form" %}"><i class="fa fa-plus"></i> Add shapefile</a>
+<a class="btn-blue" href="{% url "controlpanel_shapefile_form" %}"><i class="fa fa-plus-square mr-1"></i> {{ _("Add shapefile") }}</a>
 
 {% endblock %}

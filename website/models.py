@@ -698,21 +698,21 @@ class SpeciesFeatures(models.Model):
     @property
     def get_icon(self):
         colors = {
-            1: "gray-800",
-            2: "sky-700",
-            3: "gray-800",
-            4: "pink-700",
-            5: "pink-700",
-            6: "pink-700",
+            1: "rose",
+            2: "sky",
+            3: "amber",
+            4: "pink",
+            5: "lime",
+            6: "stone",
         }
         color = colors[self.species_type]
-        color = ""
         if self.icon:
-            return mark_safe(f'<i class="{self.icon} text-{color}" title="{self.name}"></i><span class="sr-only">{self.name}</span>')
+            icon = f'<i class="{self.icon} text-lg" title="{self.name}"></i>'
         elif self.icon_svg:
-            return mark_safe(self.icon_svg)
+            icon = self.icon_svg
         else:
-            return self.name
+            icon = self.name
+        return mark_safe(f'<span class="badge bg-{color}-100 text-{color}-700">{icon}</span><span class="sr-only">{self.name}</span>')
 
 class PlantForm(models.Model):
     letter = models.CharField(max_length=2, unique=True, db_index=True)

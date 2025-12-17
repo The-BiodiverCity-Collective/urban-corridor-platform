@@ -60,15 +60,15 @@
 
       <p class="right">
         {% if vegetation_type %}
-        <a class="btn btn-secondary" href="{% url "vegetation_type_species" vegetation_type.slug %}">New search</a>
+        <a class="btn btn-secondary" href="{% url "vegetation_type_species" vegetation_type.slug %}">{{ _("New search") }}</a>
         {% else %}
-          <a href="{% url "species" %}">New search</a> | 
-          <a href="{% url "species_full_list" %}">View all species</a>
+          <a href="{% url "species" %}">{{ _("New search") }}</a> | 
+          <a href="{% url "species_full_list" %}">{{ _("View all species") }}</a>
         {% endif %}
       </p>
     </div>
   {% endif %}
 
-  {% include "_species.grid.html" %}
+  {% include "species/_grid.html" %}
 
 {% endblock %}

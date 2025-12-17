@@ -2,6 +2,11 @@
   <thead>
     <tr>
       <th style="width:250px">{{ _("Name") }}</th>
+
+      {% if not table_hide_vegetation %}
+        <th>{{ _("Vegetation type(s)") }}</th>
+      {% endif %}
+
       <th style="white-space:nowrap; min-width:0; flex:none">{{ _("Features") }}</th>
       {% if table_show_score %}
         <th>{{ _("Species relevance") }}</th>
@@ -19,9 +24,24 @@
         <th>{{ _("Flower colour") }}</th>
       {% endif %}
 
+      {% if table_show_score %}
+        <th>{{ _("Species relevance") }}</th>
+      {% endif %}
+
+      {% if table_show_score %}
+        <td>
+          <div aria-hidden="true">
+            <div class="overflow-hidden rounded-full bg-gray-200">
+              <div style="width: calc(({{ each.num_features }} + 1) / {{ max_features }} * 100%)" class="h-2 rounded-full bg-lime-600"></div>
+            </div>
+          </div>
+        </td>
+      {% endif %}
+
       {% if table_show_actions %}
         <th>{{ _("Actions") }}</th>
       {% endif %}
+
     </tr>
   </thead>
   <tbody>
@@ -41,6 +61,17 @@
           <em>{{ each.name }}</em>
         {% endif %}
       </td>
+
+      {% if not table_hide_vegetation %}
+        <td>
+          <ul>
+          {% for veg in each.vegetation_types.all %}
+            <li><span class="badge bg-success">{{ veg }}</span></li>
+          {% endfor %}
+          </ul>
+        </td>
+      {% endif %}
+
       <td>
         {% for feature in each.features.all %}
           <span class="p-1 mr-1 {% if feature in features %}bg-yellow-100{% endif %}">

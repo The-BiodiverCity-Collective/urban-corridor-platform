@@ -1,18 +1,37 @@
 <table class="table datatable species" style="table-layout: fixed">
   <thead>
     <tr>
-      <th style="width:250px">{{ _("Scientific name") }}</th>
-      <th style="width:200px">{{ _("Common name") }}</th>
+      <th>{{ _("Name") }}</th>
+
       {% if not table_hide_vegetation %}
         <th>{{ _("Vegetation type(s)") }}</th>
       {% endif %}
-      <th style="white-space:nowrap; min-width:0; flex:none">{{ _("Features") }}</th>
+
+      <th>{{ _("Features") }}</th>
       {% if table_show_score %}
         <th>{{ _("Species relevance") }}</th>
       {% endif %}
+
+      <th>{{ _("Flowers & form") }}</th>
+
+      {% if table_show_score %}
+        <th>{{ _("Species relevance") }}</th>
+      {% endif %}
+
+      {% if table_show_score %}
+        <td>
+          <div aria-hidden="true">
+            <div class="overflow-hidden rounded-full bg-gray-200">
+              <div style="width: calc(({{ each.num_features }} + 1) / {{ max_features }} * 100%)" class="h-2 rounded-full bg-lime-600"></div>
+            </div>
+          </div>
+        </td>
+      {% endif %}
+
       {% if table_show_actions %}
         <th>{{ _("Actions") }}</th>
       {% endif %}
+
     </tr>
   </thead>
   <tbody>
@@ -24,11 +43,15 @@
         {% elif species_future and each in species_future %}
           <i class="fa fa-check-circle" title="{{ _("This species is in your list to be added to your garden.") }}"></i>
         {% endif %}
-        <a href="{% url "species" each.id %}">{{ each.name }}</a>
+        <a href="{% url "species" each.id %}">
+          {% if each.name_en %}{{ each.name_en }}{% else %}<em>{{ each.name }}</em>{% endif %}
+        </a>
+        {% if each.name_en %}
+          <br>
+          <em>{{ each.name }}</em>
+        {% endif %}
       </td>
-      <td>
-        {{ each.name_en|default_if_none:"" }}
-      </td>
+
       {% if not table_hide_vegetation %}
         <td>
           <ul>
@@ -38,12 +61,14 @@
           </ul>
         </td>
       {% endif %}
+
       <td>
+        <div class="mb-1">
         {% for feature in each.features.all %}
-          <span class="p-1 mr-1 {% if feature in features %}bg-yellow-100{% endif %}">
-            {{ feature.get_icon }}
-          </span>
+          {% ifchanged feature.species_type %}</div><div class="mb-1">{% endifchanged %}
+          {{ feature.get_icon }}
         {% endfor %}
+        </div>
       </td>
       {% if table_show_score %}
         <td>
@@ -54,6 +79,27 @@
           </div>
         </td>
       {% endif %}
+
+      <td>
+        <ul>
+          {% for color in each.colors.all %}
+            <li class="colorbox" style="background:{{ color.color }}" title="{{ color }}">
+              <span class="sr-only">{{ color }}</span>
+            </li>
+          {% endfor %}
+        </ul>
+        {% if each.flowering %}
+          <div>
+            {% for month in each.flowering_months %}
+                <span class="badge-success">{{ month }}</span>
+            {% endfor %}
+          </div>
+        {% endif %}
+        {% if each.plant_form %}
+        <div class="text-gray-700 font-bold mt-2">{{ each.plant_form }}</div>
+        {% endif %}
+      </td>
+
       {% if table_show_actions %}
         <td data-sort="{{ each.num_features }}">
           <form method="post">
@@ -64,6 +110,7 @@
           </form>
         </td>
       {% endif %}
+
     </tr>
   {% endfor %}
   </tbody>

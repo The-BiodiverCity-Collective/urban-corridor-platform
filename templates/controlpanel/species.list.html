@@ -109,51 +109,53 @@
   <a class="btn-blue" href="{% url "controlpanel_species" %}"><i class="fa fa-plus-square mr-1"></i> {{ _("Create new species") }}</a>
 {% endif %}
 
-<el-dialog>
-  <dialog id="dialog" aria-labelledby="dialog-title" class="z-100 block fixed inset-0 size-auto max-h-none max-w-none overflow-y-auto bg-transparent backdrop:bg-transparent">
-    <el-dialog-backdrop class="fixed inset-0 bg-gray-500/75 transition-opacity data-closed:opacity-0 data-enter:duration-300 data-enter:ease-out data-leave:duration-200 data-leave:ease-in"></el-dialog-backdrop>
+{% if "import" in request.GET %}
+  <el-dialog>
+    <dialog id="dialog" aria-labelledby="dialog-title" class="z-100 block fixed inset-0 size-auto max-h-none max-w-none overflow-y-auto bg-transparent backdrop:bg-transparent">
+      <el-dialog-backdrop class="fixed inset-0 bg-gray-500/75 transition-opacity data-closed:opacity-0 data-enter:duration-300 data-enter:ease-out data-leave:duration-200 data-leave:ease-in"></el-dialog-backdrop>
 
-    <div tabindex="0" class="flex min-h-full items-end justify-center p-4 text-center focus:outline-none sm:items-center sm:p-0">
-      <el-dialog-panel class="relative transform overflow-hidden rounded-lg bg-white px-4 pt-5 pb-4 text-left shadow-xl transition-all data-closed:translate-y-4 data-closed:opacity-0 data-enter:duration-300 data-enter:ease-out data-leave:duration-200 data-leave:ease-in sm:my-8 sm:w-full sm:max-w-lg sm:p-6 data-closed:sm:translate-y-0 data-closed:sm:scale-95">
-        <div>
-          <div class="mx-auto flex size-12 items-center justify-center rounded-full bg-green-100">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" data-slot="icon" aria-hidden="true" class="size-6 text-green-600">
-              <path d="m4.5 12.75 6 6 9-13.5" stroke-linecap="round" stroke-linejoin="round" />
-            </svg>
-          </div>
-          <div class="mt-3 text-center sm:mt-5">
-            <h3 id="dialog-title" class="text-base font-semibold text-gray-900">
-              {{ _("Species import complete") }}
-            </h3>
-            <div class="mt-2">
-              <p class="text-sm text-gray-500">
-                {{ _("All species information from your spreadsheet has been imported into the website. Great work!") }}
-                {{ _("You can now view the species on our website, or review the list here in the control panel.") }}
-              </p>
-              {% if inat_missing %}
-                <p>
-                  {% if inat_missing == 1 %}
-                  {% blocktranslate %}Note! There is species that do not have any iNat information available.{% endblocktranslate %}
-                  {% else %}
-                  {% blocktranslate %}Note! There are {{ inat_missing }} species that do not have any iNat information available.{% endblocktranslate %}
-                  {% endif %}
+      <div tabindex="0" class="flex min-h-full items-end justify-center p-4 text-center focus:outline-none sm:items-center sm:p-0">
+        <el-dialog-panel class="relative transform overflow-hidden rounded-lg bg-white px-4 pt-5 pb-4 text-left shadow-xl transition-all data-closed:translate-y-4 data-closed:opacity-0 data-enter:duration-300 data-enter:ease-out data-leave:duration-200 data-leave:ease-in sm:my-8 sm:w-full sm:max-w-lg sm:p-6 data-closed:sm:translate-y-0 data-closed:sm:scale-95">
+          <div>
+            <div class="mx-auto flex size-12 items-center justify-center rounded-full bg-green-100">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" data-slot="icon" aria-hidden="true" class="size-6 text-green-600">
+                <path d="m4.5 12.75 6 6 9-13.5" stroke-linecap="round" stroke-linejoin="round" />
+              </svg>
+            </div>
+            <div class="mt-3 text-center sm:mt-5">
+              <h3 id="dialog-title" class="text-base font-semibold text-gray-900">
+                {{ _("Species import complete") }}
+              </h3>
+              <div class="mt-2">
+                <p class="text-sm text-gray-500">
+                  {{ _("All species information from your spreadsheet has been imported into the website. Great work!") }}
+                  {{ _("You can now view the species on our website, or review the list here in the control panel.") }}
                 </p>
-              {% endif %}
+                {% if inat_missing %}
+                  <p>
+                    {% if inat_missing == 1 %}
+                    {% blocktranslate %}Note! There is species that do not have any iNat information available.{% endblocktranslate %}
+                    {% else %}
+                    {% blocktranslate %}Note! There are {{ inat_missing }} species that do not have any iNat information available.{% endblocktranslate %}
+                    {% endif %}
+                  </p>
+                {% endif %}
+              </div>
             </div>
           </div>
-        </div>
-        <div class="mt-5 sm:mt-6 sm:grid sm:grid-flow-row-dense sm:grid-cols-2 sm:gap-3">
-          <a href="{% url "species_source" source.id %}" class="inline-flex w-full justify-center rounded-md btn-orange px-3 py-2 text-sm font-semibold text-white shadow-xs focus-visible:outline-2 focus-visible:outline-offset-2 sm:col-start-2">
-            {{ _("View species on website") }}
-          </a>
-          <button type="button" data-action="close" class="cursor-pointer mt-3 inline-flex w-full justify-center rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-xs inset-ring-1 inset-ring-gray-300 hover:bg-gray-100 sm:col-start-1 sm:mt-0">
-            {{ _("Close") }}
-          </button>
-        </div>
-      </el-dialog-panel>
-    </div>
-  </dialog>
-</el-dialog>
+          <div class="mt-5 sm:mt-6 sm:grid sm:grid-flow-row-dense sm:grid-cols-2 sm:gap-3">
+            <a href="{% url "species_source" source.id %}" class="inline-flex w-full justify-center rounded-md btn-orange px-3 py-2 text-sm font-semibold text-white shadow-xs focus-visible:outline-2 focus-visible:outline-offset-2 sm:col-start-2">
+              {{ _("View species on website") }}
+            </a>
+            <button type="button" data-action="close" class="cursor-pointer mt-3 inline-flex w-full justify-center rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-xs inset-ring-1 inset-ring-gray-300 hover:bg-gray-100 sm:col-start-1 sm:mt-0">
+              {{ _("Close") }}
+            </button>
+          </div>
+        </el-dialog-panel>
+      </div>
+    </dialog>
+  </el-dialog>
+{% endif %}
 
 {% endblock %}
 
