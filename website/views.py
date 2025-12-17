@@ -768,6 +768,12 @@ def species_full_list(request):
         except:
             info = None
 
+    garden = None
+    in_garden = None
+    if "garden_id" in request.COOKIES:
+        garden = get_garden(request, request.COOKIES.get("garden_id"))
+        in_garden = GardenSpecies.objects.filter(garden=garden, species=info).first()
+
     context = {
         "species_list": species,
         "load_datatables": True,
@@ -778,6 +784,8 @@ def species_full_list(request):
         "page": request.GET.get("page"),
         "info": info,
         "photo": photo,
+        "garden": garden,
+        "in_garden": in_garden,
     }
 
     if "expand" in request.GET:

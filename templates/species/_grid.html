@@ -5,6 +5,7 @@
       <a href="{% querystring view="table-extended" %}" class="tab {% if request.GET.view == "table-extended" %}active{% else %}inactive{% endif %}">{{ _("Table - extended") }}</a>
       <a href="{% querystring view="photos" %}" class="tab {% if request.GET.view == "photos" %}active{% else %}inactive{% endif %}">{{ _("Photos") }}</a>
       <a href="{% querystring view="photos-extended" %}" class="tab {% if request.GET.view == "photos-extended" %}active{% else %}inactive{% endif %}">{{ _("Photos - extended") }}</a>
+      <a href="{% querystring view="photos-data" %}" class="tab {% if request.GET.view == "photos-data" %}active{% else %}inactive{% endif %}">{{ _("Photos + data") }}</a>
     </nav>
   </div>
 </div>
@@ -19,6 +20,8 @@
       {% include "species/_photos.html" %}
     {% elif request.GET.view == "photos-extended" %}
       {% include "species/_photos.extended.html" %}
+    {% elif request.GET.view == "photos-data" %}
+      {% include "species/_photos.data.html" %}
     {% endif %}
   </section>
 
