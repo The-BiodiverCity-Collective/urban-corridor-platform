@@ -82,7 +82,10 @@
       </div>
     </div>
 
-    <div class="mt-6 flex items-center justify-end gap-x-6">
+    <div class="mt-6 flex items-center justify-between gap-x-6">
+      <a class="btn-white" href="{% url "controlpanel_document_files" info.id %}">
+        &laquo; {{ _("Back to file management") }}
+      </a>
       <button type="submit" class="btn-green">
         {{ _("Import") }}
       </button>

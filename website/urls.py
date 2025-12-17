@@ -105,6 +105,7 @@ urlpatterns = [
     path("controlpanel/", views.controlpanel, name="controlpanel"),
     path("controlpanel/documents/", views.controlpanel_documents, name="controlpanel_documents"),
     path("controlpanel/documents/<int:id>/", views.controlpanel_document, name="controlpanel_document"),
+    path("controlpanel/documents/<int:id>/files/", views.controlpanel_document, {"tab": "files"}, name="controlpanel_document_files"),
     path("controlpanel/documents/<int:id>/speciesmanagement/", views.controlpanel_document_species, name="controlpanel_document_species"),
     path("controlpanel/documents/create/", views.controlpanel_document, name="controlpanel_document"),
     path("controlpanel/shapefiles/", views.controlpanel_shapefiles, name="controlpanel_shapefiles"),

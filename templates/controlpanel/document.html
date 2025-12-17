@@ -4,144 +4,201 @@
 
 <h1 class="text-3xl">{% block title %}{% if info.id %}{{ info }}{% else %}Add document{% endif %}{% endblock %}</h1>
 
-<div class="flex items-center justify-center min-h-screen">
-  <form class="max-w-[700px]" method="post" enctype="multipart/form-data">
-    <div class="space-y-12">
+<div class="border-b border-gray-200">
+  <nav class="tabs -mb-px flex space-x-8" aria-label="Tabs">
+    {% if info.id %}
+      <a href="{% url "controlpanel_document" info.id %}" class="tab {% if tab == "files" %}inactive{% else %}active{% endif %}">{{ _("General details") }}</a>
+      <a href="{% url "controlpanel_document_files" info.id %}" class="tab {% if tab != "files" %}inactive{% else %}active{% endif %}">{{ _("File management") }}</a>
+    {% else %}
+      <span class="tab active">{{ _("General details") }}</span>
+      <span class="tab inactive cursor-not-allowed">{{ _("File management") }}</span>
+    {% endif %}
+  </nav>
+</div>
 
-      <div class="border-b border-gray-900/10 pb-12">
-        <h2 class="text-base/7 font-semibold text-gray-900">General information</h2>
+{% if tab != "files" %}
 
-        <div class="grid grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6 mt-10">
+<form method="post" enctype="multipart/form-data">
 
-          <div class="col-span-full">
-            <label for="name" class="block text-sm/6 font-medium text-gray-900">{{ _("Name") }}</label>
-            <div class="mt-2">
-              <input type="text" name="name" id="name" class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-xs ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-sky-600 sm:text-sm/6" value="{{ info.name }}" required>
-            </div>
-          </div>
+  <div class="grid grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6 mt-10">
 
-          <div class="sm:col-span-3">
-            <label for="author" class="block text-sm/6 font-medium text-gray-900">{{ _("Author") }}</label>
-            <div class="mt-2">
-              <input type="text" name="author" id="author" class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-xs ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-sky-600 sm:text-sm/6" value="{{ info.author|default_if_none:"" }}" required>
-            </div>
-          </div>
+    <div class="col-span-full">
+      <label for="name" class="block text-sm/6 font-medium text-gray-900">{{ _("Name") }}</label>
+      <div class="mt-2">
+        <input type="text" name="name" id="name" class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-xs ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-sky-600 sm:text-sm/6" value="{{ info.name }}" required>
+      </div>
+    </div>
 
-          <div class="sm:col-span-3">
-            <label for="url" class="block text-sm/6 font-medium text-gray-900">{{ _("URL") }}</label>
-            <div class="mt-2">
-              <input type="url" name="url" id="url" class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-xs ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-sky-600 sm:text-sm/6" value="{{ info.url|default_if_none:"" }}">
-            </div>
-          </div>
+    <div class="sm:col-span-3">
+      <label for="author" class="block text-sm/6 font-medium text-gray-900">{{ _("Author") }}</label>
+      <div class="mt-2">
+        <input type="text" name="author" id="author" class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-xs ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-sky-600 sm:text-sm/6" value="{{ info.author|default_if_none:"" }}" required>
+      </div>
+    </div>
 
-          <div class="sm:col-span-3">
-            <label for="doc_type" class="block text-sm/6 font-medium text-gray-900">{{ _("Type") }}</label>
-            <div class="mt-2">
-              <select id="doc_type" name="doc_type" class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-xs ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-sky-600 sm:max-w-xs sm:text-sm/6" required>
-                <option value=""></option>
-                {% for key,value in doc_types %}
-                  <option {% if key == info.doc_type %}selected{% endif %} value="{{ key }}">{{ value }}</option>
-                {% endfor %}
-              </select>
-            </div>
-          </div>
+    <div class="sm:col-span-3">
+      <label for="url" class="block text-sm/6 font-medium text-gray-900">{{ _("URL") }}</label>
+      <div class="mt-2">
+        <input type="url" name="url" id="url" class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-xs ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-sky-600 sm:text-sm/6" value="{{ info.url|default_if_none:"" }}">
+      </div>
+    </div>
 
-          <div class="sm:col-span-4">
-            <label for="file" class="block text-sm/6 font-medium text-gray-900">{{ _("File(s)") }}</label>
-            {% if info.id and info.attachments.all %}
-              <span class="mt-2 bg-orange-100 text-orange-700 text-xs font-bold rounded-full px-2 py-1 inline-block">
-                <i class="fa fa-info-circle"></i> Existing files will be replaced when you upload a new file.
-              </span>
-            {% endif %}
-            <div class="mt-2">
-              <input id="file" name="file" type="file" class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-xs ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-sky-600 sm:text-sm/6" multiple>
-            </div>
-          </div>
+    <div class="sm:col-span-3">
+      <label for="doc_type" class="block text-sm/6 font-medium text-gray-900">{{ _("Type") }}</label>
+      <div class="mt-2">
+        <select id="doc_type" name="doc_type" class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-xs ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-sky-600 sm:max-w-xs sm:text-sm/6" required>
+          <option value=""></option>
+          {% for key,value in doc_types %}
+            <option {% if key == info.doc_type %}selected{% endif %} value="{{ key }}">{{ value }}</option>
+          {% endfor %}
+        </select>
+      </div>
+    </div>
 
-          {% if info.id and info.attachments.all %}
-            <div class="col-span-full">
-              <label for="cover-photo" class="block text-sm/6 font-medium text-gray-900">{{ _("Existing file(s)") }}</label>
-              <div class="mt-2 flex rounded-lg border border-dashed border-gray-900/25 px-6 py-10 overflow-hidden">
-                <ul>
-                  {% for each in info.attachments.all %}
-                    <li class="mb-5">
-                      <i class="fa-fw fa fa-{{ each.get_icon }}"></i>
-                      <a href="{{ each.file.url }}">
-                      {{ each }}
-                      </a>
-                      <span class="text-xs/5 text-gray-600">
-                        ({{ each.file.size|filesizeformat }})
-                      </span>
-                    {% if info.doc_type == "SPECIES_LIST" and each.extension != "pdf" %}
-                      <div class="mt-3">
-                        <a class="btn-blue" href="{% url "controlpanel_document_species" info.id %}?file={{ each.id }}">
-                          <i class="fa fa-file-import fa-fw"></i> 
-                          {{ _("Import species") }}
-                        </a>
-                        <a class="ml-3 btn-blue" href="{% url "controlpanel_species_list" %}?file={{ each.id }}">
-                          <i class="fa fa-folder-open fa-fw"></i> 
-                          {{ _("View imported species") }}
-                        </a>
-                      </div>
-                    {% endif %}
-                  </li>
-                  {% endfor %}
-                </ul>
-              </div>
-            </div>
-          {% endif %}
+    <div class="sm:col-span-4">
 
-          <div class="sm:col-span-4">
-            <label for="cover" class="block text-sm/6 font-medium text-gray-900">{{ _("Cover image") }}</label>
-            {% if info.cover_image %}
-              <img src="{{ info.cover_image.thumbnail.url }}" style="max-height:300px" class="rounded-2xl" />
-            {% endif %}
-            <div class="mt-2">
-              <input id="cover" name="cover" type="file" accept="image/png, image/gif, image/jpeg" class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-xs ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-sky-600 sm:text-sm/6" multiple>
-            </div>
-          </div>
+      <label for="cover" class="block text-sm/6 font-medium text-gray-900">{{ _("Cover image") }}</label>
 
+      {% if info.cover_image %}
+        <img src="{{ info.cover_image.thumbnail.url }}" style="max-height:300px" class="rounded-2xl" />
+      {% endif %}
 
-          <div class="col-span-full">
-            <label for="description" class="block text-sm/6 font-medium text-gray-900">{{ _("Description") }}</label>
-            <div class="mt-2">
-              <textarea name="description" id="description" class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-xs ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-sky-600 sm:text-sm/6">{{ info.description|default_if_none:"" }}</textarea>
-            </div>
-          </div>
-
-
-        </div>
+      <div class="mt-2">
+        <input id="cover" name="cover" type="file" accept="image/png, image/gif, image/jpeg" class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-xs ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-sky-600 sm:text-sm/6" multiple>
       </div>
 
-      <div class="border-b border-gray-900/10 pb-12">
-        <h2 class="text-base/7 font-semibold text-gray-900">Settings</h2>
-        <p class="mt-1 text-sm/6 text-gray-600">Details around appearance and other settings.</p>
+    </div>
 
-        <div class="mt-10 space-y-10">
-
-          <fieldset>
-            <legend class="text-sm/6 font-semibold text-gray-900">Publish document</legend>
-            <div class="mt-6 space-y-6">
-              <div class="flex items-center gap-x-3">
-                <input {% if info.is_active %}checked{% endif %} id="is_active" name="is_active" value="1" type="radio" class="size-4 border-gray-300 text-sky-600 focus:ring-sky-600">
-                <label for="is_active" class="block text-sm/6 font-medium text-gray-900">Active</label>
-              </div>
-              <div class="flex items-center gap-x-3">
-                <input {% if not info.is_active %}checked{% endif %} id="is_not_active" name="is_active" value="0" type="radio" class="size-4 border-gray-300 text-sky-600 focus:ring-sky-600">
-                <label for="is_not_active" class="block text-sm/6 font-medium text-gray-900">Inactive</label>
-              </div>
-            </div>
-          </fieldset>
-        </div>
+    <div class="col-span-full">
+      <label for="description" class="block text-sm/6 font-medium text-gray-900">{{ _("Description") }}</label>
+      <div class="mt-2">
+        <textarea name="description" id="description" class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-xs ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-sky-600 sm:text-sm/6">{{ info.description|default_if_none:"" }}</textarea>
       </div>
+    </div>
+
+  </div>
+
+    <h2 class="mt-10 text-base/7 font-semibold text-gray-900">Settings</h2>
+    <p class="mt-1 text-sm/6 text-gray-600">Details around appearance and other settings.</p>
+
+    <div class="mt-10 space-y-10">
+
+      <fieldset>
+        <legend class="text-sm/6 font-semibold text-gray-900">Publish document</legend>
+        <div class="mt-6 space-y-6">
+          <div class="flex items-center gap-x-3">
+            <input {% if info.is_active %}checked{% endif %} id="is_active" name="is_active" value="1" type="radio" class="size-4 border-gray-300 text-sky-600 focus:ring-sky-600">
+            <label for="is_active" class="block text-sm/6 font-medium text-gray-900">Active</label>
+          </div>
+          <div class="flex items-center gap-x-3">
+            <input {% if not info.is_active %}checked{% endif %} id="is_not_active" name="is_active" value="0" type="radio" class="size-4 border-gray-300 text-sky-600 focus:ring-sky-600">
+            <label for="is_not_active" class="block text-sm/6 font-medium text-gray-900">Inactive</label>
+          </div>
+        </div>
+      </fieldset>
     </div>
 
     <div class="mt-6 flex items-center justify-end gap-x-6">
-      <button type="submit" class="px-4 py-2 bg-lime-600 hover:bg-lime-700 text-white font-bold rounded-md focus:outline-hidden focus:ring-3 focus:ring-lime-300">{{ _("Save") }}</button>
+      <button type="submit" class="btn-green">
+        {% if info.id %}
+          {{ _("Save") }}
+        {% else %}
+          {{ _("Next") }} &raquo;
+        {% endif %}
+      </button>
     </div>
-    {% csrf_token %}
-  </form>
 
-</div>
+    {% csrf_token %}
+
+</form>
+
+
+{% else %}
+
+  <ul role="list" class="grid grid-cols-1 gap-6 sm:grid-cols-1 lg:grid-cols-2 mt-10">
+    {% for each in info.attachments.all %}
+      <li class="col-span-1 divide-y divide-gray-200 rounded-lg bg-gray-50 border border-dashed border-gray-400">
+        <div class="flex w-full items-center justify-between space-x-6 p-6">
+          <div class="flex-1 truncate">
+            <div class="flex items-center space-x-3">
+              <h3 class="truncate text-sm font-medium text-gray-900 ">
+                {{ each }}
+              </h3>
+            </div>
+            <p class="text-sm text-gray-500">
+              .{{ each.extension }} {{ _("file") }}, 
+              {{ each.file.size|filesizeformat }}
+              <i class="fa-fw fa fa-{{ each.get_icon }}"></i>
+            </p>
+
+            <p class="mt-1 truncate text-sm text-gray-500 flex justify-between mb-5">
+                <a href="{{ each.file.url }}" class="btn-orange btn-sm">
+                  <i class="fa fa-download"></i>
+                  {{ _("Download") }}
+                </a>
+              <span class="{% if not each.species.count %}badge-warning{% else %}badge bg-white{% endif %}" >
+                {{ each.species.count }} {{ _("species imported") }}
+              </span>
+            </p>
+          </div>
+        </div>
+        <div>
+          <div class="-mt-px flex divide-x divide-gray-200 ">
+            {% if info.doc_type == "SPECIES_LIST" and each.extension != "pdf" %}
+              <div class="flex w-0 flex-1">
+                <a href="{% url "controlpanel_document_species" info.id %}?file={{ each.id }}" class="relative -mr-px bg-sky-700 inline-flex w-0 flex-1 items-center justify-center gap-x-3 rounded-bl-lg border border-transparent py-4 text-sm font-semibold text-white no-underline">
+                  <i class="fa fa-sync-alt fa-fw"></i> 
+                  {{ _("Re-import") }}
+                </a>
+              </div>
+            {% endif %}
+            {% if each.species.count %}
+              <div class="-ml-px flex w-0 flex-1">
+                <a href="{% url "controlpanel_species_list" %}?file={{ each.id }}" class="bg-sky-600 relative inline-flex w-0 flex-1 items-center justify-center gap-x-3 border border-transparent py-4 text-sm font-semibold text-white no-underline">
+                  <i class="fa fa-folder-open fa-fw"></i> 
+                  {{ _("View species") }}
+                </a>
+              </div>
+            {% endif %}
+            <div class="-ml-px flex w-0 flex-1">
+              <a href="?tab=files&amp;delete={{ each.id }}" onclick="javascript:return confirm('{{ _("Are you sure?") }}')" 
+                class="bg-gray-600 relative inline-flex w-0 flex-1 items-center justify-center gap-x-3 rounded-br-lg border border-transparent py-4 text-sm font-semibold text-white no-underline">
+                <i class="fa fa-trash-alt"></i>
+                {{ _("Delete") }}
+              </a>
+            </div>
+          </div>
+        </div>
+      </li>
+    {% endfor %}
+
+    <li class="col-span-1 divide-y divide-gray-200 rounded-lg bg-gray-50 border border-dashed border-gray-400">
+      <form class="space-x-6 p-6" method="post" enctype="multipart/form-data">
+        <label for="file" class="block text-sm/6 font-medium text-gray-900">
+          {% if info.attachments.all and info.doc_type == "SPECIES_LIST" %}
+            {{ _("Replace file") }}
+          {% else %}
+            {{ _("Upload a file") }}
+          {% endif %}
+        </label>
+        <div class="mt-2">
+          <input id="file" name="file" type="file" class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-xs ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-sky-600 sm:text-sm/6" ultiple>
+          <div class="mt-6 flex items-center justify-end gap-x-6">
+            <button type="submit" class="btn-green">
+              {% if info.doc_type == "SPECIES_LIST" %}
+                {{ _("Next") }} &raquo;
+              {% else %}
+                {{ _("Save") }}
+              {% endif %}
+            </button>
+            {% csrf_token %}
+          </div>
+        </div>
+      </form>
+    </li>
+
+  </ul>
+
+{% endif %}
 
 {% endblock %}

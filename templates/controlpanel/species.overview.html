@@ -53,6 +53,13 @@
         <p class="mt-2 text-base/7 font-normal text-gray-600 ">{{ _("Species missing iNat information") }}</p>
       </div>
     </a>
+    <a href="{% url "controlpanel_species_list" %}?orphans" class="p-8 bg-red-100 rounded-2xl no-underline hover:opacity-70">
+      <p class="flex-none text-3xl font-bold tracking-tight text-gray-900 ">{{ orphans }}</p>
+      <div class="sm:w-80 sm:shrink lg:w-auto lg:flex-none">
+        <p class="text-lg font-semibold tracking-tight text-gray-900 ">{{ _("Orphan species") }}</p>
+        <p class="mt-2 text-base/7 font-normal text-gray-600 ">{{ _("Missing a documented vegetation type link") }}</p>
+      </div>
+    </a>
     {% for each in veg_total %}
       <a href="{% url "controlpanel_species_list" %}?vegetation={{ each.vegetation_types__id }}" class="p-8 bg-orange-100 rounded-2xl no-underline hover:opacity-70">
         <p class="flex-none text-3xl font-bold tracking-tight text-gray-900 ">{{ each.count }}</p>

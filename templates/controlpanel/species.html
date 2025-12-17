@@ -2,6 +2,14 @@
 {% load static %}
 {% load ucp_extras %}
 
+{% block css %}
+  {% if not SITE in info.site.all %}
+    <style type="text/css">
+    form button{display:none}
+    </style>
+  {% endif %}
+{% endblock %}
+
 {% block content %}
   {% if info.id %}
     <a href="{% url "species" info.id %}" class="btn float-right"><i class="fa fa-file"></i></a>
@@ -19,6 +27,18 @@
     <h1>Add species</h1>
   {% endif %}
 
+  {% if not SITE in info.site.all %}
+    <div class="alert alert-warning flex justify-between">
+      <span>
+      {{ _("This species is not activated for use on this website:") }}
+      {{ SITE }}
+      <br>
+      {{ _("If you want to edit the information, please activate it first.") }}
+      </span>
+      <a href="?activate" class="flex items-center btn-orange">{{ _("Activate") }}</a>
+    </div>
+  {% endif %}
+
   <div class="{% if not info.id %}hidden{% else %}sm:block{% endif %}">
     <div class="border-b border-gray-200">
       <nav class="-mb-px flex space-x-8 tabs" aria-label="Tabs">
@@ -33,7 +53,12 @@
     </div>
   </div>
 
-<form method="post" action="" class="space-y-6 p-6">
+{% if SITE in info.site.all %}
+  <form method="post" action="" class="space-y-6 p-6">
+{% else %}
+  <form disabled class="space-y-6 p-6 opacity-60">
+{% endif %}
+
   {% csrf_token %}
   
   <section class="general">
@@ -267,7 +292,25 @@
   </div>
 
   {% if info.id %}
-    <button name="delete" value="true" onclick="javascript:return confirm('Are you sure?')" type="submit" class="btn-danger"><i class="fa fa-trash fa-fw"></i> Remove {{ info }}</button>
+    <div class="p-5 bg-gray-100 rounded">
+      <h2>{{ _("Additional options") }}</h2>
+      <button 
+        name="delete" 
+        value="true" 
+        onclick="javascript:return confirm('{{ _("Are you sure you want to permanentely remove this record?") }}')" 
+        type="submit" 
+        class="btn-danger"
+      >
+        <i class="fa fa-trash fa-fw"></i> 
+        {{ _("Remove") }}
+        {{ info }}
+      </button>
+
+      <button type="submit" class="btn-orange" name="deactivate" value="true">
+        <i class="fa fa-ban"></i>
+        {{ _("Deactivate") }}
+      </button>
+    </div>
   {% endif %}
 
 </form>

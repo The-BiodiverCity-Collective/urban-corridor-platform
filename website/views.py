@@ -2304,19 +2304,25 @@ def controlpanel_documents(request):
     return render(request, "controlpanel/documents.html", context)
 
 @staff_member_required
-def controlpanel_document(request, id=None):
+def controlpanel_document(request, id=None, tab=None):
 
     info = Document()
+    site = get_site(request)
+    action = Log.LogAction.CREATE
+
     if id:
-        info = Document.objects.get(pk=id)
+        info = Document.objects.get(pk=id, site=site)
         action = Log.LogAction.UPDATE
     elif "type" in request.GET:
         info.doc_type = request.GET["type"]
 
-    site = get_site(request)
-    action = Log.LogAction.CREATE
+    if "delete" in request.GET:
+        file = Attachment.objects.get(pk=request.GET["delete"], attached_to=info)
+        file.delete()
+        messages.success(request, _("The file was deleted."))
+        return redirect(request.path)
 
-    if request.method == "POST":
+    if request.method == "POST" and not tab:
         info.name = request.POST["name"]
         info.author = request.POST["author"]
         info.url = request.POST.get("url")
@@ -2330,25 +2336,33 @@ def controlpanel_document(request, id=None):
         info.save()
         log_action(request, action, f"Document: {info.name}")
 
-        uploaded_files = request.FILES.getlist("file")
+        if action == Log.LogAction.CREATE:
+            messages.success(request, _("The document was saved. You can now upload the relevant files."))
+            return redirect(reverse("controlpanel_document_files", args=[info.id]))
+        else:
+            return redirect(reverse("controlpanel_documents"))
 
+    if request.method == "POST" and tab == "files":
+        uploaded_files = request.FILES.getlist("file")
         if uploaded_files:
             info.attachments.all().delete()
 
             for uploaded_file in uploaded_files:
-                Attachment.objects.create(file=uploaded_file, attached_to=info)
+                file = Attachment.objects.create(file=uploaded_file, attached_to=info)
 
-        messages.success(request, "Information was saved.")
-        if info.doc_type == "SPECIES_LIST":
-            return redirect(reverse("controlpanel_document", args=[info.id]))
-        else:
-            return redirect(reverse("controlpanel_documents"))
+            if info.doc_type == "SPECIES_LIST":
+                messages.success(request, _("File upload successful. Please review the file contents below and import the species if all looks good."))
+                return redirect(reverse("controlpanel_document_species", args=[info.id]) + "?file=" + str(file.id))
+            else:
+                messages.success(request, _("File upload successful. You can manage them below."))
+                return redirect(request.path)
 
     context = {
         "controlpanel": True,
         "menu": "documents",
         "info": info,
         "doc_types": Document.DOC_TYPES,
+        "tab": tab,
     }
     return render(request, "controlpanel/document.html", context)
 
@@ -2359,43 +2373,51 @@ def controlpanel_document_species(request, id):
     site = get_site(request)
 
     file = file_info.file
-
-    # We assume 2 sheets; one Meta Data followed by Plants; we read the 2nd
-    # We assume a top-row which is not actually the header; let's drop it (header=1)
-    df = pd.read_excel(file, sheet_name=1, header=1)
-
-    # Strip all the column names
-    df.columns = df.columns.str.strip()
-
-    header_names = df.columns.tolist()
+    header_names = []
     existing_features = []
     nonexisting_features = []
     features = {}
     other_characteristics = ["Time (flowering)", "Name", "Colour (flower)", "Form"]
+    error = None
 
-    MONTH_NAME_TO_ID = {
-        "jan": 1,
-        "feb": 2,
-        "mar": 3,
-        "apr": 4,
-        "may": 5,
-        "jun": 6,
-        "jul": 7,
-        "aug": 8,
-        "sep": 9,
-        "oct": 10,
-        "nov": 11,
-        "dec": 12,
-    }
+    try:
+        # We assume 2 sheets; one Meta Data followed by Plants; we read the 2nd
+        # We assume a top-row which is not actually the header; let's drop it (header=1)
+        df = pd.read_excel(file, sheet_name=1, header=1)
 
-    for each in header_names:
-        if each in other_characteristics:
-            existing_features.append(each)
-        elif feature := SpeciesFeatures.objects.filter(name__iexact=each).first():
-            existing_features.append(each)
-            features[each] = feature
-        else:
-            nonexisting_features.append(each)
+        # Strip all the column names
+        df.columns = df.columns.str.strip()
+        header_names = df.columns.tolist()
+
+    except Exception as e:
+        error = _("There was a problem reading this file. Are you sure it is formatted correctly? The following error occurred: ") + "<br><strong>" + str(e) + "</strong>"
+        messages.error(request, error)
+
+    if header_names:
+
+        MONTH_NAME_TO_ID = {
+            "jan": 1,
+            "feb": 2,
+            "mar": 3,
+            "apr": 4,
+            "may": 5,
+            "jun": 6,
+            "jul": 7,
+            "aug": 8,
+            "sep": 9,
+            "oct": 10,
+            "nov": 11,
+            "dec": 12,
+        }
+
+        for each in header_names:
+            if each in other_characteristics:
+                existing_features.append(each)
+            elif feature := SpeciesFeatures.objects.filter(name__iexact=each).first():
+                existing_features.append(each)
+                features[each] = feature
+            else:
+                nonexisting_features.append(each)
 
     if request.method == "POST":
         vegetation_type = VegetationType.objects.get(pk=request.POST["vegetation_type"])
@@ -2497,8 +2519,8 @@ def controlpanel_document_species(request, id):
                                 species.features.add(features[each])
                                 log.features.add(features[each])
 
-            messages.success(request, "The species were linked to the selected vegetation type.")
-            return redirect(reverse("controlpanel_species_list") + "?file=" + request.GET["file"])
+            messages.success(request, _("The species were imported successfully."))
+            return redirect(reverse("controlpanel_species_list") + "?import=true&file=" + request.GET["file"])
 
         except Exception as e:
             error = _("There was a problem with this file. Are you sure it is formatted correctly? See below the error: ") + str(e)
@@ -2508,35 +2530,34 @@ def controlpanel_document_species(request, id):
     alerts = []
     new_species = []
     species_count = 0
-    error = None
-    try:
-        for index, row in df.iterrows():
-            # We take the name row, and we check if each species exists. We then add a column with the result.
-            name = row["Name"]
-            if name: # Check how to deal with NaN fields of empty rows TODO
-                name_words = name.split()
+    if not error:
+        try:
+            for index, row in df.iterrows():
+                # We take the name row, and we check if each species exists. We then add a column with the result.
+                name = row["Name"]
+                if name: # Check how to deal with NaN fields of empty rows TODO
+                    name_words = name.split()
 
-                if len(name_words) < 2:
-                    alerts.append(_("Species names must contain genus + species. This row is invalid and will NOT be added."))
-                    results.append("✖️")
-                else:
-                    alerts.append("")
-                    exists = Species.objects.filter(name=name.strip()).exists()
-                results.append("✓" if exists else "✖️")
-                species_count += 1
-                if not exists:
-                    new_species.append(name)
+                    if len(name_words) < 2:
+                        alerts.append(_("Species names must contain genus + species. This row is invalid and will NOT be added."))
+                        results.append("✖️")
+                    else:
+                        alerts.append("")
+                        exists = Species.objects.filter(name=name.strip()).exists()
+                    results.append("✓" if exists else "✖️")
+                    species_count += 1
+                    if not exists:
+                        new_species.append(name)
 
-        df.insert(1, "Exists", results)
-        df.insert(2, "Details", alerts)
-        df = df.fillna("")
-        html_table = df.to_html(classes="table", escape=False)
+            df.insert(1, "Exists", results)
+            df.insert(2, "Details", alerts)
+            df = df.fillna("")
+            html_table = df.to_html(classes="table", escape=False)
 
-    except Exception as e:
-        error = _("There was a problem with your file. TIP: Make sure the 'Name' column is present.")
-        messages.error(request, error)
-        error = _("Specific error: ") + str(e)
-        messages.error(request, error)
+        except Exception as e:
+            error = _("There was a problem with your file. Make sure it is formatted according to the template.")
+            error += _("Specific error: ") + "<br><strong>" + str(e) + "</strong>"
+            messages.error(request, error)
 
     context = {
         "controlpanel": True,
@@ -2876,6 +2897,7 @@ def controlpanel_species_overview(request):
     plant_forms = PlantForm.objects.all().annotate(
         total=Count("species", filter=Q(species__site=site))
     )
+    orphans = species.exclude(species_links__vegetation_type__in=site.vegetation_types.all()).count()
 
     context = {
         "controlpanel": True,
@@ -2888,6 +2910,7 @@ def controlpanel_species_overview(request):
         "source_docs": source_docs,
         "features": features,
         "plant_forms": plant_forms,
+        "orphans": orphans,
     }
     return render(request, "controlpanel/species.overview.html", context)
 
@@ -2898,9 +2921,13 @@ def controlpanel_species_list(request):
     site = get_site(request)
     species = Species.objects.filter(site=site)
     filter_text = []
+    source = None
 
     if "file" in request.GET:
         species = species.filter(species_links__file_id=request.GET["file"])
+        file = Attachment.objects.get(pk=request.GET["file"])
+        filter_text.append(_("File") + ": " + str(file.attached_to))
+        source = file.attached_to
     elif "site" in request.GET:
         site = Site.objects.get(pk=request.GET["site"])
         species = species.filter(site=site)
@@ -2926,6 +2953,9 @@ def controlpanel_species_list(request):
     elif "no_inat" in request.GET:
         species = species.filter(~Q(meta_data__has_key="inat"))
         filter_text.append(_("iNaturalist information unavailable"))
+    elif "orphans" in request.GET:
+        species = species.exclude(species_links__vegetation_type__in=site.vegetation_types.all())
+        filter_text.append(_("Orphaned species"))
     elif "name" in request.GET:
         name = request.GET["name"].strip()
         species = Species.objects.filter(name__icontains=name)
@@ -2963,6 +2993,7 @@ def controlpanel_species_list(request):
         "title": _("Species list"),
         "load_datatables": True,
         "filter_text": filter_text,
+        "source": source,
     }
 
     if "descriptions" in request.GET:
@@ -3009,12 +3040,22 @@ def controlpanel_species(request, id=None):
 
     languages = Language.objects.all()
 
+    if "activate" in request.GET:
+        info.site.add(get_site(request))
+        messages.success(request, _("Species was activated."))
+        return redirect(request.path)
+
     if request.method == "POST":
 
         if "delete" in request.POST:
             info.delete()
-            messages.success(request, "Species was removed from the database")
+            messages.success(request, _("Species was removed from the database."))
             return redirect(reverse("controlpanel_species_list"))
+
+        if "deactivate" in request.POST:
+            info.site.remove(get_site(request))
+            messages.success(request, _("Species was deactivated."))
+            return redirect(request.path)
 
         if id:
             info.features.clear()
@@ -3069,6 +3110,7 @@ def controlpanel_species(request, id=None):
                     species_text.delete()
 
         messages.success(request, "Information was saved.")
+        return redirect(request.path)
 
     # Put all the text inside a dictionary so we can retrieve it and fill inputs/textareas
     texts = {}
