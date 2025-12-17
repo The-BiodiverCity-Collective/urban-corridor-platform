@@ -62,7 +62,7 @@
         </td>
       {% endif %}
 
-      <td>
+      <td data-sort="-{{ each.features.count }}">
         <div class="mb-1">
         {% for feature in each.features.all %}
           {% ifchanged feature.species_type %}</div><div>{% endifchanged %}

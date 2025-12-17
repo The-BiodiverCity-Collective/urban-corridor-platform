@@ -31,7 +31,7 @@
   {% if request.GET.online_tailwind %}
     <script src="https://unpkg.com/@tailwindcss/browser@4"></script>
   {% else %}
-    <link rel="stylesheet" href="{% static "css/output.css" %}?id=1255-01">
+    <link rel="stylesheet" href="{% static "css/output.css" %}?id=1255-04">
   {% endif %}
   <link rel="icon" href="{{ SITE.logo.thumbnail.url }}" type="image/png">
 
@@ -172,9 +172,12 @@
 <script type="text/javascript">
 $(function(){
 
+  const TEXT_ACTIVE = "text-sky-600";
+  const TEXT_INACTIVE = "text-gray-900";
+
   function closeNav() {
-    $(".mainnav .fa-angle-up").removeClass("fa-angle-up text-sky-600").addClass("fa-angle-down text-gray-900");
-    $(".mainnav a.hovermenu.text-sky-600").addClass("text-gray-900").removeClass("text-sky-600");
+    $(".mainnav .fa-angle-up").removeClass("fa-angle-up " + TEXT_ACTIVE).addClass("fa-angle-down " + TEXT_INACTIVE);
+    $(".mainnav a.hovermenu." + TEXT_ACTIVE).addClass(TEXT_INACTIVE).removeClass(TEXT_ACTIVE);
     $(".mainnav .dropdown").css({
       opacity: 0,
       transform: "translateY(-1rem)",
@@ -190,8 +193,8 @@ $(function(){
       closeNav();
     } else {
       closeNav();
-      $(this).removeClass("text-gray-900").addClass("text-sky-600");
-      $(this).find(".fa").removeClass("fa-angle-down").addClass("fa-angle-up text-sky-600");
+      $(this).removeClass(TEXT_INACTIVE).addClass(TEXT_ACTIVE);
+      $(this).find(".fa").removeClass("fa-angle-down").addClass("fa-angle-up " + TEXT_ACTIVE);
       $(dropdown).css({
         opacity: 1,
         transform: "translateY(0)",

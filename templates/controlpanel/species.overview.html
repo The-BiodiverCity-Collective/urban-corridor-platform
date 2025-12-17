@@ -8,7 +8,7 @@
 
 <div class="bg-gray-100 p-10 mb-10 rounded-2xl">
   <h2>Search entire species list</h2>
-  <form method="get" action="" class="space-y-6">
+  <form method="get" action="{% url "controlpanel_species_list" %}" class="space-y-6">
 
     <div class="mb-4">
       <input type="text" placeholder="Species name" name="name" id="id_name" value="{{ request.GET.name }}" class="mt-1" required>

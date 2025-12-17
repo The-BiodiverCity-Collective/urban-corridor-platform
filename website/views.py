@@ -14,7 +14,7 @@ from django.core import serializers
 from django.core.files import File
 from django.core.mail import send_mail
 from django.core.paginator import Paginator
-from django.db.models import OuterRef, Subquery, Value, CharField, Q, Count, Max
+from django.db.models import OuterRef, Subquery, Value, CharField, Q, F, Count, Max
 from django.forms import modelform_factory
 from django.http import JsonResponse, HttpResponse, Http404
 from django.shortcuts import render, get_object_or_404, redirect
@@ -2095,6 +2095,19 @@ def favicon(request):
 
 @staff_member_required
 def controlpanel(request):
+
+    # TEMP fixing all small caps species
+    from django.db.models.functions import Lower
+    if "lowcaps" in request.GET:
+        for each in SpeciesText.objects.filter(common_name__isnull=False):
+            l = each.common_name
+            l = l.lower()
+            if l == each.common_name:
+                each.common_name = l.title()
+                each.save()
+
+    # END TEMP FIX
+
     context = {
         "controlpanel": True,
         "menu": "index",
@@ -3028,7 +3041,7 @@ def controlpanel_species_list(request):
     elif "name" in request.GET:
         name = request.GET["name"].strip()
         species = Species.objects.filter(name__icontains=name)
-    
+
     if "check_names" in request.GET:
         include_ids = []
         for each in species:
@@ -3111,6 +3124,7 @@ def controlpanel_species(request, id=None):
         info = Species()
 
     languages = Language.objects.all()
+    redirect_url = request.GET.get("next") if "next" in request.GET else reverse("controlpanel_species_list")
 
     if "activate" in request.GET:
         info.site.add(get_site(request))
@@ -3122,12 +3136,12 @@ def controlpanel_species(request, id=None):
         if "delete" in request.POST:
             info.delete()
             messages.success(request, _("Species was removed from the database."))
-            return redirect(reverse("controlpanel_species_list"))
+            return redirect(redirect_url)
 
         if "deactivate" in request.POST:
             info.site.remove(get_site(request))
             messages.success(request, _("Species was deactivated."))
-            return redirect(request.path)
+            return redirect(redirect_url)
 
         if id:
             info.features.clear()
@@ -3182,7 +3196,8 @@ def controlpanel_species(request, id=None):
                     species_text.delete()
 
         messages.success(request, "Information was saved.")
-        return redirect(request.path)
+
+        return redirect(redirect_url)
 
     # Put all the text inside a dictionary so we can retrieve it and fill inputs/textareas
     texts = {}

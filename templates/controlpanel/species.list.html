@@ -80,7 +80,7 @@
     <tr {% if each.meta_data.inat %}class="inat"{% endif %}>
       <td>
         <em>
-        <a href="{% url "controlpanel_species" each.id %}">{{ each.name }}</a>
+        <a href="{% url "controlpanel_species" each.id %}?next={{ request.get_full_path }}">{{ each.name }}</a>
         </em>
         - 
         {% if each.name_en %}

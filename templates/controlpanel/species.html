@@ -12,9 +12,9 @@
 
 {% block content %}
   {% if info.id %}
-    <a href="{% url "species" info.id %}" class="btn float-right"><i class="fa fa-file"></i></a>
+    <a href="{% url "species" info.id %}" class="btn-orange btn-sm float-right"><i class="fa fa-file"></i> {{ _("View") }}</a>
     {% if info.inat_id %}
-      <a class="float-right" href="https://www.inaturalist.org/taxa/{{ info.inat_id }}"><img style="width:20px" class="inline mr-2" src="{% static "img/inat.icon.png" %}"></a>
+      <a class="btn-white btn-sm mr-1 float-right" href="https://www.inaturalist.org/taxa/{{ info.inat_id }}"><img style="width:15px" class="inline mr-1" src="{% static "img/inat.icon.png" %}"> iNat profile</a>
     {% endif %}
     <h1>
       {% if info.name_en %}
@@ -306,7 +306,7 @@
         {{ info }}
       </button>
 
-      <button type="submit" class="btn-orange" name="deactivate" value="true">
+      <button type="submit" class="btn-yellow" name="deactivate" value="true">
         <i class="fa fa-ban"></i>
         {{ _("Deactivate") }}
       </button>
