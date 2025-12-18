@@ -46,19 +46,27 @@
         </li>
       {% endif %}
       </ul>
+      <a class="btn-blue btn-sm mr-2" href="{% url "species_search" %}{% querystring %}"><i class="fa fa-pencil mr-1"></i> {{ _("Edit search") }}</a> 
 
       {% if vegetation_type %}
-        <p>Vegetation type: <a href="{{ vegetation_type.get_absolute_url }}">{{ vegetation_type }}</a></p>
+        <p>{{ _("Vegetation type") }}: <a href="{{ vegetation_type.get_absolute_url }}">{{ vegetation_type }}</a></p>
       {% endif %}
 
       <p class="absolute top-2 right-2">
         {% if vegetation_type %}
-        <a class="btn btn-secondary" href="{% url "vegetation_type_species" vegetation_type.slug %}">{{ _("New search") }}</a>
+          <a class="btn btn-secondary" href="{% url "vegetation_type_species" vegetation_type.slug %}">{{ _("New search") }}</a>
         {% else %}
           <a class="btn-orange btn-sm mr-2" href="{% url "species_search" %}"><i class="fa fa-search mr-1"></i> {{ _("New search") }}</a> 
           <a class="btn-orange btn-sm "href="{% url "species" %}"><i class="fa fa-seedling mr-1"></i> {{ _("Explore species") }}</a>
         {% endif %}
       </p>
+
+      <div class="absolute bottom-2 right-2 text-center">
+        <span class="text-black font-bold block text-5xl">{{ species_list.count }}</span>
+        <span class="text-gray-700 text-sm">{{ _("species found") }}</span>
+      </div>
+
+
     </div>
 
   {% else %}

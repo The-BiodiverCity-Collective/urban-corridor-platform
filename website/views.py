@@ -691,7 +691,6 @@ def species_search(request, vegetation_type=None):
         "family": families,
         "load_datatables": True,
         "samples": samples,
-        "all": species.count(),
         "features": features,
         "vegetation_types": veg_types,
         "vegetation_type": vegetation_type,
@@ -699,6 +698,7 @@ def species_search(request, vegetation_type=None):
         "menu": "species",
         "show_total_box": True,
         "page": "search",
+        "get_features": request.GET.getlist("feature"),
     }
     return render(request, "species/search.html", context)
 
