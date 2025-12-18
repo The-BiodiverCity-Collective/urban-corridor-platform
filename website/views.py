@@ -2250,7 +2250,9 @@ def controlpanel_page(request, id=None):
     else:
         if request.method == "POST":
             info.name = request.POST["name"]
-            info.content = request.POST.get("description")
+            content = request.POST.get("description")
+            string_to_remove = ' rel="noopener noreferrer" target="_blank"' # Auto-insert by editor
+            info.content = content.replace(string_to_remove, "")
             info.slug = request.POST.get("slug")
             info.position = 0
             info.page_type = page_type

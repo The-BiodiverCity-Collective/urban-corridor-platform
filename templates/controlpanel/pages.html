@@ -19,8 +19,8 @@
     <tr>
       <td><a href="{% url "controlpanel_page" each.id %}">{{ each.name }}</td>
       <td>
-        <a class="btn-blue btn-sm" href="{% url "controlpanel_page" each.id %}">{{ _("Edit page") }}</a>
-        <a class="btn-blue btn-sm" href="{% url "controlpanel_page" each.id %}?photos">{{ _("Manage photos") }}</a>
+        <a class="btn-blue btn-sm" href="{% url "controlpanel_page" each.id %}"><i class="fa fa-pencil mr-1"></i> {{ _("Edit page") }}</a>
+        <a class="btn-blue btn-sm" href="{% url "controlpanel_page" each.id %}?photos"><i class="fa fa-image mr-1"></i> {{ _("Manage photos") }}</a>
         <a class="btn-orange btn-sm" href="{{ each.get_absolute_url }}">{{ _("View page") }}</a>
       </td>
       <td>{% if each.is_active %}<i class="fa fa-check text-lime-700"></i>{% else %}<i class="fa fa-ban text-red-700"></i>{% endif %}</td>

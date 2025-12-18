@@ -87,10 +87,42 @@
           </div>
         {% endif %}
 
+        {% if info.page_type == 1 %}
+          <div class="flex mt-10">
+            <div class="flex-1">
+              <div class="space-y-10">
+                <fieldset>
+                  <legend class="text-sm/6 font-semibold text-gray-900">{{ _("Design") }}</legend>
+                  <div class="mt-6 space-y-2">
+                    <div class="flex items-center gap-x-3">
+                      <input {% if info.meta_data.design != "multicol" %}checked{% endif %} id="multicol" name="multicol" value="0" type="radio" class="size-4 border-gray-300 text-sky-600 focus:ring-sky-600">
+                      <label for="multicol" class="block text-sm/6 font-medium text-gray-900">{{ _("Standard design") }}</label>
+                    </div>
+                    <div class="flex items-center gap-x-3">
+                      <input {% if info.meta_data.design == "multicol" %}checked{% endif %} id="multicol-y" name="multicol" value="1" type="radio" class="size-4 border-gray-300 text-sky-600 focus:ring-sky-600">
+                      <label for="multicol-y" class="block text-sm/6 font-medium text-gray-900">{{ _("Multi-column") }}</label>
+                    </div>
+                  </div>
+                </fieldset>
+              </div>
+            </div>
+            <div class="flex-1">
+              <div class="col-span-full">
+                <label for="next_page" class="block text-sm/6 font-medium text-gray-900">{{ _("Next page link") }}</label>
+                <div class="mt-2">
+                  <input type="text" placeholder="{{ _("Link name") }}" name="next_page" id="next_page" class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-xs ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-sky-600 sm:text-sm/6" value="{{ info.meta_data.next }}">
+                  <input type="text" placeholder="{{ _("URL") }}" name="next_page" id="next_page" class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-xs ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-sky-600 sm:text-sm/6" value="{{ info.meta_data.next_link }}">
+                </div>
+              </div>
+            </div>
+          </div>
+
+        {% endif %}
+
         <div class="mt-10 space-y-10">
           <fieldset>
             <legend class="text-sm/6 font-semibold text-gray-900">{{ _("Published?") }}</legend>
-            <div class="mt-6 space-y-6">
+            <div class="mt-6 space-y-2">
               <div class="flex items-center gap-x-3">
                 <input {% if info.is_active %}checked{% endif %} id="is_active" name="is_active" value="1" type="radio" class="size-4 border-gray-300 text-sky-600 focus:ring-sky-600">
                 <label for="is_active" class="block text-sm/6 font-medium text-gray-900">{{ _("Active") }}</label>
@@ -102,6 +134,7 @@
             </div>
           </fieldset>
         </div>
+
 
         <div class="mt-6 flex items-center justify-end gap-x-6">
           <button type="submit" class="px-4 py-2 bg-lime-600 hover:bg-lime-700 text-white font-bold rounded-md focus:outline-hidden focus:ring-3 focus:ring-lime-300">
