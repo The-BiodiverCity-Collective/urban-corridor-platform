@@ -3,7 +3,7 @@
 {% load ucp_extras %}
 
 {% block css %}
-  {% if not SITE in info.site.all %}
+  {% if info.id and not SITE in info.site.all %}
     <style type="text/css">
     form button{display:none}
     </style>
@@ -27,7 +27,7 @@
     <h1>Add species</h1>
   {% endif %}
 
-  {% if not SITE in info.site.all %}
+  {% if info.id and not SITE in info.site.all %}
     <div class="alert alert-warning flex justify-between">
       <span>
       {{ _("This species is not activated for use on this website:") }}
@@ -53,7 +53,7 @@
     </div>
   </div>
 
-{% if SITE in info.site.all %}
+{% if not info.id or SITE in info.site.all %}
   <form method="post" action="" class="space-y-6 p-6">
 {% else %}
   <form disabled class="space-y-6 p-6 opacity-60">
