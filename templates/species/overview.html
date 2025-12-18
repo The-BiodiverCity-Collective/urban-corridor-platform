@@ -17,23 +17,27 @@
   </div>
 {% endif %}
 
+<div class="mb-5">
 {% with species_list=samples %}
   {% include "species/_photos.html" %}
 {% endwith %}
-
-<h2 class="mt-5">{{ _("Browse by form") }}</h2>
-<div class="container mx-auto mb-10">
-  <div class="grid lg:grid-cols-6 gap-4 sm:grid-cols-4">
-    {% for each in plant_forms %}
-      <a href="{% url "species_list" %}?plant_form={{ each.id }}" class="p-4 bg-gray-100 rounded-2xl no-underline hover:opacity-70">
-        <p class="flex-none text-3xl font-bold tracking-tight text-gray-900 ">{{ each.total }}</p>
-        <div class="sm:w-80 sm:shrink lg:w-auto lg:flex-none">
-          <p class="text-lg font-semibold tracking-tight text-gray-900 ">{{ each }}</p>
-        </div>
-      </a>
-    {% endfor %}
-  </div>
 </div>
+
+{% if SITE.id == 1 %}
+  <h2>{{ _("Browse by form") }}</h2>
+  <div class="container mx-auto mb-10">
+    <div class="grid lg:grid-cols-6 gap-4 sm:grid-cols-4">
+      {% for each in plant_forms %}
+        <a href="{% url "species_list" %}?plant_form={{ each.id }}" class="p-4 bg-gray-100 rounded-2xl no-underline hover:opacity-70">
+          <p class="flex-none text-3xl font-bold tracking-tight text-gray-900 ">{{ each.total }}</p>
+          <div class="sm:w-80 sm:shrink lg:w-auto lg:flex-none">
+            <p class="text-lg font-semibold tracking-tight text-gray-900 ">{{ each }}</p>
+          </div>
+        </a>
+      {% endfor %}
+    </div>
+  </div>
+{% endif %}
 
 <div class="flex justify-between">
   <h2>{{ _("Browse by plant feature") }}</h2>
@@ -54,12 +58,12 @@
 
 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-4 mt-10">
   <div>
-    <h2>Browse by genus</h2>
+    <h2>{{ _("Browse by genus") }}</h2>
     <table class="table table-striped datatable">
       <thead>
         <tr>
-          <th>Genus</th>
-          <th>Species</th>
+          <th>{{ _("Genus") }}</th>
+          <th>{{ _("Species") }}</th>
         </tr>
       </thead>
       <tbody>
@@ -73,12 +77,12 @@
     </table>
   </div>
   <div>
-    <h2>Browse by family</h2>
+    <h2>{{ _("Browse by family") }}</h2>
     <table class="table table-striped datatable">
       <thead>
         <tr>
-          <th>Family</th>
-          <th>Species</th>
+          <th>{{ _("Family") }}</th>
+          <th>{{ _("Species") }}</th>
         </tr>
       </thead>
       <tbody>
@@ -94,13 +98,13 @@
 </div>
 
 {% if vegetation_types.count > 1 %}
-  <div>
+  <div class="mt-5">
     <h2>Browse by vegetation type</h2>
     <table class="table table-striped datatable">
       <thead>
         <tr>
-          <th>Vegetation type</th>
-          <th>Species</th>
+          <th>{{ _("Vegetation type") }}</th>
+          <th>{{ _("Species") }}</th>
         </tr>
       </thead>
       <tbody>

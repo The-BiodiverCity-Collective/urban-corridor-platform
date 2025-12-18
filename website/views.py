@@ -655,7 +655,7 @@ def species_overview(request, vegetation_type=None):
         "show_total_box": True,
         "page": "all_species",
     }
-    return render(request, "species.overview.html", context)
+    return render(request, "species/overview.html", context)
 
 def species_search(request, vegetation_type=None):
 
@@ -700,11 +700,23 @@ def species_search(request, vegetation_type=None):
         "show_total_box": True,
         "page": "search",
     }
-    return render(request, "species.search.html", context)
+    return render(request, "species/search.html", context)
 
-def species_list(request, genus=None, family=None):
+def species_list(request, genus=None, family=None, vegetation_type=None):
     site = get_site(request)
-    species = Species.objects.filter(site=site)
+    species = Species.objects.filter(site=site) \
+        .prefetch_related("features").all() \
+        .select_related("plant_form")
+
+    view = request.GET.get("view")
+    if view == "photos":
+        species = species.select_related("photo")
+    elif view == "photos-extended" or view == "photos-data":
+        species = species.prefetch_related("photos").all()
+    if view == "table-extended":
+        species = species.prefetch_related("vegetation_types").all()
+        species = species.prefetch_related("colors").all()
+
 
     if genus:
         genus = get_object_or_404(Genus, pk=genus)
@@ -715,29 +727,11 @@ def species_list(request, genus=None, family=None):
         species = species.filter(family=family)
         full_list = Family.objects.all()
 
-    vegetation_type = None
     if "vegetation_type" in request.GET:
         vegetation_type = VegetationType.objects.get(pk=request.GET["vegetation_type"])
         species = species.filter(vegetation_types=vegetation_type)
-
-    full_list = full_list.annotate(total=Count("species"))
-    context = {
-        "load_datatables": True,
-        "genus": genus,
-        "family": family,
-        "species_list": species,
-        "full_list": full_list,
-        "menu": "species",
-    }
-    return render(request, "species.all.html", context)
-
-def species_full_list(request):
-    site = get_site(request)
-    species = Species.objects.filter(site=site)
-
-    vegetation_type = None
-    if "vegetation_type" in request.GET:
-        vegetation_type = VegetationType.objects.get(pk=request.GET["vegetation_type"])
+    elif vegetation_type:
+        vegetation_type = VegetationType.objects.get(slug=vegetation_type)
         species = species.filter(vegetation_types=vegetation_type)
 
     plant_form = None
@@ -788,13 +782,7 @@ def species_full_list(request):
         "in_garden": in_garden,
     }
 
-    if "expand" in request.GET:
-        context["table_show_flowering"] = True
-        context["table_show_colors"] = True
-        context["table_show_form"] = True
-        context["species"] = species.prefetch_related("colors").all()
-
-    return render(request, "species.all.html", context)
+    return render(request, "species/list.html", context)
 
 def rehabilitation_assessment(request, title="Assess and imagine"):
     if "next" in request.POST:
@@ -888,7 +876,7 @@ def species(request, id):
         "photo": photo,
     }
 
-    return render(request, "species.html", context)
+    return render(request, "species/profile.html", context)
 
 def species_sources(request):
     site = get_site(request)
@@ -899,7 +887,7 @@ def species_sources(request):
         "title": _("Species source document"),
         "page": "sources",
     }
-    return render(request, "species.sources.html", context)
+    return render(request, "species/sources.html", context)
 
 def species_source(request, id):
     site = get_site(request)
@@ -913,7 +901,7 @@ def species_source(request, id):
         "title": info.name,
     }
 
-    return render(request, "species.source.html", context)
+    return render(request, "species/source.html", context)
 
 def gardens(request):
     site = get_site(request)

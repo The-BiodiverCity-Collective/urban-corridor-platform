@@ -56,26 +56,4 @@
 
 </div>
 
-{% if vegetation_types.count > 1 %}
-  <div>
-    <h2>Browse by vegetation type</h2>
-    <table class="table table-striped datatable">
-      <thead>
-        <tr>
-          <th>Vegetation type</th>
-          <th>Species</th>
-        </tr>
-      </thead>
-      <tbody>
-      {% for each in vegetation_types %}
-        <tr {% if each == vegetation_type %}class="bg-primary text-light"{% endif %}>
-          <td><a href="{% url "vegetation_type_species" each.slug %}">{{ each }}</a></td>
-          <td>{{ each.total }}</td>
-        </tr>
-      {% endfor %}
-      </tbody>
-    </table>
-  </div>
-{% endif %}
-
 {% endblock %}
