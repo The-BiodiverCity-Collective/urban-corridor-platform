@@ -16,16 +16,32 @@
       <div class="mt-6 text-lg/8 text-gray-600">
         {{ page_info.get_content }}
       </div>
-      <div class="mt-6 text-lg/8 text-gray-600">
-        Your garden: 
+      {% if not "new" in request.GET %}
+        <div class="mt-6 text-lg/8 text-gray-600">
+          {{ _("Your garden") }}
           {% if garden %}
             <span class="badge font-bold bg-lime-50 text-lg">{{ garden }}</span>
+            {% if not request.user.is_authenticated %}
+            <p class="mt-5">
+              {{ _("If you want to save your garden or manage multiple gardens, please create an account.") }}
+            </p>
+            <div class="mt-3">
+              <a class="btn-blue mr-5" href="{% url "create_account" %}?next={{ request.get_full_path }}">{{ _("Create account") }}</a>
+              <a href="{% url "login" %}">{{ _("Log in") }}</a>
+            </div>
+            {% else %}
+            <div class="mt-10 text-sm">
+              <a class="text-gray-700" href="?new">{{ _("Create a new garden") }}</a> &middot;
+              <a class="text-gray-700" href="{% url "account_gardens" %}">{{ _("My gardens") }}</a>
+            </div>
+            {% endif %}
           {% else %}
             <span class="badge font-bold bg-orange-50 text-lg">
-              No garden set up yet
+              {{ _("No garden set up yet") }}
             </span>
           {% endif %}
-      </div>
+        </div>
+      {% endif %}
     </div>
 
     <a {% if garden %} href="{% url "planner_location" GARDEN %}" {% endif %} class="flex-1 relative no-underline {% if garden %} hover:opacity-75{% else %}opacity-40{% endif %}">
@@ -304,7 +320,6 @@
 
   </div>
 </div>
-
 
 
 

@@ -1,0 +1,45 @@
+{% extends "_base.html" %}
+
+{% block content %}
+
+<div>
+  <div class="px-4 sm:px-0">
+    <h3 class="text-base/7 font-semibold text-gray-900">{{ request.user.first_name }}</h3>
+    <p class="mt-1 max-w-2xl text-sm/6 text-gray-500">{{ _("Your profile") }}</p>
+  </div>
+  <div class="mt-6">
+    <dl class="grid grid-cols-1 sm:grid-cols-2">
+      <div class="border-t border-gray-100 px-4 py-6 sm:col-span-1 sm:px-0">
+        <dt class="text-sm/6 font-medium text-gray-900">{{ _("E-mail address") }}</dt>
+        <dd class="mt-1 text-sm/6 text-gray-700 sm:mt-2">{{ request.user.email }}</dd>
+      </div>
+      <div class="border-t border-gray-100 px-4 py-6 sm:col-span-1 sm:px-0">
+        <dt class="text-sm/6 font-medium text-gray-900">{{ _("Last login") }}</dt>
+        <dd class="mt-1 text-sm/6 text-gray-700 sm:mt-2">{{ request.user.last_login }}</dd>
+      </div>
+      <div class="border-t border-gray-100 px-4 py-6 sm:col-span-2 sm:px-0">
+        <dt class="text-sm/6 font-medium text-gray-900">{{ _("Gardens") }}</dt>
+        <dd class="mt-2 text-sm text-gray-900">
+          <ul role="list" class="divide-y divide-gray-100 rounded-md border border-gray-200">
+            {% for each in gardens %}
+            <li class="flex items-center justify-between py-4 pr-5 pl-4 text-sm/6">
+              <div class="flex w-0 flex-1 items-center">
+                <i class="fa fa-shovel"></i>
+                <div class="ml-4 flex min-w-0 flex-1 gap-2">
+                  <span class="truncate font-medium text-gray-900">{{ each }}</span>
+                  <span class="shrink-0 text-gray-400">{{ each.created_at }}</span>
+                </div>
+              </div>
+              <div class="ml-4 shrink-0">
+                <a href="{% url "planner" each.id %}" class="font-medium ">{{ _("View garden") }}</a>
+              </div>
+            </li>
+            {% endfor %}
+          </ul>
+        </dd>
+      </div>
+    </dl>
+  </div>
+</div>
+
+{% endblock %}

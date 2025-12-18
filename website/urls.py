@@ -48,7 +48,10 @@ urlpatterns = [
     path("photos/", views.photos, name="photos"),
 
     path("accounts/login/", views.user_login, name="login"),
+    path("accounts/create/", views.account_create, name="create_account"),
     path("accounts/logout/", views.user_logout, name="logout"),
+    path("accounts/gardens/", views.account_gardens, name="account_gardens"),
+    path("accounts/", views.account, name="account"),
 
     path("about/our-organisations/", views.organizations, name="organizations"),
     path("about/newsletter/", views.newsletter, name="newsletter"),

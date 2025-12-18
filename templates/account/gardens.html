@@ -1,0 +1,27 @@
+{% extends "_base.html" %}
+
+{% block content %}
+  <h1>{{ _("My gardens") }}</h1>
+
+  <table class="table table-striped">
+    <thead>
+      <tr>
+        <th>{{ _("Garden name") }}</th>
+        <th>{{ _("Created") }}</th>
+        <th>{{ _("Options") }}</th>
+      </tr>
+    </thead>
+    <tbody>
+    {% for each in gardens %}
+      <tr>
+        <td>{{ each.name }}</td>
+        <td>{{ each.created_at }}</td>
+        <td><a class="btn-blue btn-sm" href="{% url "planner" each.id %}"><i class="fa fa-shovel"></i> {{ _("Garden planner") }}</a></td>
+      </tr>
+    {% endfor %}
+    </tbody>
+  </table>
+
+  <a href="{% url "planner" %}?new" class="btn-blue mt-5"><i class="fa fa-plus-square"></i> {{ _("Create a new garden") }}</a>
+
+{% endblock %}

@@ -77,7 +77,7 @@ def get_site(request):
         return None
 
 # This checks to make sure the garden either belongs to the logged-in user, or the user has the right cookie set
-def get_garden(request, id):
+def get_garden(request, id, silent_fail=False):
     if request.user.is_authenticated:
         garden = Garden.objects_unfiltered.filter(pk=id, user=request.user)
         if garden:
@@ -86,10 +86,11 @@ def get_garden(request, id):
         garden = Garden.objects_unfiltered.filter(pk=request.COOKIES.get("garden_id"), is_user_created=True, user__isnull=True, uuid=request.COOKIES["garden_uuid"])
         if garden:
             return garden[0]
-    if id == 0:
-        messages.warning(request, _("Please create your own garden to get started."))
-    else:
-        messages.warning(request, _("Garden not found. Please log in to access your saved gardens."))
+    if not silent_fail:
+        if id == 0:
+            messages.warning(request, _("Please create your own garden to get started."))
+        else:
+            messages.warning(request, _("Garden not found. Please log in to access your saved gardens."))
     return None
 
 # To show the corridor by blacking out everything that is NOT the corridor, we need to 
@@ -1677,13 +1678,19 @@ def resources(request, slug=None):
     }
     return render(request, "documents.html", context)
 
+# ACCOUNT FUNCTIONS
+
 def user_login(request):
-    redirect_url = "index"
+    redirect_url = reverse("account_gardens")
     if request.GET.get("next"):
         redirect_url = request.GET.get("next")
 
     if request.user.is_authenticated:
         return redirect(redirect_url)
+
+    garden = None
+    if "garden_id" in request.COOKIES:
+        garden = get_garden(request, request.COOKIES.get("garden_id"), silent_fail=True)
 
     if request.method == "POST":
         email = request.POST.get("email").lower()
@@ -1692,23 +1699,86 @@ def user_login(request):
 
         if user is not None:
             login(request, user)
-            messages.success(request, "You are logged in.")
+            if garden:
+                garden.user = user
+                garden.save()
+            messages.success(request, _("You are logged in."))
             return redirect(redirect_url)
         else:
-            messages.error(request, "We could not authenticate you, please try again.")
+            messages.error(request, _("We could not authenticate you, please try again."))
 
     context = {
+        "garden": garden,
     }
-    return render(request, "website/login.html", context)
+    return render(request, "account/login.html", context)
 
 def user_logout(request):
     logout(request)
-    messages.warning(request, "You are now logged out")
+    messages.warning(request, _("You are now logged out"))
 
     if "next" in request.GET:
         return redirect(request.GET.get("next"))
     else:
         return redirect("index")
+
+def account_create(request):
+
+    redirect_url = request.GET.get("next") if request.GET.get("next") else reverse("planner")
+    if request.user.is_authenticated:
+        return redirect(redirect_url)
+
+    garden = None
+    if "garden_id" in request.COOKIES:
+        garden = get_garden(request, request.COOKIES.get("garden_id"), silent_fail=True)
+
+    if request.method == "POST":
+
+        email = request.POST.get("email").lower().strip()
+        password = request.POST.get("password")
+        name = request.POST.get("name")
+
+        if User.objects.filter(username=email).exists():
+            messages.error(request, _("An account with this e-mail already exists. Enter a different e-mail or log into your existing account."))
+        elif email and password and name:
+            user = User.objects.create_user(username=email, email=email, password=password)
+            user.first_name = name
+            user.save()
+
+            if garden:
+                garden.user = user
+                garden.save()
+
+            login(request, user)
+            messages.success(request, _("Your account has been successfully created"))
+            return redirect(redirect_url)
+
+    context = {
+        "garden": garden,
+    }
+    return render(request, "account/create.html", context)
+
+
+@login_required
+def account_gardens(request):
+
+    context = {
+        "gardens": Garden.objects_unfiltered.filter(user=request.user),
+        "menu": "account",
+        "page": "gardens",
+    }
+    return render(request, "account/gardens.html", context)
+
+@login_required
+def account(request):
+
+    context = {
+        "gardens": Garden.objects_unfiltered.filter(user=request.user),
+        "menu": "account",
+        "page": "account",
+    }
+    return render(request, "account/profile.html", context)
+
+# END ACCOUNT FUNCTIONS
 
 def newsletter(request):
     if request.POST and "email" in request.POST:
@@ -1794,9 +1864,9 @@ def planner(request, id=None):
         cookie_garden = Garden.objects_unfiltered.filter(uuid=request.COOKIES["garden_uuid"])
         if cookie_garden:
             cookie_garden = cookie_garden[0]
-            garden = get_garden(request, cookie_garden.id)
+            garden = get_garden(request, cookie_garden.id, silent_fail=True)
 
-    if id:
+    if id and not "new" in request.GET:
         garden = get_garden(request, id)
 
     if request.method == "POST" and "garden" in request.POST:
@@ -1806,6 +1876,9 @@ def planner(request, id=None):
             is_active = False,
             site = get_site(request),
         )
+        if request.user.is_authenticated:
+            garden.user = request.user
+            garden.save()
 
         response = redirect(reverse("planner_location", args=[garden.id]) + "?new_garden")
         response.set_cookie("garden_uuid", garden.uuid)
