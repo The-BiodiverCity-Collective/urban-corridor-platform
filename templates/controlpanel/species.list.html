@@ -106,7 +106,9 @@
 </table>
 
 {% if not source %}
-  <a class="btn-blue" href="{% url "controlpanel_species" %}"><i class="fa fa-plus-square mr-1"></i> {{ _("Create new species") }}</a>
+  <a class="btn-blue" href="{% url "controlpanel_species" %}{% if request.GET.name %}?name={{ request.GET.name }}{% endif %}">
+    <i class="fa fa-plus-square mr-1"></i> {{ _("Create new species") }}
+  </a>
 {% endif %}
 
 {% if "import" in request.GET %}

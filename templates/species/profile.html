@@ -133,7 +133,7 @@
           </button>
         </div>
         <div>
-        <a href="/planner/" class="no-underline rounded-md bg-orange-600 px-3.5 py-2.5 text-sm font-semibold text-white shadow-xs hover:text-white hover:bg-orange-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-orange-600 flex mb-3 mr-3">
+        <a href="{% url "planner" garden.id %}" class="no-underline rounded-md bg-orange-600 px-3.5 py-2.5 text-sm font-semibold text-white shadow-xs hover:text-white hover:bg-orange-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-orange-600 flex mb-3 mr-3">
           <i class="fa fa-shovel mr-2 relative" style="top:2px"></i>
           {{ _("Go to garden planner") }}
         </a>

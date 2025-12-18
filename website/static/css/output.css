@@ -1535,8 +1535,8 @@
       text-decoration-line: none;
     }
     main &.active {
-      border-color: var(--color-indigo-500);
-      color: var(--color-indigo-600);
+      border-color: var(--color-sky-500);
+      color: var(--color-sky-600);
     }
     main &.inactive {
       border-color: transparent;
@@ -1610,8 +1610,8 @@
   }
   .active {
     main &.tab {
-      border-color: var(--color-indigo-500);
-      color: var(--color-indigo-600);
+      border-color: var(--color-sky-500);
+      color: var(--color-sky-600);
     }
   }
   .border-amber-500 {
@@ -2766,13 +2766,6 @@
     &:hover {
       @media (hover: hover) {
         color: var(--color-gray-700);
-      }
-    }
-  }
-  .hover\:text-indigo-500 {
-    &:hover {
-      @media (hover: hover) {
-        color: var(--color-indigo-500);
       }
     }
   }

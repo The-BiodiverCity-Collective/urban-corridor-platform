@@ -718,7 +718,6 @@ def species_list(request, genus=None, family=None, vegetation_type=None):
         species = species.prefetch_related("vegetation_types").all()
         species = species.prefetch_related("colors").all()
 
-
     if genus:
         genus = get_object_or_404(Genus, pk=genus)
         species = species.filter(genus=genus)
@@ -767,7 +766,6 @@ def species_list(request, genus=None, family=None, vegetation_type=None):
     in_garden = None
     if "garden_id" in request.COOKIES:
         garden = get_garden(request, request.COOKIES.get("garden_id"))
-        in_garden = GardenSpecies.objects.filter(garden=garden, species=info).first()
 
     context = {
         "species_list": species,
@@ -780,7 +778,6 @@ def species_list(request, genus=None, family=None, vegetation_type=None):
         "info": info,
         "photo": photo,
         "garden": garden,
-        "in_garden": in_garden,
     }
 
     return render(request, "species/list.html", context)
@@ -2007,7 +2004,18 @@ def planner_suggestions(request, id):
     if not (garden := get_garden(request, id)):
         return redirect("planner")
 
-    species = Species.objects.filter(site=site)
+    species = Species.objects.filter(site=site) \
+        .prefetch_related("features").all() \
+        .select_related("plant_form")
+
+    view = request.GET.get("view")
+    if view == "photos":
+        species = species.select_related("photo")
+    elif view == "photos-extended" or view == "photos-data":
+        species = species.prefetch_related("photos").all()
+    if view == "table-extended":
+        species = species.prefetch_related("vegetation_types").all()
+        species = species.prefetch_related("colors").all()
 
     vegetation_type = garden.vegetation_type
     if vegetation_type:
@@ -2055,6 +2063,7 @@ def planner_suggestions(request, id):
         "features": features,
         "max_features": max_features,
         "table_hide_vegetation": True,
+        "table_hide_form": True,
         "table_show_score": True,
         "more_species_available": more_species_available,
         "species_present": Species.objects.filter(garden_plants__garden=garden, garden_plants__status="PRESENT"),
@@ -2213,53 +2222,62 @@ def controlpanel_page(request, id=None):
         info = Page.objects.get(pk=id)
         action = Log.LogAction.UPDATE
         page_type = info.page_type
+        title = _("Edit") + f": {info.name}"
     else:
         page_type = int(request.GET["type"])
 
     site = get_site(request)
     action = Log.LogAction.CREATE
 
-    if "delete_photo" in request.GET:
-        photo = Photo.objects.get(pk=request.GET["delete_photo"])
-        info.photos.remove(photo)
-        messages.success(request, "Photo was removed from the page.")
-        return redirect(request.path)
+    photos = False
+    if "photos" in request.GET:
+        photos = True
 
-    if request.method == "POST":
+        title = _("Photos") + f": {info.name}"
+        if "delete_photo" in request.GET:
+            photo = Photo.objects.get(pk=request.GET["delete_photo"])
+            info.photos.remove(photo)
+            messages.success(request, "Photo was removed from the page.")
+            return redirect(request.path)
 
-        if "photo" in request.POST:
-            info.photos.add(Photo.objects.get(pk=request.POST["photo"]))
-            messages.success(request, "Photo was added to the page.")
-            return redirect(request.get_full_path())
+        if request.method == "POST":
 
-        info.name = request.POST["name"]
-        info.content = request.POST.get("description")
-        info.slug = request.POST.get("slug")
-        info.position = 0
-        info.page_type = page_type
-        info.format = "HTML"
-        info.is_active = True if request.POST.get("is_active") == "1" else False
-        if "date" in request.POST and request.POST["date"]:
-            info.date = request.POST["date"]
-        if request.FILES.get("image"):
-            info.image = request.FILES.get("image")
-        info.site = site
+            if "photo" in request.POST:
+                info.photos.add(Photo.objects.get(pk=request.POST["photo"]))
+                messages.success(request, "Photo was added to the page.")
+                return redirect(request.get_full_path())
 
-        info.save()
-        log_action(request, action, f"Page: {info.name}")
-        messages.success(request, _("Information was saved."))
-        if request.GET.get("redirect"):
-            return redirect(request.GET.get("redirect"))
-        else:
-            return redirect(reverse("controlpanel_pages") + "?type=" + str(page_type))
+    else:
+        if request.method == "POST":
+            info.name = request.POST["name"]
+            info.content = request.POST.get("description")
+            info.slug = request.POST.get("slug")
+            info.position = 0
+            info.page_type = page_type
+            info.format = "HTML"
+            info.is_active = True if request.POST.get("is_active") == "1" else False
+            if "date" in request.POST and request.POST["date"]:
+                info.date = request.POST["date"]
+            if request.FILES.get("image"):
+                info.image = request.FILES.get("image")
+            info.site = site
+
+            info.save()
+            log_action(request, action, f"Page: {info.name}")
+            messages.success(request, _("Information was saved."))
+            if request.GET.get("redirect"):
+                return redirect(request.GET.get("redirect"))
+            else:
+                return redirect(reverse("controlpanel_pages") + "?type=" + str(page_type))
 
     context = {
         "controlpanel": True,
         "menu": menu,
         "info": info,
-        "title": Page.PageType(page_type).label,
+        "title": Page.PageType(page_type).label if not info.id else title,
         "quill": True,
         "page_type": page_type,
+        "photos": photos,
     }
     return render(request, "controlpanel/page.html", context)
 

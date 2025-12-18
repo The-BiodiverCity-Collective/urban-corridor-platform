@@ -8,24 +8,10 @@
       {% endif %}
 
       <th>{{ _("Features") }}</th>
-      {% if table_show_score %}
-        <th>{{ _("Species relevance") }}</th>
-      {% endif %}
-
       <th>{{ _("Flowers & form") }}</th>
 
       {% if table_show_score %}
         <th>{{ _("Species relevance") }}</th>
-      {% endif %}
-
-      {% if table_show_score %}
-        <td>
-          <div aria-hidden="true">
-            <div class="overflow-hidden rounded-full bg-gray-200">
-              <div style="width: calc(({{ each.num_features }} + 1) / {{ max_features }} * 100%)" class="h-2 rounded-full bg-lime-600"></div>
-            </div>
-          </div>
-        </td>
       {% endif %}
 
       {% if table_show_actions %}
@@ -70,15 +56,6 @@
         {% endfor %}
         </div>
       </td>
-      {% if table_show_score %}
-        <td>
-          <div aria-hidden="true">
-            <div class="overflow-hidden rounded-full bg-gray-200">
-              <div style="width: calc(({{ each.num_features }} + 1) / {{ max_features }} * 100%)" class="h-2 rounded-full bg-lime-600"></div>
-            </div>
-          </div>
-        </td>
-      {% endif %}
 
       <td>
         <ul>
@@ -99,6 +76,16 @@
         <div class="text-gray-700 text-sm mt-2">{{ each.plant_form }}</div>
         {% endif %}
       </td>
+
+      {% if table_show_score %}
+        <td>
+          <div aria-hidden="true">
+            <div class="overflow-hidden rounded-full bg-gray-200">
+              <div style="width: calc(({{ each.num_features }} + 1) / {{ max_features }} * 100%)" class="h-2 rounded-full bg-lime-600"></div>
+            </div>
+          </div>
+        </td>
+      {% endif %}
 
       {% if table_show_actions %}
         <td data-sort="{{ each.num_features }}">

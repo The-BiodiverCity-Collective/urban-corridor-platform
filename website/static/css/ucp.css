@@ -115,7 +115,7 @@
     @apply no-underline whitespace-nowrap border-b-2 py-4 px-1 text-sm font-medium;
   }
   main &.active {
-    @apply border-indigo-500 text-indigo-600;
+    @apply border-sky-500 text-sky-600;
   }
   main &.inactive {
     @apply border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700;
@@ -124,7 +124,7 @@
 
 @utility active {
   main &.tab {
-    @apply border-indigo-500 text-indigo-600;
+    @apply border-sky-500 text-sky-600;
   }
 }
 

@@ -81,7 +81,7 @@
 
   <div class="mb-4">
     <label for="id_name" class="block text-lg font-semibold text-gray-700">{{ _("Species Name") }}</label>
-    <input type="text" name="name" id="id_name" value="{{ info.name }}" class="mt-1" required>
+    <input type="text" name="name" id="id_name" value="{% if info.name %}{{ info.name }}{% else %}{{ request.GET.name }}{% endif %}" class="mt-1" required>
   </div>
 
   <div {% if not info.id %} class="hidden"{% endif %}>
@@ -287,7 +287,7 @@
 
   <div class="flex justify-end">
     <button type="submit" class="btn-green">
-      {% if info.id %} Update Species {% else %} Create Species {% endif %}
+      {% if info.id %} {{ _("Save") }} {% else %} {{ _("Create Species") }} {% endif %}
     </button>
   </div>
 

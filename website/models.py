@@ -124,7 +124,7 @@ class Page(models.Model):
             return ""
 
     class Meta:
-        ordering = ["position"]
+        ordering = ["position", "name"]
 
     def save(self, *args, **kwargs):
         if not self.content:
