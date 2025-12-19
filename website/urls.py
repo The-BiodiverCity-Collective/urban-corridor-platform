@@ -24,7 +24,7 @@ urlpatterns = [
     path("report/", views.report, name="report"),
     path("report/map/", views.report, {"show_map": True}, name="report_map"),
     path("report/<str:lat>/<str:lng>/", views.report, name="report"),
-    path("species/", views.species_overview, name="species"),
+
     path("species/", views.species_overview, name="species"),
     path("species/all/", views.species_list, name="species_full_list"),
     path("species/list/", views.species_list, name="species_list"),
@@ -34,6 +34,7 @@ urlpatterns = [
     path("species/family/<int:family>/", views.species_list, name="family"),
     path("species/sources/", views.species_sources, name="species_sources"),
     path("species/sources/<int:id>/", views.species_source, name="species_source"),
+
     path("vegetation-types/", views.vegetation_types, name="vegetation_types"),
     path("vegetation-types/<slug:slug>/", views.vegetation_type, name="vegetation_type"),
     path("vegetation-types/<slug:vegetation_type>/species/", views.species_list, name="vegetation_type_species"),
@@ -88,6 +89,7 @@ urlpatterns = [
     path("events/<slug:slug>/", views.event, name="event"),
 
     path("contact/", views.page, {"slug": "contact-form"}, name="contact"),
+    path("nurseries/<slug:slug>/", views.nursery, name="nursery"),
 
     path("shapefiles/<int:id>/zip/", views.shapefile_zip, name="shapefile_zip"),
     path("setcookie/", views.set_cookie, name="set_cookie"),
@@ -107,6 +109,8 @@ urlpatterns = [
     path("planner/<int:id>/plants/", views.planner_plants, {"status": "FUTURE"}, name="planner_plants"),
     path("planner/<int:id>/calendar/", views.planner_calendar, name="planner_calendar"),
     path("planner/<int:id>/plants/nurseries/", views.planner_nurseries, name="planner_nurseries"),
+    path("planner/<int:id>/plants/nurseries/<slug:slug>/", views.nursery, name="planner_nursery"),
+    path("planner/<int:id>/score/", views.planner_score, name="planner_score"),
 
     # Control Panel
     path("controlpanel/", views.controlpanel, name="controlpanel"),

@@ -72,7 +72,7 @@ class Page(models.Model):
     site = models.ForeignKey(Site, on_delete=models.CASCADE, null=True, blank=True, related_name="pages")
     is_active = models.BooleanField(default=True, db_index=True)
     date = models.DateField(null=True, blank=True)
-    meta_data = models.JSONField(null=True, blank=True)
+    meta_data = models.JSONField(null=True, blank=True, default=dict)
 
     class PageType(models.IntegerChoices):
         REGULAR = 1, "Regular page"
@@ -80,6 +80,8 @@ class Page(models.Model):
         EVENT = 3, "Event"
         TARGET = 4, "Target species"
         FEATURES = 5, "Site features"
+        NURSERY = 6, "Nursery"
+        BLURB = 7, "Blurb"
     page_type = models.IntegerField(choices=PageType.choices, db_index=True, default=1)
 
     photos = models.ManyToManyField("Photo", blank=True)
@@ -103,6 +105,8 @@ class Page(models.Model):
         return self.name
 
     def get_absolute_url(self):
+        if self.page_type == 6:
+            return "/nurseries/" + self.slug
         if self.page_type == 2:
             return "/blog/" + self.slug
         else:

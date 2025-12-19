@@ -13,11 +13,82 @@
                 <a href="{% url "controlpanel_documents" %}" class="rounded-md {% if menu == "documents" %}bg-gray-900{% endif %} px-3 py-2 text-sm font-medium text-white" aria-current="page">{{ _("Documents") }}</a>
                 <a href="{% url "controlpanel_species_overview" %}" class="rounded-md {% if menu == "species" %}bg-gray-900{% endif %} px-3 py-2 text-sm font-medium text-white" aria-current="page">{{ _("Species") }}</a>
                 <a href="{% url "controlpanel_gardens" %}" class="rounded-md {% if menu == "gardens" %}bg-gray-900{% endif %} px-3 py-2 text-sm font-medium text-white" aria-current="page">{{ _("Gardens") }}</a>
-                <a href="{% url "controlpanel_pages" %}?type=1" class="rounded-md {% if menu == "pages" and page_type == 1 %}bg-gray-900{% endif %} px-3 py-2 text-sm font-medium text-white" aria-current="page">{{ _("Pages") }}</a>
                 <a href="{% url "controlpanel_photos" %}" class="rounded-md {% if menu == "photos" %}bg-gray-900{% endif %} px-3 py-2 text-sm font-medium text-white" aria-current="page">{{ _("Photos") }}</a>
-                <a href="{% url "controlpanel_pages" %}?type=2" class="rounded-md {% if menu == "pages" and page_type == 2 %}bg-gray-900{% endif %} px-3 py-2 text-sm font-medium text-white" aria-current="page">{{ _("Blog") }}</a>
-                <a href="{% url "controlpanel_pages" %}?type=3" class="rounded-md {% if menu == "pages" and page_type == 3 %}bg-gray-900{% endif %} px-3 py-2 text-sm font-medium text-white" aria-current="page">{{ _("Events") }}</a>
                 <a href="{% url "controlpanel_vegetation_types" %}" class="rounded-md {% if menu == "vegetation_types" %}bg-gray-900{% endif %} px-3 py-2 text-sm font-medium text-white" aria-current="page">{{ _("Vegetation types") }}</a>
+
+
+                <el-dropdown class="inline-block">
+                  <button class="inline-flex w-full text-white justify-center gap-x-1.5 px-3 py-2 text-sm font-semibold cursor-pointer
+                    {% if menu == "content" %}rounded-md bg-gray-900{% endif %}
+                  ">
+                    {{ _("Content") }}
+                    <i class="fa fa-angle-down mt-1 "></i>
+                  </button>
+
+                  <el-menu anchor="bottom end" popover class="w-56 origin-top-right divide-y divide-gray-100 rounded-md bg-white shadow-lg outline-1 outline-black/5 transition transition-discrete [--anchor-gap:--spacing(2)] data-closed:scale-95 data-closed:transform data-closed:opacity-0 data-enter:duration-100 data-enter:ease-out data-leave:duration-75 data-leave:ease-in">
+                    <div class="py-1">
+                      <a href="{% url "controlpanel_pages" %}?type=1" 
+                         class="{% if menu == "content" and page_type == 1 %}bg-gray-100{% endif %} group/item flex items-center px-4 py-2 text-sm text-gray-700 focus:bg-gray-100 focus:text-gray-900 focus:outline-hidden" 
+                         aria-current="page">
+                        <i class="fa fa-pencil mr-2"></i>
+                        {{ _("Pages") }}
+                      </a>
+                      <a href="{% url "controlpanel_pages" %}?type=2" 
+                         class="{% if menu == "content" and page_type == 2 %}bg-gray-100{% endif %} group/item flex items-center px-4 py-2 text-sm text-gray-700 focus:bg-gray-100 focus:text-gray-900 focus:outline-hidden" 
+                         aria-current="page">
+                        <i class="fa fa-rss mr-2"></i>
+                        {{ _("Blog") }}
+                      </a>
+                      <a href="{% url "controlpanel_pages" %}?type=3" 
+                         class="{% if menu == "content" and page_type == 3 %}bg-gray-100{% endif %} group/item flex items-center px-4 py-2 text-sm text-gray-700 focus:bg-gray-100 focus:text-gray-900 focus:outline-hidden" 
+                         aria-current="page">
+                        <i class="fa fa-calendar-alt mr-2"></i>
+                        {{ _("Events") }}
+                      </a>
+                      <a href="{% url "controlpanel_pages" %}?type=7" 
+                         class="{% if menu == "content" and page_type == 7 %}bg-gray-100{% endif %} group/item flex items-center px-4 py-2 text-sm text-gray-700 focus:bg-gray-100 focus:text-gray-900 focus:outline-hidden" 
+                         aria-current="page">
+                        <i class="fa fa-align-left mr-2"></i>
+                        {{ _("Blurbs") }}
+                      </a>
+                    </div>
+                  </el-menu>
+                </el-dropdown>
+
+
+                <el-dropdown class="inline-block">
+                  <button class="inline-flex w-full text-white justify-center gap-x-1.5 px-3 py-2 text-sm font-semibold cursor-pointer
+                    {% if menu == "planner" %}rounded-md bg-gray-900{% endif %}
+                  ">
+                    {{ _("Planner tools") }}
+                    <i class="fa fa-angle-down mt-1 "></i>
+                  </button>
+
+                  <el-menu anchor="bottom end" popover class="w-56 origin-top-right divide-y divide-gray-100 rounded-md bg-white shadow-lg outline-1 outline-black/5 transition transition-discrete [--anchor-gap:--spacing(2)] data-closed:scale-95 data-closed:transform data-closed:opacity-0 data-enter:duration-100 data-enter:ease-out data-leave:duration-75 data-leave:ease-in">
+                    <div class="py-1">
+                      <a href="{% url "controlpanel_pages" %}?type=4"
+                         class="{% if menu == "planner" and page_type == 4 %}bg-gray-100{% endif %} group/item flex items-center px-4 py-2 text-sm text-gray-700 focus:bg-gray-100 focus:text-gray-900 focus:outline-hidden" 
+                         aria-current="page">
+                        <i class="fa fa-crow mr-2"></i>
+                        {{ _("Target animals") }}
+                      </a>
+                      <a href="{% url "controlpanel_pages" %}?type=5"
+                         class="{% if menu == "planner" and page_type == 5 %}bg-gray-100{% endif %} group/item flex items-center px-4 py-2 text-sm text-gray-700 focus:bg-gray-100 focus:text-gray-900 focus:outline-hidden" 
+                         aria-current="page">
+                        <i class="fa fa-cog mr-2"></i>
+                        {{ _("Site features") }}
+                      </a>
+                      <a href="{% url "controlpanel_pages" %}?type=6"
+                         class="{% if menu == "planner" and page_type == 6 %}bg-gray-100{% endif %} group/item flex items-center px-4 py-2 text-sm text-gray-700 focus:bg-gray-100 focus:text-gray-900 focus:outline-hidden" 
+                         aria-current="page">
+                        <i class="fa fa-hand-holding-seedling mr-2"></i>
+                        {{ _("Nurseries") }}
+                      </a>
+                    </div>
+                  </el-menu>
+                </el-dropdown>
+
+
               </div>
             </div>
           </div>

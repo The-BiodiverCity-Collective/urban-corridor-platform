@@ -8,7 +8,7 @@
   <div class="border-b border-gray-200">
     <nav class="tabs -mb-px flex space-x-8" aria-label="Tabs">
       <a href="./" class="tab {% if photos %}in{% endif %}active"><i class="fa fa-pencil mr-1"></i> {{ _("Edit content") }}</a>
-      <a href="./?photos" class="tab {% if not photos %}in{% endif %}active"><i class="fa fa-image mr-1"></i>{{ _("Photos") }}</a>
+      <a {% if info.id %}href="./?photos"{% endif %} class="tab {% if not info.id %}opacity-60{% endif %} {% if not photos %}in{% endif %}active"><i class="fa fa-image mr-1"></i>{{ _("Photos") }}</a>
     </nav>
   </div>
 </div>
@@ -87,7 +87,7 @@
           </div>
         {% endif %}
 
-        {% if info.page_type == 1 %}
+        {% if page_type == 1 %}
           <div class="flex mt-10">
             <div class="flex-1">
               <div class="space-y-10">
@@ -116,7 +116,15 @@
               </div>
             </div>
           </div>
-
+        {% elif page_type == 6 %}
+            <div class="flex-1 mt-5">
+              <div class="col-span-full">
+                <label for="url" class="block text-sm/6 font-medium text-gray-900">{{ _("Website") }}</label>
+                <div class="mt-2">
+                  <input type="text" placeholder="{{ _("URL") }}" name="url" id="url" class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-xs ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-sky-600 sm:text-sm/6" value="{{ info.meta_data.url }}">
+                </div>
+              </div>
+            </div>
         {% endif %}
 
         <div class="mt-10 space-y-10">

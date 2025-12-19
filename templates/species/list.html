@@ -34,7 +34,11 @@
     </div>
   {% elif menu != "planner" %}
       <h1>
-        {{ _("Search results") }}
+        {% if total_species == species_list.count %}
+          {{ _("Plant species - full list") }}
+        {% else %}
+          {{ _("Search results") }}
+        {% endif %}
       </h1>
   {% endif %}
 

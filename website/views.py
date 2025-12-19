@@ -710,7 +710,10 @@ def species_list(request, genus=None, family=None, vegetation_type=None, garden=
     page = request.GET.get("page")
     title = _("Search results")
 
-    species = Species.objects.filter(site=site) \
+    species = Species.objects.filter(site=site)
+    total_species = species.count()
+
+    species = species \
         .prefetch_related("features").all() \
         .select_related("plant_form")
 
@@ -745,7 +748,7 @@ def species_list(request, genus=None, family=None, vegetation_type=None, garden=
             return redirect("planner")
         species = species.filter(garden_plants__garden=garden, garden_plants__status=garden_status)
         title = _("Species list: ")
-        title += _("Current plants") if garden_status == "PRESENT" else _("Future plants")
+        title += _("current plants") if garden_status == "PRESENT" else _("future plants")
         menu = "planner"
         page = garden_status
     elif "garden_id" in request.COOKIES:
@@ -794,6 +797,7 @@ def species_list(request, genus=None, family=None, vegetation_type=None, garden=
         "garden": garden,
         "title": title,
         "hide_species_tabs": True,
+        "total_species": total_species,
 
         # Because we have tabs above the <main>, we need to unround the top-left corner if the first tab is active
         "main_rounded_classes": "rounded-tr-lg rounded-br-lg rounded-bl-lg" if request.GET.get("view", "table") == "table" else None,
@@ -1871,6 +1875,21 @@ def event(request, slug):
     }
     return render(request, "event.html", context)
 
+def nursery(request, slug, garden=None, planner=False):
+    site = get_site(request)
+    info = Page.objects.get(page_type=Page.PageType.NURSERY, slug=slug, is_active=True, site=site)
+
+    if garden:
+        if not (garden := get_garden(request, id)):
+            return redirect("planner")
+
+    context = {
+        "info": info,
+        "menu": "planner" if garden else "about",
+        "page": "nurseries",
+    }
+    return render(request, "nursery.html", context)
+
 # Restoration Garden Manager
 def planner(request, id=None):
     info = Page.objects.get(slug="planner", is_active=True, site=get_site(request))
@@ -2153,11 +2172,27 @@ def planner_nurseries(request, id):
 
     context = {
         "menu": "planner",
-        "page": status,
-        "title": _("Future plants") if status == "FUTURE" else _("Current plants"),
+        "page": "nurseries",
+        "title": _("Nurseries"),
+        "garden": garden,
+        "nurseries": Page.objects.filter(site=site, page_type=Page.PageType.NURSERY),
+        "page_info": Page.objects.get(site=site, slug="nurseries"),
+    }
+    return render(request, "planner/nurseries.html", context)
+
+def planner_score(request, id):
+
+    site = get_site(request)
+
+    if not (garden := get_garden(request, id)):
+        return redirect("planner")
+
+    context = {
+        "menu": "planner",
+        "page": "score",
         "garden": garden,
     }
-    return render(request, "planner/plants.html", context)
+    return render(request, "planner/score.html", context)
 
 
 # END OF PLANNER
@@ -2223,10 +2258,13 @@ def controlpanel_pages(request):
     site = get_site(request)
     page_type = int(request.GET["type"])
     pages = Page.objects.filter(site=site, page_type=page_type)
+    menu = "content"
+    if page_type in [4,5,6]:
+        menu = "planner"
 
     context = {
         "controlpanel": True,
-        "menu": "pages",
+        "menu": menu,
         "page_type": page_type,
         "pages": pages,
         "title": Page.PageType(page_type).label,
@@ -2236,18 +2274,23 @@ def controlpanel_pages(request):
 @staff_member_required
 def controlpanel_page(request, id=None):
 
-    menu = "pages"
+    menu = "content"
+    site = get_site(request)
+    action = Log.LogAction.CREATE
+
+    Page.objects.filter(meta_data__isnull=True).update(meta_data={})
+
     info = Page()
     if id:
-        info = Page.objects.get(pk=id)
+        info = Page.objects.get(pk=id, site=site)
         action = Log.LogAction.UPDATE
         page_type = info.page_type
         title = _("Edit") + f": {info.name}"
     else:
         page_type = int(request.GET["type"])
 
-    site = get_site(request)
-    action = Log.LogAction.CREATE
+    if page_type in [4,5,6]:
+        menu = "planner"
 
     photos = False
     if "photos" in request.GET:
@@ -2278,8 +2321,13 @@ def controlpanel_page(request, id=None):
             info.page_type = page_type
             info.format = "HTML"
             info.is_active = True if request.POST.get("is_active") == "1" else False
+
+            if "url" in request.POST:
+                info.meta_data["url"] = request.POST.get("url")
+
             if "date" in request.POST and request.POST["date"]:
                 info.date = request.POST["date"]
+
             if request.FILES.get("image"):
                 info.image = request.FILES.get("image")
             info.site = site
