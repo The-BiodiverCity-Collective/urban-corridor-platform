@@ -1,17 +1,16 @@
-
-<footer class="relative isolate overflow-hidden bg-gray-900 py-16 sm:py-24 lg:py-32">
+<footer class="relative isolate overflow-hidden bg-lime-600 py-16 sm:py-24 lg:py-32">
   <div class="mx-auto max-w-7xl px-6 lg:px-8">
     <div class="mx-auto grid max-w-2xl grid-cols-1 gap-x-8 gap-y-16 lg:max-w-none lg:grid-cols-2">
       <div class="max-w-xl lg:max-w-lg">
         <h2 class="text-4xl font-semibold tracking-tight text-white">Subscribe to our newsletter</h2>
-        <p class="mt-4 text-lg text-gray-300">
+        <p class="mt-4 text-lg text-neutral-50">
           Sign up below to receive our newsletter by e-mail!
         </p>
         <form class="mt-6 flex max-w-md gap-x-4" method="post" action="/about/newsletter/">
           {% csrf_token %}
           <label for="email-address" class="sr-only">Email address</label>
-          <input id="email-address" name="email" type="email" autocomplete="email" required class="min-w-0 flex-auto rounded-md border-0 bg-white/5 px-3.5 py-2 text-white shadow-xs ring-1 ring-inset ring-white/10 focus:ring-2 focus:ring-inset focus:ring-indigo-500 sm:text-sm/6" placeholder="Enter your email">
-          <button type="submit" class="flex-none rounded-md bg-indigo-500 px-3.5 py-2.5 text-sm font-semibold text-white shadow-xs hover:bg-indigo-400 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-500">Subscribe</button>
+          <input id="email-address" name="email" type="email" autocomplete="email" required class="min-w-0 flex-auto rounded-md border-0 bg-white/5 px-3.5 py-2 text-white shadow-xs ring-1 ring-inset ring-white/10 focus:ring-2 focus:ring-inset focus:ring-neutral-50 sm:text-sm/6" placeholder="Enter your email">
+          <button type="submit" class="flex-none rounded-md bg-neutral-50 px-3.5 py-2.5 text-sm font-semibold text-gray-700 shadow-xs hover:bg-neutral-50 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-neutral-50">Subscribe</button>
         </form>
       </div>
       <dl class="grid grid-cols-1 gap-x-8 gap-y-10 sm:grid-cols-2 lg:pt-2">
@@ -33,7 +32,7 @@
           {% if request.get_host == "corridors:7777" %}
             <dt class="mt-4 text-base font-semibold text-white">Sites</dt>
             {% for each in SITES %}
-              <dd class="mt-2 text-base/7 text-gray-400"><a href="{% url "set_cookie" %}?site={{ each.id }}&amp;redirect={{ request.get_full_path }}">{{ each }}</a></dd>
+              <dd class="mt-2 text-base/7 text-neutral-50 underline hover:no-underline"><a href="{% url "set_cookie" %}?site={{ each.id }}&amp;redirect={{ request.get_full_path }}">{{ each }}</a></dd>
             {% endfor %}
           {% endif %}
         </div>

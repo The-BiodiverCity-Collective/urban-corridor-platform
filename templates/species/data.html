@@ -1,0 +1,110 @@
+{% extends "_base.html" %}
+{% load ucp_extras %}
+
+{% block css %}
+  <style type="text/css">
+    .features svg{height:18px;width:18px}
+  </style>
+{% endblock %}
+
+{% block content %}
+
+  <div class="absolute top-2 right-2">
+    <a href="{% url "species" info.id %}" class="btn-blue btn-sm">
+      <i class="fa fa-arrow-left mr-2"></i>
+      {{ _("Back to profile") }}
+    </a>
+  </div>
+
+  <div class="mx-auto max-w-2xl px-4 py-16 sm:px-6 sm:py-24 lg:max-w-7xl lg:px-8">
+    <div class="lg:grid lg:grid-cols-2 lg:items-start lg:gap-x-8 mb-10">
+      <div class="flex">
+        <h2 hidden>{{ _("General data principles") }}</h2>
+
+      </div>
+
+      <div class="mt-10 px-4 sm:mt-16 sm:px-0 lg:mt-0">
+        {% if details.common_name %}
+          <h1 class="text-3xl font-bold tracking-tight text-gray-900 mb-1">{{ details.common_name }}</h1>
+        {% endif %}
+        <p class="text-3xl tracking-tight text-gray-900"><em>{{ info }}</em></p>
+
+        {% if sources %}
+          <h3 class="mt-10">{{ _("Inclusion rationale") }}</h3>
+
+          <p>{{ _("Why did we include this species on our website? Because it was mentioned in the following source(s):") }}</p>
+
+          <ul class="list-disc ml-4 mt-3">
+            {% for each in sources %}
+              <li><a href="{% url "species_source" each.file.attached_to.id %}">{{ each.file.attached_to }}</a></li>
+            {% endfor %}
+          </ul>
+        {% endif %}
+
+        {% if info.log.count %}
+          <h3 class="mt-10">{{ _("Features data") }}</h3>
+          <p><em>{{ _("The following sources have provided data on features for this species.") }}</em></p>
+          <table class="table table-striped">
+            <thead>
+              <tr>
+                <th>{{ _("Source document") }}</th>
+                <th>{{ _("Features") }}</th>
+              </tr>
+            </thead>
+            <tbody>
+            {% for each in info.log.all %}
+              <tr>
+                <td><a href="{{ each.file.attached_to.get_absolute_url }}">{{ each.file.attached_to }}</a>
+                <br>{{ each.created_at }}</td>
+                <td class="whitespace-nowrap">
+                  <ul class="features">
+                  {% for feature in each.features.all %}
+                    <li>{{ feature.get_text_icon }}</li>
+                  {% endfor %}
+                  </ul>
+                </td>
+              </tr>
+            {% endfor %}
+            </tbody>
+          </table>
+        {% endif %}
+
+        {% if photos %}
+          <h3 class="mt-10">{{ _("Photo credits") }}</h3>
+          <p><em>{{ _("You can see the credits underneath each photo of the species pages as well.") }}</em></p>
+          <ul class="list-disc ml-4">
+            {% for each in photos %}
+              <li>
+                {{ each.author }}
+                {% if each.image_inat %}
+                  <a href="https://www.inaturalist.org/photos/{{ each.image_inat.id }}" class="ml-3 text-sm text-gray-600 hover:text-gray-700 no-underline hover:underline">
+                    <i class="fa fa-link mr-1"></i> 
+                    {{ _("source") }}
+                  </a>
+                {% endif %}
+              </li>
+            {% endfor %}
+          </ul>
+        {% endif %}
+
+
+      </div>
+    </div>
+  </div>
+
+  <section>
+    <h3 class="mt-10">{{ _("Sources and references") }}</h3>
+    <ul class="flex flex-wrap list-none">
+    {% for each in info.links %}
+      <li><a href="{{ each }}" class="no-underline rounded-md bg-sky-600 px-3.5 py-2.5 text-sm font-semibold text-white shadow-xs hover:text-white hover:bg-sky-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-sky-600 flex mb-3 mr-3">{{ each|domain }}</a></li>
+    {% endfor %}
+    </ul>
+  </section>
+
+{% if request.user.is_staff %}
+  <a class="btn-warning btn-edit" href="{% url "controlpanel_species" info.id %}?redirect={{ request.get_full_path }}">
+    <i class="fa fa-pencil"></i>
+  </a>
+{% endif %}
+
+{% endblock %}

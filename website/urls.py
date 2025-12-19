@@ -30,6 +30,7 @@ urlpatterns = [
     path("species/list/", views.species_list, name="species_list"),
     path("species/search/", views.species_search, name="species_search"),
     path("species/<int:id>/", views.species, name="species"),
+    path("species/<int:id>/data/", views.species_data, name="species_data"),
     path("species/genus/<int:genus>/", views.species_list, name="genus"),
     path("species/family/<int:family>/", views.species_list, name="family"),
     path("species/sources/", views.species_sources, name="species_sources"),
@@ -110,7 +111,9 @@ urlpatterns = [
     path("planner/<int:id>/calendar/", views.planner_calendar, name="planner_calendar"),
     path("planner/<int:id>/plants/nurseries/", views.planner_nurseries, name="planner_nurseries"),
     path("planner/<int:id>/plants/nurseries/<slug:slug>/", views.nursery, name="planner_nursery"),
-    path("planner/<int:id>/score/", views.planner_score, name="planner_score"),
+    path("planner/<int:id>/score/", views.planner_score, {"status": "PRESENT"}, name="planner_score"),
+    path("planner/<int:id>/score/present/", views.planner_score, {"status": "PRESENT"}, name="planner_score_present"),
+    path("planner/<int:id>/score/future/", views.planner_score, {"status": "FUTURE"}, name="planner_score_future"),
 
     # Control Panel
     path("controlpanel/", views.controlpanel, name="controlpanel"),

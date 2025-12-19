@@ -800,7 +800,7 @@ def species_list(request, genus=None, family=None, vegetation_type=None, garden=
         "total_species": total_species,
 
         # Because we have tabs above the <main>, we need to unround the top-left corner if the first tab is active
-        "main_rounded_classes": "rounded-tr-lg rounded-br-lg rounded-bl-lg" if request.GET.get("view", "table") == "table" else None,
+        "main_classes": "rounded-tl-none" if request.GET.get("view", "table") == "table" else None,
     }
 
     return render(request, "species/list.html", context)
@@ -859,7 +859,6 @@ def species(request, id):
     site = get_site(request)
     info = get_object_or_404(Species, pk=id)
     details = fetch_species_text(request, info)
-    sources = SpeciesVegetationTypeLink.objects.filter(species=info, vegetation_type__sites=site)
 
     garden = None
     in_garden = None
@@ -891,13 +890,32 @@ def species(request, id):
         "photos": photos,
         "title": info.name,
         "menu": "species",
-        "sources": sources,
         "garden": garden,
         "in_garden": in_garden,
         "photo": photo,
+        "main_classes": "relative",
     }
 
     return render(request, "species/profile.html", context)
+
+def species_data(request, id):
+    site = get_site(request)
+    info = get_object_or_404(Species, pk=id)
+    sources = SpeciesVegetationTypeLink.objects.filter(species=info, vegetation_type__sites=site)
+    photos = Photo.objects.filter(species=info)
+    details = fetch_species_text(request, info)
+
+    context = {
+        "info": info,
+        "details": details,
+        "photos": photos,
+        "title": info.name,
+        "menu": "species",
+        "sources": sources,
+        "main_classes": "relative",
+    }
+
+    return render(request, "species/data.html", context)
 
 def species_sources(request):
     site = get_site(request)
@@ -2155,13 +2173,15 @@ def planner_calendar(request, id):
     if not (garden := get_garden(request, id)):
         return redirect("planner")
 
+    page_info = Page.objects.get(site=site, slug="calendar", is_active=True)
+
     context = {
         "menu": "planner",
-        "page": status,
-        "title": _("Future plants") if status == "FUTURE" else _("Current plants"),
+        "page_info": page_info,
         "garden": garden,
+        "page": "calendar",
     }
-    return render(request, "planner/plants.html", context)
+    return render(request, "planner/calendar.html", context)
 
 def planner_nurseries(request, id):
 
@@ -2180,7 +2200,7 @@ def planner_nurseries(request, id):
     }
     return render(request, "planner/nurseries.html", context)
 
-def planner_score(request, id):
+def planner_score(request, id, status):
 
     site = get_site(request)
 
@@ -2190,6 +2210,7 @@ def planner_score(request, id):
     context = {
         "menu": "planner",
         "page": "score",
+        "status": status,
         "garden": garden,
     }
     return render(request, "planner/score.html", context)
@@ -2277,8 +2298,6 @@ def controlpanel_page(request, id=None):
     menu = "content"
     site = get_site(request)
     action = Log.LogAction.CREATE
-
-    Page.objects.filter(meta_data__isnull=True).update(meta_data={})
 
     info = Page()
     if id:
@@ -2753,7 +2772,7 @@ def controlpanel_document_species(request, id):
                         species.save()
 
                     # We store all the features and log this
-                    log = FileLog.objects.create(file=file_info, species=species)
+                    log = FileLog.objects.create(file=file_info, species=species, user=request.user)
                     for each in existing_features:
                         if each not in other_characteristics:
                             feature = row[each];

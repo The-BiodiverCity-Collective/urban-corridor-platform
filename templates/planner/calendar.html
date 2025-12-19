@@ -1,0 +1,17 @@
+{% extends "_base.html" %}
+
+{% block content %}
+
+{% with this_page=page_info.name %}
+  {% include "planner/_breadcrumbs.html" %}
+{% endwith %}
+
+<h1>{{ page_info }}</h1>
+{{ page_info.get_content }}
+
+<div class="mt-10">
+  <p class="text-gray-700 font-bold">{{ _("Ready to get plants?") }}</p>
+  <a class="btn-blue" href="{% url "planner_nurseries" garden.id %}">{{ _("Indigenous nurseries") }} &raquo;</a>
+</div>
+
+{% endblock %}

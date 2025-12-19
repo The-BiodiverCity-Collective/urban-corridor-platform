@@ -12,9 +12,6 @@
     <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
   {% endif %}
 
-  {% if load_form %}
-  {% endif %}
-
   {% if load_datatables %}
     <link href="{% static 'css/datatables.min.css' %}" rel="stylesheet" />
   {% endif %}
@@ -35,7 +32,7 @@
   {% if request.GET.online_tailwind %}
     <script src="https://unpkg.com/@tailwindcss/browser@4"></script>
   {% else %}
-    <link rel="stylesheet" href="{% static "css/output.css" %}?id=1255-10">
+    <link rel="stylesheet" href="{% static "css/output.css" %}?id=1305-12">
   {% endif %}
   <link rel="icon" href="{{ SITE.logo.thumbnail.url }}" type="image/png">
 
@@ -111,7 +108,7 @@
         <div class="pre_main">
           {% block pre_main %}{% endblock %}
         </div>
-        <div class="{% if main_rounded_classes %}{{ main_rounded_classes }}{% else %}rounded-lg{% endif %} bg-white px-5 py-6 shadow-sm sm:px-6">
+        <div class="rounded-lg bg-white px-5 py-6 shadow-sm sm:px-6 {{ main_classes }}">
     {% endif %}
 
         {% if messages %}

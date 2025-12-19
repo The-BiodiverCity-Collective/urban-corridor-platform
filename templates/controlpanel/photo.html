@@ -24,6 +24,10 @@
         <dd class="mt-1 text-sm/6 text-gray-700 sm:col-span-2 sm:mt-0">{{ info.garden }}</dd>
       </div>
       <div class="px-4 py-3 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-0">
+        <dt class="text-sm/6 font-bold text-gray-900">{{ _("Species") }}</dt>
+        <dd class="mt-1 text-sm/6 text-gray-700 sm:col-span-2 sm:mt-0"><a href="{% url "controlpanel_species" info.species.id %}">{{ info.species }}</a></dd>
+      </div>
+      <div class="px-4 py-3 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-0">
         <dt class="text-sm/6 font-bold text-gray-900">{{ _("Upload date") }}</dt>
         <dd class="mt-1 text-sm/6 text-gray-700 sm:col-span-2 sm:mt-0">{{ info.upload_date|date:"M d, Y" }}</dd>
       </div>
@@ -37,6 +41,18 @@
       </div>
     </dl>
   </div>
+
+  {% if info.source == "inaturalist" %}
+    <h2 class="mt-5">{{ _("iNat info") }}</h2>
+    <dl class="divide-y divide-gray-100">
+    {% for key, value in info.image_inat.items %}
+      <div class="px-4 py-3 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-0">
+        <dt class="text-sm/6 font-bold text-gray-900">{{ key }}</dt>
+        <dd class="mt-1 text-sm/6 text-gray-700 sm:col-span-2 sm:mt-0">{{ value }}</dd>
+      </div>
+    {% endfor %}
+    </dl>
+  {% endif %}
 
   <form method="post" class="space-y-12 bg-gray-100 p-10 mt-10">
     <div class="sm:col-span-3">

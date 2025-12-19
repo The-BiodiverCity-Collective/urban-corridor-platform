@@ -2,6 +2,10 @@
 
 {% block content %}
 
+{% with this_page=page_info.name %}
+  {% include "planner/_breadcrumbs.html" %}
+{% endwith %}
+
 <div class="bg-white py-24 md:py-32 lg:py-40 dark:bg-gray-900">
   <div class="mx-auto grid max-w-7xl grid-cols-1 gap-20 px-6 lg:px-8 xl:grid-cols-3">
     <div class="mx-auto max-w-2xl lg:mx-0">

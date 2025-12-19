@@ -90,6 +90,7 @@
     --color-gray-800: oklch(27.8% 0.033 256.848);
     --color-gray-900: oklch(21% 0.034 264.665);
     --color-gray-950: oklch(13% 0.028 261.692);
+    --color-neutral-50: oklch(98.5% 0 0);
     --color-stone-100: oklch(97% 0.001 106.424);
     --color-stone-700: oklch(37.4% 0.01 67.558);
     --color-black: #000;
@@ -501,9 +502,6 @@
   .mt-20 {
     margin-top: calc(var(--spacing) * 20);
   }
-  .-mr-1 {
-    margin-right: calc(var(--spacing) * -1);
-  }
   .-mr-px {
     margin-right: -1px;
   }
@@ -585,6 +583,9 @@
   }
   .ml-2 {
     margin-left: calc(var(--spacing) * 2);
+  }
+  .ml-3 {
+    margin-left: calc(var(--spacing) * 3);
   }
   .ml-4 {
     margin-left: calc(var(--spacing) * 4);
@@ -1506,8 +1507,8 @@
     border-top-left-radius: var(--radius-md);
     border-top-right-radius: var(--radius-md);
   }
-  .rounded-tr-lg {
-    border-top-right-radius: var(--radius-lg);
+  .rounded-tl-none {
+    border-top-left-radius: 0;
   }
   .rounded-tr-md {
     border-top-right-radius: var(--radius-md);
@@ -1818,6 +1819,9 @@
   }
   .bg-lime-700 {
     background-color: var(--color-lime-700);
+  }
+  .bg-neutral-50 {
+    background-color: var(--color-neutral-50);
   }
   .bg-orange-50 {
     background-color: var(--color-orange-50);
@@ -2332,6 +2336,9 @@
   .text-lime-700 {
     color: var(--color-lime-700);
   }
+  .text-neutral-50 {
+    color: var(--color-neutral-50);
+  }
   .text-orange-600 {
     color: var(--color-orange-600);
   }
@@ -2585,11 +2592,6 @@
       }
     }
   }
-  .group-focus\/item\:text-gray-500 {
-    &:is(:where(.group\/item):focus *) {
-      color: var(--color-gray-500);
-    }
-  }
   .group-has-checked\:visible {
     &:is(:where(.group):has(*:checked) *) {
       visibility: visible;
@@ -2777,6 +2779,13 @@
       }
     }
   }
+  .hover\:bg-neutral-50 {
+    &:hover {
+      @media (hover: hover) {
+        background-color: var(--color-neutral-50);
+      }
+    }
+  }
   .hover\:bg-orange-500 {
     &:hover {
       @media (hover: hover) {
@@ -2903,6 +2912,13 @@
       }
     }
   }
+  .hover\:no-underline {
+    &:hover {
+      @media (hover: hover) {
+        text-decoration-line: none;
+      }
+    }
+  }
   .hover\:underline {
     &:hover {
       @media (hover: hover) {
@@ -3012,6 +3028,11 @@
       --tw-ring-color: var(--color-lime-500);
     }
   }
+  .focus\:ring-neutral-50 {
+    &:focus {
+      --tw-ring-color: var(--color-neutral-50);
+    }
+  }
   .focus\:ring-red-300 {
     &:focus {
       --tw-ring-color: var(--color-red-300);
@@ -3104,6 +3125,11 @@
   .focus-visible\:outline-indigo-500 {
     &:focus-visible {
       outline-color: var(--color-indigo-500);
+    }
+  }
+  .focus-visible\:outline-neutral-50 {
+    &:focus-visible {
+      outline-color: var(--color-neutral-50);
     }
   }
   .focus-visible\:outline-orange-600 {
@@ -3736,16 +3762,6 @@
       column-gap: calc(var(--spacing) * 8);
     }
   }
-  .dark\:divide-white\/10 {
-    @media (prefers-color-scheme: dark) {
-      :where(& > :not(:last-child)) {
-        border-color: color-mix(in srgb, #fff 10%, transparent);
-        @supports (color: color-mix(in lab, red, red)) {
-          border-color: color-mix(in oklab, var(--color-white) 10%, transparent);
-        }
-      }
-    }
-  }
   .dark\:bg-gray-800 {
     @media (prefers-color-scheme: dark) {
       background-color: var(--color-gray-800);
@@ -3772,14 +3788,6 @@
       }
     }
   }
-  .dark\:bg-white\/10 {
-    @media (prefers-color-scheme: dark) {
-      background-color: color-mix(in srgb, #fff 10%, transparent);
-      @supports (color: color-mix(in lab, red, red)) {
-        background-color: color-mix(in oklab, var(--color-white) 10%, transparent);
-      }
-    }
-  }
   .dark\:text-gray-300 {
     @media (prefers-color-scheme: dark) {
       color: var(--color-gray-300);
@@ -3788,11 +3796,6 @@
   .dark\:text-gray-400 {
     @media (prefers-color-scheme: dark) {
       color: var(--color-gray-400);
-    }
-  }
-  .dark\:text-gray-500 {
-    @media (prefers-color-scheme: dark) {
-      color: var(--color-gray-500);
     }
   }
   .dark\:text-indigo-400 {
@@ -3808,20 +3811,6 @@
   .dark\:text-white {
     @media (prefers-color-scheme: dark) {
       color: var(--color-white);
-    }
-  }
-  .dark\:shadow-none {
-    @media (prefers-color-scheme: dark) {
-      --tw-shadow: 0 0 #0000;
-      box-shadow: var(--tw-inset-shadow), var(--tw-inset-ring-shadow), var(--tw-ring-offset-shadow), var(--tw-ring-shadow), var(--tw-shadow);
-    }
-  }
-  .dark\:inset-ring-white\/5 {
-    @media (prefers-color-scheme: dark) {
-      --tw-inset-ring-color: color-mix(in srgb, #fff 5%, transparent);
-      @supports (color: color-mix(in lab, red, red)) {
-        --tw-inset-ring-color: color-mix(in oklab, var(--color-white) 5%, transparent);
-      }
     }
   }
   .dark\:inset-ring-white\/10 {
@@ -3860,30 +3849,11 @@
       }
     }
   }
-  .dark\:group-focus\/item\:text-white {
-    @media (prefers-color-scheme: dark) {
-      &:is(:where(.group\/item):focus *) {
-        color: var(--color-white);
-      }
-    }
-  }
   .dark\:hover\:bg-gray-800 {
     @media (prefers-color-scheme: dark) {
       &:hover {
         @media (hover: hover) {
           background-color: var(--color-gray-800);
-        }
-      }
-    }
-  }
-  .dark\:hover\:bg-white\/20 {
-    @media (prefers-color-scheme: dark) {
-      &:hover {
-        @media (hover: hover) {
-          background-color: color-mix(in srgb, #fff 20%, transparent);
-          @supports (color: color-mix(in lab, red, red)) {
-            background-color: color-mix(in oklab, var(--color-white) 20%, transparent);
-          }
         }
       }
     }
@@ -3894,23 +3864,6 @@
         @media (hover: hover) {
           color: var(--color-gray-300);
         }
-      }
-    }
-  }
-  .dark\:focus\:bg-white\/5 {
-    @media (prefers-color-scheme: dark) {
-      &:focus {
-        background-color: color-mix(in srgb, #fff 5%, transparent);
-        @supports (color: color-mix(in lab, red, red)) {
-          background-color: color-mix(in oklab, var(--color-white) 5%, transparent);
-        }
-      }
-    }
-  }
-  .dark\:focus\:text-white {
-    @media (prefers-color-scheme: dark) {
-      &:focus {
-        color: var(--color-white);
       }
     }
   }
