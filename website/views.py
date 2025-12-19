@@ -703,8 +703,13 @@ def species_search(request, vegetation_type=None):
     }
     return render(request, "species/search.html", context)
 
-def species_list(request, genus=None, family=None, vegetation_type=None):
+def species_list(request, genus=None, family=None, vegetation_type=None, garden=None, garden_status=None):
+
     site = get_site(request)
+    menu = "species"
+    page = request.GET.get("page")
+    title = _("Search results")
+
     species = Species.objects.filter(site=site) \
         .prefetch_related("features").all() \
         .select_related("plant_form")
@@ -734,6 +739,20 @@ def species_list(request, genus=None, family=None, vegetation_type=None):
         vegetation_type = VegetationType.objects.get(slug=vegetation_type)
         species = species.filter(vegetation_types=vegetation_type)
 
+    if garden:
+        # This is for when we open the list of species for a particular garden
+        if not (garden := get_garden(request, garden)):
+            return redirect("planner")
+        species = species.filter(garden_plants__garden=garden, garden_plants__status=garden_status)
+        title = _("Species list: ")
+        title += _("Current plants") if garden_status == "PRESENT" else _("Future plants")
+        menu = "planner"
+        page = garden_status
+    elif "garden_id" in request.COOKIES:
+        # In case the user isn't opening a garden-specific page but they do have a garden
+        # that they are managing; in which case we want to show the right buttons to save species
+        garden = get_garden(request, request.COOKIES.get("garden_id"))
+
     plant_form = None
     if "plant_form" in request.GET:
         plant_form = PlantForm.objects.get(pk=request.GET["plant_form"])
@@ -762,22 +781,22 @@ def species_list(request, genus=None, family=None, vegetation_type=None):
         except:
             info = None
 
-    garden = None
-    in_garden = None
-    if "garden_id" in request.COOKIES:
-        garden = get_garden(request, request.COOKIES.get("garden_id"))
-
     context = {
         "species_list": species,
         "load_datatables": True,
         "features": features,
         "vegetation_type": vegetation_type,
         "plant_form": plant_form,
-        "menu": "species",
-        "page": request.GET.get("page"),
+        "menu": menu,
+        "page": page,
         "info": info,
         "photo": photo,
         "garden": garden,
+        "title": title,
+        "hide_species_tabs": True,
+
+        # Because we have tabs above the <main>, we need to unround the top-left corner if the first tab is active
+        "main_rounded_classes": "rounded-tr-lg rounded-br-lg rounded-bl-lg" if request.GET.get("view", "table") == "table" else None,
     }
 
     return render(request, "species/list.html", context)
@@ -2096,7 +2115,8 @@ def planner_plants(request, id, status):
 
     context = {
         "menu": "planner",
-        "page": status,
+        "page": "plants",
+        "tab": status,
         "title": _("Plants overview"),
         "garden": garden,
         "species_list": plants,

@@ -1,14 +1,8 @@
-<div class="sm:block">
-  <div class="border-b border-gray-200">
-    <nav class="tabs -mb-px flex space-x-8" aria-label="Tabs">
-      <a href="{% querystring view="table" %}" class="tab {% if not request.GET.view or request.GET.view == "table" %}active{% else %}inactive {% endif %}">{{ _("Table") }}</a>
-      <a href="{% querystring view="table-extended" %}" class="tab {% if request.GET.view == "table-extended" %}active{% else %}inactive{% endif %}">{{ _("Table - extended") }}</a>
-      <a href="{% querystring view="photos" %}" class="tab {% if request.GET.view == "photos" %}active{% else %}inactive{% endif %}">{{ _("Photos") }}</a>
-      <a href="{% querystring view="photos-extended" %}" class="tab {% if request.GET.view == "photos-extended" %}active{% else %}inactive{% endif %}">{{ _("Photos - extended") }}</a>
-      <a href="{% querystring view="photos-data" %}" class="tab {% if request.GET.view == "photos-data" %}active{% else %}inactive{% endif %}">{{ _("Photos + data") }}</a>
-    </nav>
-  </div>
-</div>
+{% if not hide_species_tabs %}
+  {% with tabs_border=True %}
+    {% include "species/_tabs.html" %}
+  {% endwith %}
+{% endif %}
 
 <div class="tab_content">
   <section id="table">

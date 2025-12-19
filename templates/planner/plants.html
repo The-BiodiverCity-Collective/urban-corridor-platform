@@ -5,9 +5,25 @@
 
 {% block content %}
 
-{% with this_page=title %}
-  {% include "planner/_breadcrumbs.html" %}
-{% endwith %}
+<div class="flex justify-between">
+  <div>
+    {% with this_page=title %}
+      {% include "planner/_breadcrumbs.html" %}
+    {% endwith %}
+  </div>
+  <div class="flex flex-col justify-start">
+    <a 
+      class="btn-blue" 
+      {% if tab != "FUTURE" %}
+        href="{% url "planner_plants_present_list" garden.id %}"
+      {% else %}
+        href="{% url "planner_plants_future_list" garden.id %}"
+      {% endif %}
+    >
+      <i class="fa fa-list mr-1"></i> {{ _("View full list") }}
+    </a>
+  </div>
+</div>
 
 <form method="post">
 
@@ -26,9 +42,9 @@
     <div class="flex-4">
       <div class="sm:block">
         <div class="border-b border-gray-200">
-          <nav class="tabs -mb-px flex space-x-8" aria-label="Tabs">
-            <a href="{% url "planner_plants_future" garden.id %}" class="tab {% if page != "FUTURE" %}in{% endif %}active">{{ _("Future plants overview") }}</a>
-            <a href="{% url "planner_plants_present" garden.id %}" data-section="photos" class="tab  {% if page != "PRESENT" %}in{% endif %}active">{{ _("Current plants overview") }}</a>
+          <nav class="tabs -mb-px flex space-x-8" aria-label="{{ _("Tabs") }}">
+            <a href="{% url "planner_plants_future" garden.id %}" class="tab {% if tab != "FUTURE" %}in{% endif %}active">{{ _("Future plants overview") }}</a>
+            <a href="{% url "planner_plants_present" garden.id %}" data-section="photos" class="tab  {% if tab != "PRESENT" %}in{% endif %}active">{{ _("Current plants overview") }}</a>
           </nav>
         </div>
       </div>
@@ -42,7 +58,7 @@
     </div>
 
     <div class="flex-2 mt-10 pt-3 pr-2">
-      {% with species_score=species_list status=page %}
+      {% with species_score=species_list status=tab %}
         {% include "planner/_score.html" %}
       {% endwith %}
 

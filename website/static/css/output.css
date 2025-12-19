@@ -1273,6 +1273,9 @@
   .justify-end {
     justify-content: flex-end;
   }
+  .justify-start {
+    justify-content: flex-start;
+  }
   .gap-2 {
     gap: calc(var(--spacing) * 2);
   }
@@ -1302,13 +1305,6 @@
       --tw-space-y-reverse: 0;
       margin-block-start: calc(calc(var(--spacing) * 2) * var(--tw-space-y-reverse));
       margin-block-end: calc(calc(var(--spacing) * 2) * calc(1 - var(--tw-space-y-reverse)));
-    }
-  }
-  .space-y-3 {
-    :where(& > :not(:last-child)) {
-      --tw-space-y-reverse: 0;
-      margin-block-start: calc(calc(var(--spacing) * 3) * var(--tw-space-y-reverse));
-      margin-block-end: calc(calc(var(--spacing) * 3) * calc(1 - var(--tw-space-y-reverse)));
     }
   }
   .space-y-6 {
@@ -1483,6 +1479,13 @@
   .rounded-xl {
     border-radius: var(--radius-xl);
   }
+  .active {
+    .pre_main &.tab {
+      border-top-left-radius: var(--radius-md);
+      border-top-right-radius: var(--radius-md);
+      color: var(--color-sky-600);
+    }
+  }
   .rounded-t-lg {
     border-top-left-radius: var(--radius-lg);
     border-top-right-radius: var(--radius-lg);
@@ -1490,6 +1493,9 @@
   .rounded-t-md {
     border-top-left-radius: var(--radius-md);
     border-top-right-radius: var(--radius-md);
+  }
+  .rounded-tr-lg {
+    border-top-right-radius: var(--radius-lg);
   }
   .rounded-tr-md {
     border-top-right-radius: var(--radius-md);
@@ -1503,6 +1509,33 @@
   }
   .rounded-bl-lg {
     border-bottom-left-radius: var(--radius-lg);
+  }
+  .tab {
+    .pre_main & {
+      border-style: var(--tw-border-style);
+      border-width: 0px;
+      padding-inline: calc(var(--spacing) * 3);
+      padding-block: calc(var(--spacing) * 3);
+      font-size: var(--text-sm);
+      line-height: var(--tw-leading, var(--text-sm--line-height));
+      --tw-font-weight: var(--font-weight-medium);
+      font-weight: var(--font-weight-medium);
+      white-space: nowrap;
+      text-decoration-line: none;
+    }
+    .pre_main &.active {
+      background-color: var(--color-white);
+      color: var(--color-sky-600);
+    }
+    .pre_main &.inactive {
+      color: var(--color-white);
+      opacity: 70%;
+      &:hover {
+        @media (hover: hover) {
+          opacity: 100%;
+        }
+      }
+    }
   }
   .border {
     border-style: var(--tw-border-style);
@@ -2210,6 +2243,16 @@
   }
   .whitespace-nowrap {
     white-space: nowrap;
+  }
+  .inactive {
+    .pre_main &.tab {
+      color: var(--color-white);
+      &:hover {
+        @media (hover: hover) {
+          color: var(--color-gray-700);
+        }
+      }
+    }
   }
   .text-amber-500 {
     color: var(--color-amber-500);

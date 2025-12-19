@@ -1,8 +1,24 @@
 {% extends "_base.html" %}
 
-{% block title %}{{ _("Search results") }}{% endblock %}
+{% block pre_main %}
+  {% include "species/_tabs.html" %}
+{% endblock %}
 
 {% block content %}
+
+  {% if menu == "planner" %}
+    <div class="flex justify-between">
+      <div>
+        {% with this_page=title %}
+          {% include "planner/_breadcrumbs.html" %}
+        {% endwith %}
+      </div>
+      <div class="text-center">
+        <span class="text-black font-bold block text-5xl">{{ species_list.count }}</span>
+        <span class="text-gray-700 text-sm">{{ _("species found") }}</span>
+      </div>
+    </div>
+  {% endif %}
 
   {% if info %}
     <div class="grid grid-cols-5 gap-4 mb-4">
@@ -16,7 +32,7 @@
         </div>
       {% endif %}
     </div>
-  {% else %}
+  {% elif menu != "planner" %}
       <h1>
         {{ _("Search results") }}
       </h1>
@@ -66,16 +82,6 @@
         <span class="text-gray-700 text-sm">{{ _("species found") }}</span>
       </div>
 
-
-    </div>
-
-  {% else %}
-
-    <div class="alert alert-info">
-      <i class="fa fa-info-circle fa-fw mr-3"></i>
-      <span>
-        <strong>{{ species_list.count }}</strong> species found
-      </span>
     </div>
 
   {% endif %}

@@ -27,7 +27,7 @@
             </p>
             <div class="mt-3">
               <a class="btn-blue mr-5" href="{% url "create_account" %}?next={{ request.get_full_path }}">{{ _("Create account") }}</a>
-              <a href="{% url "login" %}">{{ _("Log in") }}</a>
+              <a href="{% url "login" %}?next={{ request.get_full_path }}">{{ _("Log in") }}</a>
             </div>
             {% else %}
             <div class="mt-10 text-sm">
@@ -202,7 +202,7 @@
 <div class="container pl-10 {% if not garden %}opacity-40 cursor-not-allowed{% endif %}">
   <div class="flex gap-4">
 
-    <a href="{% url "planner_plants_present" GARDEN %}" class="flex-1 relative no-underline hover:opacity-75">
+    <a href="{% url "planner_plants_present_list" GARDEN %}" class="flex-1 relative no-underline hover:opacity-75">
       <div class="absolute inset-0 rounded-lg bg-white lg:rounded-bl-4xl"></div>
       <div class="relative flex h-full flex-col overflow-hidden rounded-[calc(var(--radius-lg)+1px)] lg:rounded-bl-[calc(2rem+1px)]">
         <img src="/media/planner.current.jpg" alt="" class="h-40 object-cover object-center" />
@@ -221,7 +221,7 @@
       <div class="pointer-events-none absolute inset-0 rounded-lg shadow-sm outline outline-black/5 lg:rounded-bl-4xl"></div>
     </a>
 
-    <a href="{% url "planner_plants_future" GARDEN %}" class="flex-1 relative no-underline hover:opacity-75">
+    <a href="{% url "planner_plants_future_list" GARDEN %}" class="flex-1 relative no-underline hover:opacity-75">
       <div class="absolute inset-0 rounded-lg bg-white"></div>
       <div class="relative flex h-full flex-col overflow-hidden rounded-[calc(var(--radius-lg)+1px)]">
         <img src="/media/planner.future.jpg" alt="" class="h-40 object-cover object-center" />

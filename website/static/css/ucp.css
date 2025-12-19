@@ -134,6 +134,31 @@
   }
 }
 
+@utility tab {
+  .pre_main & {
+    @apply no-underline whitespace-nowrap py-3 px-3 text-sm font-medium border-0;
+  }
+  .pre_main &.active {
+    @apply text-sky-600 bg-white;
+  }
+  .pre_main &.inactive {
+    @apply text-white opacity-70 hover:opacity-100;
+  }
+}
+
+@utility active {
+  .pre_main &.tab {
+    @apply text-sky-600 rounded-t-md;
+  }
+}
+
+@utility inactive {
+  .pre_main &.tab {
+    @apply text-white hover:text-gray-700;
+  }
+}
+
+
 @layer utilities {
   button.planner-action.btn-green i.fa-check-circle{display:inline-block !important}
   button.planner-action.btn-green i.fa-certificate{display:none !important}

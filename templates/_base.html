@@ -31,7 +31,7 @@
   {% if request.GET.online_tailwind %}
     <script src="https://unpkg.com/@tailwindcss/browser@4"></script>
   {% else %}
-    <link rel="stylesheet" href="{% static "css/output.css" %}?id=1255-07">
+    <link rel="stylesheet" href="{% static "css/output.css" %}?id=1255-10">
   {% endif %}
   <link rel="icon" href="{{ SITE.logo.thumbnail.url }}" type="image/png">
 
@@ -98,7 +98,10 @@
   <main class="-mt-32">
     {% if not hide_main_container %}
       <div class="mx-auto max-w-7xl px-4 pb-12 sm:px-6 lg:px-8">
-        <div class="rounded-lg bg-white px-5 py-6 shadow-sm sm:px-6">
+        <div class="pre_main">
+          {% block pre_main %}{% endblock %}
+        </div>
+        <div class="{% if main_rounded_classes %}{{ main_rounded_classes }}{% else %}rounded-lg{% endif %} bg-white px-5 py-6 shadow-sm sm:px-6">
     {% endif %}
 
         {% if messages %}
