@@ -62,12 +62,12 @@
           <h3 class="text-sm/6 font-medium text-gray-500">Improve your garden</h3>
           <div class="flow-root">
             <div class="-my-2">
-              <a href="{% url "planner_plants_present_list" GARDEN %}" class="flex gap-x-4 py-2 text-sm/6 font-semibold hover:text-sky-600
+              <a href="{% url "planner_plants_present_list" GARDEN %}?view=photos-data" class="flex gap-x-4 py-2 text-sm/6 font-semibold hover:text-sky-600
                 {% if page == "PRESENT" and menu == "planner" %}text-sky-600{% else %}text-gray-900{% endif %}">
                 <i class="fa fa-tree-alt fa-fw text-lg text-gray-400 mr-1"></i>
                 Current plants
               </a>
-              <a href="{% url "planner_plants_future_list" GARDEN %}" class="flex gap-x-4 py-2 text-sm/6 font-semibold hover:text-sky-600
+              <a href="{% url "planner_plants_future_list" GARDEN %}?view=photos-data" class="flex gap-x-4 py-2 text-sm/6 font-semibold hover:text-sky-600
                 {% if page == "FUTURE" and menu == "planner" %}text-sky-600{% else %}text-gray-900{% endif %}">
                 <i class="fa fa-seedling fa-fw text-lg text-gray-400 mr-1"></i>
                 Future plants

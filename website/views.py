@@ -2124,6 +2124,10 @@ def planner_suggestions(request, id):
         "more_species_available": more_species_available,
         "species_present": Species.objects.filter(garden_plants__garden=garden, garden_plants__status="PRESENT"),
         "species_future": Species.objects.filter(garden_plants__garden=garden, garden_plants__status="FUTURE"),
+        "hide_species_tabs": True,
+
+        # Because we have tabs above the <main>, we need to unround the top-left corner if the first tab is active
+        "main_classes": "rounded-tl-none" if request.GET.get("view", "table") == "table" else None,
     }
     return render(request, "planner/plants.suggestions.html", context)
 

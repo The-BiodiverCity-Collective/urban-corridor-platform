@@ -1,5 +1,9 @@
 {% extends "_base.html" %}
 
+{% block pre_main %}
+  {% include "species/_tabs.html" %}
+{% endblock %}
+
 {% block content %}
 
 {% with this_page=title %}

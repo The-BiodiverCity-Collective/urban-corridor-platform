@@ -196,7 +196,10 @@ class Document(models.Model):
 
     @property
     def get_absolute_url(self):
-        return "/maps/" + str(self.id)
+        if self.doc_type == "SPECIES_LIST":
+            return "/sources/" + str(self.id) + "/"
+        else:
+            return "/maps/" + str(self.id) + "/"
 
     # Returns the opacity used for the background color in maps
     # Some layers, such as the boundary layer, should be fully 
@@ -816,32 +819,19 @@ class Species(models.Model):
         return self.meta_data.get("original")
 
     def get_links(self):
-        return self.links
         links = {}
-        original = self.meta_data.get("original")
-        if original.get("link"):
-            link = original.get("link")
-            if "wikipedia" in link:
-                links["Wikipedia"] = link
-            elif "pza" in link:
-                links["PlantZA"] = link
-            elif "redlist" in link:
-                links["Redlist"] = link
-            else:
-                links[link] = link
-
-        if original.get("link_plantza"):
-            links["PlantZA"] = original.get("link_plantza")
-
-        if original.get("link_wikipedia"):
-            links["Wikipedia"] = original.get("link_wikipedia")
-
-        if original.get("link_extra"):
-            links["More information"] = original.get("link_extra")
-
-        if original.get("link_redlist"):
-            links["Redlist"] = original.get("link_redlist")
-
+        if self.links:
+            for link in self.links:
+                if "wikipedia" in link:
+                    links["Wikipedia"] = link
+                elif "pza" in link:
+                    links["PlantZA"] = link
+                elif "redlist" in link:
+                    links["Redlist"] = link
+                elif "inaturalist" in link:
+                    links["Naturalist"] = link
+                else:
+                    links[link] = link
         return links
 
     @property
