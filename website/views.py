@@ -756,6 +756,10 @@ def species_list(request, genus=None, family=None, vegetation_type=None, garden=
         # that they are managing; in which case we want to show the right buttons to save species
         garden = get_garden(request, request.COOKIES.get("garden_id"))
 
+    in_garden = None
+    if garden:
+        in_garden = Species.objects.filter(garden_plants__garden=garden, garden_plants__status="FUTURE")
+
     plant_form = None
     if "plant_form" in request.GET:
         plant_form = PlantForm.objects.get(pk=request.GET["plant_form"])
@@ -795,6 +799,7 @@ def species_list(request, genus=None, family=None, vegetation_type=None, garden=
         "info": info,
         "photo": photo,
         "garden": garden,
+        "in_garden": in_garden,
         "title": title,
         "hide_species_tabs": True,
         "total_species": total_species,
