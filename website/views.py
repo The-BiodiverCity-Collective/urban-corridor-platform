@@ -623,23 +623,29 @@ def species_overview(request, vegetation_type=None):
 
         genus = genus.annotate(total=Count("species", filter=Q(species__vegetation_types=vegetation_type))).filter(total__gt=0)
         families = families.annotate(total=Count("species", filter=Q(species__vegetation_types=vegetation_type))).filter(total__gt=0)
-        features = SpeciesFeatures.objects.filter(species__vegetation_types=vegetation_type).distinct()
+        features = SpeciesFeatures.objects.filter(site=site).order_by("species_type", "name").annotate(
+            total=Count("species", filter=Q(species__site=site, species__vegetation_types=vegetation_type))
+        )
+        plant_forms = PlantForm.objects.all().annotate(
+            total=Count("species", filter=Q(species__site=site, species__vegetation_types=vegetation_type))
+        )
+
     else:
         genus = genus.annotate(total=Count("species"))
         families = families.annotate(total=Count("species"))
         features = SpeciesFeatures.objects.all()
+        features = SpeciesFeatures.objects.filter(site=site).order_by("species_type", "name").annotate(
+            total=Count("species", filter=Q(species__site=site))
+        )
+        plant_forms = PlantForm.objects.all().annotate(
+            total=Count("species", filter=Q(species__site=site))
+        )
+
 
     try:
         samples = Species.objects.filter(pk__in=random.sample(list(samples), 3))
     except:
         samples = None
-
-    features = SpeciesFeatures.objects.filter(site=site).order_by("species_type", "name").annotate(
-        total=Count("species", filter=Q(species__site=site))
-    )
-    plant_forms = PlantForm.objects.all().annotate(
-        total=Count("species", filter=Q(species__site=site))
-    )
 
     context = {
         "genus": genus,
@@ -1298,6 +1304,7 @@ def vegetation_type(request, slug):
         "menu": "maps",
         "page": "vegetation_types",
         "title": str(info),
+        "photos": Photo.objects.filter(species__vegetation_types=info).order_by("?")[:1],
     }
     return render(request, "fcc/vegetationtype.html", context)
 
