@@ -1061,6 +1061,9 @@
   .h-40 {
     height: calc(var(--spacing) * 40);
   }
+  .h-100 {
+    height: calc(var(--spacing) * 100);
+  }
   .h-auto {
     height: auto;
   }
@@ -1998,6 +2001,9 @@
   }
   .object-center {
     object-position: center;
+  }
+  .object-left {
+    object-position: left;
   }
   .p-0 {
     padding: calc(var(--spacing) * 0);

@@ -32,14 +32,14 @@
   {% if request.GET.online_tailwind %}
     <script src="https://unpkg.com/@tailwindcss/browser@4"></script>
   {% else %}
-    <link rel="stylesheet" href="{% static "css/output.css" %}?id=11329-03">
+    <link rel="stylesheet" href="{% static "css/output.css" %}?id=11329-04">
   {% endif %}
   <link rel="icon" href="{{ SITE.logo.thumbnail.url }}" type="image/png">
 
   {% if quill %}
     <link href="https://cdn.jsdelivr.net/npm/quill@2.0.3/dist/quill.snow.css" rel="stylesheet" />
     <script src="https://cdn.jsdelivr.net/npm/quill@2.0.3/dist/quill.js"></script>
-    <script src="{% static "js/quill.js" %}"></script>
+    <script src="{% static "js/quill.js" %}?1128-13"></script>
 
     <style type="text/css">
     .ql-container {

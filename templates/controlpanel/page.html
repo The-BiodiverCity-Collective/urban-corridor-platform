@@ -31,7 +31,7 @@
         <div class="col-span-full mt-4">
           <label for="description" class="block text-sm/6 font-medium text-gray-900">{{ _("Content") }}</label>
           <div class="mt-2">
-            <textarea name="description" id="description" class="quill block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-xs ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-sky-600 sm:text-sm/6">{{ info.content_html|default_if_none:"" }}</textarea>
+            <textarea name="description" id="description" class="quill block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-xs ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-sky-600 sm:text-sm/6">{{ info.content_html|safe|default_if_none:"" }}</textarea>
             <i class="fa fa-code show-code cursor-pointer float-right" title="{{ _("Show HTML code") }}"></i>
             <div class="quill" id="description-container"></div>
           </div>
