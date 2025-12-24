@@ -152,4 +152,5 @@ urlpatterns = [
     path("controlpanel/vegetation_types/", views.controlpanel_vegetation_types, name="controlpanel_vegetation_types"),
     path("controlpanel/vegetation_types/<int:id>/", views.controlpanel_vegetation_type, name="controlpanel_vegetation_type"),
 
+    path("controlpanel/highlight/", views.controlpanel_highlight, name="controlpanel_highlight"),
 ]

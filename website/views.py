@@ -748,7 +748,7 @@ def species_list(request, genus=None, family=None, vegetation_type=None, garden=
         vegetation_type = VegetationType.objects.get(slug=vegetation_type)
         species = species.filter(vegetation_types=vegetation_type)
 
-    if garden:
+    if garden is not None:
         # This is for when we open the list of species for a particular garden
         if not (garden := get_garden(request, garden)):
             return redirect("planner")
@@ -3503,3 +3503,34 @@ def controlpanel_vegetation_type(request, id):
         "info": info,
     }
     return render(request, "controlpanel/vegetation_type.html", context)
+
+@staff_member_required
+def controlpanel_highlight(request):
+
+    site = get_site(request)
+    info = None
+    if "load" in request.GET:
+        info = Species.objects.get(pk=request.GET["load"])
+
+    if request.method == "POST":
+        highlight = {
+            "name": request.POST["name"],
+            "description": request.POST["description"],
+            "image": request.POST["image"],
+            "url": request.POST["url"],
+            "date": timezone.now().strftime("%b %d, %Y"),
+        }
+        site.meta_data["highlight_en"] = highlight
+        site.save()
+        messages.success(request, _("The new monthly highlight has been saved."))
+        return redirect(request.path)
+
+    context = {
+        "controlpanel": True,
+        "menu": "content",
+        "title": _("Monthly highlight"),
+        "info": info,
+        "page": "highlight",
+    }
+    return render(request, "controlpanel/highlight.html", context)
+

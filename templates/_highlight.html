@@ -1,0 +1,20 @@
+<article class="relative isolate flex max-w-2xl flex-col gap-x-8 gap-y-6 sm:flex-row sm:items-start lg:flex-col lg:items-stretch">
+  <div class="relative flex-none">
+    <img class="aspect-2/1 w-full rounded-lg bg-gray-100 object-cover sm:aspect-video sm:h-32 lg:h-auto" src="{{ SITE.meta_data.highlight_en.image }}" alt="">
+    <div class="absolute inset-0 rounded-lg ring-1 ring-inset ring-gray-900/10"></div>
+  </div>
+  <div>
+    <span class="float-right relative z-10 rounded-full bg-gray-100 px-3 py-1.5 text-xs font-medium text-gray-600 hover:bg-gray-200">Monthly highlight</span>
+    <h4 class="mt-2 text-sm/6 font-semibold text-gray-900">
+      <a href="{{ SITE.meta_data.highlight_en.url }}" class="hover:text-sky-600">
+        <span class="absolute inset-0"></span>
+        <em>
+        {{ SITE.meta_data.highlight_en.name }}
+        </em>
+      </a>
+    </h4>
+    <p class="mt-2 text-sm/6 text-gray-600">
+      {{ SITE.meta_data.highlight_en.description }}
+    </p>
+  </div>
+</article>

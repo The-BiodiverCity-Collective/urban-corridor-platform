@@ -51,6 +51,12 @@
                         <i class="fa fa-align-left mr-2"></i>
                         {{ _("Blurbs") }}
                       </a>
+                      <a href="{% url "controlpanel_highlight" %}" 
+                         class="{% if menu == "content" and page == "highlight" %}bg-gray-100{% endif %} group/item flex items-center px-4 py-2 text-sm text-gray-700 focus:bg-gray-100 focus:text-gray-900 focus:outline-hidden" 
+                         aria-current="page">
+                        <i class="fa fa-map-marker-plus mr-2"></i>
+                        {{ _("Monthly highlight") }}
+                      </a>
                     </div>
                   </el-menu>
                 </el-dropdown>

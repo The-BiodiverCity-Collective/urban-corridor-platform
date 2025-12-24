@@ -14,8 +14,13 @@
   {% if info.id %}
     <a href="{% url "species" info.id %}" class="btn-orange btn-sm float-right"><i class="fa fa-file"></i> {{ _("View") }}</a>
     {% if info.inat_id %}
-      <a class="btn-white btn-sm mr-1 float-right" href="https://www.inaturalist.org/taxa/{{ info.inat_id }}"><img style="width:15px" class="inline mr-1" src="{% static "img/inat.icon.png" %}"> iNat profile</a>
+      <a class="btn-white btn-sm mr-1 float-right" href="https://www.inaturalist.org/taxa/{{ info.inat_id }}"><img style="width:15px" class="inline mr-1" src="{% static "img/inat.icon.png" %}"> {{ _("iNat") }}</a>
     {% endif %}
+      <a class="btn-blue btn-sm mr-1 float-right" href="{% url "controlpanel_highlight" %}?load={{ info.id }}"
+        title="{{ _("Make this plant the highlight of the month") }}"
+      >
+        {{ _("Make higlight") }}
+      </a>
     <h1>
       {% if info.name_en %}
         {{ info.name_en }} (<em>{{ info }}</em>)

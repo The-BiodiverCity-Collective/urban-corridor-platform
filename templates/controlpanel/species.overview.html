@@ -11,7 +11,7 @@
   <form method="get" action="{% url "controlpanel_species_list" %}" class="space-y-6">
 
     <div class="mb-4">
-      <input type="text" placeholder="Species name" name="name" id="id_name" value="{{ request.GET.name }}" class="mt-1" required>
+      <input type="text" placeholder="{{ _("Enter (part of) a species name...") }}" name="name" id="id_name" value="{{ request.GET.name }}" class="mt-1" required>
     </div>
 
     <div class="mt-6 flex items-center justify-end gap-x-6">

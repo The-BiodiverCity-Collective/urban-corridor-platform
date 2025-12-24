@@ -4,12 +4,11 @@
 
 <h1 class="text-3xl">Control Panel</h1>
 
-<h2>{{ _("Configuration") }}</h2>
-
-<ul>
-  <li><a href="{% url "controlpanel_pages" %}?type=4">{{ _("Target animal species") }}</a></li>
-  <li><a href="{% url "controlpanel_pages" %}?type=5">{{ _("Site features") }}</a></li>
-</ul>
+<h2>{{ _("Monthly highlight") }}</h2>
+<p>{{ _("The monthly highlight was last changed on:") }}
+  <strong>{{ SITE.meta_data.highlight_en.date }}</strong>
+</p>
+<a href="{% url "controlpanel_highlight" %}">{{ _("Change now") }}</a>
 
 <h2 class="mt-10">{{ _("Icon sources") }}</h2>
 <ul>
@@ -28,7 +27,7 @@
 
     {% for each in colors %}
       <div class="mb-5">
-        <div class="p-4 rounded" style="background:{{ each.color }}"></div>
+        <div class="p-4 py-10 rounded" style="background:{{ each.color }}"></div>
         <div>{{ each }}</div>
       </div>
     {% endfor %}

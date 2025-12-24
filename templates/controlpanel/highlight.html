@@ -1,0 +1,56 @@
+{% extends "_base.html" %}
+
+{% block content %}
+
+<h1 class="text-3xl">
+  {{ title }}
+</h1>
+
+{% if info %}
+
+<div class="flex gap-4">
+  <div class="flex-1">
+    <img src="{{ info.photo.medium }}" class="rounded" alt="" />
+  </div>
+  <div class="flex-4">
+    <form method="post">
+      <input type="text" name="name" value="{{ info }}" />
+      <textarea 
+        name="description"
+        placeholder="{{ _("Short one-sentence description what is interesting about this species.") }}"
+      ></textarea>
+      <p>
+      URL: <a href="{{ info.get_absolute_url }}">{{ info.get_absolute_url }}</a>
+      </p>
+      <input type="hidden" name="image" value="{{ info.photo.medium }}" />
+      <input type="hidden" name="url" value="{{ info.get_absolute_url }}" />
+      <button class="btn-blue" type="submit">Save</button>
+      {% csrf_token %}
+    </form>
+  </div>
+</div>
+
+{% else %}
+
+{% include "_highlight.html" %}
+
+<div class="bg-gray-100 p-10 mb-10 rounded-2xl mt-10">
+  <h2>Search entire species list</h2>
+  <form method="get" action="{% url "controlpanel_species_list" %}" class="space-y-6">
+
+    <div class="mb-4">
+      <input type="text" placeholder="{{ _("Enter (part of) a species name...") }}" name="name" id="id_name" value="{{ request.GET.name }}" class="mt-1" required>
+    </div>
+
+    <div class="mt-6 flex items-center justify-end gap-x-6">
+      <button type="submit" class="px-4 py-2 bg-lime-600 hover:bg-lime-700 text-white font-bold rounded-md focus:outline-hidden focus:ring-3 focus:ring-lime-300">
+        {{ _("Search") }}
+      </button>
+    </div>
+  </form>
+</div>
+
+{% endif %}
+
+
+{% endblock %}
