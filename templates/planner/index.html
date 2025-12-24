@@ -343,9 +343,9 @@
           <div class="mt-4 sm:mt-0 sm:ml-6 lg:mt-6 lg:ml-0">
             <h3 class="text-sm font-medium text-gray-900">Review requirements</h3>
             <p class="mt-2 text-sm text-gray-500">
-              Make sure you meet the requirements to join our corridor.
+              {{ _("Make sure you meet the requirements to join our corridor.") }}
             </p>
-            <a href="http://" class="no-underline hover:underline">View checklist &raquo;</a>
+            <a href="{% url "join" "requirements" %}" class="no-underline hover:underline">{{ _("View checklist") }} &raquo;</a>
           </div>
         </div>
         <div class="sm:flex lg:block">
@@ -357,9 +357,9 @@
               Online profile
             </h3>
             <p class="mt-2 text-sm text-gray-500">
-              Write your online garden profile, upload photos, and more.
+              {{ _("Write your online garden profile, upload photos, and more.") }}
             </p>
-            <a href="http://" class="no-underline hover:underline">Manage profile &raquo;</a>
+            <a href="http://" class="no-underline hover:underline">{{ _("Manage profile") }} &raquo;</a>
           </div>
         </div>
         <div class="sm:flex lg:block">

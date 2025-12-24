@@ -2366,6 +2366,18 @@ def controlpanel_page(request, id=None):
             info.format = "HTML"
             info.is_active = True if request.POST.get("is_active") == "1" else False
 
+            if "multicol" in request.POST and request.POST["multicol"] == "1":
+                info.meta_data["design"] = "multicol"
+            elif "design" in info.meta_data:
+                del info.meta_data["design"]
+
+            if request.POST.get("next"):
+                info.meta_data["next"] = request.POST["next"]
+                info.meta_data["next_link"] = request.POST["next_link"]
+            elif "next" in info.meta_data:
+                del info.meta_data["next"]
+                del info.meta_data["next_link"]
+
             if "url" in request.POST:
                 info.meta_data["url"] = request.POST.get("url")
 
