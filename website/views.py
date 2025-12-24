@@ -2589,17 +2589,15 @@ def controlpanel_documents(request):
     if "type" in request.GET and request.GET["type"]:
         documents = documents.filter(doc_type=request.GET["type"])
 
+    types = Document.DOC_TYPES
     context = {
         "controlpanel": True,
         "menu": "documents",
         "documents": documents,
         "title": _("Documents"),
-        "doc_types": [
-            ("CONTEXT", _("Context")),
-            ("TEACHING", _("Teaching resources")),
-            ("GENERAL", _("General document repository")),
-            ("SPECIES_LIST", _("Species lists")),
-        ],
+        "type": request.GET.get("type"),
+        "doc_types": types,
+        "type_label": types.get(request.GET.get("type")),
     }
     return render(request, "controlpanel/documents.html", context)
 
@@ -2932,7 +2930,8 @@ def controlpanel_shapefiles(request):
 
     context = {
         "controlpanel": True,
-        "menu": "shapefiles",
+        "menu": "documents",
+        "type": "shapefiles",
         "shapefiles": files,
         "title": _("Shapefiles"),
     }
@@ -2998,7 +2997,8 @@ def controlpanel_shapefile(request, id):
 
     context = {
         "controlpanel": True,
-        "menu": "shapefiles",
+        "menu": "documents",
+        "type": "shapefiles",
         "info": info,
         "size_in_bytes": size_in_bytes,
         "corridors": ReferenceSpace.objects.filter(source__doc_type="CORRIDOR"),
@@ -3090,7 +3090,8 @@ def controlpanel_shapefile_form(request, id=None):
 
     context = {
         "controlpanel": True,
-        "menu": "shapefiles",
+        "menu": "documents",
+        "type": "shapefiles",
         "info": info,
         "load_form": True,
         "doc_types": Document.DOC_TYPES,
@@ -3129,7 +3130,8 @@ def controlpanel_shapefile_dataviz(request, id):
 
     context = {
         "controlpanel": True,
-        "menu": "shapefiles",
+        "menu": "documents",
+        "type": "shapefiles",
         "info": info,
         "load_form": True,
         "styles": MapStyle.objects.all(),
@@ -3175,7 +3177,8 @@ def controlpanel_shapefile_classify(request, id):
 
     context = {
         "controlpanel": True,
-        "menu": "shapefiles",
+        "menu": "documents",
+        "type": "shapefiles",
         "info": info,
         "layer": layer,
     }

@@ -477,6 +477,41 @@
           </div>
         </div>
         <div>
+          <h3 class="text-sm/6 font-medium text-gray-500">{{ _("Join as a garden maintainer") }}</h3>
+          <div class="mt-6 flow-root">
+            <div class="-my-2">
+              <a href="{% url "events" %}" class="flex gap-x-4 py-2 text-sm/6 font-semibold hover:text-sky-600
+                {% if page == "events" and menu == "join" %}text-sky-600{% else %}text-gray-900{% endif %}">
+                <i class="fa fa-seedling fa-fw text-lg text-gray-400 mr-1"></i>
+                Introduction
+              </a>
+              <a href="{% url "join" "requirements" %}" class="flex gap-x-4 py-2 text-sm/6 font-semibold hover:text-sky-600
+                {% if page == "requirements" and menu == "join" %}text-sky-600{% else %}text-gray-900{% endif %}">
+                <i class="fa fa-seedling fa-fw text-lg text-gray-400 mr-1"></i>
+                Requirements
+              </a>
+              <a href="{% url "join" "requirements" %}" class="flex gap-x-4 py-2 text-sm/6 font-semibold hover:text-sky-600
+                {% if page == "requirements" and menu == "join" %}text-sky-600{% else %}text-gray-900{% endif %}">
+                <i class="fa fa-seedling fa-fw text-lg text-gray-400 mr-1"></i>
+                Your online garden profile
+              </a>
+              <a href="{% url "events" %}" class="flex gap-x-4 py-2 text-sm/6 font-semibold hover:text-sky-600
+                {% if page == "events" and menu == "join" %}text-sky-600{% else %}text-gray-900{% endif %}">
+                <i class="fa fa-seedling fa-fw text-lg text-gray-400 mr-1"></i>
+                Manage your events
+              </a>
+              <a href="{% url "events" %}" class="flex gap-x-4 py-2 text-sm/6 font-semibold hover:text-sky-600
+                {% if page == "events" and menu == "join" %}text-sky-600{% else %}text-gray-900{% endif %}">
+                <i class="fa fa-seedling fa-fw text-lg text-gray-400 mr-1"></i>
+                Request support
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="grid grid-cols-1 gap-10 sm:gap-8 lg:grid-cols-2">
+        <h3 class="sr-only">Recent posts</h3>
+        <article class="relative isolate flex max-w-2xl flex-col gap-x-8 gap-y-6 sm:flex-row sm:items-start lg:flex-col lg:items-stretch">
           <h3 class="text-sm/6 font-medium text-gray-500">{{ _("Support existing gardens") }}</h3>
           <div class="mt-6 flow-root">
             <div class="-my-2">
@@ -495,10 +530,7 @@
               </a>
             </div>
           </div>
-        </div>
-      </div>
-      <div class="grid grid-cols-1 gap-10 sm:gap-8 lg:grid-cols-2">
-        <h3 class="sr-only">Recent posts</h3>
+        </article>
         <article class="relative isolate flex max-w-2xl flex-col gap-x-8 gap-y-6 sm:flex-row sm:items-start lg:flex-col lg:items-stretch">
           <div class="relative flex-none">
             <img class="aspect-2/1 w-full rounded-lg bg-gray-100 object-cover sm:aspect-video sm:h-32 lg:h-auto" src="/media/temp.analysis.png" alt="">
@@ -520,7 +552,6 @@
             </p>
           </div>
         </article>
-        {% include "_highlight.html" %}
       </div>
     </div>
   </div>

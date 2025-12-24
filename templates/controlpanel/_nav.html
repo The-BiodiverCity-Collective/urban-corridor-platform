@@ -9,13 +9,6 @@
             </div>
             <div class="hidden sm:ml-6 sm:block">
               <div class="flex space-x-4">
-                <a href="{% url "controlpanel_shapefiles" %}" class="rounded-md {% if menu == "shapefiles" %}bg-gray-900{% endif %} px-3 py-2 text-sm font-medium text-white" aria-current="page">{{ _("Shapefiles") }}</a>
-                <a href="{% url "controlpanel_documents" %}" class="rounded-md {% if menu == "documents" %}bg-gray-900{% endif %} px-3 py-2 text-sm font-medium text-white" aria-current="page">{{ _("Documents") }}</a>
-                <a href="{% url "controlpanel_species_overview" %}" class="rounded-md {% if menu == "species" %}bg-gray-900{% endif %} px-3 py-2 text-sm font-medium text-white" aria-current="page">{{ _("Species") }}</a>
-                <a href="{% url "controlpanel_gardens" %}" class="rounded-md {% if menu == "gardens" %}bg-gray-900{% endif %} px-3 py-2 text-sm font-medium text-white" aria-current="page">{{ _("Gardens") }}</a>
-                <a href="{% url "controlpanel_photos" %}" class="rounded-md {% if menu == "photos" %}bg-gray-900{% endif %} px-3 py-2 text-sm font-medium text-white" aria-current="page">{{ _("Photos") }}</a>
-                <a href="{% url "controlpanel_vegetation_types" %}" class="rounded-md {% if menu == "vegetation_types" %}bg-gray-900{% endif %} px-3 py-2 text-sm font-medium text-white" aria-current="page">{{ _("Vegetation types") }}</a>
-
 
                 <el-dropdown class="inline-block">
                   <button class="inline-flex w-full text-white justify-center gap-x-1.5 px-3 py-2 text-sm font-semibold cursor-pointer
@@ -25,7 +18,7 @@
                     <i class="fa fa-angle-down mt-1 "></i>
                   </button>
 
-                  <el-menu anchor="bottom end" popover class="w-56 origin-top-right divide-y divide-gray-100 rounded-md bg-white shadow-lg outline-1 outline-black/5 transition transition-discrete [--anchor-gap:--spacing(2)] data-closed:scale-95 data-closed:transform data-closed:opacity-0 data-enter:duration-100 data-enter:ease-out data-leave:duration-75 data-leave:ease-in">
+                  <el-menu anchor="bottom start" popover class="w-56 origin-top-right divide-y divide-gray-100 rounded-md bg-white shadow-lg outline-1 outline-black/5 transition transition-discrete [--anchor-gap:--spacing(2)] data-closed:scale-95 data-closed:transform data-closed:opacity-0 data-enter:duration-100 data-enter:ease-out data-leave:duration-75 data-leave:ease-in">
                     <div class="py-1">
                       <a href="{% url "controlpanel_pages" %}?type=1" 
                          class="{% if menu == "content" and page_type == 1 %}bg-gray-100{% endif %} group/item flex items-center px-4 py-2 text-sm text-gray-700 focus:bg-gray-100 focus:text-gray-900 focus:outline-hidden" 
@@ -60,6 +53,58 @@
                     </div>
                   </el-menu>
                 </el-dropdown>
+
+
+                <el-dropdown class="inline-block">
+                  <button class="inline-flex w-full text-white justify-center gap-x-1.5 px-3 py-2 text-sm font-semibold cursor-pointer
+                    {% if menu == "documents" %}rounded-md bg-gray-900{% endif %}
+                  ">
+                    {{ _("Documents") }}
+                    <i class="fa fa-angle-down mt-1 "></i>
+                  </button>
+
+                  <el-menu anchor="bottom start" popover class="w-56 origin-top-right divide-y divide-gray-100 rounded-md bg-white shadow-lg outline-1 outline-black/5 transition transition-discrete [--anchor-gap:--spacing(2)] data-closed:scale-95 data-closed:transform data-closed:opacity-0 data-enter:duration-100 data-enter:ease-out data-leave:duration-75 data-leave:ease-in">
+                    <div class="py-1">
+                      <a href="{% url "controlpanel_documents" %}?type=SPECIES_LIST" 
+                         class="{% if menu == "documents" and type == "SPECIES_LIST" %}bg-gray-100{% endif %} group/item flex items-center px-4 py-2 text-sm text-gray-700 focus:bg-gray-100 focus:text-gray-900 focus:outline-hidden" 
+                         aria-current="page">
+                        <i class="fa fa-seedling mr-2"></i>
+                        {{ _("Species lists") }}
+                      </a>
+                      <a href="{% url "controlpanel_documents" %}?type=CONTEXT" 
+                         class="{% if menu == "documents" and type == "CONTEXT" %}bg-gray-100{% endif %} group/item flex items-center px-4 py-2 text-sm text-gray-700 focus:bg-gray-100 focus:text-gray-900 focus:outline-hidden" 
+                         aria-current="page">
+                        <i class="fa fa-map mr-2"></i>
+                        {{ _("Context") }}
+                      </a>
+                      <a href="{% url "controlpanel_documents" %}?type=TEACHING" 
+                         class="{% if menu == "documents" and type == "TEACHING" %}bg-gray-100{% endif %} group/item flex items-center px-4 py-2 text-sm text-gray-700 focus:bg-gray-100 focus:text-gray-900 focus:outline-hidden" 
+                         aria-current="page">
+                        <i class="fa fa-chalkboard-teacher mr-2"></i>
+                        {{ _("Teaching resources") }}
+                      </a>
+                      <a href="{% url "controlpanel_shapefiles" %}?type=GENERAL" 
+                         class="{% if menu == "documents" and type == "shapefiles" %}bg-gray-100{% endif %} group/item flex items-center px-4 py-2 text-sm text-gray-700 focus:bg-gray-100 focus:text-gray-900 focus:outline-hidden" 
+                         aria-current="page">
+                        <i class="fa fa-map-marker-alt mr-2"></i>
+                        {{ _("Shapefiles") }}
+                      </a>
+                      <a href="{% url "controlpanel_documents" %}?type=GENERAL" 
+                         class="{% if menu == "documents" and type == "GENERAL" %}bg-gray-100{% endif %} group/item flex items-center px-4 py-2 text-sm text-gray-700 focus:bg-gray-100 focus:text-gray-900 focus:outline-hidden" 
+                         aria-current="page">
+                        <i class="fa fa-info-square mr-2"></i>
+                        {{ _("General document repository") }}
+                      </a>
+                    </div>
+                  </el-menu>
+                </el-dropdown>
+
+
+                <a href="{% url "controlpanel_species_overview" %}" class="rounded-md {% if menu == "species" %}bg-gray-900{% endif %} px-3 py-2 text-sm font-medium text-white" aria-current="page">{{ _("Species") }}</a>
+                <a href="{% url "controlpanel_gardens" %}" class="rounded-md {% if menu == "gardens" %}bg-gray-900{% endif %} px-3 py-2 text-sm font-medium text-white" aria-current="page">{{ _("Gardens") }}</a>
+                <a href="{% url "controlpanel_photos" %}" class="rounded-md {% if menu == "photos" %}bg-gray-900{% endif %} px-3 py-2 text-sm font-medium text-white" aria-current="page">{{ _("Photos") }}</a>
+                <a href="{% url "controlpanel_vegetation_types" %}" class="rounded-md {% if menu == "vegetation_types" %}bg-gray-900{% endif %} px-3 py-2 text-sm font-medium text-white" aria-current="page">{{ _("Vegetation types") }}</a>
+
 
 
                 <el-dropdown class="inline-block">

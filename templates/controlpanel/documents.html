@@ -3,21 +3,24 @@
 {% block content %}
 
 <h1 class="text-3xl">
-  {{ _("Documents") }}
+{{ type_label }}
 </h1>
 
-<nav class="mb-3 flex space-x-8" aria-label="Tabs">
-  <a href="?" class="tab {% if not request.GET %}active {% else %}inactive {% endif %}">{{ _("All") }}</a>
-  {% for key,value in doc_types %}
-    <a 
-      href="?type={{ key }}" 
-      class="tab 
-      {% if request.GET.type == key %}active {% else %}inactive {% endif %}"
-    >
-      {{ value }}
-    </a>
-  {% endfor %}
-</nav>
+{% if False %}
+  These are tabs with the document type, maybe useful in the future
+  <nav class="mb-3 flex space-x-8" aria-label="Tabs">
+    <a href="?" class="tab {% if not request.GET %}active {% else %}inactive {% endif %}">{{ _("All") }}</a>
+    {% for key,value in doc_types.items %}
+      <a 
+        href="?type={{ key }}" 
+        class="tab 
+        {% if request.GET.type == key %}active {% else %}inactive {% endif %}"
+      >
+        {{ value }}
+      </a>
+    {% endfor %}
+  </nav>
+{% endif %}
 
 {% if not documents %}
   <div class="alert alert-info mb-5">{{ _("No documents found") }}</div>
@@ -26,7 +29,6 @@
     <thead>
       <tr>
         <th>{{ _("Name") }}</th>
-        <th>{{ _("Type") }}</th>
         <th>{{ _("Options") }}</th>
       </tr>
     </thead>
@@ -37,7 +39,6 @@
           <a {% if not each.is_active %}class="opacity-50"{% endif %} href="{% url "controlpanel_document" each.id %}">{{ each }}</a>
           {% if not each.is_active %}<span class="badge-danger">{{ _("Inactive") }}</span>{% endif %}
         </td>
-        <td>{{ each.get_doc_type_display }}</td>
         <td class="whitespace-nowrap">
           <a class="btn-blue btn-sm" href="{% url "controlpanel_document_files" each.id %}"><i class="fa fa-file"></i> {{ _("Files") }}</a>
           <a class="btn-blue btn-sm" href="{% url "controlpanel_document" each.id %}"><i class="fa fa-pencil"></i> {{ _("Edit") }}</a>

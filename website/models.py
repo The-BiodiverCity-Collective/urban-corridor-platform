@@ -160,18 +160,18 @@ class Organization(models.Model):
 
 class Document(models.Model):
     name = models.CharField(max_length=255, db_index=True)
-    DOC_TYPES = [
-        ("STEPPING_STONES", _("Existing stepping-stones")),
-        ("CONNECTORS", _("Corridor connectors")),
-        ("TRANSPORT", _("Transport")),
-        ("POTENTIAL", _("Possible stepping-stones")),
-        ("CONTEXT", _("Context")),
-        ("TEACHING", _("Teaching resources")),
-        ("GENERAL", _("General document repository")),
-        ("CORRIDOR", _("Ecological corridor")),
-        ("SPECIES_LIST", _("Species lists")),
-    ]
-    doc_type = models.CharField(choices=DOC_TYPES, db_index=True, max_length=20, default="GENERAL")
+    DOC_TYPES = {
+        "STEPPING_STONES": _("Existing stepping-stones"),
+        "CONNECTORS": _("Corridor connectors"),
+        "TRANSPORT": _("Transport"),
+        "POTENTIAL": _("Possible stepping-stones"),
+        "CONTEXT": _("Context"),
+        "TEACHING": _("Teaching resources"),
+        "GENERAL": _("General document repository"),
+        "CORRIDOR": _("Ecological corridor"),
+        "SPECIES_LIST": _("Species lists"),
+    }
+    doc_type = models.CharField(choices=[(key, value) for key, value in DOC_TYPES.items()], db_index=True, max_length=20, default="GENERAL")
     author = models.CharField(max_length=255, null=True, blank=True)
     url = models.URLField(max_length=255, null=True, blank=True)
     description = models.TextField(null=True, blank=True)
