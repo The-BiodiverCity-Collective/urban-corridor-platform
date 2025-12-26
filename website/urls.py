@@ -96,6 +96,9 @@ urlpatterns = [
     path("setcookie/", views.set_cookie, name="set_cookie"),
     path("favicon.ico", views.favicon),
 
+    # Ajax
+    path("ajax/species/", views.ajax_species, name="ajax_species"),
+
     # Garden Manager
     path("planner/", views.planner, name="planner"),
     path("planner/<int:id>/", views.planner, name="planner"),

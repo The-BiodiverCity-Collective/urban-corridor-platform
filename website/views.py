@@ -64,6 +64,9 @@ COLOR_SCHEMES = {
     "red": ["#7f0000", "#b30000", "#d7301f", "#ef6548", "#fc8d59", "#fdbb84", "#fdd49e", "#fee8c8", "#fff7ec"],
 }
 
+# This needs adjustment for multi-lingual sites but for now it works
+LANGUAGE_ID = 1
+
 # This fetches the site the user is on
 def get_site(request):
     try:
@@ -3213,6 +3216,7 @@ def controlpanel_species_overview(request):
         "features": features,
         "plant_forms": plant_forms,
         "orphans": orphans,
+        "load_select2": True,
     }
     return render(request, "controlpanel/species.overview.html", context)
 
@@ -3549,3 +3553,31 @@ def controlpanel_highlight(request):
     }
     return render(request, "controlpanel/highlight.html", context)
 
+
+# AJAX
+
+def ajax_species(request):
+    query = request.GET.get("q")
+    site = get_site(request)
+
+    common_name_subquery = SpeciesText.objects.filter(
+        species=OuterRef("pk"),
+        language_id=LANGUAGE_ID
+    ).values("common_name")[:1]
+
+    species = Species.objects.prefetch_related("site").filter(
+        Q(name__icontains=query) | 
+        Q(texts__common_name__icontains=query, texts__language_id=LANGUAGE_ID)
+    ).annotate(common_name=Subquery(common_name_subquery)).distinct()
+
+    results = []
+    for each in species:
+        is_active = site in each.site.all()
+        results.append({
+            "id": each.id,
+            "name": each.name,
+            "common_name": each.common_name,
+            "active": is_active,
+        })
+
+    return JsonResponse(results, safe=False)
