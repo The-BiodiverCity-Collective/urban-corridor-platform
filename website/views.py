@@ -2637,11 +2637,12 @@ def controlpanel_document(request, id=None, tab=None):
         info.save()
         log_action(request, action, f"Document: {info.name}")
 
-        if action == Log.LogAction.CREATE:
+        if action == Log.LogAction.CREATE and info.doc_type != "LINK":
             messages.success(request, _("The document was saved. You can now upload the relevant files."))
             return redirect(reverse("controlpanel_document_files", args=[info.id]))
         else:
-            return redirect(reverse("controlpanel_documents"))
+            messages.success(request, _("Information saved."))
+            return redirect(reverse("controlpanel_documents") + f"?type={info.doc_type}")
 
     if request.method == "POST" and tab == "files":
         uploaded_files = request.FILES.getlist("file")
@@ -3474,13 +3475,25 @@ def controlpanel_photos(request):
             info = Page.objects.get(id=request.GET["id"], site=site)
             photos = info.photos.all()
 
+    species = None
+    if request.GET.get("table") == "species" and "id" in request.GET:
+        species = Species.objects.get(pk=request.GET["id"])
+    elif "species_search" in request.GET:
+        query = request.GET["species_search"]
+        species = Species.objects.filter(
+            Q(name__icontains=query) | 
+            Q(texts__common_name__icontains=query, texts__language_id=LANGUAGE_ID)
+        )
+        photos = Photo.objects.filter(species__in=species)
+
     context = {
         "controlpanel": True,
         "menu": "photos",
         "gardens": Garden.objects.filter(site=site),
-        "species": Species.objects.all(),
         "pages": Page.objects.filter(site=site),
-        "photos": photos
+        "photos": photos,
+        "load_select2": True,
+        "species": species,
     }
     return render(request, "controlpanel/photos.html", context)
 
@@ -3555,7 +3568,6 @@ def controlpanel_highlight(request):
 
 
 # AJAX
-
 def ajax_species(request):
     query = request.GET.get("q")
     site = get_site(request)
@@ -3570,9 +3582,17 @@ def ajax_species(request):
         Q(texts__common_name__icontains=query, texts__language_id=LANGUAGE_ID)
     ).annotate(common_name=Subquery(common_name_subquery)).distinct()
 
+    if "active_only" in request.GET:
+        species = species.filter(site=site)
+
     results = []
     for each in species:
-        is_active = site in each.site.all()
+
+        if "active_only" in request.GET:
+            is_active = True
+        else:
+            is_active = site in each.site.all()
+
         results.append({
             "id": each.id,
             "name": each.name,

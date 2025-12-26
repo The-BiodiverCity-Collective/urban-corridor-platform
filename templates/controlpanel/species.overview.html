@@ -186,7 +186,6 @@
                    "</div>");
         }
       }).on("select2:select", function (e) {
-        console.log(e);
         const id = e.params.data.id;
         window.location.href = "/controlpanel/species/" + id + "/";
       });

@@ -89,11 +89,17 @@
                         <i class="fa fa-map-marker-alt mr-2"></i>
                         {{ _("Shapefiles") }}
                       </a>
+                      <a href="{% url "controlpanel_documents" %}?type=LINK" 
+                         class="{% if menu == "documents" and type == "LINK" %}bg-gray-100{% endif %} group/item flex items-center px-4 py-2 text-sm text-gray-700 focus:bg-gray-100 focus:text-gray-900 focus:outline-hidden" 
+                         aria-current="page">
+                        <i class="fa fa-link mr-2"></i>
+                        {{ _("Links") }}
+                      </a>
                       <a href="{% url "controlpanel_documents" %}?type=GENERAL" 
                          class="{% if menu == "documents" and type == "GENERAL" %}bg-gray-100{% endif %} group/item flex items-center px-4 py-2 text-sm text-gray-700 focus:bg-gray-100 focus:text-gray-900 focus:outline-hidden" 
                          aria-current="page">
                         <i class="fa fa-info-square mr-2"></i>
-                        {{ _("General document repository") }}
+                        {{ _("General documents") }}
                       </a>
                     </div>
                   </el-menu>

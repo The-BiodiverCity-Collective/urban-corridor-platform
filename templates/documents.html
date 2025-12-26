@@ -13,9 +13,12 @@
           <h2 class="mt-2 block font-medium text-gray-900">
             {{ each }}
           </h3>
-          <span class="badge">
-            {{ each.author }}
-          </span>
+
+          {% if each.author %}
+            <span class="badge">
+              {{ each.author }}
+            </span>
+          {% endif %}
 
           <p class="text-gray-500 mt-4" id="description-{{ each.id }}">
             {% if each.description|length > 400 %}
@@ -27,10 +30,19 @@
             {% endif %}
           </p>
 
-          <a href="{{ each.attachments.all.0.file.url }}" class="btn-blue mt-4">
-            <i class="fa fa-download"></i>
-            {{ _("Download") }}
-          </a>
+          {% if each.attachments.all %}
+            <a href="{{ each.attachments.all.0.file.url }}" class="btn-blue mt-4">
+              <i class="fa fa-download"></i>
+              {{ _("Download") }}
+            </a>
+          {% endif %}
+
+          {% if each.url %}
+            <a href="{{ each.url }}" class="btn-blue mt-4">
+              <i class="fa fa-link"></i>
+              {{ _("Visit website") }}
+            </a>
+          {% endif %}
 
         </div>
       </li>

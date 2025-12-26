@@ -4,6 +4,7 @@
 
 <h1 class="text-3xl">{% block title %}{% if info.id %}{{ info }}{% else %}Add document{% endif %}{% endblock %}</h1>
 
+{% if info.doc_type != "LINK" %}
 <div class="border-b border-gray-200">
   <nav class="tabs -mb-px flex space-x-8" aria-label="Tabs">
     {% if info.id %}
@@ -15,6 +16,7 @@
     {% endif %}
   </nav>
 </div>
+{% endif %}
 
 {% if tab != "files" %}
 
@@ -32,7 +34,7 @@
     <div class="sm:col-span-3">
       <label for="author" class="block text-sm/6 font-medium text-gray-900">{{ _("Author") }}</label>
       <div class="mt-2">
-        <input type="text" name="author" id="author" class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-xs ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-sky-600 sm:text-sm/6" value="{{ info.author|default_if_none:"" }}" required>
+        <input type="text" name="author" id="author" class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-xs ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-sky-600 sm:text-sm/6" value="{{ info.author|default_if_none:"" }}" {% if info.doc_type != "LINK" %}required{% endif %}>
       </div>
     </div>
 

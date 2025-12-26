@@ -167,6 +167,7 @@ class Document(models.Model):
         "POTENTIAL": _("Possible stepping-stones"),
         "CONTEXT": _("Context"),
         "TEACHING": _("Teaching resources"),
+        "LINK": _("Links"),
         "GENERAL": _("General document repository"),
         "CORRIDOR": _("Ecological corridor"),
         "SPECIES_LIST": _("Species lists"),
@@ -1069,6 +1070,19 @@ class Photo(models.Model):
             return self.image_inat["large_url"]
         else:
             return self.image.large.url
+
+    @property
+    def license(self):
+        license = self.license_code
+        if not license:
+            return None
+        elif license[:2] == "cc":
+            license = license.upper()
+            if license[2] == "-":
+                license = license[:2] + " " + license[3:]
+        else:
+            license = "©"
+        return license
 
     class Meta:
         ordering = ["position", "date"]
