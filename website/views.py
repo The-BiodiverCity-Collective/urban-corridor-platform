@@ -109,6 +109,17 @@ def get_swapped_corridor_coords(site):
             swapped_corridor_coords = [[y, x] for x, y in corridor] # This is needed for the hole punching to work
     return swapped_corridor_coords
 
+# We calculate the various scores for a garden here
+def get_garden_score(garden, status):
+
+    species = Species.objects.filter(garden_plants__garden=garden, garden_plants__status=status)
+
+    scores = {}
+    scores[_("Species composition")] = True
+
+    return scores
+
+
 # For a default log entry where we take the user and url from request
 def log_action(request, action, name):
     Log.objects.create(action=action, name=name, url=request.get_full_path(), user=request.user)
@@ -2251,11 +2262,12 @@ def planner_score(request, id, status):
         "page": "score",
         "status": status,
         "garden": garden,
-        "replace_main_classes": "rounded-lg bg-white shadow-sm",
+        "main_classes": "relative",
         "species_list": species,
         "feature_species": feature_species,
         "months": Species.MONTH_CHOICES,
         "flowering_failure": flowering_failure,
+        "title": _("Future garden score card") if status == "FUTURE" else _("Current garden score card"),
     }
     return render(request, "planner/score.html", context)
 

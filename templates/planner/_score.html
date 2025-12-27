@@ -56,7 +56,7 @@
     </div>
   </div>
 
-  <a class="btn-white mt-4" href="">Full report</a>
+  <a class="full_report btn-white mt-4" href="{% if status == "PRESENT" %}{% url "planner_score" GARDEN %}{% else %}{% url "planner_score_future" GARDEN %}{% endif %}">Full report</a>
 
   {% else %}
 
