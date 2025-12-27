@@ -598,6 +598,21 @@ class Garden(ReferenceSpace):
     def __str__(self):
         return self.name
 
+    @property
+    def garden_photo(self):
+        if self.photo:
+            return photo
+
+        photos = Photo.objects.filter(species__garden_plants__garden=self, species__garden_plants__status="PRESENT")
+        if photos:
+            return photos.first()
+
+        photos = Photo.objects.filter(species__garden_plants__garden=self, species__garden_plants__status="FUTURE")
+        if photos:
+            return photos.first()
+
+        return None
+
     def save(self, *args, **kwargs):
         vegetation = Document.objects.get(pk=983172)
         veg = None
@@ -830,7 +845,7 @@ class Species(models.Model):
                 elif "redlist" in link:
                     links["Redlist"] = link
                 elif "inaturalist" in link:
-                    links["Naturalist"] = link
+                    links["iNaturalist"] = link
                 else:
                     links[link] = link
         return links

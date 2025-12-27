@@ -1,5 +1,168 @@
 {% extends "_base.html" %}
+{% load ucp_extras %}
+{% load i18n %}
 
 {% block content %}
-  <h1>{{ _("Score") }}</h1>
+
+<div class="overflow-hidden rounded-lg bg-white shadow-sm">
+  <h2 id="profile-overview-title" class="sr-only">Profile Overview</h2>
+  <div class="bg-white p-6">
+    <div class="sm:flex sm:items-center sm:justify-between">
+      <div class="sm:flex sm:space-x-5">
+        {% if garden.garden_photo %}
+        <div class="shrink-0">
+          <img src="{{ garden.garden_photo.thumbnail }}" alt="" class="mx-auto size-20 rounded-full" />
+        </div>
+        {% endif %}
+        <div class="mt-4 text-center sm:mt-0 sm:pt-1 sm:text-left">
+          <p class="text-sm font-medium text-gray-600">{{ _("Scorecard") }}</p>
+          <p class="text-xl font-bold text-gray-900 sm:text-2xl">{{ garden }}</p>
+          <p class="text-sm font-medium text-gray-600">{% if status == "FUTURE" %}{{ _("Future garden") }}{% else %}{{ _("Current garden") }}{% endif %}</p>
+        </div>
+      </div>
+      <div class="mt-5 flex justify-center sm:mt-0">
+        <a href="{% url "planner" garden.id %}" class="flex items-center justify-center rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-xs inset-ring inset-ring-gray-300 hover:bg-gray-50 no-underline">
+          <i class="fa fa-shovel mr-2"></i> {{ _("Back to garden planner") }}
+        </a>
+      </div>
+    </div>
+  </div>
+  <div class="grid grid-cols-1 divide-y divide-gray-200 border-t border-gray-200 bg-gray-50 sm:grid-cols-3 sm:divide-x sm:divide-y-0">
+    <div class="px-6 py-5 text-center text-sm font-medium">
+      <span class="text-gray-900">12</span>
+      <span class="text-gray-600">{{ _("Current species") }}</span>
+    </div>
+    <div class="px-6 py-5 text-center text-sm font-medium">
+      <span class="text-gray-900">4</span>
+      <span class="text-gray-600">{{ _("Future species") }}</span>
+    </div>
+    <div class="px-6 py-5 text-center text-sm font-medium">
+      <span class="text-gray-900">2</span>
+      <span class="text-gray-600">{{ _("Animal targets") }}</span>
+    </div>
+  </div>
+</div>
+
+<div class="px-5 py-6 sm:px-6">
+
+  {% for each in garden.targets.all %}
+
+    <section class="mb-20">
+
+      <h2 class="mt-10">{{ each }}</h2>
+      <div class="mb-3">
+        <p class="text-sm font-medium text-gray-900 flex justify-between mb-1">
+          <span>{{ _("Current score") }}</span>
+          <span>62</span>
+        </p>
+        <div aria-hidden="true">
+          <div class="overflow-hidden rounded-full bg-gray-200">
+            <div style="width: 62%" class="h-2 rounded-full bg-yellow-500"></div>
+          </div>
+        </div>
+      </div>
+
+      {% with species_set=feature_species|get_item:each.id %}
+        <section class="flex mt-8">
+          <div class="flex-1">
+            <div class="text-nter">
+              <span class="text-black font-bold block text-5xl">{% if species_set.count %}{{ species_set.count }}{% else %}0{% endif %}</span>
+              <span class="text-gray-700 text-sm">species found</span>
+            </div>
+          </div>
+          <div class="flex-3">
+            <div class="container mx-auto">
+              <div class="grid grid-cols-3 gap-2">
+                {% for species in species_set %}
+                  <a class="no-underline rounded-lg p-1 hover:bg-gray-200 mb-2" href="{{ species.get_absolute_url }}">
+                    <div class="flex items-center gap-x-6">
+                      <img 
+                        src="{{ species.photo.thumbnail }}" 
+                        alt="" 
+                        class="size-16 rounded-full outline-1 -outline-offset-1 outline-black/5"
+                        title="{{ species.photo.author }}"
+                        >
+                      <div>
+                        <p class="font-semibold tracking-tight text-gray-900 mb-0">{% if species.name_en %}{{ species.name_en }}{% else %}<em>{{ species.name }}</em>{% endif %}</p>
+                        {% if species.name_en %}
+                          <p class="text-sm font-semibold text-gray-600"><em>{{ species.name }}</em></p>
+                        {% endif %}
+                      </div>
+                    </div>
+                  </a>
+                {% endfor %}
+              </div>
+            </div>
+
+            {% if each.meta_data.score_minimum_flowering %}
+              <h3 class="mt-8">{{ _("Flowering") }}</h3>
+
+              <table class="w-full text-sm">
+                <thead>
+                  <tr>
+                    <th class="border-b border-gray-200 px-4 py-2"></th>
+                    {% for month, label in months %}
+                      <th class="border-b border-gray-200 px-4 py-2">{{ label|first }}</th>
+                    {% endfor %}
+                  </tr>
+                </thead>
+                <tbody>
+                  {% for species in species_set %}
+                    <tr>
+                      <td class="border-b border-gray-200 px-4 py-1">{% if species.name_en %}{{ species.name_en }}{% else %}<em>{{ species.name }}</em>{% endif %}</td>
+                      {% for month, label in months %}
+                        <td class="border-b border-gray-200 px-4 py-1 {% if month in species.flowering %}bg-lime-500{% endif %}">
+                          {% if month in species.flowering %}
+                            <span class="sr-only">{{ _("Yes") }}</span>
+                          {% endif %}
+                        </td>
+                      {% endfor %}
+                    </tr>
+                  {% endfor %}
+                </tbody>
+              </table>
+
+              {% if flowering_failure|get_item:each.id %}
+                <div class="alert alert-warning mt-5">
+
+                  <strong>
+                  {% blocktranslate %}
+                     {{ each }} can do with more flower-power!
+                  {% endblocktranslate %}
+                  </strong>
+
+                  {% with min=each.meta_data.score_minimum_flowering %}
+                    {% blocktranslate %}
+                      Improve your garden by having at least {{ min }} different species flowering every month of the year.
+                      You can improve your garden by making sure more plants are flowering in months not currently covered.
+                    {% endblocktranslate %}
+                  {% endwith %}
+
+                </div>
+                    
+                  <div class="flex justify-between mt-3">
+                    <div>
+                    {% for key,value in flowering_failure|get_item:each.id %}
+                      <span class="badge badge-warning">
+                      {{ value }}
+                      </span>
+                    {% endfor %}
+                    </div>
+
+                    <a class="btn-blue btn-sm" href="/species/search/"><i class="fa fa-search mr-1"></i> {{ _("Find suggested species") }}</a>  
+                  </div>
+
+              {% endif %}
+            {% endif %}
+
+          </div>
+        </section>
+      {% endwith %}
+
+    </section>
+
+  {% endfor %}
+
+</div>
+
 {% endblock %}

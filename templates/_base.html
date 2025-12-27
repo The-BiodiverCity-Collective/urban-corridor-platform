@@ -113,7 +113,7 @@
         <div class="pre_main">
           {% block pre_main %}{% endblock %}
         </div>
-        <div class="rounded-lg bg-white px-5 py-6 shadow-sm sm:px-6 {{ main_classes }}">
+        <div class="{% if replace_main_classes %}{{ replace_main_classes }}{% else %}rounded-lg bg-white px-5 py-6 shadow-sm sm:px-6 {{ main_classes }}{% endif %}">
     {% endif %}
 
         {% if messages %}

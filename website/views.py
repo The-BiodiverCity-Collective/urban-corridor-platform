@@ -2226,11 +2226,36 @@ def planner_score(request, id, status):
     if not (garden := get_garden(request, id)):
         return redirect("planner")
 
+    species = Species.objects.filter(garden_plants__garden=garden, garden_plants__status=status)
+    feature_species = {}
+    flowering_failure = {}
+
+    # Here we get all the species that are a hit for a particular feature
+    for page in garden.targets.all():
+        features = page.features.all()
+        feature_species[page.id] = species.filter(features__in=page.features.all())
+        score_minimum_flowering = int(page.meta_data.get("score_minimum_flowering", 0))
+
+        if score_minimum_flowering:
+
+            fails_check = []
+            for month in range(1, 13):
+                flowering_count = species.filter(flowering__contains=[month]).distinct().count()
+                if flowering_count < score_minimum_flowering:
+                    fails_check.append(Species.MONTH_CHOICES[month - 1])  # month - 1 to match the index
+
+            flowering_failure[page.id] = fails_check
+
     context = {
         "menu": "planner",
         "page": "score",
         "status": status,
         "garden": garden,
+        "replace_main_classes": "rounded-lg bg-white shadow-sm",
+        "species_list": species,
+        "feature_species": feature_species,
+        "months": Species.MONTH_CHOICES,
+        "flowering_failure": flowering_failure,
     }
     return render(request, "planner/score.html", context)
 
@@ -2330,6 +2355,10 @@ def controlpanel_page(request, id=None):
     if page_type in [4,5,6]:
         menu = "planner"
 
+    features = None
+    if page_type in [4,5]:
+        features = SpeciesFeatures.objects.filter(site=site)
+
     photos = False
     if "photos" in request.GET:
         photos = True
@@ -2368,6 +2397,7 @@ def controlpanel_page(request, id=None):
             info.page_type = page_type
             info.format = "HTML"
             info.is_active = True if request.POST.get("is_active") == "1" else False
+            info.site = site
 
             if "multicol" in request.POST and request.POST["multicol"] == "1":
                 info.meta_data["design"] = "multicol"
@@ -2389,10 +2419,25 @@ def controlpanel_page(request, id=None):
 
             if request.FILES.get("image"):
                 info.image = request.FILES.get("image")
-            info.site = site
+
+            if page_type == 4:
+                if request.POST.get("minimum_species"):
+                    info.meta_data["score_minimum_species"] = request.POST["minimum_species"]
+                elif "score_minimum_species" in info.meta_data:
+                    del info.meta_data["score_minimum_species"]
+                if request.POST.get("minimum_flowering"):
+                    info.meta_data["score_minimum_flowering"] = request.POST["minimum_flowering"]
+                elif "score_minimum_flowering" in info.meta_data:
+                    del info.meta_data["score_minimum_flowering"]
 
             info.save()
             log_action(request, action, f"Page: {info.name}")
+
+            if page_type in [4,5]:
+                info.features.clear()
+                for each in request.POST.getlist("features"):
+                    info.features.add(SpeciesFeatures.objects.get(pk=each))
+
             messages.success(request, _("Information was saved."))
             if request.GET.get("redirect"):
                 return redirect(request.GET.get("redirect"))
@@ -2407,6 +2452,8 @@ def controlpanel_page(request, id=None):
         "quill": True,
         "page_type": page_type,
         "photos": photos,
+        "features": features,
+        "load_select2": True if page_type in [4,5] else False,
     }
     return render(request, "controlpanel/page.html", context)
 
