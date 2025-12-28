@@ -31,8 +31,8 @@
   {% for each in features %}
     <div class="flex gap-6 mb-3">
       <div class="flex-1">{{ each }}</div>
-      <div class="flex-1"><input name="minimum_species" value="{{ info.meta_data.score_minimum_species }}" type="number" /></div>
-      <div class="flex-1"><input name="minimum_flowering" value="{{ info.meta_data.score_minimum_flowering }}" type="number" /></div>
+      <div class="flex-1"><input name="minimum_species" value="{{ each.meta_data.score_minimum_species }}" type="number" /></div>
+      <div class="flex-1"><input name="minimum_flowering" value="{{ each.meta_data.score_minimum_flowering }}" type="number" /></div>
     </div>
   {% endfor %}
 

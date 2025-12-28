@@ -127,6 +127,13 @@ class Page(models.Model):
         else:
             return ""
 
+    def score_per_species(self):
+        if self.meta_data and "score_minimum_species" in self.meta_data:
+            min_species = int(self.meta_data["score_minimum_species"])
+            return 100/min_species
+        else:
+            return 0
+
     class Meta:
         ordering = ["position", "name"]
 

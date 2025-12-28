@@ -118,6 +118,17 @@ def get_garden_score(garden, status):
     scores = {}
     scores[_("Species composition")] = True
 
+    for each in garden.targets.all():
+        score = 0
+        if each.meta_data.get("score_minimum_species"):
+            number_of_species = species.filter(features__in=each.features.all()).count()
+            score = number_of_species/int(each.meta_data.get("score_minimum_species"))*100
+            if score > 100:
+                score = 100
+            if each.meta_data.get("score_minimum_flowering"):
+                score = score/2 # Weight is only 50% if we have a second parameter
+        scores[each.name] = score
+
     return scores
 
 
@@ -1825,9 +1836,9 @@ def account_create(request):
 
 @login_required
 def account_gardens(request):
-
+    site = get_site(request)
     context = {
-        "gardens": Garden.objects_unfiltered.filter(user=request.user),
+        "gardens": Garden.objects_unfiltered.filter(user=request.user, site=site),
         "menu": "account",
         "page": "gardens",
     }
@@ -1835,9 +1846,9 @@ def account_gardens(request):
 
 @login_required
 def account(request):
-
+    site = get_site(request)
     context = {
-        "gardens": Garden.objects_unfiltered.filter(user=request.user),
+        "gardens": Garden.objects_unfiltered.filter(user=request.user, site=site),
         "menu": "account",
         "page": "account",
     }
@@ -2241,6 +2252,7 @@ def planner_score(request, id, status):
     species = Species.objects.filter(garden_plants__garden=garden, garden_plants__status=status)
     feature_species = {}
     flowering_failure = {}
+    flowering_success = {}
 
     # Here we get all the species that are a hit for a particular feature
     for page in garden.targets.all():
@@ -2251,12 +2263,15 @@ def planner_score(request, id, status):
         if score_minimum_flowering:
 
             fails_check = []
+            success_count = 12
             for month in range(1, 13):
                 flowering_count = species.filter(flowering__contains=[month]).distinct().count()
                 if flowering_count < score_minimum_flowering:
                     fails_check.append(Species.MONTH_CHOICES[month - 1])  # month - 1 to match the index
+                    success_count -= 1
 
             flowering_failure[page.id] = fails_check
+            flowering_success[page.id] = success_count
 
     context = {
         "menu": "planner",
@@ -2268,7 +2283,9 @@ def planner_score(request, id, status):
         "feature_species": feature_species,
         "months": Species.MONTH_CHOICES,
         "flowering_failure": flowering_failure,
+        "flowering_success": flowering_success,
         "title": _("Future garden score card") if status == "FUTURE" else _("Current garden score card"),
+        "scores": get_garden_score(garden, status),
     }
     return render(request, "planner/score.html", context)
 
@@ -3694,7 +3711,7 @@ def controlpanel_scoring(request):
         "vegetation": VegetationType.objects.filter(site=site, is_negative=False),
         "invasives": VegetationType.objects.filter(site=site, is_negative=True),
         "plant_forms": PlantForm.objects.all(),
-        "features": SpeciesFeatures.objects.filter(site=site, species_type=SpeciesFeatures.SpeciesType.ANIMALS),
+        "features": Page.objects.filter(site=site, page_type=Page.PageType.TARGET),
         "succession": SpeciesFeatures.objects.filter(pk__in=[138,139,145]),
     }
     return render(request, "controlpanel/scoring.html", context)
