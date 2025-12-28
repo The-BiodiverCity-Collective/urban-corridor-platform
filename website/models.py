@@ -686,6 +686,7 @@ class VegetationType(models.Model):
     slug = models.SlugField(max_length=255)
     spaces = models.ManyToManyField(ReferenceSpace, blank=True, limit_choices_to={"source_id": 983172})
     site = models.ForeignKey(Site, on_delete=models.CASCADE)
+    is_negative = models.BooleanField(default=False, help_text="Indicates that this is e.g. alien / invasive vegetation")
     meta_data = models.JSONField(null=True, blank=True)
 
     def __str__(self):
@@ -695,7 +696,7 @@ class VegetationType(models.Model):
         return reverse("vegetation_type", args=[self.slug])
 
     class Meta:
-        ordering = ["name"]
+        ordering = ["is_negative", "name"]
 
 class SpeciesFeatures(models.Model):
     name = models.CharField(max_length=255, db_index=True)

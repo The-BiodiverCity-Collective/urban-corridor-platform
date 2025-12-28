@@ -1,0 +1,117 @@
+{% extends "_base.html" %}
+
+{% block content %}
+
+<h1 class="flex justify-between">
+  <span>{{ title }}</span>
+  <span><i class="fa fa-star"></i><i class="fa fa-star"></i><i class="fa fa-star-half mr-2"></i></span>
+</h1>
+
+{{ _("Configure the settings below to indicate what a top-scoring garden looks like.") }}
+
+<form method="post">
+ 
+  {% csrf_token %}
+
+  <h2 class="mt-8">{{ _("Target animals") }}</h2>
+
+  <div class="alert alert-info flex">
+    <div class="mr-3">
+      <i class="fa fa-info-circle"></i>
+    </div>
+    <span>{{ _("If you leave the field empty, no minimum will be required for a maximum score.") }}</span>
+  </div>
+
+  <div class="flex gap-6 mb-3 mt-4">
+    <div class="flex-1"></div>
+    <div class="flex-1 font-bold">{{ _("Minimum species required") }}</div>
+    <div class="flex-1 font-bold">{{ _("Minimum flowering species/month") }}</div>
+  </div>
+
+  {% for each in features %}
+    <div class="flex gap-6 mb-3">
+      <div class="flex-1">{{ each }}</div>
+      <div class="flex-1"><input name="minimum_species" value="{{ info.meta_data.score_minimum_species }}" type="number" /></div>
+      <div class="flex-1"><input name="minimum_flowering" value="{{ info.meta_data.score_minimum_flowering }}" type="number" /></div>
+    </div>
+  {% endfor %}
+
+  <h2>{{ _("Structural diversity") }}</h2>
+
+  <div class="alert alert-info flex">
+    <div class="mr-3">
+      <i class="fa fa-info-circle"></i>
+    </div>
+    <span>{{ _("Enter the number of species required to achieve full structural diversity. Leave empty is a particular plant form is not required for a full score.") }}</span>
+  </div>
+
+  <div class="container mx-auto mt-10">
+    <div class="grid grid-cols-3 gap-4">
+    {% for each in vegetation %}
+      <section class="p-2 mb-5 bg-gray-100 rounded-lg">
+        <p class="font-bold text-center mt-3 mb-5">{{ each }}</p>
+        {% for form in plant_forms %}
+          <div class="flex gap-6 mb-3">
+            <div class="flex-1">{{ form }}</div>
+            <div class="flex-1"><input name="minimum_flowering" value="{{ info.meta_data.score_minimum_flowering }}" type="number" /></div>
+          </div>
+        {% endfor %}
+        <hr class="text-gray-300 mb-3">
+        {% for feature in succession %}
+          <div class="flex gap-6 mb-3">
+            <div class="flex-1">{{ feature }}</div>
+            <div class="flex-1"><input name="minimum_flowering" value="{{ info.meta_data.score_minimum_flowering }}" type="number" /></div>
+          </div>
+        {% endfor %}
+      </section>
+    {% endfor %}
+    </div>
+  </div>
+
+  <h2>{{ _("Species composition") }}</h2>
+
+  <div class="alert alert-info flex">
+    <div class="mr-3">
+      <i class="fa fa-info-circle"></i>
+    </div>
+    <span>{{ _("Indicate how many different, indigenous species should be present for a maximum score.") }}</span>
+  </div>
+
+  <div class="container mx-auto mt-1">
+    <div class="grid grid-cols-3 gap-4">
+    {% for each in vegetation %}
+      <section class="p-2 mb-5 bg-gray-100 rounded-lg">
+        <p class="font-bold text-center mt-3 mb-5">{{ each }}</p>
+          <div class="flex gap-6 mb-3">
+            <div class="flex-1">{{ _("Minimum species") }}</div>
+            <div class="flex-1"><input name="minimum_flowering" value="{{ info.meta_data.score_minimum_flowering }}" type="number" /></div>
+          </div>
+      </section>
+    {% endfor %}
+    </div>
+  </div>
+
+  <div class="alert alert-info flex mt-10">
+    <div class="mr-3">
+      <i class="fa fa-info-circle"></i>
+    </div>
+    <span>{{ _("Indicate how many negative points each 'negative' species should get.") }}</span>
+  </div>
+
+  <div class="container mx-auto mt-1">
+    <div class="grid grid-cols-3 gap-4">
+    {% for each in invasives %}
+      <section class="p-2 mb-5 bg-gray-100 rounded-lg">
+        <p class="font-bold text-center mt-3 mb-5">{{ each }}</p>
+          <div class="flex gap-6 mb-3">
+            <div class="flex-1">{{ _("Points per species") }}</div>
+            <div class="flex-1"><input name="minimum_flowering" value="{{ info.meta_data.score_minimum_flowering }}" type="number" max="-1" min="-10" /></div>
+          </div>
+      </section>
+    {% endfor %}
+    </div>
+  </div>
+
+</form>
+
+{% endblock %}

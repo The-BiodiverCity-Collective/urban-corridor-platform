@@ -141,6 +141,12 @@
                         <i class="fa fa-hand-holding-seedling mr-2"></i>
                         {{ _("Nurseries") }}
                       </a>
+                      <a href="{% url "controlpanel_scoring" %}"
+                         class="{% if menu == "planner" and page == "scoring" %}bg-gray-100{% endif %} group/item flex items-center px-4 py-2 text-sm text-gray-700 focus:bg-gray-100 focus:text-gray-900 focus:outline-hidden" 
+                         aria-current="page">
+                        <i class="fa fa-star-half mr-2"></i>
+                        {{ _("Scoring") }}
+                      </a>
                     </div>
                   </el-menu>
                 </el-dropdown>

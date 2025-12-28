@@ -1,0 +1,62 @@
+{% extends "_base.html" %}
+
+{% block content %}
+
+  <h1>{{ _("Vegetation type") }}</h1>
+
+  <form method="post" enctype="multipart/form-data">
+
+    <div class="col-span-full mt-2">
+      <label for="name" class="block text-sm/6 font-medium text-gray-900">{{ _("Title") }}</label>
+      <div class="mt-2">
+        <input type="text" name="name" id="name" class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-xs ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-sky-600 sm:text-sm/6" value="{{ info.name|default_if_none:"" }}" required>
+      </div>
+    </div>
+
+    <div class="col-span-full mt-4">
+      <label for="description" class="block text-sm/6 font-medium text-gray-900">{{ _("Content") }}</label>
+      <div class="mt-2">
+        <textarea name="description" id="description" class="quill block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-xs ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-sky-600 sm:text-sm/6">{{ info.description|safe|default_if_none:"" }}</textarea>
+        <i class="fa fa-code show-code cursor-pointer float-right" title="{{ _("Show HTML code") }}"></i>
+        <div class="quill" id="description-container"></div>
+      </div>
+    </div>
+
+    <div class="mt-10">
+      <legend class="text-sm/6 font-semibold text-gray-900">{{ _("Redlist status") }}</legend>
+      <div class="mt-2 space-y-2">
+        <select name="redlist">
+          <option></option>
+          {% for each in redlist %}
+            <option {% if each == info.redlist %}selected{% endif %} value="{{ each.id }}">{{ each }}</option>
+          {% endfor %}
+        </select>
+      </div>
+    </div>
+
+    <div class="mt-10 space-y-10">
+      <fieldset>
+        <legend class="text-sm/6 font-semibold text-gray-900">{{ _("Type") }}</legend>
+        <div class="mt-2 space-y-2">
+          <div class="flex items-center gap-x-3">
+            <input {% if not info.is_negative %}checked{% endif %} id="is_not_negative" name="is_negative" value="0" type="radio" class="size-4 border-gray-300 text-sky-600 focus:ring-sky-600">
+            <label for="is_not_negative" class="block text-sm/6 font-medium text-gray-900">{{ _("Regular") }}</label>
+          </div>
+          <div class="flex items-center gap-x-3">
+            <input {% if info.is_negative %}checked{% endif %} id="is_negative" name="is_negative" value="1" type="radio" class="size-4 border-gray-300 text-sky-600 focus:ring-sky-600">
+            <label for="is_negative" class="block text-sm/6 font-medium text-gray-900">{{ _("Negative (e.g. alien vegetation)") }}</label>
+          </div>
+        </div>
+      </fieldset>
+    </div>
+
+    <div class="mt-6 flex items-center justify-end gap-x-6">
+      <button type="submit" class="px-4 py-2 bg-lime-600 hover:bg-lime-700 text-white font-bold rounded-md focus:outline-hidden focus:ring-3 focus:ring-lime-300">
+        {{ _("Save") }}
+      </button>
+    </div>
+    {% csrf_token %}
+
+  </form>
+
+{% endblock %}

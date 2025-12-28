@@ -11,7 +11,7 @@
     <tr>
       <th>{{ _("Name") }}</th>
       <th>{{ _("Spaces") }}</th>
-      <th>{{ _("Description") }}</th>
+      <th>{{ _("Options") }}</th>
     </tr>
   </thead>
   <tbody>
@@ -24,13 +24,18 @@
         {% endfor %}
       </td>
       <td>
-        {% if each.description %}
-          <i class="fa fa-check"></i>
-        {% endif %}
+        <a class="btn-blue btn-sm" href="{% url "controlpanel_vegetation_type_form" each.id %}"><i class="fa fa-pencil mr-1"></i> {{ _("Edit") }}</a>
+        <a class="btn-blue btn-sm" href="{% url "controlpanel_vegetation_type" each.id %}"><i class="fa fa-file mr-1"></i> {{ _("View details") }}</a>
+        <a class="btn-orange btn-sm" href="{{ each.get_absolute_url }}">{{ _("Public view") }}</a>
       </td>
     </tr>
   {% endfor %}
   </tbody>
 </table>
+
+<a class="btn-blue" href="{% url "controlpanel_vegetation_type_form" %}">
+  <i class="fa fa-plus-square mr-1"></i> 
+  {{ _("Add") }}
+</a>
 
 {% endblock %}

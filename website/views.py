@@ -21,9 +21,10 @@ from django.shortcuts import render, get_object_or_404, redirect
 from django.template.loader import render_to_string, get_template
 from django.utils import timezone
 from django.utils.safestring import mark_safe
+from django.utils.text import slugify
 from django.utils.translation import gettext_lazy as _
-from folium.plugins import Fullscreen
 from django.views.decorators.csrf import csrf_exempt
+from folium.plugins import Fullscreen
 
 import folium
 import io
@@ -3596,6 +3597,48 @@ def controlpanel_vegetation_type(request, id):
     return render(request, "controlpanel/vegetation_type.html", context)
 
 @staff_member_required
+def controlpanel_vegetation_type_form(request, id=None):
+
+    site = get_site(request)
+    info = VegetationType.objects.get(site=site, pk=id) if id else None
+
+    if request.method == "POST":
+        if not info:
+            info = VegetationType()
+            info.site = site
+            info.slug = slugify(request.POST["name"])
+
+        info.name = request.POST["name"]
+
+        # Auto-insert by editor
+        description = request.POST["description"]
+        string_to_remove = [
+            ' rel="noopener noreferrer" target="_blank"',
+            '<p><br></p>',
+            '<ol><li data-list="bullet"><span class="ql-ui" contenteditable="false"></span><br></li></ol>',
+        ]
+        for each in string_to_remove:
+            description = description.replace(each, "")
+        info.description = description
+        info.redlist_id = request.POST.get("redlist", None)
+        info.is_negative = True if request.POST.get("is_negative") == "1" else False
+        info.save()
+        messages.success(request, _("The information has been saved."))
+        if "redirect" in request.GET:
+            return redirect(request.GET["redirect"])
+        else:
+            return redirect(reverse("controlpanel_vegetation_types"))
+
+    context = {
+        "controlpanel": True,
+        "menu": "vegetation_types",
+        "info": info,
+        "quill": True,
+        "redlist": Redlist.objects.all(),
+    }
+    return render(request, "controlpanel/vegetation_type.form.html", context)
+
+@staff_member_required
 def controlpanel_highlight(request):
 
     site = get_site(request)
@@ -3624,6 +3667,37 @@ def controlpanel_highlight(request):
         "page": "highlight",
     }
     return render(request, "controlpanel/highlight.html", context)
+
+@staff_member_required
+def controlpanel_scoring(request):
+
+    site = get_site(request)
+
+    if request.method == "POST":
+        highlight = {
+            "name": request.POST["name"],
+            "description": request.POST["description"],
+            "image": request.POST["image"],
+            "url": request.POST["url"],
+            "date": timezone.now().strftime("%b %d, %Y"),
+        }
+        site.meta_data["highlight_en"] = highlight
+        site.save()
+        messages.success(request, _("The new monthly highlight has been saved."))
+        return redirect(request.path)
+
+    context = {
+        "controlpanel": True,
+        "menu": "planner",
+        "page": "scoring",
+        "title": _("Scoring"),
+        "vegetation": VegetationType.objects.filter(site=site, is_negative=False),
+        "invasives": VegetationType.objects.filter(site=site, is_negative=True),
+        "plant_forms": PlantForm.objects.all(),
+        "features": SpeciesFeatures.objects.filter(site=site, species_type=SpeciesFeatures.SpeciesType.ANIMALS),
+        "succession": SpeciesFeatures.objects.filter(pk__in=[138,139,145]),
+    }
+    return render(request, "controlpanel/scoring.html", context)
 
 
 # AJAX
