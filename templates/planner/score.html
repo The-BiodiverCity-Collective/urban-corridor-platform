@@ -203,10 +203,10 @@
                     <td class="font-mono">
                       {% with score=each.score_per_species|multiply:species_set.count %}
                         {% if score > 100 %}
-                          <span class="text-lime-700">100.0</span>
+                          <span class="text-lime-700">100</span>
                           ({{ _("Maximum score reached!") }})
                         {% else %}
-                          {{ score }}
+                          {{ score|floatformat:0 }}
                         {% endif %}
                       {% endwith %}
                     </td>
@@ -225,10 +225,10 @@
                         <td class="font-mono">8.33</td>
                         <td class="font-mono">
                             {% if score == 12 %}
-                              <span class="text-lime-700">100.0</span>
+                              <span class="text-lime-700">100</span>
                               ({{ _("Maximum score reached!") }})
                             {% else %}
-                              {{ score|multiply:8.33333333333 }}
+                              {{ score|multiply:8.33333333333|floatformat:0 }}
                             {% endif %}
                         </td>
                       </tr>

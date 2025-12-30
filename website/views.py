@@ -120,6 +120,8 @@ def get_garden_score(garden, status):
 
     for each in garden.targets.all():
         score = 0
+
+        # Let's see if there are enough plants for this animal species
         if each.meta_data.get("score_minimum_species"):
             number_of_species = species.filter(features__in=each.features.all()).count()
             score = number_of_species/int(each.meta_data.get("score_minimum_species"))*100
@@ -127,7 +129,22 @@ def get_garden_score(garden, status):
                 score = 100
             if each.meta_data.get("score_minimum_flowering"):
                 score = score/2 # Weight is only 50% if we have a second parameter
-        scores[each.name] = score
+
+        # Let's see if there are enough flowering plants
+        if each.meta_data.get("score_minimum_flowering"):
+
+            score_minimum_flowering = int(each.meta_data.get("score_minimum_flowering"))
+            success_count = 12
+            for month in range(1, 13):
+                flowering_count = species.filter(flowering__contains=[month]).distinct().count()
+                if flowering_count < score_minimum_flowering:
+                    success_count -= 1
+            if each.meta_data.get("score_minimum_flowering"):
+                score += ((success_count/12)*100) / 2 # Weight is 50%
+            else:
+                score += (success_count/12)*100
+
+        scores[each.name] = int(score)
 
     return scores
 
