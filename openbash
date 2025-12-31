@@ -1,1 +1,1 @@
-sudo docker exec -it ucp_web /bin/bash
+sudo docker exec -it corridors_web /bin/bash

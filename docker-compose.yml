@@ -1,7 +1,7 @@
 services:  
   db:
     image: postgis/postgis:17-3.5
-    container_name: ucp_db
+    container_name: corridors_db
     environment:
        POSTGRES_HOST_AUTH_METHOD: trust
        POSTGRES_PASSWORD: postgres
@@ -16,7 +16,7 @@ services:
       - db
     ports:
       - 8080:8080
-    container_name: ucp_adminer
+    container_name: corridors_adminer
   web:
     build: .
     command: python3 manage.py runserver 0.0.0.0:7777
@@ -26,10 +26,10 @@ services:
       - 7777:7777
     depends_on:
       - db
-    container_name: ucp_web
+    container_name: corridors_web
 
 networks:
-  ucp_default:
+  corridors_default:
     driver: bridge
 
 volumes:

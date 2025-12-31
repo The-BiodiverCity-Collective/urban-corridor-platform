@@ -73,7 +73,7 @@
     <div class="sm:col-span-3 mb-10 mt-10">
       <label for="doc_type" class="block text-sm/6 font-medium text-gray-900">Vegetation type</label>
       <div class="mt-2">
-        <select name="vegetation_type" required>
+        <select name="vegetation_type">
           <option value=""></option>
           {% for each in vegetation_types %}
             <option value="{{ each.id }}">{{ each }}</option>

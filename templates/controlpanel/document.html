@@ -178,7 +178,7 @@
       <form class="space-x-6 p-6" method="post" enctype="multipart/form-data">
         <label for="file" class="block text-sm/6 font-medium text-gray-900">
           {% if info.attachments.all and info.doc_type == "SPECIES_LIST" %}
-            {{ _("Replace file") }}
+            {{ _("Add new file") }}
           {% else %}
             {{ _("Upload a file") }}
           {% endif %}

@@ -2741,7 +2741,6 @@ def controlpanel_document(request, id=None, tab=None):
     if request.method == "POST" and tab == "files":
         uploaded_files = request.FILES.getlist("file")
         if uploaded_files:
-            info.attachments.all().delete()
 
             for uploaded_file in uploaded_files:
                 file = Attachment.objects.create(file=uploaded_file, attached_to=info)
@@ -2773,7 +2772,7 @@ def controlpanel_document_species(request, id):
     existing_features = []
     nonexisting_features = []
     features = {}
-    other_characteristics = ["Time (flowering)", "Name", "Colour (flower)", "Form"]
+    other_characteristics = ["Time (flowering)", "Name", "Colour (flower)", "Form", "Link"]
     error = None
 
     try:
@@ -2816,7 +2815,9 @@ def controlpanel_document_species(request, id):
                 nonexisting_features.append(each)
 
     if request.method == "POST":
-        vegetation_type = VegetationType.objects.get(pk=request.POST["vegetation_type"])
+        vegetation_type = None
+        if request.POST.get("vegetation_type"):
+            vegetation_type = VegetationType.objects.get(pk=request.POST["vegetation_type"])
         SpeciesVegetationTypeLink.objects.filter(file=file_info).delete()
         FileLog.objects.filter(file=file_info).delete()
 
@@ -2856,17 +2857,18 @@ def controlpanel_document_species(request, id):
                         )
 
                     # We store this link in a table so we can trace it back...
-                    SpeciesVegetationTypeLink.objects.create(
-                        species = species,
-                        vegetation_type = vegetation_type,
-                        file = file_info,
-                    )
+                    if vegetation_type:
+                        SpeciesVegetationTypeLink.objects.create(
+                            species = species,
+                            vegetation_type = vegetation_type,
+                            file = file_info,
+                        )
 
-                    # And we mark the actual species as belonging to this vegetation type
-                    species.vegetation_types.add(vegetation_type)
+                        # And we mark the actual species as belonging to this vegetation type
+                        species.vegetation_types.add(vegetation_type)
 
-                    # And make sure this is activated for the current site
-                    species.site.add(site)
+                        # And make sure this is activated for the current site
+                        species.site.add(site)
 
                     must_save = False
 
@@ -2877,6 +2879,13 @@ def controlpanel_document_species(request, id):
                             must_save = True
                         else:
                             messages.warning(request, _("The plant form was not found:") + " " + plant_form + " - " + species.name)
+
+                    if "Link" in existing_features:
+                        link = row["Link"].strip()
+                        links = species.links or []
+                        if link not in links:
+                            species.links = links.append(link)
+                            must_save = True
 
                     if "Colour (flower)" in existing_features and isinstance(row["Colour (flower)"], str):
                         color_list = row["Colour (flower)"]
