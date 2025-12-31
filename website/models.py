@@ -1230,8 +1230,10 @@ class Color(models.Model):
 
 class FileLog(models.Model):
     species = models.ForeignKey(Species, on_delete=models.CASCADE, related_name="log")
-    file = models.ForeignKey(Attachment, on_delete=models.CASCADE)
+    file = models.ForeignKey(Attachment, on_delete=models.CASCADE, related_name="log")
     features = models.ManyToManyField(SpeciesFeatures, blank=True, related_name="log")
     created_at = models.DateTimeField(auto_now_add=True)
+    colors = models.BooleanField(default=False)
+    flowering = models.BooleanField(default=False)
     meta_data = models.JSONField(null=True, blank=True)
     user = models.ForeignKey(User, on_delete=models.PROTECT)

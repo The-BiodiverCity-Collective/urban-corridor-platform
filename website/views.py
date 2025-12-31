@@ -985,7 +985,7 @@ def species_sources(request):
 def species_source(request, id):
     site = get_site(request)
     info = Document.objects.get(site=site, doc_type="SPECIES_LIST", pk=id)
-    species = Species.objects.filter(species_links__file__attached_to=info)
+    species = Species.objects.filter(log__file__attached_to=info, site=site)
 
     context = {
         "menu": "species",
@@ -2871,6 +2871,8 @@ def controlpanel_document_species(request, id):
                         species.site.add(site)
 
                     must_save = False
+                    has_colors = False
+                    has_flowering = False
 
                     if "Form" in existing_features:
                         plant_form = row["Form"].strip()
@@ -2884,7 +2886,8 @@ def controlpanel_document_species(request, id):
                         link = row["Link"].strip()
                         links = species.links or []
                         if link not in links:
-                            species.links = links.append(link)
+                            links.append(link)
+                            species.links = links
                             must_save = True
 
                     if "Colour (flower)" in existing_features and isinstance(row["Colour (flower)"], str):
@@ -2893,6 +2896,7 @@ def controlpanel_document_species(request, id):
                             color = each.strip().lower()
                             if color in colors:
                                 species.colors.add(colors[color])
+                                has_colors = True
                             else:
                                 messages.warning(request, _("The color was not found:") + " " + color + " - " + species.name)
 
@@ -2901,10 +2905,12 @@ def controlpanel_document_species(request, id):
                         month_list = row["Time (flowering)"]
                         for each in month_list.split(","):
                             month = each.strip().lower()
-                            if month in MONTH_NAME_TO_ID:
-                                months.append(MONTH_NAME_TO_ID[month])
-                            else:
-                                messages.warning(request, _("The month was not found:") + " - <strong>" + month + "</strong> - " + species.name)
+                            if month:
+                                if month in MONTH_NAME_TO_ID:
+                                    months.append(MONTH_NAME_TO_ID[month])
+                                    has_flowering = True
+                                else:
+                                    messages.warning(request, _("The month was not found:") + " - <strong>" + month + "</strong> - " + species.name)
 
                         if months:
                             species.flowering = months
@@ -2914,7 +2920,7 @@ def controlpanel_document_species(request, id):
                         species.save()
 
                     # We store all the features and log this
-                    log = FileLog.objects.create(file=file_info, species=species, user=request.user)
+                    log = FileLog.objects.create(file=file_info, species=species, user=request.user, colors=has_colors, flowering=has_flowering)
                     for each in existing_features:
                         if each not in other_characteristics:
                             feature = row[each];
@@ -2935,6 +2941,9 @@ def controlpanel_document_species(request, id):
     new_species = []
     species_count = 0
     if not error:
+        if len(df) > 200:
+            df = df[:200]
+            messages.warning(request, _("Your spreadsheet has more rows, but we only show 200 below. When you import them, ALL records will be imported"))
         try:
             for index, row in df.iterrows():
                 # We take the name row, and we check if each species exists. We then add a column with the result.
@@ -2942,9 +2951,9 @@ def controlpanel_document_species(request, id):
                 if name: # Check how to deal with NaN fields of empty rows TODO
                     name_words = name.split()
 
+                    exists = False
                     if len(name_words) < 2:
-                        alerts.append(_("Species names must contain genus + species. This row is invalid and will NOT be added."))
-                        results.append("✖️")
+                        alerts.append("Species names must contain genus + species. This row is invalid and will NOT be added.")
                     else:
                         alerts.append("")
                         exists = Species.objects.filter(name=name.strip()).exists()
@@ -3334,7 +3343,7 @@ def controlpanel_species_list(request):
     source = None
 
     if "file" in request.GET:
-        species = species.filter(species_links__file_id=request.GET["file"])
+        species = Species.objects.filter(log__file_id=request.GET["file"])
         file = Attachment.objects.get(pk=request.GET["file"])
         filter_text.append(_("File") + ": " + str(file.attached_to))
         source = file.attached_to
