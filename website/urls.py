@@ -158,5 +158,6 @@ urlpatterns = [
     path("controlpanel/vegetation_types/create/", views.controlpanel_vegetation_type_form, name="controlpanel_vegetation_type_form"),
 
     path("controlpanel/highlight/", views.controlpanel_highlight, name="controlpanel_highlight"),
+    path("controlpanel/features/", views.controlpanel_features, name="controlpanel_features"),
     path("controlpanel/scoring/", views.controlpanel_scoring, name="controlpanel_scoring"),
 ]

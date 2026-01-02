@@ -75,9 +75,9 @@
   {% if info.id and info.photos.count %}
     <div class="grid grid-cols-12 gap-2 mb-6">
       {% for each in info.photos.all %}
-        <div class="relative overflow-hidden rounded-lg shadow-lg aspect-w-16 aspect-h-9">
+        <div class="relative overflow-hidden rounded-lg shadow-lg h-20">
           <a href="{% url "controlpanel_photo" each.id %}">
-            <img src="{{ each.thumbnail }}" alt="" class="object-cover w-full h-full">
+            <img src="{{ each.thumbnail }}" alt="" class="object-cover size-full">
           </a>
         </div>
       {% endfor %}
@@ -143,7 +143,10 @@
       </select>
     </div>
 
-    <div class="mb-4 bg-gray-100 p-4">
+    <div class="mb-4 bg-gray-100 p-4 relative" id="features">
+      <span class="absolute badge badge-warning right-2 top-2 cursor-pointer" id="show_all_features">
+        {{ _("Show all features") }}
+      </span>
       <div class="container mx-auto">
         <div class="grid grid-cols-3 gap-4">
           {% for feature in features_list %}
@@ -154,7 +157,7 @@
               <div>
                 <h4>{{ feature.get_species_type_display }}</h4>
             {% endifchanged %}
-            <span class="flex items-center">
+            <span class="flex items-center {% if SITE not in feature.site.all %}hidden{% endif %}">
               <input type="checkbox" name="features" id="id_features_{{ feature.id }}" value="{{ feature.id }}" class="form-checkbox h-5 w-5 text-blue-500" {% if feature in info.features.all %} checked {% endif %}>
               <label for="id_features_{{ feature.id }}" class="ml-2 text-gray-700">{{ feature.name }}</label>
             </span>
@@ -492,6 +495,11 @@
         });
       });
     {% endif %}
+
+    $("#show_all_features").click(function(){
+      $("#features span.flex").removeClass("hidden");
+      $(this).hide();
+    });
 
   });
 </script>

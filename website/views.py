@@ -717,6 +717,7 @@ def species_search(request, vegetation_type=None):
     veg_types = VegetationType.objects.filter(sites=site).annotate(
         total=Count("species", filter=Q(species__site=site))
     ).filter(total__gt=0)
+    features = SpeciesFeatures.objects.filter(site=site)
 
     if vegetation_type:
         vegetation_type = VegetationType.objects.get(slug=vegetation_type)
@@ -725,11 +726,10 @@ def species_search(request, vegetation_type=None):
 
         genus = genus.annotate(total=Count("species", filter=Q(species__vegetation_types=vegetation_type))).filter(total__gt=0)
         families = families.annotate(total=Count("species", filter=Q(species__vegetation_types=vegetation_type))).filter(total__gt=0)
-        features = SpeciesFeatures.objects.filter(species__vegetation_types=vegetation_type).distinct()
+        features = features.objects.filter(species__vegetation_types=vegetation_type).distinct()
     else:
         genus = genus.annotate(total=Count("species"))
         families = families.annotate(total=Count("species"))
-        features = SpeciesFeatures.objects.all()
 
     try:
         samples = Species.objects.filter(pk__in=random.sample(list(samples), 3))
@@ -2355,7 +2355,28 @@ def controlpanel(request):
                 each.common_name = l.title()
                 each.save()
 
-    # END TEMP FIX
+        # END TEMP FIX
+        grass = SpeciesFeatures.objects.get(name="Grass")
+        for each in Species.objects.filter(plant_form__letter="G"):
+            each.features.add(grass)
+
+        shrub = SpeciesFeatures.objects.get(name="Shrub")
+        for each in Species.objects.filter(plant_form__letter__in=["DS","S"]):
+            each.features.add(shrub)
+
+        tree = SpeciesFeatures.objects.get(name="Tree")
+        for each in Species.objects.filter(plant_form__letter="T"):
+            each.features.add(tree)
+
+        forb = SpeciesFeatures.objects.get(name="Forb")
+        for each in Species.objects.filter(plant_form__letter="F"):
+            each.features.add(forb)
+
+        fern = SpeciesFeatures.objects.get(name="Fern")
+        for each in Species.objects.filter(log__file__attached_to_id=983498):
+            each.features.add(fern)
+        for each in Species.objects.filter(texts__common_name__icontains="fern"):
+            each.features.add(fern)
 
     context = {
         "controlpanel": True,
@@ -3559,7 +3580,7 @@ def controlpanel_species(request, id=None):
         "menu": "species",
         "genus_list": Genus.objects.all(),
         "family_list": Family.objects.all(),
-        "features_list": SpeciesFeatures.objects.all(),
+        "features_list": SpeciesFeatures.objects.all().prefetch_related("site"),
         "vegetation_types_list": VegetationType.objects.all(),
         "info": info,
         "languages": languages,
@@ -3719,6 +3740,24 @@ def controlpanel_highlight(request):
         "page": "highlight",
     }
     return render(request, "controlpanel/highlight.html", context)
+
+@staff_member_required
+def controlpanel_features(request):
+
+    site = get_site(request)
+
+    if request.method == "POST":
+        site.features.set(SpeciesFeatures.objects.filter(id__in=request.POST.getlist("feature")))
+        messages.success(request, _("Feature configuration has been saved."))
+        return redirect(request.path)
+
+    context = {
+        "controlpanel": True,
+        "page": "features",
+        "title": _("Features"),
+        "features": SpeciesFeatures.objects.all().prefetch_related("site"),
+    }
+    return render(request, "controlpanel/features.html", context)
 
 @staff_member_required
 def controlpanel_scoring(request):

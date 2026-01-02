@@ -720,7 +720,7 @@ class SpeciesFeatures(models.Model):
         SOIL = 9, _("Soils")
 
     species_type = models.IntegerField(choices=SpeciesType.choices, db_index=True, default=0)
-    site = models.ManyToManyField(Site, blank=True)
+    site = models.ManyToManyField(Site, blank=True, related_name="features")
     icon = models.CharField(max_length=50, null=True, blank=True, help_text="Enter all the classes we need to add to the <i> tag")
     icon_svg = models.TextField(null=True, blank=True)
 
