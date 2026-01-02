@@ -133,16 +133,6 @@
       </div>
     </div>
 
-    <div class="mb-4">
-      <label class="block text-lg font-semibold text-gray-700">{{ _("Plant form") }}</label>
-      <select name="plant_form" class="mt-1">
-        <option></option>
-        {% for each in plant_forms %}
-          <option value="{{ each.id }}" {% if each == info.plant_form %} selected {% endif %}>{{ each }} ({{ each.description }})</option>
-        {% endfor %}
-      </select>
-    </div>
-
     <div class="mb-4 bg-gray-100 p-4 relative" id="features">
       <span class="absolute badge badge-warning right-2 top-2 cursor-pointer" id="show_all_features">
         {{ _("Show all features") }}

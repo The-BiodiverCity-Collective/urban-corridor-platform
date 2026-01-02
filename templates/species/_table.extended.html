@@ -8,7 +8,7 @@
       {% endif %}
 
       <th>{{ _("Features") }}</th>
-      <th>{{ _("Flowers & form") }}</th>
+      <th>{{ _("Flowers & type") }}</th>
 
       {% if table_show_score %}
         <th>{{ _("Species relevance") }}</th>
@@ -51,8 +51,10 @@
       <td data-sort="-{{ each.features.count }}">
         <div class="mb-1">
         {% for feature in each.features.all %}
-          {% ifchanged feature.species_type %}</div><div>{% endifchanged %}
-          {{ feature.get_text_icon }}
+          {% if feature.species_type != 7 %}
+            {% ifchanged feature.species_type %}</div><div>{% endifchanged %}
+            {{ feature.get_text_icon }}
+          {% endif %}
         {% endfor %}
         </div>
       </td>
@@ -72,9 +74,14 @@
             {% endfor %}
           </div>
         {% endif %}
-        {% if each.plant_form %}
-        <div class="text-gray-700 text-sm mt-2">{{ each.plant_form }}</div>
-        {% endif %}
+        <div class="text-gray-700 text-sm mt-2">
+          {% for feature in each.features.all %}
+            {% if feature.species_type == 7 %}
+              {% ifchanged feature.species_type %}</div><div>{% endifchanged %}
+              {{ feature.get_text_icon }}
+            {% endif %}
+          {% endfor %}
+        </div>
       </td>
 
       {% if table_show_score %}

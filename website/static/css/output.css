@@ -70,6 +70,8 @@
     --color-purple-500: oklch(62.7% 0.265 303.9);
     --color-purple-600: oklch(55.8% 0.288 302.321);
     --color-purple-800: oklch(43.8% 0.218 303.724);
+    --color-fuchsia-100: oklch(95.2% 0.037 318.852);
+    --color-fuchsia-700: oklch(51.8% 0.253 323.949);
     --color-fuchsia-800: oklch(45.2% 0.211 324.591);
     --color-pink-50: oklch(97.1% 0.014 343.198);
     --color-pink-100: oklch(94.8% 0.028 342.258);
@@ -1793,6 +1795,9 @@
   .bg-amber-700 {
     background-color: var(--color-amber-700);
   }
+  .bg-fuchsia-100 {
+    background-color: var(--color-fuchsia-100);
+  }
   .bg-fuchsia-800 {
     background-color: var(--color-fuchsia-800);
   }
@@ -2344,6 +2349,9 @@
   }
   .text-emerald-500 {
     color: var(--color-emerald-500);
+  }
+  .text-fuchsia-700 {
+    color: var(--color-fuchsia-700);
   }
   .text-gray-100 {
     color: var(--color-gray-100);

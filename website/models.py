@@ -739,6 +739,9 @@ class SpeciesFeatures(models.Model):
             4: "stone",
             5: "lime",
             6: "pink",
+            7: "fuchsia",
+            8: "amber",
+            9: "lime",
         }
         return colors[self.species_type]
         
@@ -772,18 +775,9 @@ class SpeciesFeatures(models.Model):
     def get_text_icon(self):
         return self._generate_icon(True)
 
-class PlantForm(models.Model):
-    letter = models.CharField(max_length=2, unique=True, db_index=True)
-    name = models.CharField(max_length=255, unique=True, db_index=True)
-    description = models.CharField(max_length=255)
-
-    def __str__(self):
-        return self.name
-
 class Species(models.Model):
     name = models.CharField(max_length=255, unique=True, db_index=True)
     redlist = models.ForeignKey(Redlist, on_delete=models.CASCADE, null=True, blank=True)
-    plant_form = models.ForeignKey(PlantForm, on_delete=models.CASCADE, null=True, blank=True, related_name="species")
     links = models.JSONField(null=True, blank=True)
     site = models.ManyToManyField(Site, blank=True)
 

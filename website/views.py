@@ -669,9 +669,6 @@ def species_overview(request, vegetation_type=None):
         features = SpeciesFeatures.objects.filter(site=site).order_by("species_type", "name").annotate(
             total=Count("species", filter=Q(species__site=site, species__vegetation_types=vegetation_type))
         )
-        plant_forms = PlantForm.objects.all().annotate(
-            total=Count("species", filter=Q(species__site=site, species__vegetation_types=vegetation_type))
-        )
 
     else:
         genus = genus.annotate(total=Count("species"))
@@ -680,10 +677,6 @@ def species_overview(request, vegetation_type=None):
         features = SpeciesFeatures.objects.filter(site=site).order_by("species_type", "name").annotate(
             total=Count("species", filter=Q(species__site=site))
         )
-        plant_forms = PlantForm.objects.all().annotate(
-            total=Count("species", filter=Q(species__site=site))
-        )
-
 
     try:
         samples = Species.objects.filter(pk__in=random.sample(list(samples), 3))
@@ -697,7 +690,6 @@ def species_overview(request, vegetation_type=None):
         "samples": samples,
         "all": species.count(),
         "features": features.filter(total__gt=0),
-        "plant_forms": plant_forms.filter(total__gt=0),
         "vegetation_types": veg_types,
         "vegetation_type": vegetation_type,
         "veg_link": f"?vegetation_type={vegetation_type.id}" if vegetation_type else "",
@@ -763,8 +755,7 @@ def species_list(request, genus=None, family=None, vegetation_type=None, garden=
     total_species = species.count()
 
     species = species \
-        .prefetch_related("features").all() \
-        .select_related("plant_form")
+        .prefetch_related("features").all()
 
     view = request.GET.get("view")
     if view == "photos":
@@ -809,11 +800,6 @@ def species_list(request, genus=None, family=None, vegetation_type=None, garden=
     if garden:
         in_garden = Species.objects.filter(garden_plants__garden=garden, garden_plants__status="FUTURE")
 
-    plant_form = None
-    if "plant_form" in request.GET:
-        plant_form = PlantForm.objects.get(pk=request.GET["plant_form"])
-        species = species.filter(plant_form=plant_form)
-
     features = None
     if "feature" in request.GET:
         features = SpeciesFeatures.objects.filter(pk__in=request.GET.getlist("feature"))
@@ -842,7 +828,6 @@ def species_list(request, genus=None, family=None, vegetation_type=None, garden=
         "load_datatables": True,
         "features": features,
         "vegetation_type": vegetation_type,
-        "plant_form": plant_form,
         "menu": menu,
         "page": page,
         "info": info,
@@ -2116,8 +2101,7 @@ def planner_suggestions(request, id):
         return redirect("planner")
 
     species = Species.objects.filter(site=site) \
-        .prefetch_related("features").all() \
-        .select_related("plant_form")
+        .prefetch_related("features").all()
 
     view = request.GET.get("view")
     if view == "photos":
@@ -2344,40 +2328,6 @@ def favicon(request):
 
 @staff_member_required
 def controlpanel(request):
-
-    # TEMP fixing all small caps species
-    from django.db.models.functions import Lower
-    if "lowcaps" in request.GET:
-        for each in SpeciesText.objects.filter(common_name__isnull=False):
-            l = each.common_name
-            l = l.lower()
-            if l == each.common_name:
-                each.common_name = l.title()
-                each.save()
-
-        # END TEMP FIX
-        grass = SpeciesFeatures.objects.get(name="Grass")
-        for each in Species.objects.filter(plant_form__letter="G"):
-            each.features.add(grass)
-
-        shrub = SpeciesFeatures.objects.get(name="Shrub")
-        for each in Species.objects.filter(plant_form__letter__in=["DS","S"]):
-            each.features.add(shrub)
-
-        tree = SpeciesFeatures.objects.get(name="Tree")
-        for each in Species.objects.filter(plant_form__letter="T"):
-            each.features.add(tree)
-
-        forb = SpeciesFeatures.objects.get(name="Forb")
-        for each in Species.objects.filter(plant_form__letter="F"):
-            each.features.add(forb)
-
-        fern = SpeciesFeatures.objects.get(name="Fern")
-        for each in Species.objects.filter(log__file__attached_to_id=983498):
-            each.features.add(fern)
-        for each in Species.objects.filter(texts__common_name__icontains="fern"):
-            each.features.add(fern)
-
     context = {
         "controlpanel": True,
         "menu": "index",
@@ -2842,12 +2792,6 @@ def controlpanel_document_species(request, id):
         SpeciesVegetationTypeLink.objects.filter(file=file_info).delete()
         FileLog.objects.filter(file=file_info).delete()
 
-        # If the Forms are present, then let's build a dictionary linking the letters to the records
-        if "Form" in existing_features:
-            plant_forms = {}
-            for each in PlantForm.objects.all():
-                plant_forms[each.letter] = each
-
         # Same for plant colors
         if "Colour (flower)" in existing_features:
             colors = {}
@@ -2894,14 +2838,6 @@ def controlpanel_document_species(request, id):
                     must_save = False
                     has_colors = False
                     has_flowering = False
-
-                    if "Form" in existing_features:
-                        plant_form = row["Form"].strip()
-                        if plant_form in plant_forms:
-                            species.plant_form = plant_forms[plant_form]
-                            must_save = True
-                        else:
-                            messages.warning(request, _("The plant form was not found:") + " " + plant_form + " - " + species.name)
 
                     if "Link" in existing_features:
                         link = row["Link"].strip()
@@ -3333,9 +3269,6 @@ def controlpanel_species_overview(request):
     features = SpeciesFeatures.objects.filter(site=site).order_by("species_type", "name").annotate(
         total=Count("species", filter=Q(species__site=site))
     )
-    plant_forms = PlantForm.objects.all().annotate(
-        total=Count("species", filter=Q(species__site=site))
-    )
     orphans = species.exclude(species_links__vegetation_type__in=site.vegetation_types.all()).count()
 
     context = {
@@ -3348,7 +3281,6 @@ def controlpanel_species_overview(request):
         "veg_total": veg_total,
         "source_docs": source_docs,
         "features": features,
-        "plant_forms": plant_forms,
         "orphans": orphans,
         "load_select2": True,
     }
@@ -3379,10 +3311,6 @@ def controlpanel_species_list(request):
             vegetation_type = VegetationType.objects.get(pk=request.GET["vegetation"])
             filter_text.append(_("Vegetation type") + ": " + vegetation_type.name)
             species = species.filter(vegetation_types=vegetation_type)
-    elif "plant_form" in request.GET:
-        plant_form = PlantForm.objects.get(pk=request.GET["plant_form"])
-        species = species.filter(plant_form=plant_form)
-        filter_text.append(_("Plant form") + ": " + plant_form.name)
     elif "feature" in request.GET:
         feature = SpeciesFeatures.objects.get(pk=request.GET["feature"])
         species = species.filter(features=feature)
@@ -3508,7 +3436,6 @@ def controlpanel_species(request, id=None):
         info.name = request.POST["name"].strip()
         info.genus_id = request.POST.get("genus")
         info.family_id = request.POST.get("family")
-        info.plant_form_id = request.POST.get("plant_form", None)
         links = [link.strip() for link in request.POST.getlist("links") if link.strip()]
         info.links = links if links else None
 
@@ -3587,7 +3514,6 @@ def controlpanel_species(request, id=None):
         "texts": texts,
         "title": info.name if info.name else "Add new species",
         "inat": inat,
-        "plant_forms": PlantForm.objects.all(),
     }
 
     return render(request, "controlpanel/species.html", context)
@@ -3784,7 +3710,6 @@ def controlpanel_scoring(request):
         "title": _("Scoring"),
         "vegetation": VegetationType.objects.filter(site=site, is_negative=False),
         "invasives": VegetationType.objects.filter(site=site, is_negative=True),
-        "plant_forms": PlantForm.objects.all(),
         "features": Page.objects.filter(site=site, page_type=Page.PageType.TARGET),
         "succession": SpeciesFeatures.objects.filter(pk__in=[138,139,145]),
     }
