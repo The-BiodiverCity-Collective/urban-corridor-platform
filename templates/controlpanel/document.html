@@ -138,9 +138,10 @@
                   <i class="fa fa-download"></i>
                   {{ _("Download") }}
                 </a>
-              <span class="{% if not each.log.count %}badge-warning{% else %}badge bg-white{% endif %}" >
+              <a class="no-underline {% if not each.log.count %}badge-warning{% else %}badge bg-white{% endif %}"
+                href="{% url "controlpanel_species_list" %}?file={{ each.id }}">
                 {{ each.log.count }} {{ _("species imported") }}
-              </span>
+              </a>
             </p>
           </div>
         </div>
