@@ -1,16 +1,40 @@
-<div class="mt-5">
+<div class="mt-5 species_list">
   {% for each in species_list %}
 
-  <a href="{{ each.get_absolute_url }}" class="no-underline text-gray-800 hover:underline">
-    {% if each.name_en %}
-    <hgroup>
-      <h2 class="mb-0">{{ each.name_en }}</h2>
-      <h3 class="font-normal"><em>{{ each.name }}</em></h3>
-    </hgroup>
-    {% else %}
-      <h2><em>{{ each.name }}</em></h2>
+  <div class="species flex justify-between h-full">
+    <a href="{{ each.get_absolute_url }}" class="no-underline text-gray-800 hover:underline species">
+      {% if each.name_en %}
+      <hgroup>
+        <h2 class="mb-0 name">{{ each.name_en }}</h2>
+        <h3 class="font-normal"><em>{{ each.name }}</em></h3>
+      </hgroup>
+      {% else %}
+        <h2><em class="name">{{ each.name }}</em></h2>
+      {% endif %}
+    </a>
+    {% if garden %}
+      <div class="flex flex-col justify-end">
+        <div>
+          <button 
+            data-species="{{ each.id }}" 
+            data-action="PRESENT" 
+            class="planner-action {% if each in in_garden_present %}btn-gray{% else %}btn-white{% endif %} btn-sm"
+          >
+            <i class="fa fa-check-circle mr-1"></i>
+            {{ _("I have this in my garden") }}
+          </button>
+          <button 
+            data-species="{{ each.id }}" 
+            data-action="FUTURE" 
+            class="planner-action {% if each in in_garden_future %}btn-gray{% else %}btn-white{% endif %} btn-sm"
+          >
+              <i class="fa fa-calendar-plus mr-1"></i>
+            {{ _("I want this in my garden") }}
+          </button>
+        </div>
+      </div>
     {% endif %}
-  </a>
+  </div>
 
   <ul role="list" class="mt-5 grid gap-x-4 gap-y-8 sm:gap-x-6 lg:grid-cols-4 md:grid-cols-2 grid-cols-1 xl:gap-x-8 mb-10">
     {% for photo in each.photos.all|slice:":4" %}
@@ -25,3 +49,7 @@
   </ul>
   {% endfor %}
 </div>
+
+{% if garden %}
+  {% include "species/_js.ajaxbuttons.html" %}
+{% endif %}

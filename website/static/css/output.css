@@ -625,7 +625,7 @@
     text-decoration-line: none;
     &:hover {
       @media (hover: hover) {
-        background-color: var(--color-gray-50);
+        background-color: var(--color-gray-200);
       }
     }
     &:focus {
@@ -840,6 +840,36 @@
     }
     &:focus {
       --tw-ring-color: var(--color-yellow-300);
+    }
+    &:focus {
+      --tw-outline-style: none;
+      outline-style: none;
+      @media (forced-colors: active) {
+        outline: 2px solid transparent;
+        outline-offset: 2px;
+      }
+    }
+  }
+  .btn-gray {
+    display: inline-block;
+    cursor: pointer;
+    border-radius: var(--radius-sm);
+    background-color: var(--color-gray-300);
+    padding-inline: calc(var(--spacing) * 3.5);
+    padding-block: calc(var(--spacing) * 2.5);
+    font-size: var(--text-sm);
+    line-height: var(--tw-leading, var(--text-sm--line-height));
+    --tw-font-weight: var(--font-weight-semibold);
+    font-weight: var(--font-weight-semibold);
+    color: var(--color-gray-700);
+    text-decoration-line: none;
+    &:hover {
+      @media (hover: hover) {
+        background-color: var(--color-gray-400);
+      }
+    }
+    &:focus {
+      --tw-ring-color: var(--color-gray-300);
     }
     &:focus {
       --tw-outline-style: none;

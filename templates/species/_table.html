@@ -1,4 +1,4 @@
-<table class="table datatable species" style="table-layout: fixed">
+<table class="table datatable species species_list" style="table-layout: fixed">
   <thead>
     <tr>
       <th style="width:250px">{{ _("Name") }}</th>
@@ -30,14 +30,9 @@
   </thead>
   <tbody>
   {% for each in species_list %}
-    <tr>
+    <tr class="species">
       <td data-sort="{{ each.name_en }} {{ each.name }}">
-        {% if species_present and each in species_present %}
-          <i class="fa fa-check-circle text-lime-700" title="{{ _("This species is currently present in your garden.") }}"></i>
-        {% elif species_future and each in species_future %}
-          <i class="fa fa-check-circle" title="{{ _("This species is in your list to be added to your garden.") }}"></i>
-        {% endif %}
-        <a href="{% url "species" each.id %}">
+        <a href="{% url "species" each.id %}" class="name">
           {% if each.name_en %}{{ each.name_en }}{% else %}<em>{{ each.name }}</em>{% endif %}
         </a>
         {% if each.name_en %}
@@ -85,6 +80,28 @@
               <div style="width: calc(({{ each.num_features }} + 1) / {{ max_features }} * 100%)" class="h-2 rounded-full bg-lime-600"></div>
             </div>
           </div>
+
+          {% if garden %}
+            <div class="mt-1">
+              <button 
+                data-species="{{ each.id }}" 
+                data-action="PRESENT" 
+                class="planner-action {% if each in in_garden_present %}btn-gray{% else %}btn-white{% endif %} btn-sm"
+              >
+                  <i class="fa fa-check-circle mr-1"></i>
+                {{ _("I have this") }}
+              </button>
+              <button 
+                data-species="{{ each.id }}" 
+                data-action="FUTURE" 
+                class="planner-action {% if each in in_garden_future %}btn-gray{% else %}btn-white{% endif %} btn-sm"
+              >
+                  <i class="fa fa-calendar-plus mr-1"></i>
+                {{ _("I want this") }}
+              </button>
+            </div>
+          {% endif %}
+
         </td>
       {% endif %}
 
@@ -103,3 +120,7 @@
   {% endfor %}
   </tbody>
 </table>
+
+{% if garden %}
+  {% include "species/_js.ajaxbuttons.html" %}
+{% endif %}

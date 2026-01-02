@@ -35,6 +35,10 @@
   @apply text-sm bg-lime-600 text-white px-3.5 py-2.5 rounded-sm hover:bg-lime-700 focus:outline-hidden font-semibold focus:ring-lime-300 no-underline hover:text-white inline-block cursor-pointer;
 }
 
+@utility btn-gray {
+  @apply text-sm bg-gray-300 text-gray-700 px-3.5 py-2.5 rounded-sm hover:bg-gray-400 focus:outline-hidden font-semibold focus:ring-gray-300 no-underline inline-block cursor-pointer;
+}
+
 @utility btn-danger {
   @apply text-sm bg-red-600 text-white px-3.5 py-2.5 rounded-sm hover:bg-red-700 focus:outline-hidden font-semibold focus:ring-red-300 no-underline hover:text-white inline-block cursor-pointer;
 }
@@ -52,7 +56,7 @@
 }
 
 @utility btn-white {
-  @apply text-sm bg-white border border-gray-200 text-gray-500 px-3.5 py-2.5  rounded-sm hover:bg-gray-50 focus:outline-hidden font-semibold focus:ring-sky-300 no-underline inline-block cursor-pointer;
+  @apply text-sm bg-white border border-gray-200 text-gray-500 px-3.5 py-2.5  rounded-sm hover:bg-gray-200 focus:outline-hidden font-semibold focus:ring-sky-300 no-underline inline-block cursor-pointer;
 }
 @utility btn-sm {
   @apply px-2 py-1 text-xs;

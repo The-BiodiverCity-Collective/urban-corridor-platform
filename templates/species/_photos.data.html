@@ -1,29 +1,37 @@
-{% load i18n %}
-<div class="mt-5">
+<div class="mt-5 species_list">
 
   {% for each in species_list %}
     <div class="species flex justify-between h-full">
       <a href="{{ each.get_absolute_url }}" class="no-underline text-gray-800 hover:underline">
         {% if each.name_en %}
         <hgroup>
-          <h2 class="mb-0">{{ each.name_en }}</h2>
+          <h2 class="name mb-0">{{ each.name_en }}</h2>
           <h3 class="font-normal"><em>{{ each.name }}</em></h3>
         </hgroup>
         {% else %}
-          <h2><em>{{ each.name }}</em></h2>
+          <h2><em class="name">{{ each.name }}</em></h2>
         {% endif %}
       </a>
       {% if garden %}
         <div class="flex flex-col justify-end">
-          <button 
-            data-species="{{ each.id }}" 
-            data-action="FUTURE" 
-            class="planner-action {% if each in in_garden_future %}btn-green{% else %}btn-white{% endif %} cursor-pointer"
-          >
-            <i class="fa fa-check-circle mr-1"></i>
-            <i class="fa fa-certificate mr-1"></i>
-            {{ _("I want this in my garden") }}
-          </button>
+          <div>
+            <button 
+              data-species="{{ each.id }}" 
+              data-action="PRESENT" 
+              class="planner-action {% if each in in_garden_present %}btn-gray{% else %}btn-white{% endif %} btn-sm"
+            >
+              <i class="fa fa-check-circle mr-1"></i>
+              {{ _("I have this in my garden") }}
+            </button>
+            <button 
+              data-species="{{ each.id }}" 
+              data-action="FUTURE" 
+              class="planner-action {% if each in in_garden_future %}btn-gray{% else %}btn-white{% endif %} btn-sm"
+            >
+                <i class="fa fa-calendar-plus mr-1"></i>
+              {{ _("I want this in my garden") }}
+            </button>
+          </div>
         </div>
       {% endif %}
     </div>
@@ -86,89 +94,5 @@
 </div>
 
 {% if garden %}
-  <script type="text/javascript">
-  $(function(){
-    $("button.planner-action").on("click", function(e) {
-      
-      var button = $(this);
-      var action = $(this).data("action");
-      var species = $(this).data("species");
-      var name = $(this).closest("div.species").find("h2").text();
-      console.log(name);
-      $.ajax({
-        url: "/species/"+species+"/",
-        method: "POST",
-        data: {
-          action: action,
-        },
-        dataType: "json",
-        success: function(response) {
-          if (response.success) {
-            $("span#species_name").html(name);
-            $("#notification").show();
-            button.addClass("btn-green");
-          } else {
-            alert("{{ _("Sorry, we were not able to record this species. Reload the page and try again.") }} Error code: 16.");
-          }
-        },
-        error: function(xhr, status, error) {
-          console.error("AJAX Error:", error);
-          alert("{{ _("Sorry, we were not able to record this species. Reload the page and try again.") }} Error code: 17.");
-        }
-      });
-    });
-
-    $("#close_modal").click(function(){
-      $("#dialog").hide();
-    });
-
-  });
-  </script>
-
-
-<div aria-live="assertive" class="pointer-events-none fixed inset-0 flex items-end px-4 py-6 sm:items-start sm:p-6 z-10001">
-  <div class="flex w-full flex-col items-center space-y-4 sm:items-end">
-    <div id="notification" class="hidden pointer-events-auto w-full max-w-sm translate-y-0 transform rounded-lg bg-white opacity-100 shadow-lg outline-1 outline-black/5 transition duration-300 ease-out sm:translate-x-0 dark:bg-gray-800 dark:-outline-offset-1 dark:outline-white/10 starting:translate-y-2 starting:opacity-0 starting:sm:translate-x-2 starting:sm:translate-y-0">
-      <div class="p-4">
-        <div class="flex items-start">
-          <div class="shrink-0 pt-0.5">
-            <i class="fa fa-check-circle text-lime-600"></i>
-          </div>
-          <div class="ml-3 w-0 flex-1">
-            <p class="text-sm font-medium text-gray-900 dark:text-white">{{ _("Species added") }}</p>
-            <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">
-              <span id="species_name"></span>
-              {% blocktranslate %}
-                 is now on your future plant list for {{ garden }}.
-              {% endblocktranslate %}
-            </p>
-            <div class="mt-4 flex">
-              <a href="{% url "planner_plants" garden.id %}" class="btn-orange btn-sm">
-                <i class="fas fa-shovel mr-2"></i>
-                {{ _("View my plants") }}
-              </a>
-
-            </div>
-          </div>
-          <div class="ml-4 flex shrink-0">
-            <button type="button" id="close" class="cursor-pointer inline-flex rounded-md text-gray-400 hover:text-gray-500 focus:outline-2 focus:outline-offset-2 focus:outline-sky-600 dark:hover:text-white dark:focus:outline-sky-500">
-              <span class="sr-only">{{ _("Close") }}</span>
-              <svg viewBox="0 0 20 20" fill="currentColor" data-slot="icon" aria-hidden="true" class="size-5">
-                <path d="M6.28 5.22a.75.75 0 0 0-1.06 1.06L8.94 10l-3.72 3.72a.75.75 0 1 0 1.06 1.06L10 11.06l3.72 3.72a.75.75 0 1 0 1.06-1.06L11.06 10l3.72-3.72a.75.75 0 0 0-1.06-1.06L10 8.94 6.28 5.22Z" />
-              </svg>
-            </button>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-</div>
-
+  {% include "species/_js.ajaxbuttons.html" %}
 {% endif %}
-<script type="text/javascript">
-$(function(){
-  $("#close").click(function() {
-    $("#notification").hide("fast");  
-  });
-});
-</script>
