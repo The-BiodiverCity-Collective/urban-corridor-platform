@@ -160,10 +160,6 @@
 
 
 @layer utilities {
-  button.planner-action.btn-green i.fa-check-circle{display:inline-block !important}
-  button.planner-action.btn-green i.fa-certificate{display:none !important}
-  button.planner-action:not(.btn-green) i.fa-certificate{display:inline-block !important}
-  button.planner-action:not(.btn-green) i.fa-check-circle{display:none !important}
   section.features svg, table.species svg{width:20px;height:20px;display:inline-block}
   .leaflet-map {
     box-shadow: 1px 1px 2px 0px rgba(0, 0, 0, 0.2);

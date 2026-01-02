@@ -796,9 +796,11 @@ def species_list(request, genus=None, family=None, vegetation_type=None, garden=
         # that they are managing; in which case we want to show the right buttons to save species
         garden = get_garden(request, request.COOKIES.get("garden_id"))
 
-    in_garden = None
+    in_garden_future = None
+    in_garden_present = None
     if garden:
-        in_garden = Species.objects.filter(garden_plants__garden=garden, garden_plants__status="FUTURE")
+        in_garden_future = Species.objects.filter(garden_plants__garden=garden, garden_plants__status="FUTURE")
+        in_garden_present = Species.objects.filter(garden_plants__garden=garden, garden_plants__status="PRESENT")
 
     features = None
     if "feature" in request.GET:
@@ -833,7 +835,8 @@ def species_list(request, genus=None, family=None, vegetation_type=None, garden=
         "info": info,
         "photo": photo,
         "garden": garden,
-        "in_garden": in_garden,
+        "in_garden_present": in_garden_present,
+        "in_garden_future": in_garden_future,
         "title": title,
         "hide_species_tabs": True,
         "total_species": total_species,
@@ -906,11 +909,19 @@ def species(request, id):
         in_garden = GardenSpecies.objects.filter(garden=garden, species=info).first()
 
     if request.method == "POST":
-        if in_garden:
-            in_garden.status = request.POST["action"]
-            in_garden.save()
-        else:
-            GardenSpecies.objects.create(garden=garden, species=info, status=request.POST["action"])
+        response = {
+            "success": True,
+        }
+        classes = request.POST.get("classes")
+        if "btn-green" in classes:
+            # User wants to remove a species
+            GardenSpecies.objects.filter(garden=garden, species=info).delete()
+        elif "btn-white" in classes:
+            if in_garden:
+                in_garden.status = request.POST["action"]
+                in_garden.save()
+            else:
+                GardenSpecies.objects.create(garden=garden, species=info, status=request.POST["action"])
         return JsonResponse({"success": True})
 
     photo = None
@@ -2161,8 +2172,8 @@ def planner_suggestions(request, id):
         "table_hide_form": True,
         "table_show_score": True,
         "more_species_available": more_species_available,
-        "species_present": Species.objects.filter(garden_plants__garden=garden, garden_plants__status="PRESENT"),
-        "species_future": Species.objects.filter(garden_plants__garden=garden, garden_plants__status="FUTURE"),
+        "in_garden_present": Species.objects.filter(garden_plants__garden=garden, garden_plants__status="PRESENT"),
+        "in_garden_future": Species.objects.filter(garden_plants__garden=garden, garden_plants__status="FUTURE"),
         "hide_species_tabs": True,
 
         # Because we have tabs above the <main>, we need to unround the top-left corner if the first tab is active

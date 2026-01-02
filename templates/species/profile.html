@@ -152,12 +152,10 @@
           <div>
             <button data-species="{{ info.id }}" data-action="PRESENT" class="planner-action {% if in_garden.status == "PRESENT" %}btn-green{% else %}btn-white{% endif %} mb-3 mr-3 cursor-pointer">
               <i class="fa fa-check-circle mr-1"></i>
-              <i class="fa fa-certificate mr-1"></i>
               {{ _("I have this in my garden") }}
             </button>
             <button data-species="{{ info.id }}" data-action="FUTURE" class="planner-action {% if in_garden.status == "FUTURE" %}btn-green{% else %}btn-white{% endif %} mb-3 mr-3 cursor-pointer">
-              <i class="fa fa-check-circle mr-1"></i>
-              <i class="fa fa-certificate mr-1"></i>
+              <i class="fa fa-calendar-plus mr-1"></i>
               {{ _("I want this in my garden") }}
             </button>
           </div>
@@ -208,19 +206,25 @@
         var button = $(this);
         var action = $(this).data("action");
         var species = $(this).data("species");
+        var classes = $(this).attr("class");
         $.ajax({
           url: "/species/"+species+"/",
           method: "POST",
           data: {
             action: action,
+            classes: classes,
           },
           dataType: "json",
           success: function(response) {
             if (response.success) {
-              $("#dialog").show();
               $("button.planner-action").removeClass("btn-green");
               $("button.planner-action").addClass("btn-white");
-              button.addClass("btn-green");
+              if (!classes.includes("btn-green")) {
+                // We only show the dialog and add green if the user is clicking a button not already green
+                // If they do, then we actually REMOVE a species from a list, so no modal/green class to be added
+                $("#dialog").show();
+                button.addClass("btn-green");
+              }
             } else {
               alert("{{ _("Sorry, we were not able to record this species. Reload the page and try again.") }} Error code: 16.");
             }

@@ -4024,18 +4024,6 @@
   color: var(--color-sky-600);
 }
 @layer utilities {
-  button.planner-action.btn-green i.fa-check-circle {
-    display: inline-block !important;
-  }
-  button.planner-action.btn-green i.fa-certificate {
-    display: none !important;
-  }
-  button.planner-action:not(.btn-green) i.fa-certificate {
-    display: inline-block !important;
-  }
-  button.planner-action:not(.btn-green) i.fa-check-circle {
-    display: none !important;
-  }
   section.features svg, table.species svg {
     width: 20px;
     height: 20px;

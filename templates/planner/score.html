@@ -244,8 +244,8 @@
 
               <div class="relative block w-full rounded-lg border-2 border-dashed border-gray-300 py-20 px-12 text-center hover:border-gray-400">
                 <div class="mt-2 block text-sm font-semibold text-gray-900">
-                  {{ _("No species added yet.") }}
-                  iv><a class="btn btn-blue btn-sm mt-5" href="{% url "planner_suggestions" garden.id %}">{{ _("View suggested plants") }}</a></div>
+                  <div>{{ _("No species added yet.") }}</div>
+                  <a class="btn btn-blue btn-sm mt-5" href="{% url "planner_suggestions" garden.id %}">{{ _("View suggested plants") }}</a>
                 </div>
               </div>
 
