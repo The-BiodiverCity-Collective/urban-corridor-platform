@@ -45,6 +45,6 @@ def color_calculator(points):
     elif points < 100:
         return "lime-700"
     elif points == 100:
-        return "lime-900"
+        return "lime-500"
 
 

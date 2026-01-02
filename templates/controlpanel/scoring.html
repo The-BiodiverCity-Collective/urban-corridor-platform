@@ -1,4 +1,5 @@
 {% extends "_base.html" %}
+{% load ucp_extras %}
 
 {% block content %}
 
@@ -31,8 +32,8 @@
   {% for each in features %}
     <div class="flex gap-6 mb-3">
       <div class="flex-1">{{ each }}</div>
-      <div class="flex-1"><input name="minimum_species" value="{{ each.meta_data.score_minimum_species }}" type="number" /></div>
-      <div class="flex-1"><input name="minimum_flowering" value="{{ each.meta_data.score_minimum_flowering }}" type="number" /></div>
+      <div class="flex-1"><input name="minimum_species_{{ each.id }}" value="{{ each.meta_data.score_minimum_species }}" type="number" /></div>
+      <div class="flex-1"><input name="minimum_flowering_{{ each.id }}" value="{{ each.meta_data.score_minimum_flowering }}" type="number" /></div>
     </div>
   {% endfor %}
 
@@ -48,22 +49,17 @@
   <div class="container mx-auto mt-10">
     <div class="grid grid-cols-3 gap-4">
     {% for each in vegetation %}
-      <section class="p-2 mb-5 bg-gray-100 rounded-lg">
-        <p class="font-bold text-center mt-3 mb-5">{{ each }}</p>
-        {% for form in plant_forms %}
-          <div class="flex gap-6 mb-3">
-            <div class="flex-1">{{ form }}</div>
-            <div class="flex-1"><input name="minimum_flowering" value="{{ info.meta_data.score_minimum_flowering }}" type="number" /></div>
-          </div>
-        {% endfor %}
-        <hr class="text-gray-300 mb-3">
-        {% for feature in succession %}
-          <div class="flex gap-6 mb-3">
-            <div class="flex-1">{{ feature }}</div>
-            <div class="flex-1"><input name="minimum_flowering" value="{{ info.meta_data.score_minimum_flowering }}" type="number" /></div>
-          </div>
-        {% endfor %}
-      </section>
+      {% with veg_criteria=criteria|get_item:each.id %}
+        <section class="p-2 mb-5 bg-gray-100 rounded-lg">
+          <p class="font-bold text-center mt-3 mb-5">{{ each }}</p>
+          {% for feature in diversity %}
+            <div class="flex gap-6 mb-3">
+              <div class="flex-1">{{ feature }}</div>
+              <div class="flex-1"><input name="feature_{{ each.id }}_{{ feature.id }}" value="{{ veg_criteria|get_item:feature.id }}" type="number" /></div>
+            </div>
+          {% endfor %}
+        </section>
+      {% endwith %}
     {% endfor %}
     </div>
   </div>
@@ -84,7 +80,7 @@
         <p class="font-bold text-center mt-3 mb-5">{{ each }}</p>
           <div class="flex gap-6 mb-3">
             <div class="flex-1">{{ _("Minimum species") }}</div>
-            <div class="flex-1"><input name="minimum_flowering" value="{{ info.meta_data.score_minimum_flowering }}" type="number" /></div>
+            <div class="flex-1"><input name="minimum_species_{{ each.id }}" value="{{ each.minimum_species }}" type="number" /></div>
           </div>
       </section>
     {% endfor %}
@@ -105,12 +101,14 @@
         <p class="font-bold text-center mt-3 mb-5">{{ each }}</p>
           <div class="flex gap-6 mb-3">
             <div class="flex-1">{{ _("Points per species") }}</div>
-            <div class="flex-1"><input name="minimum_flowering" value="{{ info.meta_data.score_minimum_flowering }}" type="number" max="-1" min="-10" /></div>
+            <div class="flex-1"><input name="negative_points_{{ each.id }}" value="{{ each.negative_points }}" type="number" /></div>
           </div>
       </section>
     {% endfor %}
     </div>
   </div>
+
+  <button type="submit" class="btn-green">{{ _("Save") }}</button>
 
 </form>
 

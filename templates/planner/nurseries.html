@@ -40,5 +40,13 @@
   </div>
 </div>
 
+<div class="mt-10 rounded-md bg-gray-100 p-4 flex justify-between items-center">
+  <p class="text-gray-700 font-bold text-2xl">{{ _("Want to see your garden score?") }}</p>
+  <div>
+    <a class="btn-blue" href="{% url "planner_score_present" garden.id %}">{{ _("Current score") }}</a>
+    <a class="btn-blue" href="{% url "planner_score_future" garden.id %}">{{ _("Future score") }}</a>
+  </div>
+</div>
+
 
 {% endblock %}

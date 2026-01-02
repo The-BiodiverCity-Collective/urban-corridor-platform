@@ -241,13 +241,13 @@
     </a>
 
     <div class="flex-1 pt-3 pl-10 pr-2">
-      {% with species_score=species_current status="PRESENT" %}
+      {% with scoring_table=score_present status="PRESENT" %}
         {% include "planner/_score.html" %}
       {% endwith %}
     </div>
 
     <div class="flex-1 pt-3 pl-10 pr-2">
-      {% with species_score=species_future status="FUTURE" %}
+      {% with scoring_table=score_future status="FUTURE" %}
         {% include "planner/_score.html" %}
       {% endwith %}
     </div>

@@ -13,7 +13,7 @@ from django.utils.translation import gettext_lazy as _
 import os
 from django.db.models.signals import post_delete
 from django.dispatch import receiver
-from django.db.models import Q
+from django.db.models import Q, UniqueConstraint
 import datetime
 import requests
 from django.contrib.postgres.fields import ArrayField
@@ -47,7 +47,6 @@ class Site(models.Model):
     language = models.ForeignKey(Language, on_delete=models.PROTECT)
     corridor = models.ForeignKey("Document", on_delete=models.PROTECT, null=True, blank=True, limit_choices_to={"doc_type":"CORRIDOR"}, related_name="primary_site")
     logo = StdImageField(upload_to="logos", variations={"thumbnail": (350, 350), "medium": (800, 600)}, null=True, blank=True)
-    vegetation_types = models.ManyToManyField("VegetationType", blank=True, related_name="sites")
     meta_data = models.JSONField(null=True, blank=True)
     vegetation_types_map = models.ForeignKey("Document", on_delete=models.PROTECT, null=True, blank=True, related_name="primary_site_vegetation")
 
@@ -628,7 +627,7 @@ class Garden(ReferenceSpace):
                 veg = vegetation.spaces.get(geometry__intersects=self.geometry.centroid)
                 veg = veg.get_vegetation_type()
             except:
-                veg = None
+                veg = VegetationType.objects.filter(site=self.site, is_negative=False).first()
             self.vegetation_type = veg
         super().save(*args, **kwargs)
 
@@ -692,8 +691,10 @@ class VegetationType(models.Model):
     redlist = models.ForeignKey(Redlist, on_delete=models.SET_NULL, null=True)
     slug = models.SlugField(max_length=255)
     spaces = models.ManyToManyField(ReferenceSpace, blank=True, limit_choices_to={"source_id": 983172})
-    site = models.ForeignKey(Site, on_delete=models.CASCADE)
-    is_negative = models.BooleanField(default=False, help_text="Indicates that this is e.g. alien / invasive vegetation")
+    site = models.ForeignKey(Site, on_delete=models.CASCADE, related_name="vegetation_types")
+    is_negative = models.BooleanField(db_index=True, default=False, help_text="Indicates that this is e.g. alien / invasive vegetation")
+    negative_points = models.SmallIntegerField(db_index=True, null=True, blank=True, help_text="The number of negative point for each species in the garden (negative veg. type)")
+    minimum_species = models.PositiveSmallIntegerField(db_index=True, null=True, blank=True, help_text="The minimum number of species needed for a top-score (positive veg. type)")
     meta_data = models.JSONField(null=True, blank=True)
 
     def __str__(self):
@@ -701,6 +702,10 @@ class VegetationType(models.Model):
 
     def get_absolute_url(self):
         return reverse("vegetation_type", args=[self.slug])
+
+    @property
+    def score_per_species(self):
+        return 100/self.minimum_species if self.minimum_species else None
 
     class Meta:
         ordering = ["is_negative", "name"]
@@ -1239,3 +1244,14 @@ class FileLog(models.Model):
     flowering = models.BooleanField(default=False)
     meta_data = models.JSONField(null=True, blank=True)
     user = models.ForeignKey(User, on_delete=models.PROTECT)
+
+class DiversityCriteria(models.Model):
+    feature = models.ForeignKey(SpeciesFeatures, on_delete=models.CASCADE)
+    quantity = models.PositiveSmallIntegerField()
+    vegetation_type = models.ForeignKey(VegetationType, on_delete=models.CASCADE, related_name="criteria")
+
+    class Meta:
+        constraints = [
+            UniqueConstraint(fields=["feature", "vegetation_type"], name="unique_combo")
+        ]
+        ordering = ["vegetation_type", "feature__species_type", "feature__name"]

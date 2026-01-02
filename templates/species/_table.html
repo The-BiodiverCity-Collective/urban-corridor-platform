@@ -108,8 +108,8 @@
       {% if table_show_actions %}
         <td data-sort="{{ each.num_features }}">
           <form method="post">
-            <button type="submit" class="btn-danger px-2 py-1" name="delete" value="{{ each.id }}">
-              {{ _("Delete") }}
+            <button type="submit" class="px-2 py-1 cursor-pointer hover:text-red-700 text-red-400" name="delete" value="{{ each.id }}">
+              <i class="fa fa-trash"></i>
             </button>
             {% csrf_token %}
           </form>

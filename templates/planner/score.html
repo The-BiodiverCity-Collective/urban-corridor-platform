@@ -15,27 +15,252 @@
     {% include "planner/_breadcrumbs.html" %}
   {% endwith %}
 
-      {% with scoring_table=scores status="PRESENT" %}
-        {% include "planner/_score.html" %}
-      {% endwith %}
-
   <div class="absolute top-5 right-5 text-center">
-    <span class="text-black font-bold block text-5xl">35</span>
+    <span class="text-black font-bold block text-5xl">{{ scores.total }}</span>
     <span class="text-gray-700 text-sm">{{ _("Total score") }}</span>
+  </div>
+
+  <div class="container mx-auto">
+    <div class="grid grid-cols-2 gap-4">
+      <div class="p-4">
+        <h2>{{ _("How to use this garden score") }}</h2>
+          <p>
+          This scorecard helps you better understand how your garden is expected to 
+          perform when it comes to some key restoration goals, including
+          <a href="#composition">species composition</a>, <a href="#diversity">species diversity</a>,
+          and an analysis of how things look with regards to your animal target species.
+          </p>
+          <p>
+            Scores are based on the species that you have listed for your garden 
+            (current and future species). So if you haven't finished marking your species,
+            make sure to do that first!
+          </p>
+          <p>
+            We have done our best to make this analysis as transparent and balanced as 
+            possible. However, it is always going to be an approximation, aimed at helping
+            you gain new insights. <a href="/contact/">We welcome feedback!</a>
+          </p>
+      </div>
+      <div class="p-4">
+        {% with scoring_table=scores status="PRESENT" %}
+          {% include "planner/_score.html" %}
+        {% endwith %}
+      </div>
+    </div>
   </div>
 
 </div> <!-- Closing <main> -->
 
 <div class="mt-20">
 
+  <section class="break-before-page mb-20 bg-white p-6 rounded-lg shadow-sm" id="composition">
+
+    <h2>{{ _("Species composition") }}</h2>
+    <div class="mb-3">
+      <p class="text-sm font-medium text-gray-900 flex justify-between mb-1">
+        <span>{% if status == "PRESENT" %}{{ _("Current score") }}{% else %}{{ _("Future score") }}{% endif %}</span>
+        <span>{{ scores|get_item:"Species composition" }}</span>
+      </p>
+      <div aria-hidden="true">
+        <div class="overflow-hidden rounded-full bg-gray-200">
+          <div style="width: {{ scores|get_item:"Species composition" }}%" class="h-2 rounded-full bg-{{ scores|get_item:"Species composition"|color_calculator }}"></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="container">
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+        <div class="bg-gray-100 rounded-t-md p-3">
+          <div class="text-gray-700 font-normal text-sm mb-5">
+            {{ _("Your garden's vegetation type:") }}
+          </div>
+          <span class="text-gray-800 font-bold block text-5xl">
+            {{ veg_type.name }}
+          </span>
+        </div>
+        <a class="flex flex-col justify-between bg-gray-100 rounded-t-md no-underline hover:opacity-70" href="{% url "planner_suggestions" garden.id %}?vegetation_type={{ veg_type.id }}" title="{{ _("View suggested species") }}">
+          <div class="p-3">
+            <div class="text-gray-700 font-normal text-sm mb-5">
+              {% if status == "PRESENT" %}
+                {{ _("Your garden has:") }}
+              {% else %}
+                {{ _("Your garden will have:") }}
+              {% endif %}
+            </div>
+            <span class="text-black font-bold block text-5xl">
+              {{ locally_indigenous }}
+            </span>
+            <span class="text-gray-700 text-sm">
+              {{ _("Locally appropriate species") }}
+            </span>
+          </div>
+          {% with score=veg_type.score_per_species|multiply:locally_indigenous %}
+            {% if veg_type.minimum_species > locally_indigenous %}
+              <div class="border-t border-gray-300 rounded-b-md bg-gray-200 px-2 py-1 text-xs font-medium text-gray-700 p-2 flex justify-between items-center">
+                <div>{{ _("Target") }}: {{ veg_type.minimum_species }} {{ _("species") }}<br>{{ _("Points") }}: {{ score|floatformat:0 }}</div>
+                <i class="mt-2 mb-2 text-lg fa fa-times-circle text-gray-200"></i>
+              </div>
+            {% else %}
+              <div class="border-t border-gray-300 rounded-b-md bg-lime-100 px-2 py-1 text-xs font-medium text-lime-700 p-3 flex justify-between items-center">
+                <div>{{ _("Target") }}: {{ veg_type.minimum_species }} {{ _("species") }}<br>{{ _("Points") }}: 
+                  {% if score > 100 %}100{% else %}{{ score|floatformat:0 }}{% endif %}
+                </div>
+                <i class="mt-2 mb-2 text-lg fa fa-check-circle"></i>
+              </div>
+            {% endif %}
+          {% endwith %}
+        </a>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mt-5">
+        <div class="bg-gray-100 rounded-t-md p-3">
+          <div class="text-gray-700 font-normal text-sm mb-5">
+            {{ _("Species to avoid:") }}
+          </div>
+          <span class="text-gray-800 font-bold block text-5xl">
+            {{ _("Undesireable species") }}
+          </span>
+        </div>
+        {% for each in bad_veg_types %}
+        <a class="flex flex-col justify-between bg-gray-100 rounded-t-md no-underline hover:opacity-70" href="{% url "planner_suggestions" garden.id %}?vegetation_type={{ veg_type.id }}" title="{{ _("View species in your garden") }}">
+          <div class="p-3">
+            <div class="text-gray-700 font-normal text-sm mb-5">
+              {% if status == "PRESENT" %}
+                {{ _("Your garden has:") }}
+              {% else %}
+                {{ _("Your garden will have:") }}
+              {% endif %}
+            </div>
+            <span class="text-black font-bold block text-5xl">
+              {{ each.total }}
+            </span>
+            <span class="text-gray-700 text-sm">
+              {{ each }}
+            </span>
+          </div>
+          {% with score=each.negative_points|multiply:each.total %}
+            {% if score < 0 %}
+              <div class="border-t border-gray-300 rounded-b-md bg-gray-200 px-2 py-1 text-xs font-medium text-gray-700 p-2 flex justify-between items-center">
+                <div>{{ _("Target") }}: {{ _("0 species") }}<br>{{ _("Point reduction") }}: {{ score|floatformat:0 }}</div>
+                <i class="mt-2 mb-2 text-lg fa fa-times-circle text-gray-200"></i>
+              </div>
+            {% else %}
+              <div class="border-t border-gray-300 rounded-b-md bg-lime-100 px-2 py-1 text-xs font-medium text-lime-700 p-3 flex justify-between items-center">
+                <div>{{ _("Target") }}: {{ _("0 species") }}<br>{{ _("Point reduction") }}: {{ score|floatformat:0 }}</div>
+                <i class="mt-2 mb-2 text-lg fa fa-check-circle"></i>
+              </div>
+            {% endif %}
+          {% endwith %}
+        </a>
+        {% endfor %}
+      </div>
+    </div>
+
+    {% if scores|get_item:"Species composition" < 100 %}
+      <div class="alert alert-warning flex mt-5">
+        <div class="mr-3">
+          <i class="fa fa-exclamation-triangle"></i>
+        </div>
+        <div>
+          <strong class="block">
+          {% blocktranslate %}
+            You can improve your garden by changing the plant composition!
+          {% endblocktranslate %}
+          </strong>
+            {% blocktranslate %}
+              By adding more locally indigenous plants, your garden can play a stronger
+              role as a stepping stone garden in a corridor of restoration gardens.
+            {% endblocktranslate %}
+        </div>
+      </div>
+    {% endif %}
+
+  </section>
+
+<div class="mt-20">
+
+  <section class="break-before-page mb-20 bg-white p-6 rounded-lg shadow-sm" id="diversity">
+
+    <h2>{{ _("Species diversity") }}</h2>
+    <div class="mb-3">
+      <p class="text-sm font-medium text-gray-900 flex justify-between mb-1">
+        <span>{% if status == "PRESENT" %}{{ _("Current score") }}{% else %}{{ _("Future score") }}{% endif %}</span>
+        <span>{{ scores|get_item:"Species diversity" }}</span>
+      </p>
+      <div aria-hidden="true">
+        <div class="overflow-hidden rounded-full bg-gray-200">
+          <div style="width: {{ scores|get_item:"Species diversity" }}%" class="h-2 rounded-full bg-{{ scores|get_item:"Species diversity"|color_calculator }}"></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="container">
+      <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 lg:grid-cols-8 gap-4">
+        {% for each in diversity %}
+          <a class="flex flex-col justify-between bg-gray-100 rounded-t-md no-underline hover:opacity-70" href="{% url "planner_suggestions" garden.id %}?feature={{ each.feature_id }}" title="{{ _("View suggested species") }}">
+            <div class="p-3">
+              <span class="text-black font-bold block text-5xl">
+                {{ each.species_count }}
+              </span>
+              <span class="text-gray-700 text-sm">
+                {{ each.feature }}
+              </span>
+            </div>
+            {% if each.quantity > each.species_count %}
+              <div class="border-t border-gray-300 rounded-b-md bg-gray-200 px-2 py-1 text-xs font-medium text-gray-600 p-2 flex justify-between items-center">
+                <div>
+                  <span class="font-normal">{{ _("Target") }}:</span> 
+                  <span class="font-bold font-gray-800">{{ each.quantity }}</span>
+                </div>
+                <i class="mt-2 mb-2 text-lg fa fa-times-circle text-gray-200"></i>
+              </div>
+            {% else %}
+              <div class="border-t border-gray-300 rounded-b-md bg-lime-100 px-2 py-1 text-xs font-medium text-lime-700 p-3 flex justify-between items-center">
+                <div>
+                  <span class="font-normal">{{ _("Target") }}:</span> 
+                  <span class="font-bold font-lime-800">{{ each.quantity }}</span>
+                </div>
+                <i class="mt-2 mb-2 text-lg fa fa-check-circle"></i>
+              </div>
+            {% endif %}
+          </a>
+        {% endfor %}
+      </div>
+    </div>
+
+    {% if scores|get_item:"Species diversity" < 100 %}
+      <div class="alert alert-warning flex mt-5">
+        <div class="mr-3">
+          <i class="fa fa-exclamation-triangle"></i>
+        </div>
+        <div>
+          <strong class="block">
+          {% blocktranslate %}
+            You can improve your garden by increasing the diversity of plants!
+          {% endblocktranslate %}
+          </strong>
+            {% blocktranslate %}
+              We have defined a number of target species to ensure there is a rich
+              diversity in your garden. Try to get your numbers up to meet the minimum
+              targets in each classification. Click on each box above to get 
+              species suggestions.
+            {% endblocktranslate %}
+        </div>
+      </div>
+    {% endif %}
+
+  </section>
+
   {% for each in garden.targets.all %}
 
-    <section class="break-before-page mb-20 bg-white p-6 rounded-lg shadow-sm">
+    <section class="break-before-page mb-20 bg-white p-6 rounded-lg shadow-sm relative">
 
       <h2>{{ each }}</h2>
+      <a class="absolute top-2 right-2 btn-gray btn-sm" href="{% url "planner_suggestions" garden.id %}?page_id={{ each.id }}"><i class="fa fa-search mr-1"></i> {{ _("Find suggested species") }}</a>  
+
       <div class="mb-3">
         <p class="text-sm font-medium text-gray-900 flex justify-between mb-1">
-          <span>{{ _("Current score") }}</span>
+          <span>{% if status == "PRESENT" %}{{ _("Current score") }}{% else %}{{ _("Future score") }}{% endif %}</span>
           <span>{{ scores|get_item:each.name }}</span>
         </p>
         <div aria-hidden="true">
@@ -137,18 +362,15 @@
 
                 {% if flowering_failure|get_item:each.id %}
                   <div class="alert alert-warning mt-5 flex">
-
                     <div class="mr-3">
                       <i class="fa fa-exclamation-triangle"></i>
                     </div>
-
                     <div>
                       <strong class="block">
                       {% blocktranslate %}
                          {{ each }} can do with more flower-power!
                       {% endblocktranslate %}
                       </strong>
-
                       {% with min=each.meta_data.score_minimum_flowering %}
                         {% blocktranslate %}
                           You can improve your garden by making sure more plants are flowering in months not currently covered.
@@ -156,7 +378,6 @@
                         {% endblocktranslate %}
                       {% endwith %}
                     </div>
-
                   </div>
                       
                     <div class="flex justify-between mt-3">
@@ -168,7 +389,7 @@
                       {% endfor %}
                       </div>
 
-                      <a class="btn-blue btn-sm" href="/species/search/"><i class="fa fa-search mr-1"></i> {{ _("Find suggested species") }}</a>  
+                      <a class="btn-orange btn-sm" href="{% url "planner_suggestions" garden.id %}?page_id={{ each.id }}"><i class="fa fa-search mr-1"></i> {{ _("Find suggested species") }}</a>  
                     </div>
 
                 {% endif %}
@@ -199,12 +420,12 @@
                       {% endif %}
                     </td>
                     <td class="font-mono">{{ species_set.count }}</td>
-                    <td class="font-mono">{{ each.score_per_species }}</td>
+                    <td class="font-mono">{{ each.score_per_species|floatformat:1 }}</td>
                     <td class="font-mono">
                       {% with score=each.score_per_species|multiply:species_set.count %}
                         {% if score > 100 %}
                           <span class="text-lime-700">100</span>
-                          ({{ _("Maximum score reached!") }})
+                          <span class="badge bg-lime-100">{{ _("Top score!") }}</span>
                         {% else %}
                           {{ score|floatformat:0 }}
                         {% endif %}
@@ -222,11 +443,11 @@
                           {% endif %}
                         </td>
                         <td class="font-mono">{{ score }}</td>
-                        <td class="font-mono">8.33</td>
+                        <td class="font-mono">8.3</td>
                         <td class="font-mono">
                             {% if score == 12 %}
                               <span class="text-lime-700">100</span>
-                              ({{ _("Maximum score reached!") }})
+                              <span class="badge bg-lime-100">{{ _("Top score!") }}</span>
                             {% else %}
                               {{ score|multiply:8.33333333333|floatformat:0 }}
                             {% endif %}

@@ -158,10 +158,10 @@
     </div>
 
     <div class="mb-4">
-      <label class="block text-lg font-semibold text-gray-700">Vegetation Types</label>
+      <label class="mb-5 block text-lg font-semibold text-gray-700">{{ _("Vegetation types") }}</label>
       <div class="grid grid-cols-2 gap-4">
         {% for vegetation_type in vegetation_types_list %}
-          <div class="flex items-center">
+          <div class="flex items-center" {% if vegetation_type not in SITE.vegetation_types.all %}hidden{% endif %}>
             <input type="checkbox" name="vegetation_types" id="id_vegetation_types_{{ vegetation_type.id }}" value="{{ vegetation_type.id }}" class="form-checkbox h-5 w-5 text-green-500" {% if vegetation_type in info.vegetation_types.all %} checked {% endif %}>
             <label for="id_vegetation_types_{{ vegetation_type.id }}" class="ml-2 text-gray-700">{{ vegetation_type.name }}</label>
           </div>
@@ -170,7 +170,7 @@
     </div>
 
     <div class="mb-4">
-      <label for="id_links" class="block text-lg font-semibold text-gray-700">Links</label>
+      <label for="id_links" class="block text-lg font-semibold text-gray-700">{{ _("Links") }}</label>
       <div id="links-container">
         {% if info.links %}
           {% for link in info.links %}

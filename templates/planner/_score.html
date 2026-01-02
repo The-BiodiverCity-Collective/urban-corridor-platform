@@ -10,44 +10,22 @@
   {% if scoring_table %}
 
     {% for label,points in scoring_table.items %}
-    <div class="mb-3">
-      <p class="text-sm font-medium text-gray-900 flex justify-between mb-1">
-        <span>{{ label}}</span>
-        <span>{{ points }}</span>
-      </p>
-      <div aria-hidden="true">
-        <div class="overflow-hidden rounded-full bg-gray-200">
-          <div style="width: {{ points }}%" class="h-2 rounded-full bg-{{ points|color_calculator }}"></div>
+      {% if label != "total" %}
+        <div class="mb-3">
+          <p class="text-sm font-medium text-gray-900 flex justify-between mb-1">
+            <span>{{ label}}</span>
+            <span>{{ points }}</span>
+          </p>
+          <div aria-hidden="true">
+            <div class="overflow-hidden rounded-full bg-gray-200">
+              <div style="width: {{ points }}%" class="h-2 rounded-full bg-{{ points|color_calculator }}"></div>
+            </div>
+          </div>
         </div>
-      </div>
-    </div>
+      {% endif %}
     {% endfor %}
 
-    <div class="mb-3" hidden>
-      <p class="text-sm font-medium text-gray-900 flex justify-between mb-1">
-        <span>Species composition</span>
-        <span>28</span>
-      </p>
-      <div aria-hidden="true">
-        <div class="overflow-hidden rounded-full bg-gray-200">
-          <div style="width: 28%" class="h-2 rounded-full bg-red-600"></div>
-        </div>
-      </div>
-    </div>
-
-    <div class="mb-3" hidden>
-      <p class="text-sm font-medium text-gray-900 flex justify-between mb-1">
-        <span>Structural diversity</span>
-        <span>39</span>
-      </p>
-      <div aria-hidden="true">
-        <div class="overflow-hidden rounded-full bg-gray-200">
-          <div style="width:39%" class="h-2 rounded-full bg-orange-500"></div>
-        </div>
-      </div>
-    </div>
-
-    <a class="full_report btn-white mt-4" href="{% if status == "PRESENT" %}{% url "planner_score" GARDEN %}{% else %}{% url "planner_score_future" GARDEN %}{% endif %}">Full report</a>
+    <a class="full_report btn-white mt-4" href="{% if status == "PRESENT" %}{% url "planner_score" GARDEN %}{% else %}{% url "planner_score_future" GARDEN %}{% endif %}">{{ _("Full report") }}</a>
 
   {% else %}
 

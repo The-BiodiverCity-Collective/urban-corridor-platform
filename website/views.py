@@ -114,9 +114,30 @@ def get_swapped_corridor_coords(site):
 def get_garden_score(garden, status):
 
     species = Species.objects.filter(garden_plants__garden=garden, garden_plants__status=status)
-
+    veg_type = garden.vegetation_type
     scores = {}
-    scores[_("Species composition")] = True
+    total = 0
+
+    # For species composition we check how many locally indigenous species are present, 
+    # and reduce points for invasives
+    locally_indigenous = species.filter(vegetation_types=veg_type).count()
+    score = min(locally_indigenous, veg_type.minimum_species)*veg_type.score_per_species
+    scores[_("Species composition")] = int(score)
+    total += score
+
+    # For species diversity we check how many of the criteria are met
+    all_criteria = DiversityCriteria.objects.filter(vegetation_type=garden.vegetation_type).count()
+    criteria_met = DiversityCriteria.objects.filter(vegetation_type=garden.vegetation_type).annotate(
+        species_count=Count(
+            "feature__species",
+            filter=Q(feature__species__garden_plants__garden_id=garden.id, feature__species__garden_plants__status=status),
+            distinct=True
+        )
+    ).filter(species_count__gte=F("quantity")).count()
+
+    score = int((criteria_met/all_criteria)*100)
+    scores[_("Species diversity")] = score
+    total += score
 
     for each in garden.targets.all():
         score = 0
@@ -145,6 +166,9 @@ def get_garden_score(garden, status):
                 score += (success_count/12)*100
 
         scores[each.name] = int(score)
+        total += score
+
+    scores["total"] = int(total)
 
     return scores
 
@@ -951,7 +975,7 @@ def species(request, id):
 def species_data(request, id):
     site = get_site(request)
     info = get_object_or_404(Species, pk=id)
-    sources = SpeciesVegetationTypeLink.objects.filter(species=info, vegetation_type__sites=site)
+    sources = SpeciesVegetationTypeLink.objects.filter(species=info, vegetation_type__site=site)
     photos = Photo.objects.filter(species=info)
     details = fetch_species_text(request, info)
 
@@ -1996,6 +2020,8 @@ def planner(request, id=None):
         "garden": garden,
         "species_present": GardenSpecies.objects.filter(garden=garden, status="PRESENT").count(),
         "species_future": GardenSpecies.objects.filter(garden=garden, status="FUTURE").count(),
+        "score_present": get_garden_score(garden, "PRESENT") if garden else None,
+        "score_future": get_garden_score(garden, "FUTURE") if garden else None,
     }
     return render(request, "planner/index.html", context)
 
@@ -2123,6 +2149,14 @@ def planner_suggestions(request, id):
         species = species.prefetch_related("vegetation_types").all()
         species = species.prefetch_related("colors").all()
 
+    if "feature" in request.GET:
+        feature = SpeciesFeatures.objects.get(pk=request.GET["feature"])
+        species = species.filter(features=feature)
+
+    if "page_id" in request.GET:
+        page = Page.objects.get(pk=request.GET["page_id"], site=site)
+        species = species.filter(features__in=page.features.all())
+
     vegetation_type = garden.vegetation_type
     if vegetation_type:
         species = species.filter(vegetation_types=vegetation_type)
@@ -2211,6 +2245,7 @@ def planner_plants(request, id, status):
         "title": _("Plants overview"),
         "garden": garden,
         "species_list": plants,
+        "score": get_garden_score(garden, status),
         "table_hide_vegetation": True,
         "table_hide_form": True,
         "table_hide_aspects": True,
@@ -2285,6 +2320,19 @@ def planner_score(request, id, status):
             flowering_failure[page.id] = fails_check
             flowering_success[page.id] = success_count
 
+    veg_type = garden.vegetation_type if garden.vegetation_type else site.vegetation_types.all().first()
+    criteria = DiversityCriteria.objects.filter(vegetation_type=veg_type).annotate(
+        species_count=Count(
+            "feature__species",
+            filter=Q(feature__species__garden_plants__garden_id=garden.id, feature__species__garden_plants__status=status),
+            distinct=True
+        )
+    )
+
+    bad_veg = VegetationType.objects.filter(site=site, is_negative=True, negative_points__isnull=False).annotate(
+        total=Count("species__garden_plants", filter=Q(species__garden_plants__garden=garden, species__garden_plants__status=status))
+    )
+
     context = {
         "menu": "planner",
         "page": "score",
@@ -2298,6 +2346,10 @@ def planner_score(request, id, status):
         "flowering_success": flowering_success,
         "title": _("Future garden score card") if status == "FUTURE" else _("Current garden score card"),
         "scores": get_garden_score(garden, status),
+        "diversity": criteria,
+        "veg_type": veg_type,
+        "bad_veg_types": bad_veg,
+        "locally_indigenous": species.filter(vegetation_types=veg_type).count(),
     }
     return render(request, "planner/score.html", context)
 
@@ -3701,18 +3753,15 @@ def controlpanel_scoring(request):
 
     site = get_site(request)
 
-    if request.method == "POST":
-        highlight = {
-            "name": request.POST["name"],
-            "description": request.POST["description"],
-            "image": request.POST["image"],
-            "url": request.POST["url"],
-            "date": timezone.now().strftime("%b %d, %Y"),
-        }
-        site.meta_data["highlight_en"] = highlight
-        site.save()
-        messages.success(request, _("The new monthly highlight has been saved."))
-        return redirect(request.path)
+    diversity = SpeciesFeatures.objects.filter(
+        species_type__in=[SpeciesFeatures.SpeciesType.SUCCESSION,SpeciesFeatures.SpeciesType.TYPE], site=site
+    )
+
+    criteria = {}
+    for each in DiversityCriteria.objects.filter(vegetation_type__site=site):
+        if not each.vegetation_type_id in criteria:
+            criteria[each.vegetation_type_id] = {}
+        criteria[each.vegetation_type_id][each.feature_id] = each.quantity
 
     context = {
         "controlpanel": True,
@@ -3722,8 +3771,41 @@ def controlpanel_scoring(request):
         "vegetation": VegetationType.objects.filter(site=site, is_negative=False),
         "invasives": VegetationType.objects.filter(site=site, is_negative=True),
         "features": Page.objects.filter(site=site, page_type=Page.PageType.TARGET),
-        "succession": SpeciesFeatures.objects.filter(pk__in=[138,139,145]),
+        "diversity": diversity,
+        "criteria": criteria,
     }
+    if request.method == "POST":
+        for each in context["features"]:
+            min_species = request.POST.get(f"minimum_species_{each.id}")
+            min_flowering = request.POST.get(f"minimum_flowering_{each.id}")
+            if min_species:
+                each.meta_data["score_minimum_species"] = min_species
+            elif "score_minimum_species" in each.meta_data:
+                del each.meta_data["score_minimum_species"]
+            if min_flowering:
+                each.meta_data["score_minimum_flowering"] = min_flowering
+            elif "score_minimum_flowering" in each.meta_data:
+                del each.meta_data["score_minimum_flowering"]
+            each.save()
+
+        for each in context["vegetation"]:
+            each.criteria.all().delete()
+            for feature in diversity:
+                quantity = int(request.POST.get(f"feature_{each.id}_{feature.id}", 0) or 0)
+                if int(quantity) > 0:
+                    DiversityCriteria.objects.create(vegetation_type=each, feature=feature, quantity=quantity)
+            min_species = request.POST.get(f"minimum_species_{each.id}") or None
+            each.minimum_species = min_species
+            each.save()
+
+        for each in context["invasives"]:
+            negative_points = request.POST.get(f"negative_points_{each.id}") or None
+            each.negative_points = negative_points
+            each.save()
+
+        messages.success(request, _("The new monthly highlight has been saved."))
+        return redirect(request.path)
+
     return render(request, "controlpanel/scoring.html", context)
 
 
