@@ -709,12 +709,15 @@ class SpeciesFeatures(models.Model):
     name = models.CharField(max_length=255, db_index=True)
 
     class SpeciesType(models.IntegerChoices):
-        HABITAT = 5, "Habitats & soils"
-        ANIMALS = 1, "Animal-friendly"
-        SITE = 2, "Tolerances & suitability"
-        GROWTH = 3, "Growth features"
-        OTHER = 4, "Social features"
-        ASPECT = 6, "Aspect"
+        ANIMALS = 1, _("Animal-friendly")
+        SITE = 2, _("Tolerances & suitability")
+        GROWTH = 3, _("Growth features")
+        SOCIAL = 4, _("Social features")
+        HABITAT = 5, _("Habitats")
+        ASPECT = 6, _("Aspect")
+        TYPE = 7, _("Plant types")
+        SUCCESSION = 8, _("Succession")
+        SOIL = 9, _("Soils")
 
     species_type = models.IntegerField(choices=SpeciesType.choices, db_index=True, default=0)
     site = models.ManyToManyField(Site, blank=True)
@@ -942,6 +945,11 @@ class Species(models.Model):
                         if "preferred_common_name" in info and info["preferred_common_name"] and not self.name_en:
                             species_text, created = SpeciesText.objects.get_or_create(species=self, language_id=1)
                             species_text.common_name = info["preferred_common_name"]
+                            cn = species_text.common_name
+                            cn = cn.lower()
+                            if cn == species_text.common_name:
+                                # All small-caps so let's change that
+                                species_text.common_name = cn.title()
                             species_text.save()
                             
                         self.save()
