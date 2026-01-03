@@ -1,23 +1,25 @@
+{% load querystring_plus %}
+
 <div class="sm:block">
   <div class="{% if tabs_border %}border-b border-gray-200{% endif %}">
     <nav class="tabs -mb-px flex {% if tabs_border %}space-x-8{% else %}space-x-2{% endif %}" aria-label="Tabs">
-      <a href="{% querystring view="table" %}" class="tab {% if not request.GET.view or request.GET.view == "table" %}active{% else %}inactive {% endif %}">
+      <a href="{% querystring_plus view="table" %}" class="tab {% if not request.GET.view or request.GET.view == "table" %}active{% else %}inactive {% endif %}">
         <i class="fa fa-table mr-1"></i>
         {{ _("Table") }}
       </a>
-      <a href="{% querystring view="table-extended" %}" class="tab {% if request.GET.view == "table-extended" %}active{% else %}inactive{% endif %}">
+      <a href="{% querystring_plus view="table-extended" %}" class="tab {% if request.GET.view == "table-extended" %}active{% else %}inactive{% endif %}">
         <i class="fa fa-table mr-1"></i>
         {{ _("Table - extended") }}
       </a>
-      <a href="{% querystring view="photos" %}" class="tab {% if request.GET.view == "photos" %}active{% else %}inactive{% endif %}">
+      <a href="{% querystring_plus view="photos" %}" class="tab {% if request.GET.view == "photos" %}active{% else %}inactive{% endif %}">
         <i class="fa fa-image mr-1"></i>
         {{ _("Photos") }}
       </a>
-      <a href="{% querystring view="photos-extended" %}" class="tab {% if request.GET.view == "photos-extended" %}active{% else %}inactive{% endif %}">
+      <a href="{% querystring_plus view="photos-extended" %}" class="tab {% if request.GET.view == "photos-extended" %}active{% else %}inactive{% endif %}">
         <i class="fa fa-image mr-1"></i>
         {{ _("Photos - extended") }}
       </a>
-      <a href="{% querystring view="photos-data" %}" class="tab {% if request.GET.view == "photos-data" %}active{% else %}inactive{% endif %}">
+      <a href="{% querystring_plus view="photos-data" %}" class="tab {% if request.GET.view == "photos-data" %}active{% else %}inactive{% endif %}">
         <i class="fa fa-image mr-1"></i>
         {{ _("Photos + data") }}
       </a>

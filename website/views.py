@@ -14,7 +14,7 @@ from django.core import serializers
 from django.core.files import File
 from django.core.mail import send_mail
 from django.core.paginator import Paginator
-from django.db.models import OuterRef, Subquery, Value, CharField, Q, F, Count, Max
+from django.db.models import OuterRef, Subquery, Value, CharField, Q, F, Count, Max, IntegerField
 from django.forms import modelform_factory
 from django.http import JsonResponse, HttpResponse, Http404
 from django.shortcuts import render, get_object_or_404, redirect
@@ -113,7 +113,14 @@ def get_swapped_corridor_coords(site):
 # We calculate the various scores for a garden here
 def get_garden_score(garden, status):
 
-    species = Species.objects.filter(garden_plants__garden=garden, garden_plants__status=status)
+    # For current gardens, only check PRESENT species. For future gardens, we want all plants (present+future)
+    if status == "PRESENT":
+        species = Species.objects.filter(garden_plants__garden=garden, garden_plants__status=status)
+        q_filter = Q(feature__species__garden_plants__garden_id=garden.id, feature__species__garden_plants__status=status)
+    else:
+        species = Species.objects.filter(garden_plants__garden=garden)
+        q_filter = Q(feature__species__garden_plants__garden_id=garden.id)
+
     veg_type = garden.vegetation_type
     scores = {}
     total = 0
@@ -130,7 +137,7 @@ def get_garden_score(garden, status):
     criteria_met = DiversityCriteria.objects.filter(vegetation_type=garden.vegetation_type).annotate(
         species_count=Count(
             "feature__species",
-            filter=Q(feature__species__garden_plants__garden_id=garden.id, feature__species__garden_plants__status=status),
+            filter=q_filter,
             distinct=True
         )
     ).filter(species_count__gte=F("quantity")).count()
@@ -679,7 +686,7 @@ def species_overview(request, vegetation_type=None):
     genus = Genus.objects.filter(species__site=site)
     families = Family.objects.filter(species__site=site)
     species = Species.objects.filter(site=site)
-    veg_types = VegetationType.objects.filter(sites=site).annotate(
+    veg_types = VegetationType.objects.filter(site=site).annotate(
         total=Count("species", filter=Q(species__site=site))
     ).filter(total__gt=0)
 
@@ -730,7 +737,7 @@ def species_search(request, vegetation_type=None):
     genus = Genus.objects.filter(species__site=site)
     families = Family.objects.filter(species__site=site)
     species = Species.objects.filter(site=site)
-    veg_types = VegetationType.objects.filter(sites=site).annotate(
+    veg_types = VegetationType.objects.filter(site=site).annotate(
         total=Count("species", filter=Q(species__site=site))
     ).filter(total__gt=0)
     features = SpeciesFeatures.objects.filter(site=site)
@@ -2063,6 +2070,7 @@ def planner_location(request, id):
         "garden": garden,
         "map_hide_save": True,
         "step": 1,
+        "swapped_corridor_coords": get_swapped_corridor_coords(site),
     }
     return render(request, "planner/location.html", context)
 
@@ -2149,17 +2157,31 @@ def planner_suggestions(request, id):
         species = species.prefetch_related("vegetation_types").all()
         species = species.prefetch_related("colors").all()
 
+    filter_text = []
     if "feature" in request.GET:
-        feature = SpeciesFeatures.objects.get(pk=request.GET["feature"])
-        species = species.filter(features=feature)
+        feature = SpeciesFeatures.objects.filter(pk__in=request.GET.getlist("feature"))
+        for each in feature:
+            filter_text.append(each)
+        species = species.filter(features__in=feature)
 
     if "page_id" in request.GET:
         page = Page.objects.get(pk=request.GET["page_id"], site=site)
         species = species.filter(features__in=page.features.all())
+        for each in page.features.all():
+            filter_text.append(each)
 
-    vegetation_type = garden.vegetation_type
-    if vegetation_type:
+    if "month" in request.GET:
+        months = request.GET.getlist("month")
+        species = species.filter(flowering__overlap=months)
+        month_labels = ", ".join(str(dict(Species.MONTH_CHOICES)[int(month)]) for month in months)
+        filter_text.append(_("Flowering any of these months: ") + month_labels)
+            
+    if "vegetation_type" in request.GET:
+        vegetation_type = VegetationType.objects.get(pk=request.GET["vegetation_type"], site=site)
         species = species.filter(vegetation_types=vegetation_type)
+        filter_text.append(vegetation_type.name)
+    else:
+        vegetation_type = garden.vegetation_type
 
     # Check which features are linked to this garden
     features = SpeciesFeatures.objects.filter(Q(page__garden_targets=garden)|Q(page__garden_site_features=garden))
@@ -2169,7 +2191,7 @@ def planner_suggestions(request, id):
 
     # We use this to create bars showing relative score
     max_features = species.aggregate(Max("num_features"))["num_features__max"]
-    if vegetation_type:
+    if vegetation_type and species.exists():
         max_features += 1 # Add one because it will also meet the vegetation type parameter
 
     # Get the top 50 species only
@@ -2209,6 +2231,7 @@ def planner_suggestions(request, id):
         "in_garden_present": Species.objects.filter(garden_plants__garden=garden, garden_plants__status="PRESENT"),
         "in_garden_future": Species.objects.filter(garden_plants__garden=garden, garden_plants__status="FUTURE"),
         "hide_species_tabs": True,
+        "filter_text": filter_text,
 
         # Because we have tabs above the <main>, we need to unround the top-left corner if the first tab is active
         "main_classes": "rounded-tl-none" if request.GET.get("view", "table") == "table" else None,
@@ -2296,7 +2319,12 @@ def planner_score(request, id, status):
     if not (garden := get_garden(request, id)):
         return redirect("planner")
 
-    species = Species.objects.filter(garden_plants__garden=garden, garden_plants__status=status)
+    if status == "PRESENT":
+        species = Species.objects.filter(garden_plants__garden=garden, garden_plants__status=status)
+        q_filter = Q(feature__species__garden_plants__garden_id=garden.id, feature__species__garden_plants__status=status)
+    else:
+        species = Species.objects.filter(garden_plants__garden=garden)
+        q_filter = Q(feature__species__garden_plants__garden_id=garden.id)
     feature_species = {}
     flowering_failure = {}
     flowering_success = {}
@@ -2324,14 +2352,20 @@ def planner_score(request, id, status):
     criteria = DiversityCriteria.objects.filter(vegetation_type=veg_type).annotate(
         species_count=Count(
             "feature__species",
-            filter=Q(feature__species__garden_plants__garden_id=garden.id, feature__species__garden_plants__status=status),
+            filter=q_filter,
             distinct=True
         )
     )
 
-    bad_veg = VegetationType.objects.filter(site=site, is_negative=True, negative_points__isnull=False).annotate(
-        total=Count("species__garden_plants", filter=Q(species__garden_plants__garden=garden, species__garden_plants__status=status))
-    )
+    if status == "PRESENT":
+        bad_veg = VegetationType.objects.filter(site=site, is_negative=True, negative_points__isnull=False).annotate(
+            total=Count("species__garden_plants", filter=Q(species__garden_plants__garden=garden, species__garden_plants__status=status))
+        )
+    else:
+        # There isn't really a way to "remove" bad vegetation from a future scenario, so we are going to assume people WILL remove
+        bad_veg = VegetationType.objects.filter(site=site, is_negative=True, negative_points__isnull=False).annotate(
+            total=Value(0, output_field=IntegerField())
+        )
 
     context = {
         "menu": "planner",

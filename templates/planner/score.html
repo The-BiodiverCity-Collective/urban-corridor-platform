@@ -2,6 +2,7 @@
 {% load ucp_extras %}
 {% load i18n %}
 {% load humanize %}
+{% load tz %}
 
 {% block css %}
   <style type="text/css">
@@ -27,7 +28,7 @@
           <p>
           This scorecard helps you better understand how your garden is expected to 
           perform when it comes to some key restoration goals, including
-          <a href="#composition">species composition</a>, <a href="#diversity">species diversity</a>,
+          <a href="#section-species-composition">species composition</a>, <a href="#section-species-diversity">species diversity</a>,
           and an analysis of how things look with regards to your animal target species.
           </p>
           <p>
@@ -41,10 +42,20 @@
             you gain new insights. <a href="/contact/">We welcome feedback!</a>
           </p>
       </div>
-      <div class="p-4">
-        {% with scoring_table=scores status="PRESENT" %}
-          {% include "planner/_score.html" %}
-        {% endwith %}
+      <div class="p-4 flex flex-col justify-between h-full">
+        <div>
+          {% with scoring_table=scores status=status %}
+            {% include "planner/_score.html" %}
+          {% endwith %}
+        </div>
+
+        <span class="mt-auto text-right text-gray-500 text-sm">
+          {{ _("Date") }}
+          <br>
+          <strong>
+          {% now "M j, Y" %}
+          </strong>
+        </span>
       </div>
     </div>
   </div>
@@ -53,7 +64,7 @@
 
 <div class="mt-20">
 
-  <section class="break-before-page mb-20 bg-white p-6 rounded-lg shadow-sm" id="composition">
+  <section class="break-before-page mb-20 bg-white p-6 rounded-lg shadow-sm" id="section-species-composition">
 
     <h2>{{ _("Species composition") }}</h2>
     <div class="mb-3">
@@ -78,7 +89,7 @@
             {{ veg_type.name }}
           </span>
         </div>
-        <a class="flex flex-col justify-between bg-gray-100 rounded-t-md no-underline hover:opacity-70" href="{% url "planner_suggestions" garden.id %}?vegetation_type={{ veg_type.id }}" title="{{ _("View suggested species") }}">
+        <a class="flex flex-col justify-between bg-gray-100 rounded-t-md no-underline hover:opacity-70" href="{% url "planner_suggestions" garden.id %}?vegetation_type={{ veg_type.id }}&amp;back_box=planner&amp;box_details={{ status }}" title="{{ _("View suggested species") }}">
           <div class="p-3">
             <div class="text-gray-700 font-normal text-sm mb-5">
               {% if status == "PRESENT" %}
@@ -122,13 +133,13 @@
           </span>
         </div>
         {% for each in bad_veg_types %}
-        <a class="flex flex-col justify-between bg-gray-100 rounded-t-md no-underline hover:opacity-70" href="{% url "planner_suggestions" garden.id %}?vegetation_type={{ veg_type.id }}" title="{{ _("View species in your garden") }}">
+        <a class="flex flex-col justify-between bg-gray-100 rounded-t-md no-underline hover:opacity-70" href="{% url "planner_suggestions" garden.id %}?vegetation_type={{ each.id }}&amp;back_box=planner&amp;box_details={{ status }}" title="{{ _("View species in your garden") }}">
           <div class="p-3">
             <div class="text-gray-700 font-normal text-sm mb-5">
               {% if status == "PRESENT" %}
                 {{ _("Your garden has:") }}
               {% else %}
-                {{ _("Your garden will have:") }}
+                {{ _("We expect your garden to have:") }}
               {% endif %}
             </div>
             <span class="text-black font-bold block text-5xl">
@@ -179,7 +190,7 @@
 
 <div class="mt-20">
 
-  <section class="break-before-page mb-20 bg-white p-6 rounded-lg shadow-sm" id="diversity">
+  <section class="break-before-page mb-20 bg-white p-6 rounded-lg shadow-sm" id="section-species-diversity">
 
     <h2>{{ _("Species diversity") }}</h2>
     <div class="mb-3">
@@ -197,7 +208,7 @@
     <div class="container">
       <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 lg:grid-cols-8 gap-4">
         {% for each in diversity %}
-          <a class="flex flex-col justify-between bg-gray-100 rounded-t-md no-underline hover:opacity-70" href="{% url "planner_suggestions" garden.id %}?feature={{ each.feature_id }}" title="{{ _("View suggested species") }}">
+          <a class="flex flex-col justify-between bg-gray-100 rounded-t-md no-underline hover:opacity-70" href="{% url "planner_suggestions" garden.id %}?feature={{ each.feature_id }}&amp;back_box=planner&amp;box_details={{ status }}" title="{{ _("View suggested species") }}">
             <div class="p-3">
               <span class="text-black font-bold block text-5xl">
                 {{ each.species_count }}
@@ -206,23 +217,26 @@
                 {{ each.feature }}
               </span>
             </div>
-            {% if each.quantity > each.species_count %}
-              <div class="border-t border-gray-300 rounded-b-md bg-gray-200 px-2 py-1 text-xs font-medium text-gray-600 p-2 flex justify-between items-center">
-                <div>
-                  <span class="font-normal">{{ _("Target") }}:</span> 
-                  <span class="font-bold font-gray-800">{{ each.quantity }}</span>
+            <div>
+              <div class="max-w-full bg-{% if each.quantity > each.species_count %}sky{% else %}lime{% endif %}-700 h-[2px]" style="width:{% widthratio each.species_count each.quantity 100%}%"></div>
+              {% if each.quantity > each.species_count %}
+                <div class="border-t border-gray-300 rounded-b-md bg-gray-200 px-2 py-1 text-xs font-medium text-gray-600 p-2 flex justify-between items-center">
+                  <div>
+                    <span class="font-normal">{{ _("Target") }}:</span> 
+                    <span class="font-bold font-gray-800">{{ each.quantity }}</span>
+                  </div>
+                  <i class="mt-2 mb-2 text-lg fa fa-times-circle text-gray-200"></i>
                 </div>
-                <i class="mt-2 mb-2 text-lg fa fa-times-circle text-gray-200"></i>
-              </div>
-            {% else %}
-              <div class="border-t border-gray-300 rounded-b-md bg-lime-100 px-2 py-1 text-xs font-medium text-lime-700 p-3 flex justify-between items-center">
-                <div>
-                  <span class="font-normal">{{ _("Target") }}:</span> 
-                  <span class="font-bold font-lime-800">{{ each.quantity }}</span>
+              {% else %}
+                <div class="border-t border-gray-300 rounded-b-md bg-lime-100 px-2 py-1 text-xs font-medium text-lime-700 p-3 flex justify-between items-center">
+                  <div>
+                    <span class="font-normal">{{ _("Target") }}:</span> 
+                    <span class="font-bold font-lime-800">{{ each.quantity }}</span>
+                  </div>
+                  <i class="mt-2 mb-2 text-lg fa fa-check-circle"></i>
                 </div>
-                <i class="mt-2 mb-2 text-lg fa fa-check-circle"></i>
-              </div>
-            {% endif %}
+              {% endif %}
+            </div>
           </a>
         {% endfor %}
       </div>
@@ -253,10 +267,10 @@
 
   {% for each in garden.targets.all %}
 
-    <section class="break-before-page mb-20 bg-white p-6 rounded-lg shadow-sm relative">
+    <section class="break-before-page mb-20 bg-white p-6 rounded-lg shadow-sm relative" id="section-{{ each.name|slugify }}">
 
       <h2>{{ each }}</h2>
-      <a class="absolute top-2 right-2 btn-gray btn-sm" href="{% url "planner_suggestions" garden.id %}?page_id={{ each.id }}"><i class="fa fa-search mr-1"></i> {{ _("Find suggested species") }}</a>  
+      <a class="absolute top-2 right-2 btn-gray btn-sm" href="{% url "planner_suggestions" garden.id %}?page_id={{ each.id }}&amp;back_box=planner&amp;box_details={{ status }}"><i class="fa fa-search mr-1"></i> {{ _("Find suggested species") }}</a>  
 
       <div class="mb-3">
         <p class="text-sm font-medium text-gray-900 flex justify-between mb-1">
@@ -389,7 +403,9 @@
                       {% endfor %}
                       </div>
 
-                      <a class="btn-orange btn-sm" href="{% url "planner_suggestions" garden.id %}?page_id={{ each.id }}"><i class="fa fa-search mr-1"></i> {{ _("Find suggested species") }}</a>  
+                      <a class="btn-orange btn-sm" href="{% url "planner_suggestions" garden.id %}?page_id={{ each.id }}{% for key,value in flowering_failure|get_item:each.id %}&amp;month={{ key }}{% endfor %}&amp;view=table-extended&amp;back_box=planner&amp;box_details={{ status }}">
+                        <i class="fa fa-search mr-1"></i> {{ _("Find flowering species") }}
+                      </a>
                     </div>
 
                 {% endif %}

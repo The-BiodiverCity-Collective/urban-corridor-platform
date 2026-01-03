@@ -869,7 +869,7 @@ class Species(models.Model):
 
     @property
     def flowering_months(self):
-        return [dict(self.MONTH_CHOICES)[month] for month in self.flowering]
+        return [dict(self.MONTH_CHOICES)[month] for month in sorted(self.flowering)]
 
     @property
     def inat_id(self):
