@@ -1,4 +1,5 @@
 {% extends "_base.html" %}
+{% load static %}
 
 {% block content %}
 
@@ -7,8 +8,12 @@
 <div class="sm:block">
   <div class="border-b border-gray-200">
     <nav class="tabs -mb-px flex space-x-8" aria-label="Tabs">
-      <a href="./" class="tab {% if photos %}in{% endif %}active"><i class="fa fa-pencil mr-1"></i> {{ _("Edit content") }}</a>
-      <a {% if info.id %}href="./?photos"{% endif %} class="tab {% if not info.id %}opacity-60{% endif %} {% if not photos %}in{% endif %}active"><i class="fa fa-image mr-1"></i>{{ _("Photos") }}</a>
+      <a href="./" class="tab {% if photos or species %}in{% endif %}active"><i class="fa fa-pencil mr-1"></i> {{ _("Edit content") }}</a>
+      {% if page_type == 6 %}
+        <a {% if info.id %}href="./?species"{% endif %} class="tab {% if not info.id %}opacity-60{% endif %} {% if not species %}in{% endif %}active"><i class="fa fa-leaf mr-1"></i>{{ _("Species") }}</a>
+      {% else %}
+        <a {% if info.id %}href="./?photos"{% endif %} class="tab {% if not info.id %}opacity-60{% endif %} {% if not photos %}in{% endif %}active"><i class="fa fa-image mr-1"></i>{{ _("Photos") }}</a>
+      {% endif %}
     </nav>
   </div>
 </div>
@@ -17,7 +22,7 @@
 
   <div class="space-y-12">
 
-    {% if not photos %}
+    {% if not photos and not species %}
 
       <form method="post" enctype="multipart/form-data">
 
@@ -191,7 +196,7 @@
       </div>
     </form>
 
-  {% else %}
+  {% elif photos %}
 
     <form method="post">
       {% csrf_token %}
@@ -230,10 +235,63 @@
       </div>
     </form>
 
+  {% elif species %}
+
+    <form method="post">
+      {% csrf_token %}
+      <div class="space-y-12">
+        <div class="border-b border-gray-900/10 pb-12">
+
+          {% if info.id and info.species.count %}
+            <table class="table table-striped">
+              <thead>
+                <tr>
+                  <th>{{ _("Species") }}</th>
+                  <th>{{ _("Options") }}</th>
+                </tr>
+              </thead>
+              <tbody>
+              {% for each in info.species.all %}
+                <tr>
+                  <td>{{ each }}</td>
+                  <td><a href="?species&amp;delete_species={{ each.id }}"><i class="fa fa-trash"></i></a></td>
+                </tr>
+              {% endfor %}
+              </tbody>
+            </table>
+          {% endif %}
+
+          <div class="mt-10 grid grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6">
+            <div class="sm:col-span-4">
+              <label for="photo" class="block text-sm/6 font-medium text-gray-900">{{ _("Search species") }}</label>
+              <div class="mb-4">
+                <select id="search_species" style="width: 100%;">
+                  <option value="" disabled selected hidden>{{ _("Enter (part of) a species name...") }}</option>
+                </select>
+              </div>
+
+              <label for="photo" class="mt-5 block text-sm/6 font-medium text-gray-900">{{ _("Enter multiple species") }}</label>
+              <div class="mt-2">
+                <textarea name="species_list" placeholder="{{ _("Enter multiple species (scientific names), each on a new line") }}"></textarea>
+              </div>
+            </div>
+          </div>
+
+        </div>
+
+      </div>
+
+      <div class="mt-6 flex items-center justify-end gap-x-6">
+        <button type="submit" class="px-4 py-2 bg-lime-600 hover:bg-lime-700 text-white font-bold rounded-md focus:outline-hidden focus:ring-3 focus:ring-lime-300">
+          {{ _("Add species") }}
+        </button>
+      </div>
+    </form>
+
+    {% endif %}
+
   </div>
 </div>
-
-{% endif %}
 
 {% endblock %}
 
@@ -259,4 +317,16 @@
 
     });
     </script>
+
+  {% if species %}
+    <script type="text/javascript">
+      // Settings for the species search ajax field
+      var search_active_only = true;
+      function getRedirectURL(id) {
+        return "?species&add_species=" + id;
+      }
+    </script>
+    <script type="text/javascript" src="{% static "js/species.search.js" %}"></script>
+  {% endif %}
+
 {% endblock %}

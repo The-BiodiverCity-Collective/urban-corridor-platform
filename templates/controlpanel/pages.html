@@ -20,7 +20,11 @@
       <td><a href="{% url "controlpanel_page" each.id %}">{{ each.name }}</td>
       <td>
         <a class="btn-blue btn-sm" href="{% url "controlpanel_page" each.id %}"><i class="fa fa-pencil mr-1"></i> {{ _("Edit") }}</a>
-        <a class="btn-blue btn-sm" href="{% url "controlpanel_page" each.id %}?photos"><i class="fa fa-image mr-1"></i> {{ _("Manage photos") }}</a>
+        {% if page_type == 6 %}
+          <a class="btn-blue btn-sm" href="{% url "controlpanel_page" each.id %}?species"><i class="fa fa-leaf mr-1"></i> {{ _("Manage species") }}</a>
+        {% else %}
+          <a class="btn-blue btn-sm" href="{% url "controlpanel_page" each.id %}?photos"><i class="fa fa-image mr-1"></i> {{ _("Manage photos") }}</a>
+        {% endif %}
         {% if page_type != 4 and page_type != 5 and page_type != 7 %}
           <a class="btn-orange btn-sm" href="{{ each.get_absolute_url }}">{{ _("View page") }}</a>
         {% endif %}

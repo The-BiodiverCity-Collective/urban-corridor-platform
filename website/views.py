@@ -2475,6 +2475,7 @@ def controlpanel_page(request, id=None):
         features = SpeciesFeatures.objects.filter(site=site)
 
     photos = False
+    species = False
     if "photos" in request.GET:
         photos = True
 
@@ -2491,6 +2492,33 @@ def controlpanel_page(request, id=None):
                 info.photos.add(Photo.objects.get(pk=request.POST["photo"]))
                 messages.success(request, "Photo was added to the page.")
                 return redirect(request.get_full_path())
+
+    elif "species" in request.GET:
+        # For nurseries we can manage which species are stocked
+        species = True
+
+        title = _("Species") + f": {info.name}"
+        if "delete_species" in request.GET:
+            species = Species.objects.get(pk=request.GET["delete_species"])
+            info.species.remove(species)
+            messages.success(request, _("Species was removed."))
+            return redirect(request.path + "?species")
+        elif "add_species" in request.GET:
+            info.species.add(Species.objects.get(pk=request.GET["add_species"]))
+            messages.success(request, _("Species was added"))
+            return redirect(request.path + "?species")
+        elif request.method == "POST":
+            skip_success = False
+            for each in request.POST.get("species_list").split("\n"):
+                species = Species.objects.filter(name=each.strip())
+                if species:
+                    info.species.add(species.first())
+                else:
+                    messages.error(request, _("The following species was not found: ") + each)
+                    skip_success = True
+            if not skip_success:
+                messages.success(request, _("Species have been added"))
+            return redirect(request.path + "?species")
 
     else:
         if request.method == "POST":
@@ -2567,8 +2595,9 @@ def controlpanel_page(request, id=None):
         "quill": True,
         "page_type": page_type,
         "photos": photos,
+        "species": species,
         "features": features,
-        "load_select2": True if page_type in [4,5] else False,
+        "load_select2": True if page_type in [4,5] or species else False,
     }
     return render(request, "controlpanel/page.html", context)
 

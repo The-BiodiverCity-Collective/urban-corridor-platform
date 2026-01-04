@@ -90,6 +90,9 @@ class Page(models.Model):
     # link to Butterflies, Bees, etc)
     features = models.ManyToManyField("SpeciesFeatures", blank=True)
 
+    # This is used for pages for nurseries, to mark which species they stock
+    species = models.ManyToManyField("Species")
+
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 

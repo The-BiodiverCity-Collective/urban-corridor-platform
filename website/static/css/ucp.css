@@ -372,3 +372,26 @@
 
 }
 
+.select2-container--default .select2-selection--single .select2-selection__arrow b {
+  display:none;
+}
+.select2-container--default .select2-selection--single {
+  height:40px;
+  padding-top:5px;
+  padding-left:10px;
+  border: 1px solid #d1d5db; /* Gray border */
+  border-radius: 0.5rem; /* Rounded corners */
+}
+.select2-container--default .select2-selection--single.select2-selection--focus {
+  border-color: #3b82f6; /* Sky-700 border on focus */
+  box-shadow: 0 0 0 0.2rem rgba(59, 130, 247, 0.25); /* Sky-700 shadow ring */
+}
+.select2-container--default .select2-selection__placeholder {
+  color: #6b7280; /* Gray color for placeholder */
+}
+.select2-container--default .select2-selection__rendered {
+  color: #374151; /* Text color */
+}
+.select2-container--default .select2-search--dropdown .select2-search__field {
+  border-radius: 0.25rem;
+}
