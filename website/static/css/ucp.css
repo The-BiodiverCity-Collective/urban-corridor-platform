@@ -114,6 +114,18 @@
   @apply bg-red-100 border-red-500 text-red-700;
 }
 
+@utility bottomnav {
+  a {
+    @apply flex-1 flex items-center justify-center px-2 py-1 text-gray-700 hover:text-gray-900 rounded-md hover:bg-gray-300 transition-all duration-200;
+  }
+  a.active {
+    @apply text-white bg-lime-600;
+  }
+  i {
+    @apply group-hover:scale-110 transition-transform flex-shrink-0;
+  }
+}
+
 @utility tab {
   main & {
     @apply no-underline whitespace-nowrap border-b-2 py-4 px-1 text-sm font-medium;

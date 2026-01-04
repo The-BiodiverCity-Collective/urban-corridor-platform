@@ -1,6 +1,6 @@
 from django.conf import settings
 import random
-from website.models import Site
+from website.models import Site, Garden
 
 def site(request):
 
@@ -25,8 +25,9 @@ def site(request):
 
     # If this user is managing a garden, we can get that ID and use it to create planner-related
     # URLs. However, we want the URL to use 0 as a variable so it doesn't fail to work if no 
-    # garden is being actively managed
+    # garden is being actively managed.
     garden = request.COOKIES.get("garden_id", 0)
+    garden_name = request.COOKIES.get("garden_name", None)
 
     return {
         "DEBUG": settings.DEBUG,
@@ -35,4 +36,5 @@ def site(request):
         "SITE": site,
         "SITES": sites,
         "GARDEN": garden,
+        "GARDEN_NAME": garden_name,
     }

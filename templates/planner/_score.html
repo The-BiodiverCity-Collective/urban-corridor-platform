@@ -1,6 +1,6 @@
 {% load ucp_extras %}
   {% if status == "PRESENT" %}
-    <h2 class="mb-1"><a class="no-underline hover:underline text-gray-700 hover:text-sky-800" href="{% url "planner_score" GARDEN %}">{{ _("Current score") }}</a></h2>
+    <h2 class="mb-1"><a class="no-underline hover:underline text-gray-700 hover:text-sky-800" href="{% url "planner_score_present" GARDEN %}">{{ _("Current score") }}</a></h2>
     <p class="mb-8">{{ _("Based on the species currently in your garden.") }}</p>
   {% else %}
     <h2 class="mb-1"><a class="no-underline hover:underline text-gray-700 hover:text-sky-800" href="{% url "planner_score_future" GARDEN %}">{{ _("Future score") }}</a></h2>
@@ -13,7 +13,7 @@
       {% if label != "total" %}
         <div class="mb-3">
           <p class="text-sm font-medium text-gray-900 flex justify-between mb-1">
-            <a href="{% if status == "PRESENT" %}{% url "planner_score" garden.id %}{% else %}{% url "planner_score_future" GARDEN %}{% endif %}#section-{{ label|slugify }}"
+            <a href="{% if status == "PRESENT" %}{% url "planner_score_present" garden.id %}{% else %}{% url "planner_score_future" GARDEN %}{% endif %}#section-{{ label|slugify }}"
                class="no-underline hover:underline text-gray-700 hover:text-sky-800">
                 {{ label}}
             </a>
@@ -29,7 +29,7 @@
     {% endfor %}
 
     <div class="flex justify-end">
-    <a class="full_report btn-gray btn-sm mt-4" href="{% if status == "PRESENT" %}{% url "planner_score" GARDEN %}{% else %}{% url "planner_score_future" GARDEN %}{% endif %}">
+    <a class="full_report btn-gray btn-sm mt-4" href="{% if status == "PRESENT" %}{% url "planner_score_present" GARDEN %}{% else %}{% url "planner_score_future" GARDEN %}{% endif %}">
       <i class="fa fa-file-chart-line mr-2"></i>
       {{ _("Full scorecard") }}
     </a>

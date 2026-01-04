@@ -85,7 +85,11 @@ def get_garden(request, id, silent_fail=False):
     if request.user.is_authenticated:
         garden = Garden.objects_unfiltered.filter(pk=id, user=request.user)
         if garden:
-            return garden[0]
+            garden = garden[0]
+            if garden.id != request.COOKIES.get("garden_id"):
+                # Set the cookies
+                pass
+            return garden
     if "garden_id" in request.COOKIES and "garden_uuid" in request.COOKIES:
         garden = Garden.objects_unfiltered.filter(pk=request.COOKIES.get("garden_id"), is_user_created=True, user__isnull=True, uuid=request.COOKIES["garden_uuid"])
         if garden:
@@ -124,6 +128,9 @@ def get_garden_score(garden, status):
     veg_type = garden.vegetation_type
     scores = {}
     total = 0
+
+    if not species:
+        return None
 
     # For species composition we check how many locally indigenous species are present, 
     # and reduce points for invasives
@@ -1837,9 +1844,14 @@ def user_logout(request):
     messages.warning(request, _("You are now logged out"))
 
     if "next" in request.GET:
-        return redirect(request.GET.get("next"))
+        response = redirect(request.GET.get("next"))
     else:
-        return redirect("index")
+        response = redirect("index")
+
+    response.delete_cookie("garden_uuid")
+    response.delete_cookie("garden_id")
+    response.delete_cookie("garden_name")
+    return response
 
 def account_create(request):
 
@@ -2018,6 +2030,7 @@ def planner(request, id=None):
         response = redirect(reverse("planner_location", args=[garden.id]) + "?new_garden")
         response.set_cookie("garden_uuid", garden.uuid)
         response.set_cookie("garden_id", garden.id)
+        response.set_cookie("garden_name", garden.name)
         return response
 
     context = {
@@ -2311,6 +2324,23 @@ def planner_nurseries(request, id):
         "page_info": Page.objects.get(site=site, slug="nurseries"),
     }
     return render(request, "planner/nurseries.html", context)
+
+def planner_score_overview(request, id):
+
+    site = get_site(request)
+
+    if not (garden := get_garden(request, id)):
+        return redirect("planner")
+
+    context = {
+        "menu": "planner",
+        "page": "score",
+        "title": _("Score"),
+        "garden": garden,
+        "score_present": get_garden_score(garden, "PRESENT"),
+        "score_future": get_garden_score(garden, "FUTURE"),
+    }
+    return render(request, "planner/score.overview.html", context)
 
 def planner_score(request, id, status):
 
