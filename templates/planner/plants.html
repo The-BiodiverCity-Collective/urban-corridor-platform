@@ -1,82 +1,114 @@
 {% extends "_base.html" %}
-{% block title %}
-  {{ page_info }}
-{% endblock %}
 
 {% block content %}
 
-<div class="flex justify-between">
-  <div>
-    {% with this_page=title %}
-      {% include "planner/_breadcrumbs.html" %}
-    {% endwith %}
-  </div>
-  <div class="flex flex-col justify-start">
-    <a 
-      class="btn-blue" 
-      {% if tab != "FUTURE" %}
-        href="{% url "planner_plants_present_list" garden.id %}"
-      {% else %}
-        href="{% url "planner_plants_future_list" garden.id %}"
-      {% endif %}
-    >
-      <i class="fa fa-list mr-1"></i> {{ _("View detailed list") }}
-    </a>
-  </div>
-</div>
+<h1>{{ title }}</h1>
 
-<form method="post">
+<div class="flex flex-col md:flex-row {% if plants_present and plants_future %}{% else %}gap-4{% endif %}">
+  <div class="flex-1 {% if plants_present and plants_future %}border-r border-gray-300{% endif %} mb-10">
+    <h2 class="p-5 {% if plants_present %}border-b-4 border-gray-300 bg-gray-100{% endif %} text-center">
+      <a class="text-gray-700" href="{% url "planner_plants_present_list" GARDEN %}?view=photos-data">{{ _("Current plants") }}</a>
+    </h2>
 
-  <div>
-    {{ page_info.get_content }}
-  </div>
-
-  <div class="alert alert-info">
-    <i class="fa fa-info-circle fa-fw mr-3"></i>
-    <span>
-      <strong>{{ species_list.count }}</strong> species found
-    </span>
-  </div>
-
-  <div class="flex gap-8">
-    <div class="flex-4">
-      <div class="sm:block">
-        <div class="border-b border-gray-200">
-          <nav class="tabs -mb-px flex space-x-8" aria-label="{{ _("Tabs") }}">
-            <a href="{% url "planner_plants_future" garden.id %}" class="tab {% if tab != "FUTURE" %}in{% endif %}active">{{ _("Future plants overview") }}</a>
-            <a href="{% url "planner_plants_present" garden.id %}" data-section="photos" class="tab  {% if tab != "PRESENT" %}in{% endif %}active">{{ _("Current plants overview") }}</a>
-          </nav>
+    {% if plants_present %}
+      <div class="container mx-auto">
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-2 mr-2">
+          {% for species in plants_present %}
+            <a class="no-underline rounded-lg p-1 hover:bg-gray-200 mb-2" href="{{ species.get_absolute_url }}">
+              <div class="flex items-center gap-x-6">
+                <img 
+                  src="{{ species.photo.thumbnail }}" 
+                  alt="" 
+                  class="size-16 rounded-full outline-1 -outline-offset-1 outline-black/5"
+                  title="{{ species.photo.author }}"
+                  >
+                <div>
+                  <p class="font-semibold tracking-tight text-gray-900 mb-0">
+                    {% if species.name_en %}{{ species.name_en }}{% else %}<em>{{ species.name }}</em>{% endif %}
+                  </p>
+                  {% if species.name_en %}
+                    <p class="text-sm font-normal text-gray-600"><em>{{ species.name }}</em></p>
+                  {% endif %}
+                </div>
+              </div>
+            </a>
+          {% endfor %}
         </div>
       </div>
 
-      <div class="tab_content">
-        <section class="mt-2">
-          {% include "species/_table.html" %}
-        </section>
+      <div class="flex justify-between p-5 border-t-2 border-gray-300 bg-gray-100">
+        <a class="btn-green btn-sm" href="{% url "planner_plants_present_list" GARDEN %}?view=photos-data">
+          <i class="fas fa-seedling mr-2"></i>
+          {{ _("View in Plant Explorer") }}
+        </a>
+        <a class="full_report btn-gray btn-sm" href="{% url "planner_score_present" GARDEN %}">
+          <i class="fas fa-chart-line mr-2"></i>
+          {{ _("Full scorecard") }}
+        </a>
       </div>
-       
-    </div>
 
-    <div class="flex-2 mt-10 pt-3 pr-2">
-      {% with scoring_table=score status=tab %}
-        {% include "planner/_score.html" %}
-      {% endwith %}
-
-      <h2 class="mb-1 mt-10">{{ _("Next steps") }}</h2>
-      <p class="mb-8">{{ _("Did you finish improving your garden's restoration potential?") }}</p>
-      <a href="{% url "planner_calendar" garden.id %}" class="btn-blue mb-2"><i class="fa fa-calendar-alt mr-1"></i> {{ _("Garden calendar") }} &raquo;</a>
-      <br>
-      <a href="{% url "planner_nurseries" garden.id %}" class="btn-blue"><i class="fa fa-hand-holding-seedling mr-1"></i> {{ _("Indigenous nurseries") }} &raquo;</a>
-
-    </div>
+    {% else %}
+      <div class="relative block w-full rounded-lg bg-gray-100 py-20 px-12 text-center hover:border-gray-400">
+        <div class="mt-2 block text-sm font-semibold text-gray-600">
+          <div>{{ _("No species added yet.") }}</div>
+          <a class="btn btn-blue btn-sm mt-5" href="{% url "species" %}">{{ _("View our plants database") }}</a>
+        </div>
+      </div>
+    {% endif %}
 
   </div>
+  <div class="flex-1">
+    <h2 class="p-5 {% if plants_future %}border-b-4 border-gray-300 bg-gray-100{% endif %} text-center">
+      <a class="text-gray-700" href="{% url "planner_plants_future_list" GARDEN %}?view=photos-data">{{ _("Future plants") }}</a>
+    </h2>
 
-<div class="mt-10">
-  {% include "planner/_returnlink.html" %}
+    {% if plants_future %}
+      <div class="container mx-auto">
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-2 ml-2">
+          {% for species in plants_future %}
+            <a class="no-underline rounded-lg p-1 hover:bg-gray-200 mb-2" href="{{ species.get_absolute_url }}">
+              <div class="flex items-center gap-x-6">
+                <img 
+                  src="{{ species.photo.thumbnail }}" 
+                  alt="" 
+                  class="size-16 rounded-full outline-1 -outline-offset-1 outline-black/5"
+                  title="{{ species.photo.author }}"
+                  >
+                <div>
+                  <p class="font-semibold tracking-tight text-gray-900 mb-0">
+                    {% if species.name_en %}{{ species.name_en }}{% else %}<em>{{ species.name }}</em>{% endif %}
+                  </p>
+                  {% if species.name_en %}
+                    <p class="text-sm font-normal text-gray-600"><em>{{ species.name }}</em></p>
+                  {% endif %}
+                </div>
+              </div>
+            </a>
+          {% endfor %}
+        </div>
+      </div>
+
+      <div class="flex justify-between p-5 border-t-2 border-gray-300 bg-gray-100">
+        <a class="btn-green btn-sm" href="{% url "planner_plants_future_list" GARDEN %}?view=photos-data">
+          <i class="fas fa-seedling mr-2"></i>
+          {{ _("View in Plant Explorer") }}
+        </a>
+        <a class="full_report btn-gray btn-sm" href="{% url "planner_score_future" GARDEN %}">
+          <i class="fas fa-chart-line mr-2"></i>
+          {{ _("Full scorecard") }}
+        </a>
+      </div>
+
+    {% else %}
+      <div class="relative block w-full rounded-lg bg-gray-100 py-20 px-12 text-center hover:border-gray-400">
+        <div class="mt-2 block text-sm font-semibold text-gray-600">
+          <div>{{ _("No species added yet.") }}</div>
+          <a class="btn btn-blue btn-sm mt-5" href="{% url "planner_suggestions" garden.id %}">{{ _("View suggested plants") }}</a>
+        </div>
+      </div>
+    {% endif %}
+
+  </div>
 </div>
-
-  {% csrf_token %}
-</form>
 
 {% endblock %}

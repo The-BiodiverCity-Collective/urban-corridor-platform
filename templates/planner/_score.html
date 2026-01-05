@@ -29,17 +29,21 @@
     {% endfor %}
 
     <div class="flex justify-end">
-    <a class="full_report btn-gray btn-sm mt-4" href="{% if status == "PRESENT" %}{% url "planner_score_present" GARDEN %}{% else %}{% url "planner_score_future" GARDEN %}{% endif %}">
-      <i class="fa fa-file-chart-line mr-2"></i>
-      {{ _("Full scorecard") }}
-    </a>
+      <a class="full_report btn-gray btn-sm mt-4" href="{% if status == "PRESENT" %}{% url "planner_score_present" GARDEN %}{% else %}{% url "planner_score_future" GARDEN %}{% endif %}">
+        <i class="fas fa-chart-line mr-2"></i>
+        {{ _("Full scorecard") }}
+      </a>
     </div>
 
   {% else %}
 
     <div class="rounded-sm bg-gray-100 text-gray-600 p-3 text-center mt-10">
       <strong class="block mb-2">{{ _("No score available yet") }}</strong>
-      {{ _("Please register your current garden species to create a scorecard.") }}
+      {% if status == "PRESENT" %}
+        {{ _("Please register your current garden species to create a scorecard.") }}
+      {% else %}
+        {{ _("Please mark future garden species you wish to add to your garden in order to create this scorecard.") }}
+      {% endif %}
     </div>
 
   {% endif %}

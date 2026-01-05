@@ -194,8 +194,6 @@ def log_action(request, action, name):
 # Regular views
 def index(request):
     context = {
-        #"garden": Garden.objects.filter(is_active=True).order_by("?")[0],
-        "garden": Garden(),
     }
     site = get_site(request)
     if site.id == 2:
@@ -716,6 +714,7 @@ def species_overview(request, vegetation_type=None):
             total=Count("species", filter=Q(species__site=site))
         )
 
+    features = features.filter(total__gt=0)
     try:
         samples = Species.objects.filter(pk__in=random.sample(list(samples), 3))
     except:
@@ -727,7 +726,8 @@ def species_overview(request, vegetation_type=None):
         "load_datatables": True,
         "samples": samples,
         "all": species.count(),
-        "features": features.filter(total__gt=0),
+        "features": features.exclude(species_type=SpeciesFeatures.SpeciesType.TYPE),
+        "plant_types": features.filter(species_type=SpeciesFeatures.SpeciesType.TYPE),
         "vegetation_types": veg_types,
         "vegetation_type": vegetation_type,
         "veg_link": f"?vegetation_type={vegetation_type.id}" if vegetation_type else "",
@@ -779,6 +779,7 @@ def species_search(request, vegetation_type=None):
         "show_total_box": True,
         "page": "search",
         "get_features": request.GET.getlist("feature"),
+        "load_select2": True,
     }
     return render(request, "species/search.html", context)
 
@@ -825,7 +826,7 @@ def species_list(request, genus=None, family=None, vegetation_type=None, garden=
         if not (garden := get_garden(request, garden)):
             return redirect("planner")
         species = species.filter(garden_plants__garden=garden, garden_plants__status=garden_status)
-        title = _("Species list: ")
+        title = _("My plants: ")
         title += _("current plants") if garden_status == "PRESENT" else _("future plants")
         menu = "planner"
         page = garden_status
@@ -878,6 +879,7 @@ def species_list(request, genus=None, family=None, vegetation_type=None, garden=
         "title": title,
         "hide_species_tabs": True,
         "total_species": total_species,
+        "planner_tab": "my_plants" if garden_status else None,
 
         # Because we have tabs above the <main>, we need to unround the top-left corner if the first tab is active
         "main_classes": "rounded-tl-none" if request.GET.get("view", "table") == "table" else None,
@@ -951,21 +953,25 @@ def species(request, id):
             "success": True,
         }
         classes = request.POST.get("classes")
-        if "btn-green" in classes:
+        if "btn-green" in classes or "btn-gray" in classes:
             # User wants to remove a species
             GardenSpecies.objects.filter(garden=garden, species=info).delete()
+            response["action"] = "removed"
         elif "btn-white" in classes:
             if in_garden:
                 in_garden.status = request.POST["action"]
                 in_garden.save()
+                response["action"] = "changed"
             else:
                 GardenSpecies.objects.create(garden=garden, species=info, status=request.POST["action"])
-        return JsonResponse({"success": True})
+                response["action"] = "created"
+        return JsonResponse(response)
 
     photo = None
     photos = Photo.objects.filter(species=info)
     # TODO: CHECK ON position
     #position__gte=1)
+
     if photos:
         if "photo" in request.GET:
             photo = photos.get(pk=request.GET["photo"])
@@ -2042,6 +2048,7 @@ def planner(request, id=None):
         "species_future": GardenSpecies.objects.filter(garden=garden, status="FUTURE").count(),
         "score_present": get_garden_score(garden, "PRESENT") if garden else None,
         "score_future": get_garden_score(garden, "FUTURE") if garden else None,
+        "planner_tab": "my_garden",
     }
     return render(request, "planner/index.html", context)
 
@@ -2078,6 +2085,7 @@ def planner_location(request, id):
     context = {
         "menu": "planner",
         "page": "location",
+        "planner_tab": "my_garden",
         "load_map": True,
         "info": Page.objects.get(site=site, slug="planner-location"),
         "garden": garden,
@@ -2114,6 +2122,7 @@ def planner_target_species(request, id):
         "targets": targets,
         "garden": garden,
         "step": 3,
+        "planner_tab": "my_garden",
     }
     return render(request, "planner/target_species.html", context)
 
@@ -2148,6 +2157,7 @@ def planner_site(request, id):
         "garden": garden,
         "features": features,
         "step": 2,
+        "planner_tab": "my_garden",
     }
     return render(request, "planner/site.html", context)
 
@@ -2258,7 +2268,8 @@ def planner_plants(request, id, status):
     if not (garden := get_garden(request, id)):
         return redirect("planner")
 
-    plants = Species.objects.filter(garden_plants__garden=garden, garden_plants__status=status)
+    plants_present = Species.objects.filter(garden_plants__garden=garden, garden_plants__status="PRESENT")
+    plants_future = Species.objects.filter(garden_plants__garden=garden, garden_plants__status="FUTURE")
 
     if "delete" in request.POST:
         plant = Species.objects.get(pk=request.POST["delete"])
@@ -2278,16 +2289,11 @@ def planner_plants(request, id, status):
         "menu": "planner",
         "page": "plants",
         "tab": status,
-        "title": _("Plants overview"),
+        "title": _("My plants"),
         "garden": garden,
-        "species_list": plants,
-        "score": get_garden_score(garden, status),
-        "table_hide_vegetation": True,
-        "table_hide_form": True,
-        "table_hide_aspects": True,
-        "table_hide_habitats": True,
-        "table_show_actions": True,
-        "load_datatables": True,
+        "plants_present": plants_present,
+        "plants_future": plants_future,
+        "planner_tab": "my_plants",
     }
     return render(request, "planner/plants.html", context)
 
@@ -2338,7 +2344,7 @@ def planner_score_overview(request, id):
         "title": _("Score"),
         "garden": garden,
         "score_present": get_garden_score(garden, "PRESENT"),
-        "score_future": get_garden_score(garden, "FUTURE"),
+        "score_future": get_garden_score(garden, "FUTURE") if GardenSpecies.objects.filter(garden=garden, status="FUTURE").exists() else None,
     }
     return render(request, "planner/score.overview.html", context)
 

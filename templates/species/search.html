@@ -1,4 +1,5 @@
 {% extends "_base.html" %}
+{% load static %}
 
 {% block content %}
 
@@ -18,6 +19,17 @@
 
 <div class="">
   <h2>{{ _("Search species list") }}</h2>
+
+  <form method="get" action="{% url "controlpanel_species_list" %}" class="space-y-6">
+
+    <div class="mb-4">
+      <select id="search_species" style="width: 100%;">
+        <option disabled selected hidden>{{ _("Search by name...") }}</option>
+      </select>
+    </div>
+
+  </form>
+
   <form action="{% url "species_list" %}">
     {% if vegetation_type %}
       <input type="hidden" name="vegetation_type" value="{{ vegetation_type.id }}" />
@@ -63,4 +75,15 @@
 
 </div>
 
+{% endblock %}
+
+{% block js %}
+  <script type="text/javascript">
+    // Settings for the species search ajax field
+    var search_active_only = true;
+    function getRedirectURL(id) {
+      return "/species/" + id + "/";
+    }
+  </script>
+  <script type="text/javascript" src="{% static "js/species.search.js" %}"></script>
 {% endblock %}

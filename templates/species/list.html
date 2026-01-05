@@ -8,11 +8,7 @@
 
   {% if menu == "planner" %}
     <div class="flex justify-between">
-      <div>
-        {% with this_page=title %}
-          {% include "planner/_breadcrumbs.html" %}
-        {% endwith %}
-      </div>
+      <h1>{{ title }}</h1>
       <div class="text-center">
         <span class="text-black font-bold block text-5xl">{{ species_list.count }}</span>
         <span class="text-gray-700 text-sm">{{ _("species found") }}</span>
