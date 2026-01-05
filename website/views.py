@@ -87,8 +87,13 @@ def get_garden(request, id, silent_fail=False):
         if garden:
             garden = garden[0]
             if garden.id != request.COOKIES.get("garden_id"):
-                # Set the cookies
-                pass
+                # Some cookie id is set, but the user accesses an URL with another
+                # garden in the <id> of the url. That is valid if the user has access so we
+                # must simply update the cookie to reflect this. See gardencookie middleware.
+                request._set_garden_cookie = True
+                request._garden_uuid = garden.uuid
+                request._garden_id = garden.id
+                request._garden_name = garden.name
             return garden
     if "garden_id" in request.COOKIES and "garden_uuid" in request.COOKIES:
         garden = Garden.objects_unfiltered.filter(pk=request.COOKIES.get("garden_id"), is_user_created=True, user__isnull=True, uuid=request.COOKIES["garden_uuid"])

@@ -14,9 +14,9 @@
         {% endwith %}
       </div>
       <div class="p-4 relative">
-        {% if score_future %}
+        {% if score_future or not score_present %}
           <div class="absolute top-5 right-5 text-center">
-            <span class="text-black font-bold block text-3xl">{{ score_future.total }}</span>
+            <span class="text-black font-bold block text-3xl">{{ score_future.total|default:0 }}</span>
             <span class="text-gray-700 text-sm">{{ _("Total score") }}</span>
           </div>
         {% endif %}
