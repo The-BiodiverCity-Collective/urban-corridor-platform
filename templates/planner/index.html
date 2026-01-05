@@ -5,7 +5,7 @@
 
 {% block content %}
 
-<div class="container mt-10">
+<div class="container mt-10 mb-20">
   <div class="flex gap-4">
 
     <div class="flex-2 pt-10 pl-10 pr-2">
@@ -110,7 +110,7 @@
   </form>
 {% endif %}
 
-<div class="bg-white {% if not garden %}opacity-40 cursor-not-allowed{% endif %}">
+<div class="bg-white {% if not garden %}opacity-40 cursor-not-allowed{% endif %}" hidden>
   <div class="mx-auto max-w-7xl py-24 sm:px-2 sm:py-32 lg:px-4">
     <div class="mx-auto max-w-2xl px-4 lg:max-w-none">
       <div class="max-w-3xl">
@@ -182,7 +182,7 @@
 </div>
 
 
-<div class="bg-white {% if not garden %}opacity-40 cursor-not-allowed{% endif %}">
+<div class="bg-white {% if not garden %}opacity-40 cursor-not-allowed{% endif %}" hidden>
   <div class="mx-auto mb-15 lg:px-4">
     <div class="mx-auto max-w-2xl px-4 lg:max-w-none">
       <div class="max-w-3xl">
@@ -199,7 +199,7 @@
   </div>
 </div>
 
-<div class="container pl-10 {% if not garden %}opacity-40 cursor-not-allowed{% endif %}">
+<div class="container pl-10 {% if not garden %}opacity-40 cursor-not-allowed{% endif %}" hidden>
   <div class="flex gap-4">
 
     <a href="{% url "planner_plants_present_list" GARDEN %}?view=photos-data" class="flex-1 relative no-underline hover:opacity-75">
@@ -321,154 +321,5 @@
   </div>
 </div>
 
-
-
-<div class="bg-white {% if not garden %}opacity-40 cursor-not-allowed{% endif %}">
-  <div class="mx-auto max-w-7xl py-24 sm:px-2 sm:py-32 lg:px-4">
-    <div class="mx-auto max-w-2xl px-4 lg:max-w-none">
-      <div class="max-w-3xl">
-        <h2 class="text-4xl font-bold tracking-tight text-gray-900">
-          {{ _("Become part of our corridor!") }}
-        </h2>
-        <p class="mt-4 text-gray-500">
-          Any city park, private garden, corporate garden, or public open space can become 
-          part of our corridor! Register your garden now and join our community.
-        </p>
-      </div>
-      <div class="mt-16 grid grid-cols-1 gap-x-8 gap-y-10 lg:grid-cols-4">
-        <div class="sm:flex lg:block">
-          <div class="sm:shrink-0">
-            <i class="fal fa-clipboard-check text-5xl text-sky-700"></i>
-          </div>
-          <div class="mt-4 sm:mt-0 sm:ml-6 lg:mt-6 lg:ml-0">
-            <h3 class="text-sm font-medium text-gray-900">Review requirements</h3>
-            <p class="mt-2 text-sm text-gray-500">
-              {{ _("Make sure you meet the requirements to join our corridor.") }}
-            </p>
-            <a href="{% url "join" "requirements" %}" class="no-underline hover:underline">{{ _("View checklist") }} &raquo;</a>
-          </div>
-        </div>
-        <div class="sm:flex lg:block">
-          <div class="sm:shrink-0">
-            <i class="fal fa-file-image text-5xl text-sky-700"></i>
-          </div>
-          <div class="mt-4 sm:mt-0 sm:ml-6 lg:mt-6 lg:ml-0">
-            <h3 class="text-sm font-medium text-gray-900">
-              Online profile
-            </h3>
-            <p class="mt-2 text-sm text-gray-500">
-              {{ _("Write your online garden profile, upload photos, and more.") }}
-            </p>
-            <a href="http://" class="no-underline hover:underline">{{ _("Manage profile") }} &raquo;</a>
-          </div>
-        </div>
-        <div class="sm:flex lg:block">
-          <div class="sm:shrink-0">
-            <i class="fal fa-calendar-edit text-5xl text-sky-700"></i>
-          </div>
-          <div class="mt-4 sm:mt-0 sm:ml-6 lg:mt-6 lg:ml-0">
-            <h3 class="text-sm font-medium text-gray-900">
-              Announce events
-            </h3>
-            <p class="mt-2 text-sm text-gray-500">
-              Weeding days? Maintenance activities? Announce your events to the public!
-            </p>
-            <a href="http://" class="no-underline hover:underline">Manage events &raquo;</a>
-          </div>
-        </div>
-        <div class="sm:flex lg:block">
-          <div class="sm:shrink-0">
-            <i class="fal fa-people-carry text-5xl text-sky-700"></i>
-          </div>
-          <div class="mt-4 sm:mt-0 sm:ml-6 lg:mt-6 lg:ml-0">
-            <h3 class="text-sm font-medium text-gray-900">
-              Request support
-            </h3>
-            <p class="mt-2 text-sm text-gray-500">
-              Do you need specific plant species? Soil? Equipment? Ask our community for help.
-            </p>
-            <a href="http://" class="no-underline hover:underline">Request now &raquo;</a>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-</div>
-
-
-
-
-
-<div class="bg-white {% if not garden %}opacity-40 cursor-not-allowed{% endif %}">
-  <div class="mx-auto mb-15 lg:px-4">
-    <div class="mx-auto max-w-2xl px-4 lg:max-w-none">
-      <div class="max-w-3xl">
-        <h2 class="text-4xl font-bold tracking-tight text-gray-900">
-          {{ _("Advanced tools") }}
-        </h2>
-        <p class="mt-4 text-gray-500">
-          Do you want to take things to the next level? Below are a set of
-          more advanced tools for those that are keen to take the ecological
-          restoration of their space to the next level!
-        </p>
-      </div>
-    </div>
-  </div>
-</div>
-
-<div class="container pl-10 {% if not garden %}opacity-40 cursor-not-allowed{% endif %}">
-  <div class="flex gap-4">
-
-    <a href="{% url "planner_location" GARDEN %}" class="flex-1 relative no-underline hover:opacity-75">
-      <div class="absolute inset-0 rounded-lg bg-white lg:rounded-bl-4xl"></div>
-      <div class="relative flex h-full flex-col overflow-hidden rounded-[calc(var(--radius-lg)+1px)] lg:rounded-bl-[calc(2rem+1px)]">
-        <img src="/media/planner.ecologicalwheel.png" alt="" class="h-40 object-cover object-center" />
-        <div class="p-10 pt-4">
-          <p class="mt-2 text-lg font-medium tracking-tight text-gray-950">{{ _("Ecological needs assessment") }}</p>
-          <p class="mt-2 max-w-lg text-sm/6 text-gray-600 font-normal">{{ _("Assess, plan for, and monitor the ecological needs of your garden.") }}</p>
-        </div>
-      </div>
-      <div class="pointer-events-none absolute inset-0 rounded-lg shadow-sm outline outline-black/5 lg:rounded-bl-4xl"></div>
-    </a>
-
-    <a href="{% url "planner_target_species" GARDEN %}" class="flex-1 relative no-underline hover:opacity-75">
-      <div class="absolute inset-0 rounded-lg bg-white"></div>
-      <div class="relative flex h-full flex-col overflow-hidden rounded-[calc(var(--radius-lg)+1px)]">
-        <img src="/media/planner.socialwheel.png" alt="" class="h-40 object-cover object-center" />
-        <div class="p-10 pt-4">
-          <p class="mt-2 text-lg font-medium tracking-tight text-gray-950">{{ _("Social needs assessment") }}</p>
-          <p class="mt-2 max-w-lg text-sm/6 text-gray-600 font-normal">{{ _("Assess, plan for, and monitor the social needs of your garden.") }}</p>
-        </div>
-      </div>
-      <div class="pointer-events-none absolute inset-0 rounded-lg shadow-sm outline outline-black/5"></div>
-    </a>
-
-    <a href="{% url "planner_target_species" GARDEN %}" class="flex-1 relative no-underline hover:opacity-75">
-      <div class="absolute inset-0 rounded-lg bg-white"></div>
-      <div class="relative flex h-full flex-col overflow-hidden rounded-[calc(var(--radius-lg)+1px)]">
-        <img src="/media/planner.design.jpg" alt="" class="h-40 object-cover object-center" />
-        <div class="p-10 pt-4">
-          <p class="mt-2 text-lg font-medium tracking-tight text-gray-950">{{ _("Garden design") }}</p>
-          <p class="mt-2 max-w-lg text-sm/6 text-gray-600 font-normal">{{ _("Learn more about how to combine landscape architecture and ecological restoration to design your garden.") }}</p>
-        </div>
-      </div>
-      <div class="pointer-events-none absolute inset-0 rounded-lg shadow-sm outline outline-black/5"></div>
-    </a>
-
-    <a href="{% url "planner_target_species" GARDEN %}" class="flex-1 relative no-underline hover:opacity-75">
-      <div class="absolute inset-0 rounded-lg bg-white"></div>
-      <div class="relative flex h-full flex-col overflow-hidden rounded-[calc(var(--radius-lg)+1px)]">
-        <img src="/media/planner.certify.jpg" alt="" class="h-40 object-cover object-center" />
-        <div class="p-10 pt-4">
-          <p class="mt-2 text-lg font-medium tracking-tight text-gray-950">{{ _("Certification") }}</p>
-          <p class="mt-2 max-w-lg text-sm/6 text-gray-600 font-normal">{{ _("Consult our affiliated professionals to certify your garden.") }}</p>
-        </div>
-      </div>
-      <div class="pointer-events-none absolute inset-0 rounded-lg shadow-sm outline outline-black/5"></div>
-    </a>
-
-
-  </div>
-</div>
 
 {% endblock %}

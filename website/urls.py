@@ -117,7 +117,8 @@ urlpatterns = [
     path("planner/<int:id>/score/", views.planner_score_overview, name="planner_score"),
     path("planner/<int:id>/score/present/", views.planner_score, {"status": "PRESENT"}, name="planner_score_present"),
     path("planner/<int:id>/score/future/", views.planner_score, {"status": "FUTURE"}, name="planner_score_future"),
-    path("planner/<int:id>/resources/", views.planner_score, {"status": "PRESENT"}, name="planner_resources"),
+    path("planner/<int:id>/resources/", views.planner_resources, name="planner_resources"),
+    path("planner/<int:id>/join/", views.planner_join, name="planner_join"),
 
     # Control Panel
     path("controlpanel/", views.controlpanel, name="controlpanel"),

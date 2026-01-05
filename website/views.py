@@ -2314,6 +2314,36 @@ def planner_calendar(request, id):
     }
     return render(request, "planner/calendar.html", context)
 
+def planner_resources(request, id):
+
+    site = get_site(request)
+
+    if not (garden := get_garden(request, id)):
+        return redirect("planner")
+
+    context = {
+        "menu": "planner",
+        "garden": garden,
+        "page": "resources",
+        "title": _("Resources"),
+    }
+    return render(request, "planner/resources.html", context)
+
+def planner_join(request, id):
+
+    site = get_site(request)
+
+    if not (garden := get_garden(request, id)):
+        return redirect("planner")
+
+    context = {
+        "menu": "planner",
+        "garden": garden,
+        "page": "join",
+        "title": _("Join us"),
+    }
+    return render(request, "planner/join.html", context)
+
 def planner_nurseries(request, id):
 
     site = get_site(request)

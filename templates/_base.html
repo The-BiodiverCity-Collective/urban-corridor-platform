@@ -232,8 +232,8 @@
           <a href="{% url "planner_suggestions" garden_id %}" class="group {% if page == "suggestions" %}active{% endif %}"><i class="fas fa-list mr-2 "></i>Suggested plants</a>
           <a href="{% url "planner_plants" garden_id %}" class="group {% if planner_tab == "my_plants" %}active{% endif %}"><i class="fas fa-leaf mr-2 "></i>My plants</a>
           <a href="{% url "planner_score" garden_id %}" class="group {% if page == "score" %}active{% endif %}"><i class="fas fa-chart-line mr-2 "></i>My score</a>
-          <a href="{% url "planner_resources" garden_id %}" class="group"><i class="fas fa-open-book mr-2 "></i>Resources</a>
-          <a href="" class="group"><i class="fas fa-users mr-2 "></i>Join us</a>
+          <a href="{% url "planner_resources" garden_id %}" class="group {% if page == "resources" %}active{% endif %}"><i class="fas fa-folder mr-2 "></i>Resources</a>
+          <a href="{% url "planner_join" garden_id %}" class="group {% if page == "join" %}active{% endif %}""><i class="fas fa-users mr-2 "></i>Join us</a>
         </div>
       </div>
     </div>

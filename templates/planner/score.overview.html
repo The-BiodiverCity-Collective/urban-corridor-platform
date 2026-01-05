@@ -6,7 +6,7 @@
     <div class="grid grid-cols-2 gap-4">
       <div class="p-4 relative">
         <div class="absolute top-5 right-5 text-center">
-          <span class="text-black font-bold block text-3xl">{{ score_present.total }}</span>
+          <span class="text-black font-bold block text-3xl">{{ score_present.total|default:0 }}</span>
           <span class="text-gray-700 text-sm">{{ _("Total score") }}</span>
         </div>
         {% with scoring_table=score_present status="PRESENT" %}
@@ -14,10 +14,12 @@
         {% endwith %}
       </div>
       <div class="p-4 relative">
-        <div class="absolute top-5 right-5 text-center">
-          <span class="text-black font-bold block text-3xl">{{ score_future.total }}</span>
-          <span class="text-gray-700 text-sm">{{ _("Total score") }}</span>
-        </div>
+        {% if score_future %}
+          <div class="absolute top-5 right-5 text-center">
+            <span class="text-black font-bold block text-3xl">{{ score_future.total }}</span>
+            <span class="text-gray-700 text-sm">{{ _("Total score") }}</span>
+          </div>
+        {% endif %}
         {% with scoring_table=score_future status="FUTURE" %}
           {% include "planner/_score.html" %}
         {% endwith %}
