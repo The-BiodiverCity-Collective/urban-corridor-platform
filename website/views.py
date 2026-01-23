@@ -131,8 +131,8 @@ def get_garden_score(garden, status):
         q_filter = Q(feature__species__garden_plants__garden_id=garden.id)
 
     veg_type = garden.vegetation_type
-    if not veg_type:
-        veg_type = VegetationType.objects.filter(site_id=1, is_negative=False).first()
+    if not veg_type: # TEMP
+        veg_type = VegetationType.objects.filter(site_id=1, is_negative=False).first() #TEMP
     scores = {}
     total = 0
 
@@ -142,7 +142,10 @@ def get_garden_score(garden, status):
     # For species composition we check how many locally indigenous species are present, 
     # and reduce points for invasives
     locally_indigenous = species.filter(vegetation_types=veg_type).count()
-    score = min(locally_indigenous, veg_type.minimum_species)*veg_type.score_per_species
+    try:
+        score = min(locally_indigenous, veg_type.minimum_species)*veg_type.score_per_species
+    except:
+        score = 0 #TEMP
     scores[_("Species composition")] = int(score)
     total += score
 
