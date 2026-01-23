@@ -105,7 +105,7 @@
     <h2>{{ _("To start using our tools, enter your garden name") }}</h2>
     {% csrf_token %}
     <label for="garden" class="sr-only">{{ _("Garden name") }}</label>
-    <input id="garden" name="garden" type="text" required class="min-w-0 flex-auto rounded-md border-0 bg-gray/5 px-3.5 py-2 text-gray shadow-xs ring-1 ring-inset ring-gray/10 focus:ring-2 focus:ring-inset focus:ring-lime-500 sm:text-sm/6" placeholder="{{ _("Enter a name for your garden") }}">
+    <input id="garden" name="garden" type="text" required class="min-w-0 flex-auto rounded-md border-0 bg-gray/5 px-3.5 py-2 text-gray shadow-xs ring-1 ring-inset ring-gray/10 focus:ring-2 focus:ring-inset focus:ring-lime-500 sm:text-sm/6" placeholder="{{ _("Enter a name for your garden") }}" autocomplete="off">
     <button type="submit" class="btn-green mt-2">{{ _("Next &raquo;") }}</button>
   </form>
 {% endif %}

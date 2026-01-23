@@ -131,6 +131,8 @@ def get_garden_score(garden, status):
         q_filter = Q(feature__species__garden_plants__garden_id=garden.id)
 
     veg_type = garden.vegetation_type
+    if not veg_type:
+        veg_type = VegetationType.objects.filter(site_id=1, is_negative=False).first()
     scores = {}
     total = 0
 
