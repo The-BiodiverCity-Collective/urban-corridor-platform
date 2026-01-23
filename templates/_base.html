@@ -37,7 +37,7 @@
   {% if request.GET.online_tailwind %}
     <script src="https://unpkg.com/@tailwindcss/browser@4"></script>
   {% else %}
-    <link rel="stylesheet" href="{% static "css/output.css" %}?id=0745-23">
+    <link rel="stylesheet" href="{% static "css/output.css" %}?id=1349-23">
   {% endif %}
   <link rel="icon" href="{{ SITE.logo.thumbnail.url }}" type="image/png">
 
@@ -207,39 +207,41 @@
   
 {% endblock %}
 
-<div class="fixed bottom-0 left-0 right-0 z-10000 border-t border-gray-300">
-  <div class="absolute left-1/2 transform -translate-x-1/2 bottom-[calc(100%)] bg-gray-100 px-6 py-2 z-10 border-t border-l border-r rounded-t-lg border-gray-300
-  {% if not GARDEN %}hover:bg-gray-200{% endif %}
-  ">
-    <h3 class="font-semibold {% if GARDEN %}uppercase{% endif %} text-gray-700 text-center whitespace-nowrap">
-      <a href="{% url "planner" GARDEN %}"><i class="fa fa-shovel mr-2"></i> 
-        {% if garden %}
-          {{ garden }}
-        {% elif GARDEN %}
-          {{ GARDEN_NAME }}
-        {% else %}
-          {{ _("Start planning your restoration garden") }}
-        {% endif %}
-      </a>
-    </h3>
-  </div>
-  {% if GARDEN %}
-    {% with garden_id=garden.id|default:GARDEN %}
-    <div class="bg-gray-100 px-6 relative z-0">
-      <div class="max-w-7xl mx-auto">
-        <div class="flex space-x-1 text-sm font-medium py-1 bottomnav">
-          <a href="{% url "planner" garden_id %}" class="group {% if planner_tab == "my_garden" %}active{% endif %}"><i class="fas fa-seedling mr-2 "></i>My garden</a>
-          <a href="{% url "planner_suggestions" garden_id %}" class="group {% if page == "suggestions" %}active{% endif %}"><i class="fas fa-list mr-2 "></i>Suggested plant list</a>
-          <a href="{% url "planner_plants" garden_id %}" class="group {% if planner_tab == "my_plants" %}active{% endif %}"><i class="fas fa-leaf mr-2 "></i>My plant lists</a>
-          <a href="{% url "planner_score" garden_id %}" class="group {% if page == "score" %}active{% endif %}"><i class="fas fa-chart-line mr-2 "></i>My score</a>
-          <a href="{% url "planner_resources" garden_id %}" class="group {% if page == "resources" %}active{% endif %}"><i class="fas fa-folder mr-2 "></i>Resources</a>
-          <a href="{% url "planner_join" garden_id %}" class="group {% if page == "join" or request.GET.page == "join" %}active{% endif %}""><i class="fas fa-users mr-2 "></i>Join us</a>
+{% if not hide_bottom_planner_menu %}
+  <div class="fixed bottom-0 left-0 right-0 z-10000 border-t border-gray-300">
+    <div class="absolute left-1/2 transform -translate-x-1/2 bottom-[calc(100%)] bg-gray-100 px-6 py-2 z-10 border-t border-l border-r rounded-t-lg border-gray-300
+    {% if not GARDEN %}hover:bg-gray-200{% endif %}
+    ">
+      <h3 class="font-semibold {% if GARDEN %}uppercase{% endif %} text-gray-700 text-center whitespace-nowrap">
+        <a href="{% url "planner" GARDEN %}"><i class="fa fa-shovel mr-2"></i> 
+          {% if garden %}
+            {{ garden }}
+          {% elif GARDEN %}
+            {{ GARDEN_NAME }}
+          {% else %}
+            {{ _("Start planning your restoration garden") }}
+          {% endif %}
+        </a>
+      </h3>
+    </div>
+    {% if GARDEN %}
+      {% with garden_id=garden.id|default:GARDEN %}
+      <div class="bg-gray-100 px-6 relative z-0">
+        <div class="max-w-7xl mx-auto">
+          <div class="flex space-x-1 text-sm font-medium py-1 bottomnav">
+            <a href="{% url "planner" garden_id %}" class="group {% if planner_tab == "my_garden" %}active{% endif %}"><i class="fas fa-seedling mr-2 "></i>My garden</a>
+            <a href="{% url "planner_suggestions" garden_id %}" class="group {% if page == "suggestions" %}active{% endif %}"><i class="fas fa-list mr-2 "></i>Suggested plant list</a>
+            <a href="{% url "planner_plants" garden_id %}" class="group {% if planner_tab == "my_plants" %}active{% endif %}"><i class="fas fa-leaf mr-2 "></i>My plant lists</a>
+            <a href="{% url "planner_score" garden_id %}" class="group {% if page == "score" %}active{% endif %}"><i class="fas fa-chart-line mr-2 "></i>My score</a>
+            <a href="{% url "planner_resources" garden_id %}" class="group {% if page == "resources" %}active{% endif %}"><i class="fas fa-folder mr-2 "></i>Resources</a>
+            <a href="{% url "planner_join" garden_id %}" class="group {% if page == "join" or request.GET.page == "join" %}active{% endif %}"><i class="fas fa-users mr-2 "></i>Join us</a>
+          </div>
         </div>
       </div>
-    </div>
-    {% endwith %}
-  {% endif %}
-</div>
+      {% endwith %}
+    {% endif %}
+  </div>
+{% endif %}
 
 <script type="text/javascript">
 $(function(){

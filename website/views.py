@@ -131,8 +131,6 @@ def get_garden_score(garden, status):
         q_filter = Q(feature__species__garden_plants__garden_id=garden.id)
 
     veg_type = garden.vegetation_type
-    if not veg_type: # TEMP
-        veg_type = VegetationType.objects.filter(site_id=1, is_negative=False).first() #TEMP
     scores = {}
     total = 0
 
@@ -142,10 +140,7 @@ def get_garden_score(garden, status):
     # For species composition we check how many locally indigenous species are present, 
     # and reduce points for invasives
     locally_indigenous = species.filter(vegetation_types=veg_type).count()
-    try:
-        score = min(locally_indigenous, veg_type.minimum_species)*veg_type.score_per_species
-    except:
-        score = 0 #TEMP
+    score = min(locally_indigenous, veg_type.minimum_species)*veg_type.score_per_species
     scores[_("Species composition")] = int(score)
     total += score
 
@@ -204,11 +199,14 @@ def log_action(request, action, name):
 # Regular views
 def index(request):
     context = {
+        "hide_bottom_planner_menu": True,
     }
     site = get_site(request)
     if site.id == 2:
         return render(request, "fcc/index.html", context)
     else:
+        # Remove padding on the right so the image sticks to the side
+        context["replace_main_classes"] = "rounded-lg bg-white pl-5 py-6 shadow-sm sm:pl-6" 
         return render(request, "braam/index.html", context)
 
 def design(request):
