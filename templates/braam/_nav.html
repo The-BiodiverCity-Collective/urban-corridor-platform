@@ -5,14 +5,9 @@
       <div>
         <a href="/" class="mr-4"><i class="fa fa-home"></i></a>
 
-        <a href="/gardens/" class="mr-3 inline-flex items-center gap-x-1 text-sm/6 font-semibold {% if menu == "about" %}text-sky-600{% else %}text-gray-900{% endif %} hovermenu" data-target="about" aria-expanded="false">
-          {{ _("About Us") }}
-          <i class="fa fa-angle-down mt-1"></i>
-        </a>
-
-        <a href="/gardens/" class="mr-3 inline-flex items-center gap-x-1 text-sm/6 font-semibold {% if menu == "gardens" %}text-sky-600{% else %}text-gray-900{% endif %} hovermenu" data-target="gardens" aria-expanded="false">
-          {{ _("Garden network") }}
-          <i class="fa fa-angle-down mt-1"></i>
+        <a href="/rgm/" class="mr-3 inline-flex items-center gap-x-1 text-sm/6 font-semibold {% if menu == "planner" %}text-sky-600 active{% else %}text-gray-900{% endif %} hovermenu" data-target="planner" aria-expanded="false">
+          {{ _("Garden Planner") }}
+            <i class="fa fa-angle-down mt-1 {% if menu == "planner" %}text-sky-600{% endif %}"></i>
         </a>
 
         <a href="/species/" class="mr-3 inline-flex items-center gap-x-1 text-sm/6 font-semibold {% if menu == "species" %}text-sky-600 active{% else %}text-gray-900{% endif %} hovermenu" data-target="species" aria-expanded="false">
@@ -20,14 +15,24 @@
             <i class="fa fa-angle-down mt-1 {% if menu == "species" %}text-sky-600{% endif %}"></i>
         </a>
 
-        <a href="/maps/" class="mr-3 inline-flex items-center gap-x-1 text-sm/6 font-semibold {% if menu == "maps" %}text-sky-600 active{% else %}text-gray-900{% endif %} hovermenu" data-target="maps" aria-expanded="false">
-          {{ _("Maps") }}
-            <i class="fa fa-angle-down mt-1 {% if menu == "maps" %}text-sky-600{% endif %}"></i>
-        </a>
-
         <a href="/join/" class="mr-3 inline-flex items-center gap-x-1 text-sm/6 font-semibold {% if menu == "join" %}text-sky-600 active{% else %}text-gray-900{% endif %} hovermenu" data-target="join" aria-expanded="false">
           {{ _("Join Us") }}
             <i class="fa fa-angle-down mt-1 {% if menu == "join" %}text-sky-600{% endif %}"></i>
+        </a>
+
+        <a href="/gardens/" class="mr-3 inline-flex items-center gap-x-1 text-sm/6 font-semibold {% if menu == "about" %}text-sky-600{% else %}text-gray-900{% endif %} hovermenu" data-target="about" aria-expanded="false">
+          {{ _("About Us") }}
+          <i class="fa fa-angle-down mt-1"></i>
+        </a>
+
+        <a hidden href="/gardens/" class="mr-3 inline-flex items-center gap-x-1 text-sm/6 font-semibold {% if menu == "gardens" %}text-sky-600{% else %}text-gray-900{% endif %} hovermenu" data-target="gardens" aria-expanded="false">
+          {{ _("Garden network") }}
+          <i class="fa fa-angle-down mt-1"></i>
+        </a>
+
+        <a hidden href="/maps/" class="mr-3 inline-flex items-center gap-x-1 text-sm/6 font-semibold {% if menu == "maps" %}text-sky-600 active{% else %}text-gray-900{% endif %} hovermenu" data-target="maps" aria-expanded="false">
+          {{ _("Maps") }}
+            <i class="fa fa-angle-down mt-1 {% if menu == "maps" %}text-sky-600{% endif %}"></i>
         </a>
 
         <a href="/resources/" class="mr-3 inline-flex items-center gap-x-1 text-sm/6 font-semibold {% if menu == "resources" %}text-sky-600 active{% else %}text-gray-900{% endif %} hovermenu" data-target="resources" aria-expanded="false">
@@ -35,10 +40,6 @@
             <i class="fa fa-angle-down mt-1 {% if menu == "resources" %}text-sky-600{% endif %}"></i>
         </a>
 
-        <a href="/rgm/" class="mr-3 inline-flex items-center gap-x-1 text-sm/6 font-semibold {% if menu == "planner" %}text-sky-600 active{% else %}text-gray-900{% endif %} hovermenu" data-target="planner" aria-expanded="false">
-          {{ _("Garden Planner") }}
-            <i class="fa fa-angle-down mt-1 {% if menu == "planner" %}text-sky-600{% endif %}"></i>
-        </a>
       </div>
 
       <a href="/account/" class="mr-3 inline-flex items-center gap-x-1 text-sm/6 font-semibold {% if menu == "account" %}text-sky-600 active{% else %}text-gray-900{% endif %} hovermenu" data-target="account" aria-expanded="false">
@@ -65,16 +66,6 @@
                 <i class="fa fa-search fa-fw text-lg text-gray-400 mr-1"></i>
                 Search species
               </a>
-              <a href="/species/list/?feature=125&page=pioneers" 
-              class="flex gap-x-4 py-2 text-sm/6 font-semibold hover:text-sky-600 {% if page == "pioneers" %}text-sky-600{% else %}text-gray-900{% endif %}">
-                <i class="fa fa-shovel fa-fw text-lg text-gray-400 mr-1"></i>
-                Pioneers
-              </a>
-              <a href="/species/list/?feature=115&page=medicinal" 
-              class="flex gap-x-4 py-2 text-sm/6 font-semibold hover:text-sky-600 {% if page == "medicinal" %}text-sky-600{% else %}text-gray-900{% endif %}">
-                <i class="fa fa-heart fa-fw text-lg text-gray-400 mr-1"></i>
-                Medicinal
-              </a>
               <a href="/species/list/?feature=123&page=edible" 
               class="flex gap-x-4 py-2 text-sm/6 font-semibold hover:text-sky-600 {% if page == "edible" %}text-sky-600{% else %}text-gray-900{% endif %}">
                 <i class="fa fa-utensils fa-fw text-lg text-gray-400 mr-1"></i>
@@ -84,6 +75,16 @@
               class="flex gap-x-4 py-2 text-sm/6 font-semibold hover:text-sky-600 {% if page == "easy" %}text-sky-600{% else %}text-gray-900{% endif %}">
                 <i class="fa fa-check fa-fw text-lg text-gray-400 mr-1"></i>
                 Easy to grow
+              </a>
+              <a href="/species/list/?feature=125&page=pioneers" 
+              class="flex gap-x-4 py-2 text-sm/6 font-semibold hover:text-sky-600 {% if page == "pioneers" %}text-sky-600{% else %}text-gray-900{% endif %}">
+                <i class="fa fa-shovel fa-fw text-lg text-gray-400 mr-1"></i>
+                Pioneers
+              </a>
+              <a href="/species/list/?feature=115&page=medicinal" 
+              class="flex gap-x-4 py-2 text-sm/6 font-semibold hover:text-sky-600 {% if page == "medicinal" %}text-sky-600{% else %}text-gray-900{% endif %}">
+                <i class="fa fa-heart fa-fw text-lg text-gray-400 mr-1"></i>
+                Medicinal
               </a>
               <a href="/species/" class="flex gap-x-4 py-2 text-sm/6 font-semibold text-gray-900 hover:text-sky-600" hidden>
                 <i class="fa fa-exclamation-triangle fa-fw text-lg text-gray-400 mr-1"></i>
@@ -110,16 +111,6 @@
               class="flex gap-x-4 py-2 text-sm/6 font-semibold hover:text-sky-600 {% if page == "birds" %}text-sky-600{% else %}text-gray-900{% endif %}">
                 <i class="fa fa-crow fa-fw text-lg text-gray-400 mr-1"></i>
                 For birds
-              </a>
-            </div>
-          </div>
-          <h3 class="text-sm/6 font-medium text-gray-500">{{ _("Additional info") }}</h3>
-          <div class="mt-6 flow-root">
-            <div class="-my-2">
-              <a href="{% url "species_sources" %}" 
-              class="flex gap-x-4 py-2 text-sm/6 font-semibold hover:text-sky-600 {% if page == "sources" %}text-sky-600{% else %}text-gray-900{% endif %}">
-                <i class="fa fa-books fa-fw text-lg text-gray-400 mr-1"></i>
-                {{ _("Source documents") }}
               </a>
             </div>
           </div>
@@ -404,6 +395,11 @@
           <h3 class="text-sm/6 font-medium text-gray-500">Documents</h3>
           <div class="mt-6 flow-root">
             <div class="-my-2">
+              <a href="{% url "species_sources" %}" 
+              class="flex gap-x-4 py-2 text-sm/6 font-semibold hover:text-sky-600 {% if page == "sources" %}text-sky-600{% else %}text-gray-900{% endif %}">
+                <i class="fa fa-books fa-fw text-lg text-gray-400 mr-1"></i>
+                Plant reference sources
+              </a>
               <a href="/resources/teaching/" class="flex gap-x-4 py-2 text-sm/6 font-semibold hover:text-sky-600
                 {% if page == "teaching" and menu == "resources" %}text-sky-600{% else %}text-gray-900{% endif %}">
                 <i class="fa fa-list fa-fw text-lg text-gray-400 mr-1"></i>

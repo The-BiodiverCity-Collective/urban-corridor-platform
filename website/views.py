@@ -2244,7 +2244,7 @@ def planner_suggestions(request, id):
     context = {
         "menu": "planner",
         "page": "suggestions",
-        "title": _("Suggested plants"),
+        "title": _("Suggested plant list"),
         "garden": garden,
         "species_list": species,
         "species_count": species_count,
@@ -2294,7 +2294,7 @@ def planner_plants(request, id, status):
         "menu": "planner",
         "page": "plants",
         "tab": status,
-        "title": _("My plants"),
+        "title": _("My plant lists"),
         "garden": garden,
         "plants_present": plants_present,
         "plants_future": plants_future,
@@ -2457,6 +2457,86 @@ def planner_score(request, id, status):
         "locally_indigenous": species.filter(vegetation_types=veg_type).count(),
     }
     return render(request, "planner/score.html", context)
+
+def planner_events(request, id):
+
+    site = get_site(request)
+
+    if not (garden := get_garden(request, id)):
+        return redirect("planner")
+
+    context = {
+        "menu": "planner",
+        "page": "join",
+        "slug": "events",
+        "title": _("Events"),
+        "garden": garden,
+    }
+    return render(request, "planner/underconstruction.html", context)
+
+def planner_profile(request, id):
+
+    site = get_site(request)
+
+    if not (garden := get_garden(request, id)):
+        return redirect("planner")
+
+    context = {
+        "menu": "planner",
+        "page": "join",
+        "slug": "profile",
+        "title": _("Register your garden"),
+        "garden": garden,
+    }
+    return render(request, "planner/underconstruction.html", context)
+
+def planner_certification(request, id):
+
+    site = get_site(request)
+
+    if not (garden := get_garden(request, id)):
+        return redirect("planner")
+
+    context = {
+        "menu": "planner",
+        "page": "join",
+        "slug": "certification",
+        "title": _("Certify your garden"),
+        "garden": garden,
+    }
+    return render(request, "planner/underconstruction.html", context)
+
+def planner_support(request, id):
+
+    site = get_site(request)
+
+    if not (garden := get_garden(request, id)):
+        return redirect("planner")
+
+    context = {
+        "menu": "planner",
+        "page": "join",
+        "slug": "support",
+        "title": _("Support for your garden"),
+        "garden": garden,
+    }
+    return render(request, "planner/underconstruction.html", context)
+
+def planner_design(request, id):
+
+    site = get_site(request)
+
+    if not (garden := get_garden(request, id)):
+        return redirect("planner")
+
+    context = {
+        "menu": "planner",
+        "slug": "design",
+        "page": "join",
+        "title": _("Garden design: measure your garden"),
+        "garden": garden,
+    }
+    return render(request, "planner/underconstruction.html", context)
 
 
 # END OF PLANNER

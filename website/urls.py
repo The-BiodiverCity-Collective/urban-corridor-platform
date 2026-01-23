@@ -59,7 +59,7 @@ urlpatterns = [
     path("about/newsletter/", views.newsletter, name="newsletter"),
     path("about/", RedirectView.as_view(url="/about/introduction", permanent=True)),
     path("about/<slug:slug>/", views.page, {"menu": "about"}, name="about"),
-    path("join/<slug:slug>/", views.page, name="join"),
+    path("join/<slug:slug>/", views.page, {"menu": "planner"}, name="join"),
     path("resources/<slug:slug>/", views.resources, name="resources"),
     path("page/<slug:slug>/", views.page, name="page"),
 
@@ -119,6 +119,11 @@ urlpatterns = [
     path("planner/<int:id>/score/future/", views.planner_score, {"status": "FUTURE"}, name="planner_score_future"),
     path("planner/<int:id>/resources/", views.planner_resources, name="planner_resources"),
     path("planner/<int:id>/join/", views.planner_join, name="planner_join"),
+    path("planner/<int:id>/events/", views.planner_events, name="planner_events"),
+    path("planner/<int:id>/support/", views.planner_support, name="planner_support"),
+    path("planner/<int:id>/certification/", views.planner_certification, name="planner_certification"),
+    path("planner/<int:id>/profile/", views.planner_profile, name="planner_profile"),
+    path("planner/<int:id>/design/", views.planner_design, name="planner_design"),
 
     # Control Panel
     path("controlpanel/", views.controlpanel, name="controlpanel"),

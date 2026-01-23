@@ -624,14 +624,19 @@ class Garden(ReferenceSpace):
 
     def save(self, *args, **kwargs):
         vegetation = Document.objects.get(pk=983172)
-        veg = None
+        
+        # Default to the first veg type in the system
+        veg = VegetationType.objects.filter(site=self.site, is_negative=False).first()
+
         if self.geometry:
             try:
                 veg = vegetation.spaces.get(geometry__intersects=self.geometry.centroid)
                 veg = veg.get_vegetation_type()
             except:
                 veg = VegetationType.objects.filter(site=self.site, is_negative=False).first()
-            self.vegetation_type = veg
+
+        self.vegetation_type = veg
+
         super().save(*args, **kwargs)
 
 class Event(models.Model):
