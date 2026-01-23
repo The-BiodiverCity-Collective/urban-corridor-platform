@@ -206,7 +206,7 @@ def index(request):
         return render(request, "fcc/index.html", context)
     else:
         # Remove padding on the right so the image sticks to the side
-        context["replace_main_classes"] = "rounded-lg bg-white pl-5 py-6 shadow-sm sm:pl-6" 
+        context["eplace_main_classes"] = "rounded-lg bg-white pl-5 pb-20 shadow-sm sm:pl-6" 
         return render(request, "braam/index.html", context)
 
 def design(request):
