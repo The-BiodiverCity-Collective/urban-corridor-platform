@@ -1,0 +1,43 @@
+{% extends "_base.html" %}
+
+{% block content %}
+  <h1>{{ title }}</h1>
+  
+  {% if not activity %}
+  <h2>{{ _("Activities") }}</h2>
+  <table class="table table-striped">
+    <thead>
+      <tr>
+        <th>{{ _("Activity") }}</th>
+        <th>{{ _("Position") }}</th>
+        <th>{{ _("Options") }}</th>
+      </tr>
+    </thead>
+    <tbody>
+    {% for each in activities %}
+      <tr>
+        <td>{{ each.name }}</td>
+        <td>{{ each.position }}</td>
+        <td>
+          <a href="?edit={{ each.id }}" class="btn-sm btn-blue"><i class="fa fa-pencil mr-1"></i> {{ _("Edit") }}</a>
+        </td>
+      </tr>
+    {% endfor %}
+    </tbody>
+  </table>
+
+  <h3 class="mt-10">{{ _("Add new activity") }}</h3>
+  {% endif %}
+  <form method="post">
+    <div class="mb-2">
+      <label>{{ _("Activity") }}</label>
+      <input type="text" name="activity" value="{{ activity.name }}" />
+    </div>
+    <div class="mb-2">
+      <label>{{ _("Position") }}</label>
+      <input type="number" name="position" value="{{ activity.position }}" />
+    </div>
+    <button class="btn-green" type="submit">{{ _("Save") }}</button>
+    {% csrf_token %}
+  </form>
+{% endblock %}

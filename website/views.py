@@ -206,7 +206,7 @@ def index(request):
         return render(request, "fcc/index.html", context)
     else:
         # Remove padding on the right so the image sticks to the side
-        context["eplace_main_classes"] = "rounded-lg bg-white pl-5 pb-20 shadow-sm sm:pl-6" 
+        context["replace_main_classes"] = "rounded-lg bg-white pl-5 pb-20 shadow-sm sm:pl-6" 
         return render(request, "braam/index.html", context)
 
 def design(request):
@@ -4025,6 +4025,36 @@ def controlpanel_scoring(request):
 
     return render(request, "controlpanel/scoring.html", context)
 
+@staff_member_required
+def controlpanel_calendar(request):
+
+    site = get_site(request)
+
+    activity = None
+    if request.GET.get("edit"):
+        activity = GardeningActivity.objects.get(site=site, id=request.GET["edit"])
+
+    if request.method == "POST":
+        if not activity:
+            activity = GardeningActivity()
+        activity.site = site
+        activity.name = request.POST["activity"]
+        activity.position = request.POST["position"]
+        activity.save()
+        return redirect(request.path)
+
+    activities = GardeningActivity.objects.filter(site=site)
+
+    context = {
+        "controlpanel": True,
+        "menu": "planner",
+        "page": "calendar",
+        "title": _("Activities calendar"),
+        "activities": activities,
+        "activity": activity,
+    }
+
+    return render(request, "controlpanel/calendar.html", context)
 
 # AJAX
 def ajax_species(request):

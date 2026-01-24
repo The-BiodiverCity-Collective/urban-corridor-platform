@@ -1263,3 +1263,20 @@ class DiversityCriteria(models.Model):
             UniqueConstraint(fields=["feature", "vegetation_type"], name="unique_combo")
         ]
         ordering = ["vegetation_type", "feature__species_type", "feature__name"]
+
+class GardeningActivity(models.Model):
+    name = models.CharField(max_length=255)
+    site = models.ForeignKey(Site, on_delete=models.CASCADE, related_name="activities")
+    position = models.PositiveSmallIntegerField(db_index=True)
+
+    def __str__(self):
+        return self.name
+
+    class Meta:
+        ordering = ["position", "name"]
+
+class ActivityCalendar(models.Model):
+    details = models.CharField(max_length=255, null=True)
+    intensity = models.PositiveSmallIntegerField()
+    month = models.PositiveSmallIntegerField()
+    activity = models.ForeignKey(GardeningActivity, on_delete=models.CASCADE, related_name="calendar")
