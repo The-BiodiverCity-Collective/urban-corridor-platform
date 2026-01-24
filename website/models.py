@@ -33,6 +33,22 @@ from django.contrib.auth.models import User
 from django.contrib.auth import get_user_model
 User = get_user_model()
 
+MONTH_CHOICES = [
+    (1, _("Jan")),
+    (2, _("Feb")),
+    (3, _("Mar")),
+    (4, _("Apr")),
+    (5, _("May")),
+    (6, _("Jun")),
+    (7, _("Jul")),
+    (8, _("Aug")),
+    (9, _("Sep")),
+    (10, _("Oct")),
+    (11, _("Nov")),
+    (12, _("Dec")),
+]
+
+
 class Language(models.Model):
     name = models.CharField(max_length=255)
     code = models.CharField(max_length=5)
@@ -805,21 +821,6 @@ class Species(models.Model):
     photo = models.ForeignKey("Photo", on_delete=models.SET_NULL, null=True, blank=True, related_name="main_species")
     colors = models.ManyToManyField("Color", blank=True, related_name="species")
 
-    MONTH_CHOICES = [
-        (1, _("Jan")),
-        (2, _("Feb")),
-        (3, _("Mar")),
-        (4, _("Apr")),
-        (5, _("May")),
-        (6, _("Jun")),
-        (7, _("Jul")),
-        (8, _("Aug")),
-        (9, _("Sep")),
-        (10, _("Oct")),
-        (11, _("Nov")),
-        (12, _("Dec")),
-    ]
-
     flowering = ArrayField(models.PositiveSmallIntegerField(choices=MONTH_CHOICES), blank=True, default=list)
     meta_data = models.JSONField(null=True, blank=True)
 
@@ -1277,6 +1278,12 @@ class GardeningActivity(models.Model):
 
 class ActivityCalendar(models.Model):
     details = models.CharField(max_length=255, null=True)
-    intensity = models.PositiveSmallIntegerField()
-    month = models.PositiveSmallIntegerField()
+    month = models.PositiveSmallIntegerField(choices=MONTH_CHOICES)
     activity = models.ForeignKey(GardeningActivity, on_delete=models.CASCADE, related_name="calendar")
+
+    class Intensity(models.IntegerChoices):
+        NOTHING = 0, _("No activity")
+        LOW = 1, _("Low activity")
+        MED = 2, _("Medium activity")
+        HIGH = 3, _("High activity")
+    intensity = models.IntegerField(choices=Intensity.choices, db_index=True)

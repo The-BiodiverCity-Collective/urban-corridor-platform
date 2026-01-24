@@ -4056,6 +4056,46 @@ def controlpanel_calendar(request):
 
     return render(request, "controlpanel/calendar.html", context)
 
+
+@staff_member_required
+def controlpanel_activity(request, id):
+
+    site = get_site(request)
+    activity = GardeningActivity.objects.get(site=site, id=id)
+
+    calendar_by_month = {
+        c.month: c for c in activity.calendar.all()
+    }
+
+    if request.method == "POST":
+        for month, month_label in MONTH_CHOICES:
+            details = request.POST.get(f"details_{month}", "").strip()
+            intensity = request.POST.get(f"intensity_{month}")
+
+            ActivityCalendar.objects.update_or_create(
+                activity=activity,
+                month=month,
+                defaults={
+                    "details": details or None,
+                    "intensity": intensity,
+                },
+            )
+        messages.success(request, _("Information was saved."))
+        return redirect("controlpanel_calendar")
+
+    context = {
+        "controlpanel": True,
+        "menu": "planner",
+        "page": "calendar",
+        "title": activity,
+        "activity": activity,
+        "months": MONTH_CHOICES,
+        "intensity_choices": ActivityCalendar.Intensity.choices,
+        "calendar_by_month": calendar_by_month,
+    }
+
+    return render(request, "controlpanel/calendar.activity.html", context)
+
 # AJAX
 def ajax_species(request):
     query = request.GET.get("q")

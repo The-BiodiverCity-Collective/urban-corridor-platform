@@ -1,0 +1,46 @@
+{% extends "_base.html" %}
+{% load ucp_extras %}
+
+{% block content %}
+  <h1 class="text-2xl font-semibold mb-6">
+    {{ activity.name }} – Activity Calendar
+  </h1>
+
+  <form method="post" class="space-y-6">
+    {% csrf_token %}
+
+    <div class="overflow-x-auto">
+      <table class="w-full border border-gray-200 rounded-lg">
+        <thead class="bg-gray-100">
+          <tr>
+            <th class="px-4 py-3 text-left text-sm font-medium text-gray-700">{{ _("Month") }}</th>
+            <th class="px-4 py-3 text-left text-sm font-medium text-gray-700">{{ _("Intensity") }}</th>
+            <th class="px-4 py-3 text-left text-sm font-medium text-gray-700">{{ _("Description") }}</th>
+          </tr>
+        </thead>
+
+        <tbody class="divide-y divide-gray-200">
+          {% for month, month_label in months %}
+            {% with entry=calendar_by_month|get_item:month %}
+              <tr>
+                <td class="px-4 py-3 font-medium text-gray-800">{{ month_label }}</td>
+                <td class="px-4 py-3">
+                  <select name="intensity_{{ month }}" class="w-full rounded-md border-gray-300 focus:border-green-500 focus:ring-green-500 text-sm">
+                    {% for value, label in intensity_choices %}
+                      <option value="{{ value }}" {% if entry and entry.intensity == value %}selected{% endif %}>{{ label }}</option>
+                    {% endfor %}
+                  </select>
+                </td>
+                <td class="px-4 py-3">
+                  <input type="text" name="details_{{ month }}" value="{{ entry.details|default_if_none:'' }}" class="w-full rounded-md border-gray-300 focus:border-green-500 focus:ring-green-500 text-sm">
+                </td>
+              </tr>
+            {% endwith %}
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+
+  <button type="submit" class="btn-green">{{ _("Save") }}</button>
+  </form>
+{% endblock %}

@@ -20,6 +20,7 @@
         <td>{{ each.position }}</td>
         <td>
           <a href="?edit={{ each.id }}" class="btn-sm btn-blue"><i class="fa fa-pencil mr-1"></i> {{ _("Edit") }}</a>
+          <a href="{% url "controlpanel_activity" each.id %}" class="btn-sm btn-blue"><i class="fa fa-calendar-alt mr-1"></i> {{ _("Manage calendar") }}</a>
         </td>
       </tr>
     {% endfor %}
