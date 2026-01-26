@@ -2204,7 +2204,7 @@ def planner_suggestions(request, id):
     if "month" in request.GET:
         months = request.GET.getlist("month")
         species = species.filter(flowering__overlap=months)
-        month_labels = ", ".join(str(dict(Species.MONTH_CHOICES)[int(month)]) for month in months)
+        month_labels = ", ".join(str(dict(MONTH_CHOICES)[int(month)]) for month in months)
         filter_text.append(_("Flowering any of these months: ") + month_labels)
             
     if "vegetation_type" in request.GET:
@@ -2313,12 +2313,21 @@ def planner_calendar(request, id):
         return redirect("planner")
 
     page_info = Page.objects.get(site=site, slug="calendar", is_active=True)
+    activities = ActivityCalendar.objects.filter(activity__site=site).select_related("activity").order_by("activity__position", "activity__name", "month")
+    rows = {}
+    monthly_totals = {m: 0 for m, _ in MONTH_CHOICES}
+    for a in activities:
+        rows.setdefault(a.activity, {})[a.month] = a
+        monthly_totals[a.month] += a.intensity
 
     context = {
         "menu": "planner",
         "page_info": page_info,
         "garden": garden,
         "page": "calendar",
+        "months": MONTH_CHOICES,
+        "rows": rows,
+        "monthly_totals": monthly_totals,
     }
     return render(request, "planner/calendar.html", context)
 
@@ -2416,7 +2425,7 @@ def planner_score(request, id, status):
             for month in range(1, 13):
                 flowering_count = species.filter(flowering__contains=[month]).distinct().count()
                 if flowering_count < score_minimum_flowering:
-                    fails_check.append(Species.MONTH_CHOICES[month - 1])  # month - 1 to match the index
+                    fails_check.append(MONTH_CHOICES[month - 1])  # month - 1 to match the index
                     success_count -= 1
 
             flowering_failure[page.id] = fails_check
@@ -2449,7 +2458,7 @@ def planner_score(request, id, status):
         "main_classes": "relative",
         "species_list": species,
         "feature_species": feature_species,
-        "months": Species.MONTH_CHOICES,
+        "months": MONTH_CHOICES,
         "flowering_failure": flowering_failure,
         "flowering_success": flowering_success,
         "title": _("Future garden score card") if status == "FUTURE" else _("Current garden score card"),

@@ -1,8 +1,71 @@
 {% extends "_base.html" %}
+{% load ucp_extras %}
 
 {% block content %}
 
 <h1>{{ page_info }}</h1>
 {{ page_info.get_content }}
 
+<main class="overflow-x-auto">
+  <table class="min-w-full border border-gray-300 text-sm">
+    <thead>
+      <tr>
+        <th class="border px-3 py-2 text-left bg-gray-100">Activity</th>
+        {% for m, label in months %}
+          <th class="border px-3 py-2 text-center bg-gray-100">{{ label }}</th>
+        {% endfor %}
+      </tr>
+    </thead>
+    <tbody>
+      {% for activity, months_map in rows.items %}
+        <tr>
+          <td class="border px-3 py-2 font-medium whitespace-nowrap">{{ activity.name }}</td>
+          {% for m, label in months %}
+            {% with cell=months_map|get_item:m %}
+              <td class="border px-2 py-2 text-center
+                {% if not cell or cell.intensity == 0 %}bg-gray-100
+                {% elif cell.intensity == 1 %}bg-orange-100
+                {% elif cell.intensity == 2 %}bg-orange-300
+                {% elif cell.intensity == 3 %}bg-orange-500
+                {% endif %}
+              ">
+                {% if cell and cell.details %}
+                  {% if cell.details|length > 60 %}
+                    <span class="cell-short">{{ cell.details|slice:":40" }}…</span>
+                    <span class="cell-full hidden">{{ cell.details }}</span>
+                    <button class="ml-1 text-xs underline more-toggle">more</button>
+                  {% else %}
+                    <span>{{ cell.details }}</span>
+                  {% endif %}
+                {% endif %}
+              </td>
+            {% endwith %}
+          {% endfor %}
+        </tr>
+      {% endfor %}
+    </tbody>
+    <tfoot>
+      <tr class="font-semibold">
+        <td class="border px-3 py-2 bg-gray-200">Monthly intensity</td>
+        {% for m, label in months %}
+          <th class="border px-2 py-2 text-center bg-gray-200">
+            {{ monthly_totals|get_item:m }}
+          </th>
+        {% endfor %}
+      </tr>
+    </tfoot>
+  </table>
+</main>
+
+{% endblock %}
+
+{% block js %}
+   <script>
+    $(document).on("click", ".more-toggle", function() {
+      const cell = $(this).closest("td");
+      cell.find(".cell-short").addClass("hidden");
+      cell.find(".cell-full").removeClass("hidden");
+      $(this).addClass("hidden");
+    });
+  </script> 
 {% endblock %}

@@ -29,7 +29,7 @@
     {% endfor %}
 
     <div class="flex justify-end">
-      <a class="full_report btn-gray btn-sm mt-4" href="{% if status == "PRESENT" %}{% url "planner_score_present" GARDEN %}{% else %}{% url "planner_score_future" GARDEN %}{% endif %}">
+      <a class="full_report btn-green btn-sm mt-4" href="{% if status == "PRESENT" %}{% url "planner_score_present" GARDEN %}{% else %}{% url "planner_score_future" GARDEN %}{% endif %}">
         <i class="fas fa-chart-line mr-2"></i>
         {{ _("Full scorecard") }}
       </a>
