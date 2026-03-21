@@ -2,42 +2,63 @@
 
 {% block content %}
 
-<h1 class="text-3xl">
-  {{ title }}
-</h1>
+<div class="flex justify-between">
+  <h1 class="text-3xl">
+    {{ title }}
+  </h1>
+  <a href="{% querystring ordering='true' %}">{{ _("Modify order") }}</a>
+</div>
 
-<table class="table mb-5">
-  <thead>
-    <tr>
-      <th>{{ _("Title") }}</th>
-      <th>{{ _("Options") }}</th>
-      <th>{{ _("Active") }}</th>
-    </tr>
-  </thead>
-  <tbody>
-  {% for each in pages %}
-    <tr>
-      <td><a href="{% url "controlpanel_page" each.id %}">{{ each.name }}</td>
-      <td>
-        <a class="btn-blue btn-sm" href="{% url "controlpanel_page" each.id %}"><i class="fa fa-pencil mr-1"></i> {{ _("Edit") }}</a>
-        {% if page_type == 6 %}
-          <a class="btn-blue btn-sm" href="{% url "controlpanel_page" each.id %}?species"><i class="fa fa-leaf mr-1"></i> {{ _("Manage species") }}</a>
-        {% else %}
-          <a class="btn-blue btn-sm" href="{% url "controlpanel_page" each.id %}?photos"><i class="fa fa-image mr-1"></i> {{ _("Manage photos") }}</a>
-        {% endif %}
-        {% if page_type != 4 and page_type != 5 and page_type != 7 %}
-          <a class="btn-orange btn-sm" href="{{ each.get_absolute_url }}">{{ _("View page") }}</a>
-        {% endif %}
-      </td>
-      <td>{% if each.is_active %}<i class="fa fa-check text-lime-700"></i>{% else %}<i class="fa fa-ban text-red-700"></i>{% endif %}</td>
-    </tr>
-  {% endfor %}
-  </tbody>
-</table>
 
-<a class="btn-blue" href="{% url "controlpanel_page" %}?type={{ page_type }}">
-  <i class="fa fa-plus-square mr-1"></i> 
-  {{ _("Add") }}
-</a>
+<form method="post">
+  
+  <table class="table mb-5">
+    <thead>
+      <tr>
+        {% if request.GET.ordering %}
+          <th>{{ _("Position") }}</th>
+        {% endif %}
+        <th>{{ _("Title") }}</th>
+        <th>{{ _("Options") }}</th>
+        <th>{{ _("Active") }}</th>
+      </tr>
+    </thead>
+    <tbody>
+    {% for each in pages %}
+      <tr>
+        {% if request.GET.ordering %}
+          <td><input type="number" class="w-22" name="order_{{ each.id }}" value="{{ each.position }}" /></td>
+        {% endif %}
+        <td><a href="{% url "controlpanel_page" each.id %}{% if "plain" in request.GET %}?plain{% endif %}">{{ each.name }}</a></td>
+        <td>
+          <a class="btn-blue btn-sm" href="{% url "controlpanel_page" each.id %}{% if "plain" in request.GET %}?plain{% endif %}"><i class="fa fa-pencil mr-1"></i> {{ _("Edit") }}</a>
+          {% if page_type == 6 %}
+            <a class="btn-blue btn-sm" href="{% url "controlpanel_page" each.id %}?species"><i class="fa fa-leaf mr-1"></i> {{ _("Manage species") }}</a>
+          {% else %}
+            <a class="btn-blue btn-sm" href="{% url "controlpanel_page" each.id %}?photos"><i class="fa fa-image mr-1"></i> {{ _("Manage photos") }}</a>
+          {% endif %}
+          {% if page_type != 4 and page_type != 5 and page_type != 7 %}
+            <a class="btn-orange btn-sm" href="{{ each.get_absolute_url }}">{{ _("View page") }}</a>
+          {% endif %}
+        </td>
+        <td>{% if each.is_active %}<i class="fa fa-check text-lime-700"></i>{% else %}<i class="fa fa-ban text-red-700"></i>{% endif %}</td>
+      </tr>
+    {% endfor %}
+    </tbody>
+  </table>
+
+  {% if request.GET.ordering %}
+    <button type="submit" class="btn-green">Save</button>
+  {% endif %}
+
+  {% csrf_token %}
+</form>
+
+{% if not request.GET.ordering %}
+  <a class="btn-blue" href="{% url "controlpanel_page" %}?type={{ page_type }}">
+    <i class="fa fa-plus-square mr-1"></i> 
+    {{ _("Add") }}
+  </a>
+{% endif %}
 
 {% endblock %}

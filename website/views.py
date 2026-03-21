@@ -196,17 +196,33 @@ def get_garden_score(garden, status):
 def log_action(request, action, name):
     Log.objects.create(action=action, name=name, url=request.get_full_path(), user=request.user)
 
-# Regular views
+# This function helps clean info added by the quill editor
+def quill_cleanup(content):
+    if not content:
+        return ""
+    string_to_remove = [
+        ' rel="noopener noreferrer" target="_blank"',
+        '<p><br></p>',
+        '<ol><li data-list="bullet"><span class="ql-ui" contenteditable="false"></span><br></li></ol>',
+    ]
+    for each in string_to_remove:
+        content = content.replace(each, "")
+    return content
+
+# END OF REUSED VIEWS
+
+# START OF REGULAR views
 def index(request):
     context = {
         "hide_bottom_planner_menu": True,
+
+        # Remove padding on the right so the image sticks to the side
+        "replace_main_classes": "rounded-lg bg-white pl-5 pb-20 shadow-sm sm:pl-6",
     }
     site = get_site(request)
     if site.id == 2:
         return render(request, "fcc/index.html", context)
     else:
-        # Remove padding on the right so the image sticks to the side
-        context["replace_main_classes"] = "rounded-lg bg-white pl-5 pb-20 shadow-sm sm:pl-6" 
         return render(request, "braam/index.html", context)
 
 def design(request):
@@ -2166,6 +2182,7 @@ def planner_site(request, id):
         "features": features,
         "step": 2,
         "planner_tab": "my_garden",
+        "load_tooltip": True,
     }
     return render(request, "planner/site.html", context)
 
@@ -2605,6 +2622,25 @@ def controlpanel_pages(request):
     if page_type in [4,5,6]:
         menu = "planner"
 
+    if "ordering" in request.GET:
+        # The ordering is not necessarily set, so we will load the numbers
+        # in case they are missing
+        last_position = 0
+        for each in pages:
+            if not each.position:
+                each.position = last_position + 1
+                each.save()
+            last_position = each.position
+
+        if request.method == "POST":
+            for each in pages:
+                label = f"order_{each.id}"
+                position = request.POST.get(label)
+                each.position = position
+                each.save()
+            messages.success(request, "New positions were saved.")
+            return redirect(request.get_full_path())
+
     context = {
         "controlpanel": True,
         "menu": menu,
@@ -2685,19 +2721,8 @@ def controlpanel_page(request, id=None):
 
     else:
         if request.method == "POST":
-            info.name = request.POST["name"]
-            content = request.POST.get("description")
-
-            # Auto-insert by editor
-            string_to_remove = [
-                ' rel="noopener noreferrer" target="_blank"',
-                '<p><br></p>',
-                '<ol><li data-list="bullet"><span class="ql-ui" contenteditable="false"></span><br></li></ol>',
-            ]
-            for each in string_to_remove:
-                content = content.replace(each, "")
-
-            info.content = content
+            info.name = request.POST["name"] 
+            info.content = quill_cleanup(request.POST.get("description"))
             info.slug = request.POST.get("slug")
             info.position = 0
             info.page_type = page_type
@@ -2748,14 +2773,21 @@ def controlpanel_page(request, id=None):
             if request.GET.get("redirect"):
                 return redirect(request.GET.get("redirect"))
             else:
-                return redirect(reverse("controlpanel_pages") + "?type=" + str(page_type))
+                url = reverse("controlpanel_pages") + "?type=" + str(page_type)
+                if "plain" in request.GET:
+                    url = f"{url}&plain"
+                return redirect(url)
+
+    if "plain" in request.GET and info:
+        # When showing in plain text we want to remove any remnants of Quill text
+        info.content_html = quill_cleanup(info.content_html)
 
     context = {
         "controlpanel": True,
         "menu": menu,
         "info": info,
         "title": Page.PageType(page_type).label if not info.id else title,
-        "quill": True,
+        "quill": False if "plain" in request.GET else True,
         "page_type": page_type,
         "photos": photos,
         "species": species,

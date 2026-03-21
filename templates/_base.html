@@ -37,8 +37,14 @@
   {% if request.GET.online_tailwind %}
     <script src="https://unpkg.com/@tailwindcss/browser@4"></script>
   {% else %}
-    <link rel="stylesheet" href="{% static "css/output.css" %}?id=1408-27">
+    <link rel="stylesheet" href="{% static "css/output.css" %}?id=1724-2103">
   {% endif %}
+
+  {% if load_tooltip %}
+    <script src="https://unpkg.com/@popperjs/core@2"></script>
+    <script src="https://unpkg.com/tippy.js@6"></script>
+  {% endif %}
+
   <link rel="icon" href="{{ SITE.logo.thumbnail.url }}" type="image/png">
 
   {% if quill %}
@@ -143,12 +149,12 @@
 
 {% if request.user.is_authenticated and request.user.is_superuser %}
   {% if controlpanel %}
-    <a href="/" class="btn-orange btn-sm fixed right-2 bottom-2 z-50">
+    <a href="/" class="btn-orange btn-sm fixed right-2 bottom-2 z-20000">
       <i class="fa fa-arrow-left mr-1"></i>
       {{ _("Website") }}
     </a>
   {% else %}
-    <a href="{% url "controlpanel" %}" class="badge badge-warning fixed right-2 bottom-2 z-50">
+    <a href="{% url "controlpanel" %}" class="badge badge-warning fixed right-2 bottom-2 z-20000">
       <i class="fa fa-lock mr-1"></i>
       {{ _("Control panel") }}
     </a>
@@ -290,6 +296,12 @@ $(function(){
 
 });
 </script>
+
+{% if load_tooltip %}
+<script>
+  tippy(".tooltip");
+</script>
+{% endif %}
 
 </body>
 </html>

@@ -57,7 +57,9 @@
       <ul class="mb-3 ml-4 mt-3">
       {% for each in features %}
         <li>
-          <i class="fa fa-check"></i> {{ each }}
+          <i class="fa fa-check"></i> 
+          {{ each.get_species_type_display }}:
+          {{ each }}
         </li>
       {% endfor %}
       {% if plant_form %}

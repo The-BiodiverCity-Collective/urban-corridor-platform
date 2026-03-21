@@ -45,7 +45,6 @@
     --color-lime-800: oklch(45.3% 0.124 130.933);
     --color-green-50: oklch(98.2% 0.018 155.826);
     --color-green-100: oklch(96.2% 0.044 156.743);
-    --color-green-200: oklch(92.5% 0.084 155.995);
     --color-green-500: oklch(72.3% 0.219 149.579);
     --color-green-600: oklch(62.7% 0.194 149.214);
     --color-green-700: oklch(52.7% 0.154 150.069);
@@ -138,7 +137,6 @@
     --font-weight-bold: 700;
     --tracking-tight: -0.025em;
     --tracking-wide: 0.025em;
-    --tracking-wider: 0.05em;
     --leading-tight: 1.25;
     --leading-relaxed: 1.625;
     --radius-sm: 0.25rem;
@@ -435,6 +433,9 @@
   .z-10001 {
     z-index: 10001;
   }
+  .z-20000 {
+    z-index: 20000;
+  }
   .col-span-1 {
     grid-column: span 1 / span 1;
   }
@@ -633,6 +634,9 @@
   }
   .-ml-px {
     margin-left: -1px;
+  }
+  .ml-1 {
+    margin-left: calc(var(--spacing) * 1);
   }
   .ml-2 {
     margin-left: calc(var(--spacing) * 2);
@@ -1270,6 +1274,9 @@
   }
   .w-12 {
     width: calc(var(--spacing) * 12);
+  }
+  .w-22 {
+    width: calc(var(--spacing) * 22);
   }
   .w-24 {
     width: calc(var(--spacing) * 24);
@@ -2005,9 +2012,6 @@
   .bg-green-100 {
     background-color: var(--color-green-100);
   }
-  .bg-green-200 {
-    background-color: var(--color-green-200);
-  }
   .bg-indigo-500 {
     background-color: var(--color-indigo-500);
   }
@@ -2088,9 +2092,6 @@
   }
   .bg-red-300 {
     background-color: var(--color-red-300);
-  }
-  .bg-red-400 {
-    background-color: var(--color-red-400);
   }
   .bg-red-500 {
     background-color: var(--color-red-500);
@@ -4524,7 +4525,7 @@
     position: fixed;
     bottom: 10px;
     left: 10px;
-    z-index: 1000;
+    z-index: 20000;
   }
   .mainnav .dropdown {
     visibility: hidden;

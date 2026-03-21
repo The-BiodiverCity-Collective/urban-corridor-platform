@@ -30,10 +30,10 @@
                 {% endif %}
               ">
                 {% if cell and cell.details %}
-                  {% if cell.details|length > 60 %}
-                    <span class="cell-short">{{ cell.details|slice:":40" }}…</span>
+                  {% if cell.details|length > 50 %}
+                    <span class="cell-short">{{ cell.details|slice:":30" }}…</span>
                     <span class="cell-full hidden">{{ cell.details }}</span>
-                    <button class="ml-1 text-xs underline more-toggle">more</button>
+                    <button class="ml-1 text-xs underline more-toggle cursor-pointer">more</button>
                   {% else %}
                     <span>{{ cell.details }}</span>
                   {% endif %}

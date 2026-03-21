@@ -21,7 +21,9 @@
 
       {% for each in features %}
         <label aria-label="{{ each }}" class="group relative rounded-lg border border-gray-300 bg-white has-checked:outline-2 has-checked:-outline-offset-2 has-checked:outline-lime-600 has-focus-visible:outline-3 has-focus-visible:-outline-offset-1 has-checked:bg-lime-50 hover:bg-gray-100">
-
+          {% if each.content %}
+            <i class="absolute top-2 right-2 fas fa-info-circle text-sky-700 tooltip z-50" data-tippy-content="{{ each.content }}"></i>
+          {% endif %}
           <input type="checkbox" name="feature" {% if each in garden.site_features.all %}checked{% endif %} value="{{ each.id }}" class="absolute inset-0 appearance-none focus:outline-none cursor-pointer" />
           <div class="flex-1 p-4">
             <span class="block text-sm font-medium text-gray-900">{{ each }}</span>

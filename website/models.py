@@ -738,7 +738,7 @@ class SpeciesFeatures(models.Model):
     name = models.CharField(max_length=255, db_index=True)
 
     class SpeciesType(models.IntegerChoices):
-        ANIMALS = 1, _("Animal-friendly")
+        WILDLIFE = 1, _("Wildlife supported")
         SITE = 2, _("Tolerances & suitability")
         GROWTH = 3, _("Growth features")
         SOCIAL = 4, _("Social features")

@@ -333,7 +333,7 @@
     position: fixed;
     bottom: 10px;
     left: 10px;
-    z-index:1000;
+    z-index:20000;
   }
   .mainnav .dropdown {
     visibility: hidden;
