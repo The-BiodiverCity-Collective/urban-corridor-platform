@@ -1,0 +1,25 @@
+{% extends "_base.html" %}
+
+{% block content %}
+
+  <h1>{{ _("Inventory unit") }}</h1>
+
+  <form method="post">
+
+    <div class="col-span-full mt-2">
+      <label for="name" class="block text-sm/6 font-medium text-gray-900">{{ _("Name") }}</label>
+      <div class="mt-2">
+        <input type="text" name="name" id="name" class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-xs ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-sky-600 sm:text-sm/6" value="{{ info.unit|default_if_none:"" }}" required>
+      </div>
+    </div>
+
+    <div class="mt-6 flex items-center justify-end gap-x-6">
+      <button type="submit" class="px-4 py-2 bg-lime-600 hover:bg-lime-700 text-white font-bold rounded-md focus:outline-hidden focus:ring-3 focus:ring-lime-300">
+        {{ _("Save") }}
+      </button>
+    </div>
+    {% csrf_token %}
+
+  </form>
+
+{% endblock %}

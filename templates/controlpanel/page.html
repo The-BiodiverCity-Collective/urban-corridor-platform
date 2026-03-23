@@ -242,7 +242,7 @@
       <div class="space-y-12">
         <div class="border-b border-gray-900/10 pb-12">
 
-          {% if info.id and info.species.count %}
+          {% if info.id and info.inventory.count %}
             <table class="table table-striped">
               <thead>
                 <tr>
@@ -251,7 +251,7 @@
                 </tr>
               </thead>
               <tbody>
-              {% for each in info.species.all %}
+              {% for each in info.inventory.all %}
                 <tr>
                   <td>{{ each }}</td>
                   <td><a href="?species&amp;delete_species={{ each.id }}"><i class="fa fa-trash"></i></a></td>

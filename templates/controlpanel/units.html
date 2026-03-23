@@ -1,0 +1,37 @@
+{% extends "_base.html" %}
+
+{% block content %}
+
+<h1 class="text-3xl">
+  Inventory units
+</h1>
+
+{% if not units %}
+  <div class="alert alert-info mb-5">{{ _("No units found") }}</div>
+{% else %}
+  <table class="table mb-5">
+    <thead>
+      <tr>
+        <th>{{ _("Name") }}</th>
+        <th>{{ _("Options") }}</th>
+      </tr>
+    </thead>
+    <tbody>
+    {% for each in units %}
+      <tr>
+        <td>
+          <a {% if not each.is_active %}class="opacity-50"{% endif %} href="{% url "controlpanel_unit" each.id %}">{{ each }}</a>
+        </td>
+        <td class="whitespace-nowrap">
+          <a class="btn-blue btn-sm" href="{% url "controlpanel_unit" each.id %}"><i class="fa fa-pencil"></i> {{ _("Edit") }}</a>
+          <a class="btn-danger btn-sm" href="?delete={{ each.id }}"><i class="fa fa-trash"></i> {{ _("Delete") }}</a>
+        </td>
+      </tr>
+    {% endfor %}
+    </tbody>
+  </table>
+{% endif %}
+
+<a class="btn-blue" href="{% url "controlpanel_unit" %}"><i class="fa fa-plus-square mr-1"></i> {{ _("Add unit") }}</a>
+
+{% endblock %}

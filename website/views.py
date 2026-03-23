@@ -1,7 +1,5 @@
 from .forms import *
 from .models import *
-from PIL import Image
-from PIL.ExifTags import TAGS, GPSTAGS
 from dateutil.relativedelta import relativedelta
 from django.conf import settings
 from django.contrib import messages
@@ -24,7 +22,6 @@ from django.utils.safestring import mark_safe
 from django.utils.text import slugify
 from django.utils.translation import gettext_lazy as _
 from django.views.decorators.csrf import csrf_exempt
-from folium.plugins import Fullscreen
 
 import folium
 import io
@@ -39,6 +36,10 @@ import uuid
 import wikipediaapi
 import xml.etree.ElementTree as ET
 import zipfile
+
+from PIL import Image
+from PIL.ExifTags import TAGS, GPSTAGS
+from folium.plugins import Fullscreen
 
 # Quick debugging, sometimes it's tricky to locate the PRINT in all the Django 
 # output in the console, so just using a simply function to highlight it better
@@ -2698,12 +2699,11 @@ def controlpanel_page(request, id=None):
 
         title = _("Species") + f": {info.name}"
         if "delete_species" in request.GET:
-            species = Species.objects.get(pk=request.GET["delete_species"])
-            info.species.remove(species)
+            NurseryInventory.objects.filter(nursery=info, pk=request.GET["delete_species"]).delete()
             messages.success(request, _("Species was removed."))
             return redirect(request.path + "?species")
         elif "add_species" in request.GET:
-            info.species.add(Species.objects.get(pk=request.GET["add_species"]))
+            NurseryInventory.objects.create(nursery=info, species_id=request.GET["add_species"])
             messages.success(request, _("Species was added"))
             return redirect(request.path + "?species")
         elif request.method == "POST":
@@ -4136,6 +4136,51 @@ def controlpanel_activity(request, id):
     }
 
     return render(request, "controlpanel/calendar.activity.html", context)
+
+@staff_member_required
+def controlpanel_units(request):
+    site = get_site(request)
+
+    if "delete" in request.GET:
+        unit = InventoryUnit.objects.get(pk=request.GET["delete"], site=site)
+        if NurseryInventory.objects.filter(unit=unit).exists():
+            messages.error(request, _("There is inventory with this unit - change that first before we can delete this unit."))
+        else:
+            unit.delete()
+            messages.success(request, _("Unit was removed"))
+        return redirect(request.path)
+
+    context = {
+        "controlpanel": True,
+        "menu": "planner",
+        "units": InventoryUnit.objects.filter(site=site),
+        "page_type": 6, # To mark the correct menu item in the nav
+    }
+    return render(request, "controlpanel/units.html", context)
+
+@staff_member_required
+def controlpanel_unit(request, id=None):
+
+    site = get_site(request)
+    info = InventoryUnit()
+    if id:
+        info = InventoryUnit.objects.get(pk=id, site=site)
+
+    if request.method == "POST":
+        info.unit = request.POST["name"]
+        info.site = site
+        info.save()
+
+        messages.success(request, _("Information was saved."))
+        return redirect(reverse("controlpanel_units"))
+
+    context = {
+        "controlpanel": True,
+        "menu": "planner",
+        "info": info,
+        "page_type": 6, # To mark the correct menu item in the nav
+    }
+    return render(request, "controlpanel/unit.html", context)
 
 # AJAX
 def ajax_species(request):

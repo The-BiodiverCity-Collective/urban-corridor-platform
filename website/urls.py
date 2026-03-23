@@ -169,4 +169,7 @@ urlpatterns = [
     path("controlpanel/scoring/", views.controlpanel_scoring, name="controlpanel_scoring"),
     path("controlpanel/calendar/", views.controlpanel_calendar, name="controlpanel_calendar"),
     path("controlpanel/calendar/<int:id>/", views.controlpanel_activity, name="controlpanel_activity"),
+    path("controlpanel/units/", views.controlpanel_units, name="controlpanel_units"),
+    path("controlpanel/units/<int:id>/", views.controlpanel_unit, name="controlpanel_unit"),
+    path("controlpanel/units/create/", views.controlpanel_unit, name="controlpanel_unit"),
 ]
