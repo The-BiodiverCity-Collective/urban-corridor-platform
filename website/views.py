@@ -4182,6 +4182,46 @@ def controlpanel_unit(request, id=None):
     }
     return render(request, "controlpanel/unit.html", context)
 
+@staff_member_required
+def controlpanel_users(request):
+    site = get_site(request)
+
+    context = {
+        "controlpanel": True,
+        "menu": "users",
+        "users": User.objects.all(),
+    }
+    return render(request, "controlpanel/users.html", context)
+
+@staff_member_required
+def controlpanel_user(request, id=None):
+
+    site = get_site(request)
+    info = User()
+    if id:
+        info = User.objects.get(pk=id)
+
+    if request.method == "POST":
+        info.first_name = request.POST["first_name"]
+        info.email = request.POST["email"]
+        info.username = request.POST["email"]
+        info.is_active = True if request.POST.get("is_active") else False
+        info.is_superuser = True if request.POST.get("is_superuser") else False
+        info.is_staff = True if request.POST.get("is_staff") else False
+        if "password_change" in request.POST and request.POST["password_change"]:
+            info.set_password(request.POST["password_change"])
+        info.save()
+
+        messages.success(request, _("Information was saved."))
+        return redirect(reverse("controlpanel_users"))
+
+    context = {
+        "controlpanel": True,
+        "menu": "users",
+        "info": info,
+    }
+    return render(request, "controlpanel/user.html", context)
+
 # AJAX
 def ajax_species(request):
     query = request.GET.get("q")

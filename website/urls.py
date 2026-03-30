@@ -172,4 +172,7 @@ urlpatterns = [
     path("controlpanel/units/", views.controlpanel_units, name="controlpanel_units"),
     path("controlpanel/units/<int:id>/", views.controlpanel_unit, name="controlpanel_unit"),
     path("controlpanel/units/create/", views.controlpanel_unit, name="controlpanel_unit"),
+    path("controlpanel/users/", views.controlpanel_users, name="controlpanel_users"),
+    path("controlpanel/users/<int:id>/", views.controlpanel_user, name="controlpanel_user"),
+    path("controlpanel/users/create/", views.controlpanel_user, name="controlpanel_user"),
 ]

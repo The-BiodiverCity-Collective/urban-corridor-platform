@@ -1,0 +1,51 @@
+{% extends "_base.html" %}
+
+{% block content %}
+
+<h1 class="text-3xl">
+  Users
+</h1>
+
+{% if not users %}
+  <div class="alert alert-info mb-5">{{ _("No users found") }}</div>
+{% else %}
+  <table class="table mb-5">
+    <thead>
+      <tr>
+        <th>{{ _("Name") }}</th>
+        <th>{{ _("Features") }}</th>
+        <th>{{ _("Options") }}</th>
+      </tr>
+    </thead>
+    <tbody>
+    {% for each in users %}
+      <tr>
+        <td>
+          <a {% if not each.is_active %}class="opacity-50"{% endif %} href="{% url "controlpanel_user" each.id %}">{{ each }}</a>
+        </td>
+        <td>
+          {% if each.is_superuser %}
+            <span class="badge">Superuser</span>
+          {% endif %}
+          {% if each.is_staff %}
+            <span class="badge">Staff</span>
+          {% endif %}
+          {% if each.is_active %}
+            <span class="badge">Active</span>
+          {% else %}
+            <span class="badge bg-danger">Inactive</span>
+          {% endif %}
+        </td>
+        <td class="whitespace-nowrap">
+          <a class="btn-blue btn-sm" href="{% url "controlpanel_user" each.id %}"><i class="fa fa-pencil"></i> {{ _("Edit") }}</a>
+          <a class="btn-danger btn-sm" href="?delete={{ each.id }}"><i class="fa fa-trash"></i> {{ _("Delete") }}</a>
+        </td>
+      </tr>
+    {% endfor %}
+    </tbody>
+  </table>
+{% endif %}
+
+<a class="btn-blue" href="{% url "controlpanel_user" %}"><i class="fa fa-plus-square mr-1"></i> {{ _("Add user") }}</a>
+
+{% endblock %}
