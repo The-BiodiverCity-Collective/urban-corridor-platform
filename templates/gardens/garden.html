@@ -18,10 +18,6 @@
   <div class="alert alert-warning">
     <i class="fa fa-info-circle"></i>
     Please note: this garden is not yet publicly active. You can review and edit this garden before activating.
-    <form method="post">
-      <button type="submit" name="activate" value="true" class="btn btn-success mt-3">Activate this garden</button>
-      {% csrf_token %}
-    </form>
   </div>
 {% endif %}
 
@@ -56,7 +52,9 @@
             {% if info.photo %}
               <div id="headshot" aria-labelledby="headshot" tabindex="0" class="relative">
                 <img src="{{ info.photo.large }}" alt="" class="aspect-square w-full object-cover sm:rounded-lg">
-                <span id="credit" class="absolute text-sm bg-gray-50 opacity-90 p-1 rounded-tr-md" style="bottom:0;">{{ info.photo.credit }}</span>
+                <span id="credit" class="absolute text-sm bg-gray-50 opacity-90 p-1 rounded-tr-md" style="bottom:0;">
+                  {{ info.photo.credit }}
+                </span>
               </div>
             {% endif %}
 
@@ -64,7 +62,7 @@
 
         </div>
 
-        <h2 class="mt-4">{{ _("Support") }}</h2>
+        <h2 class="mt-10">{{ _("Support") }}</h2>
         <ul class="flex space-x-4">
           <a href="/contact/" class="flex-fill text-center bg-gray-100 action p-4 rounded-sm text-gray-800 no-underline">
             <i class="fal fa-handshake fa-2x fa-fw my-2"></i> <br>
@@ -74,7 +72,7 @@
             <i class="fal fa-heart-circle fa-2x fa-fw my-2"></i> <br>
             {{ _("I would like to support this garden") }}
           </a>
-          <a href="/contact/" class="flex-fill text-center bg-gray-100 action p-4 rounded-sm text-gray-800 no-underline">
+          <a href="{% url "planner" %}" class="flex-fill text-center bg-gray-100 action p-4 rounded-sm text-gray-800 no-underline">
             <i class="fal fa-edit fa-2x fa-fw my-2"></i> <br>
             {{ _("I would like to register my own garden") }}
           </a>
@@ -102,9 +100,9 @@
           {{ info.description|linebreaksbr|urlize }}
         </p>
 
-        <h2 class="mt-4">{{ _("More information") }}</h2>
+        <h2 class="mt-4" hidden>{{ _("More information") }}</h2>
 
-        <div class="w">
+        <div class="w" hidden>
           <div class="flex flex-wrap -mx-2">
             <div class="w-full sm:w-1/2 px-2">
 
@@ -161,13 +159,17 @@
 
     </div>
 
+    <div class="mt-10">
       <a href="{% url "gardens" %}">&laquo; Back to stepping-stone garden network</a>
 
-      <h4 class="mt-4">Update information</h4>
-      <p>
-        Do you want to update information on this page? 
-        <a href="{% url "garden_manager" info.id %}">Click here</a>.
-      </p>
+      {% if False %}
+        <h4 class="mt-4">Update information</h4>
+        <p>
+          Do you want to update information on this page? 
+          <a href="{% url "garden_manager" info.id %}">Click here</a>.
+        </p>
+      {% endif %}
+    </div>
 
 
   </div>

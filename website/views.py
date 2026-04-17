@@ -293,7 +293,7 @@ def map(request, id):
         else:
             geo = each.geometry
 
-        url = each.get_absolute_url
+        url = each.get_absolute_url()
 
         # If we need separate colors we'll itinerate over them one by one
         if show_individual_colors:
@@ -684,7 +684,7 @@ def geojson(request, id):
             geom = each.geometry
             if intersection:
                 geom = each.geometry.intersection(circle)
-            url = each.get_absolute_url
+            url = each.get_absolute_url()
             content = ""
             if each.photo:
                 content = f"<a class='d-block' href='{url}'><img alt='{each.name}' src='{each.photo.image.thumbnail.url}' /></a><hr>"
@@ -1093,6 +1093,7 @@ def garden(request, id):
     show_garden = True
 
     if not info.is_active:
+        # Needs review
         show_garden = False
         if request.user.is_authenticated:
             show_garden = True
@@ -1247,7 +1248,7 @@ def garden_form(request, id=None, token=None, uuid=None):
                     )
 
                 messages.success(request, "Information was saved.")
-                return redirect(info.get_absolute_url)
+                return redirect(info.get_absolute_url())
         else:
             messages.error(request, "We could not save your form, please fill out all fields")
     context = {
@@ -1325,7 +1326,7 @@ def vegetation_types(request):
     for each in spaces:
         geom_type = each.geometry.geom_type
         geo = each.geometry
-        url = each.get_absolute_url
+        url = each.get_absolute_url()
 
         # If we need separate colors we'll itinerate over them one by one
         if show_individual_colors:
@@ -1786,6 +1787,12 @@ def page(request, slug, menu=None):
             messages.warning(request, "This page is not currently published and not publicly available.")
     else:
         info = get_object_or_404(Page, slug=slug, is_active=True, site=site)
+
+    # We can use GARDEN in uppercase in the next_link and it will automatically be swapped for the garden id
+    # E.g. used in the requirements page
+    if info.meta_data and "next_link" in info.meta_data and "GARDEN" in info.meta_data["next_link"]:
+        garden = get_garden(request, request.COOKIES.get("garden_id"), silent_fail=True)
+        info.meta_data["next_link"] = info.meta_data["next_link"].replace("GARDEN", str(garden.id))
 
     context = {
         "info": info,
@@ -2508,6 +2515,22 @@ def planner_events(request, id):
     }
     return render(request, "planner/underconstruction.html", context)
 
+def planner_under_construction(request, id):
+
+    site = get_site(request)
+
+    if not (garden := get_garden(request, id)):
+        return redirect("planner")
+
+    context = {
+        "menu": "planner",
+        "page": "resources",
+        "slug": "resources",
+        "title": _("Resources"),
+        "garden": garden,
+    }
+    return render(request, "planner/underconstruction.html", context)
+
 def planner_profile(request, id):
 
     site = get_site(request)
@@ -2524,12 +2547,68 @@ def planner_profile(request, id):
     if not request.user.is_authenticated:
         return redirect(reverse("login") + "?next=" + request.get_full_path())
 
+    if request.method == "POST":
+        if "photos" in request.FILES:
+
+            position = Photo.objects.filter(garden=garden).aggregate(Max("position"))["position__max"]
+            if not position:
+                position = 0
+
+            for each in request.FILES.getlist("photos"):
+                position += 1
+                # Try to get the date from the EXIF data
+                image_file = each.read()
+                image = Image.open(io.BytesIO(image_file))
+                exif_data = image._getexif()
+                if exif_data:
+                    for tag_id, value in exif_data.items():
+                        tag = TAGS.get(tag_id, tag_id)
+                        if tag == "DateTimeOriginal":
+                            # Convert the EXIF date string to a datetime object
+                            try:
+                                photo_date = timezone.datetime.strptime(value, "%Y:%m:%d %H:%M:%S")
+                            except ValueError:
+                                photo_date = timezone.now()  # Fallback to today's date if parsing fails
+                                messages.warning(request, f"Photo date was not found for {each.name} - using today's date. Please change if needed.")
+
+                else:
+                    photo_date = timezone.now()
+                    messages.warning(request, f"Photo date was not found for {each.name} - using today's date. Please change if needed.")
+
+                Photo.objects.create(
+                    author = request.POST["photographer"],
+                    image = each,
+                    date = photo_date,
+                    position = position,
+                    garden = garden,
+                    source = "upload",
+                    license_code = request.POST["license"],
+                )
+
+            messages.success(request, _("Photos have been added."))
+            return redirect(request.get_full_path())
+
+        else:
+            garden.name = request.POST["name"]
+            garden.description = request.POST.get("description")
+            garden.type = request.POST["type"]
+            garden.contact_name = request.POST.get("contact_name")
+            garden.contact_phone = request.POST.get("contact_phone")
+            garden.contact_email = request.POST.get("contact_email")
+            garden.is_active = True if request.POST.get("is_active") == "1" else False
+            garden.save()
+            messages.success(request, _("Information has been saved."))
+            return redirect(request.get_full_path())
+
     context = {
         "menu": "planner",
         "page": "join",
         "slug": "profile",
-        "title": _("Register your garden"),
+        "title": _("Manage your garden profile"),
         "garden": garden,
+        "garden_types": Garden.GardenType,
+        "photos": True if "photos" in request.GET else False,
+        "licenses": Photo.LICENSE_CHOICES,
     }
     return render(request, "planner/profile.html", context)
 

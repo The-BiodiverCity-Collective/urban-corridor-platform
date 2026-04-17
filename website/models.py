@@ -220,7 +220,6 @@ class Document(models.Model):
         else:
             return None
 
-    @property
     def get_absolute_url(self):
         if self.doc_type == "SPECIES_LIST":
             return "/sources/" + str(self.id) + "/"
@@ -521,7 +520,6 @@ class ReferenceSpace(models.Model):
     def __str__(self):
         return self.name if self.name else str(_("Unnamed object"))
 
-    @property
     def get_absolute_url(self):
         if hasattr(self, "garden"):
             return f"/gardens/{self.id}/"
@@ -617,11 +615,23 @@ class Garden(ReferenceSpace):
     targets = models.ManyToManyField("Page", blank=True, related_name="garden_targets")
     site_features = models.ManyToManyField("Page", blank=True, related_name="garden_site_features")
 
+    class GardenType(models.IntegerChoices):
+        PUBLIC = 1, _("Public space")
+        PRIVATE = 2, _("Private garden")
+        CORPORATE = 3, _("Corporate garden/space")
+        BALCONY = 4, _("Balcony garden")
+        OTHER = 99, _("Other")
+
+    garden_type = models.IntegerField(choices=GardenType.choices, db_index=True, default=1)
+
     objects = ActiveRecordManager()
     objects_unfiltered = models.Manager()
 
     def __str__(self):
         return self.name
+
+    def get_absolute_url(self):
+        return reverse("garden", args=[self.id])
 
     @property
     def garden_photo(self):
@@ -831,7 +841,6 @@ class Species(models.Model):
         ordering = ["name"]
         verbose_name_plural = "Species"
 
-    @property
     def get_absolute_url(self):
         return reverse("species", args=[self.id])
 
@@ -1087,7 +1096,9 @@ class Photo(models.Model):
 
     @property
     def credit(self):
-        return self.author
+        license = self.license_code
+        license = license.upper()
+        return f"© {self.author} ({license})"
 
     @property
     def thumbnail(self):
@@ -1139,7 +1150,6 @@ class Corridor(models.Model):
     class Meta:
         ordering = ["name"]
 
-    @property
     def get_absolute_url(self):
         return f"/corridors/rivers/{self.id}/"
 

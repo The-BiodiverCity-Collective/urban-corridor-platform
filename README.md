@@ -60,7 +60,8 @@ From the root directory of the project. This is a shortcut to migrate any unappl
 
 This repository uses TailwindCSS (https://tailwindcss.com/). In general terms, here is how this works:
 
-- There is a node package installed (note that Node is included in the Dockerfile), called `tailwindcss`. Also included are `postcss-cli`, `postcss` and `autoprefixer`. These packages all work together to get the CSS properly set up. See more at: https://tailwindcss.com/docs/installation/tailwind-cli
-- Have a look at `package.json` for which files exactly are included. 
+- The standalone tailwind executable is used to create an output file from an input file and based on all classes used on the website.
+- The executable is downloadable from https://github.com/tailwindlabs/tailwindcss/releases, and should be saved in the main folder
+- Rename the executable from its platform-dependent name (e.g. tailwindcss-linux-x64) to tailwindcss-cli. Make sure to check the checksum when downloading.
 - Tailwind includes a ton of predefined styles. However, only the styles that are actually used on the website are included in the CSS file. This is done by running a script that checks which files are used and that then creates the static CSS file corresponding to those styles. 
-- Run `csscreate` to re-generate the CSS file. The configuration of what file is created is included in the `package.json` file. At present, `output.css` is the name of the final CSS. There is an intermediate CSS called `ucp.css` that includes details on which Tailwind features to load, AND it includes additional CSS to embed in `output.css`
+- Run `csscreate` to re-generate the CSS file. At present, `output.css` is the name of the final CSS. There is an intermediate CSS called `ucp.css` that includes details on which Tailwind features to load, AND it includes additional CSS to embed in `output.css`

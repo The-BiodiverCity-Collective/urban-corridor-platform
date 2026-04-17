@@ -70,49 +70,53 @@
 <div class="container pl-10 {% if not garden %}opacity-40 cursor-not-allowed{% endif %}">
   <div class="flex gap-4">
 
-    <a href="{% url "planner_location" GARDEN %}" class="flex-1 relative no-underline hover:opacity-75">
+    <a href="{% url "planner_under_construction" GARDEN %}" class="flex-1 relative no-underline hover:opacity-75">
       <div class="absolute inset-0 rounded-lg bg-white lg:rounded-bl-4xl"></div>
       <div class="relative flex h-full flex-col overflow-hidden rounded-[calc(var(--radius-lg)+1px)] lg:rounded-bl-[calc(2rem+1px)]">
         <img src="/media/planner.ecologicalwheel.png" alt="" class="h-40 object-cover object-center" />
         <div class="p-10 pt-4">
           <p class="mt-2 text-lg font-medium tracking-tight text-gray-950">{{ _("Ecological needs assessment") }}</p>
           <p class="mt-2 max-w-lg text-sm/6 text-gray-600 font-normal">{{ _("Assess, plan for, and monitor the ecological needs of your garden.") }}</p>
+          <span class="badge badge-warning">Under construction</span>
         </div>
       </div>
       <div class="pointer-events-none absolute inset-0 rounded-lg shadow-sm outline outline-black/5 lg:rounded-bl-4xl"></div>
     </a>
 
-    <a href="{% url "planner_target_species" GARDEN %}" class="flex-1 relative no-underline hover:opacity-75">
+    <a href="{% url "planner_under_construction" GARDEN %}" class="flex-1 relative no-underline hover:opacity-75">
       <div class="absolute inset-0 rounded-lg bg-white"></div>
       <div class="relative flex h-full flex-col overflow-hidden rounded-[calc(var(--radius-lg)+1px)]">
         <img src="/media/planner.socialwheel.png" alt="" class="h-40 object-cover object-center" />
         <div class="p-10 pt-4">
           <p class="mt-2 text-lg font-medium tracking-tight text-gray-950">{{ _("Social needs assessment") }}</p>
           <p class="mt-2 max-w-lg text-sm/6 text-gray-600 font-normal">{{ _("Assess, plan for, and monitor the social needs of your garden.") }}</p>
+          <span class="badge badge-warning">Under construction</span>
         </div>
       </div>
       <div class="pointer-events-none absolute inset-0 rounded-lg shadow-sm outline outline-black/5"></div>
     </a>
 
-    <a href="{% url "planner_target_species" GARDEN %}" class="flex-1 relative no-underline hover:opacity-75">
+    <a href="{% url "planner_under_construction" GARDEN %}" class="flex-1 relative no-underline hover:opacity-75">
       <div class="absolute inset-0 rounded-lg bg-white"></div>
       <div class="relative flex h-full flex-col overflow-hidden rounded-[calc(var(--radius-lg)+1px)]">
         <img src="/media/planner.design.jpg" alt="" class="h-40 object-cover object-center" />
         <div class="p-10 pt-4">
           <p class="mt-2 text-lg font-medium tracking-tight text-gray-950">{{ _("Garden design") }}</p>
           <p class="mt-2 max-w-lg text-sm/6 text-gray-600 font-normal">{{ _("Learn more about how to combine landscape architecture and ecological restoration to design your garden.") }}</p>
+          <span class="badge badge-warning">Under construction</span>
         </div>
       </div>
       <div class="pointer-events-none absolute inset-0 rounded-lg shadow-sm outline outline-black/5"></div>
     </a>
 
-    <a href="{% url "planner_target_species" GARDEN %}" class="flex-1 relative no-underline hover:opacity-75">
+    <a href="{% url "planner_under_construction" GARDEN %}" class="flex-1 relative no-underline hover:opacity-75">
       <div class="absolute inset-0 rounded-lg bg-white"></div>
       <div class="relative flex h-full flex-col overflow-hidden rounded-[calc(var(--radius-lg)+1px)]">
         <img src="/media/planner.certify.jpg" alt="" class="h-40 object-cover object-center" />
         <div class="p-10 pt-4">
           <p class="mt-2 text-lg font-medium tracking-tight text-gray-950">{{ _("Certification") }}</p>
           <p class="mt-2 max-w-lg text-sm/6 text-gray-600 font-normal">{{ _("Consult our affiliated professionals to certify your garden.") }}</p>
+          <span class="badge badge-warning">Under construction</span>
         </div>
       </div>
       <div class="pointer-events-none absolute inset-0 rounded-lg shadow-sm outline outline-black/5"></div>

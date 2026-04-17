@@ -118,6 +118,7 @@ urlpatterns = [
     path("planner/<int:id>/score/present/", views.planner_score, {"status": "PRESENT"}, name="planner_score_present"),
     path("planner/<int:id>/score/future/", views.planner_score, {"status": "FUTURE"}, name="planner_score_future"),
     path("planner/<int:id>/resources/", views.planner_resources, name="planner_resources"),
+    path("planner/<int:id>/under_construction/", views.planner_under_construction, name="planner_under_construction"),
     path("planner/<int:id>/join/", views.planner_join, name="planner_join"),
     path("planner/<int:id>/events/", views.planner_events, name="planner_events"),
     path("planner/<int:id>/support/", views.planner_support, name="planner_support"),
