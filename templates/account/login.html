@@ -58,7 +58,7 @@
 
     <p class="text-center text-sm/6 text-gray-500">
       {{ _("No account yet?") }}
-      <a href="{% url "create_account" %}" class="font-semibold">
+      <a href="{% url "create_account" %}{% if request.GET.next %}?next={{ request.GET.next }}{% endif %}" class="font-semibold">
         {{ _("Create an account") }}
       </a>
     </p>

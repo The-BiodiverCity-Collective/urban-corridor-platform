@@ -2038,6 +2038,9 @@ def planner(request, id=None):
     info = Page.objects.get(slug="planner", is_active=True, site=get_site(request))
     garden = None
 
+    if "my_garden" in request.POST:
+        return redirect(reverse("planner", args=[request.POST["my_garden"]]))
+
     if not id and "garden_uuid" in request.COOKIES and not "new" in request.GET:
         cookie_garden = Garden.objects_unfiltered.filter(uuid=request.COOKIES["garden_uuid"])
         if cookie_garden:
@@ -2074,6 +2077,7 @@ def planner(request, id=None):
         "score_present": get_garden_score(garden, "PRESENT") if garden else None,
         "score_future": get_garden_score(garden, "FUTURE") if garden else None,
         "planner_tab": "my_garden",
+        "my_gardens": Garden.objects_unfiltered.filter(user=request.user) if request.user.is_authenticated else None,
     }
     return render(request, "planner/index.html", context)
 
@@ -2508,8 +2512,17 @@ def planner_profile(request, id):
 
     site = get_site(request)
 
+    if not id and "garden_id" in request.COOKIES:
+        # We hard-coded the link from JOIN > REQUIREMENTS and use garden=0 because
+        # we can't hard-code the garden ID. So if id = 0, let's pick it up from the 
+        # cookie and redirect
+        return redirect(reverse("planner_profile", args=[request.COOKIES["garden_id"]]))
+
     if not (garden := get_garden(request, id)):
         return redirect("planner")
+
+    if not request.user.is_authenticated:
+        return redirect(reverse("login") + "?next=" + request.get_full_path())
 
     context = {
         "menu": "planner",
@@ -2518,7 +2531,7 @@ def planner_profile(request, id):
         "title": _("Register your garden"),
         "garden": garden,
     }
-    return render(request, "planner/underconstruction.html", context)
+    return render(request, "planner/profile.html", context)
 
 def planner_certification(request, id):
 
