@@ -9,6 +9,7 @@
     <tr>
       <th>{{ _("Name") }}</th>
       <th>{{ _("Photos") }}</th>
+      <th>{{ _("User") }}</th>
       <th>{{ _("Active") }}</th>
       <th>Original</th>
     </tr>
@@ -18,6 +19,7 @@
     <tr>
       <td><a href="{% url "controlpanel_garden" each.id %}">{{ each.name }}</td>
       <td>{{ each.photos.count }}</td>
+      <td>{{ each.user|default_if_none:"" }}</td>
       <td>{{ each.is_active }}</td>
       <td>{{ each.original.your_name }}<br>{{ each.original.email }}<br>{{each.original.phone }}</td>
     </tr>

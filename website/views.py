@@ -2920,6 +2920,7 @@ def controlpanel_garden(request, id=None):
         info.contact_email = request.POST.get("contact_email")
         info.contact_phone = request.POST.get("contact_phone")
         info.description = request.POST.get("description")
+        info.user_id = request.POST.get("user")
         info.is_active = True if request.POST.get("is_active") == "1" else False
         info.site = site
 
@@ -2978,6 +2979,7 @@ def controlpanel_garden(request, id=None):
         "menu": "gardens",
         "info": info,
         "title": _("Edit garden") + ": " + info.name if info.id else _("Add garden"),
+        "users": User.objects.all(),
     }
     return render(request, "controlpanel/garden.html", context)
 

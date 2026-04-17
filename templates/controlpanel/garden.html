@@ -115,6 +115,17 @@
               </div>
             </div>
           </fieldset>
+
+          <div>
+            <legend class="text-sm/6 font-semibold text-gray-900">{{ _("User") }}</legend>
+            <select name="user" class="mt-5">
+              <option value=""></option>
+              {% for each in users %}
+                <option {% if each == info.user %}selected{% endif %} value="{{ each.id }}">{{ each.email }}</option>
+              {% endfor %}
+            </select>
+          </div>
+
         </div>
       </div>
 
