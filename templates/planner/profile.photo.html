@@ -1,0 +1,72 @@
+{% extends "_base.html" %}
+{% load static %}
+
+{% block content %}
+
+<h1 class="text-3xl">{{ title }}</h1>
+
+<div class="sm:block">
+  <div class="border-b border-gray-200">
+    <nav class="tabs -mb-px flex space-x-8" aria-label="Tabs">
+      <a href="{% url "planner_profile" GARDEN %}" class="tab inactive"><i class="fa fa-pencil mr-1"></i> {{ _("Edit profile") }}</a>
+      <a href="{% url "planner_profile_photos" GARDEN %}" class="tab active"><i class="fa fa-image mr-1"></i>{{ _("Photos") }}</a>
+      <a href="{{ garden.get_absolute_url }}" target="_blank" class="tab ml-auto inactive"><i class="fa fa-external-link mr-1"></i>{{ _("Preview") }}</a>
+    </nav>
+  </div>
+</div>
+
+<div class="bg-gray-100 p-5">
+
+  <div class="space-y-12">
+
+    {% if not photos and not species %}
+
+    <form method="post" enctype="multipart/form-data">
+      {% csrf_token %}
+      <div class="space-y-12">
+        <div class="border-b border-gray-900/10 pb-12">
+
+          <div class="relative overflow-hidden rounded-lg shadow-lg w-40">
+            <img src="{{ photo.thumbnail }}" alt="" class="object-cover w-full h-full">
+          </div>
+
+          <div class="mt-10 grid grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6">
+            <div class="sm:col-span-4">
+              <label class="block text-sm/6 font-medium text-gray-900">{{ _("Photographer") }}</label>
+              <div class="mt-2">
+                <input type="text" required name="photographer" value="{{ photo.author }}" />
+              </div>
+            </div>
+          </div>
+
+          <div class="mt-10 grid grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6">
+            <div class="sm:col-span-4">
+              <label class="block text-sm/6 font-medium text-gray-900">{{ _("License") }}</label>
+              <div class="mt-2">
+              <select id="license" name="license" required>
+                <option value=""></option>
+                {% for key,value in licenses %}
+                  <option {% if key == photo.license_code %}selected{% endif %} value="{{ key }}">{{ value }}</option>
+                {% endfor %}
+              </select>
+            </div>
+            
+          </div>
+
+        </div>
+
+      </div>
+
+      <div class="mt-6 flex items-center justify-end gap-x-6">
+        <button type="submit" class="px-4 py-2 bg-lime-600 hover:bg-lime-700 text-white font-bold rounded-md focus:outline-hidden focus:ring-3 focus:ring-lime-300">
+          {{ _("Save") }}
+        </button>
+      </div>
+    </form>
+
+    {% endif %}
+
+  </div>
+</div>
+
+{% endblock %}

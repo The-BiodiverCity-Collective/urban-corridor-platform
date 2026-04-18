@@ -2531,7 +2531,7 @@ def planner_under_construction(request, id):
     }
     return render(request, "planner/underconstruction.html", context)
 
-def planner_profile(request, id):
+def planner_profile(request, id, photos=False):
 
     site = get_site(request)
 
@@ -2548,7 +2548,7 @@ def planner_profile(request, id):
         return redirect(reverse("login") + "?next=" + request.get_full_path())
 
     if request.method == "POST":
-        if "photos" in request.FILES:
+        if photos:
 
             position = Photo.objects.filter(garden=garden).aggregate(Max("position"))["position__max"]
             if not position:
@@ -2607,10 +2607,40 @@ def planner_profile(request, id):
         "title": _("Manage your garden profile"),
         "garden": garden,
         "garden_types": Garden.GardenType,
-        "photos": True if "photos" in request.GET else False,
+        "photos": photos,
         "licenses": Photo.LICENSE_CHOICES,
     }
     return render(request, "planner/profile.html", context)
+
+def planner_profile_photo(request, id, photo):
+
+    site = get_site(request)
+
+    if not (garden := get_garden(request, id)):
+        return redirect("planner")
+
+    if not request.user.is_authenticated:
+        return redirect(reverse("login") + "?next=" + request.get_full_path())
+
+    photo = Photo.objects.get(pk=photo, garden=garden)
+
+    if request.method == "POST":
+        photo.author = request.POST["photographer"]
+        photo.license_code = request.POST["license"]
+        photo.save()
+        messages.success(request, "Information was saved.")
+        return redirect(reverse("planner_profile_photos", args=[garden.id]))
+
+    context = {
+        "menu": "planner",
+        "page": "join",
+        "slug": "profile",
+        "title": _("Manage your garden profile"),
+        "garden": garden,
+        "photo": photo,
+        "licenses": Photo.LICENSE_CHOICES,
+    }
+    return render(request, "planner/profile.photo.html", context)
 
 def planner_certification(request, id):
 

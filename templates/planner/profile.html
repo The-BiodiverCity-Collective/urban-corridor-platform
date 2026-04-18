@@ -8,8 +8,8 @@
 <div class="sm:block">
   <div class="border-b border-gray-200">
     <nav class="tabs -mb-px flex space-x-8" aria-label="Tabs">
-      <a href="./" class="tab {% if photos or species %}in{% endif %}active"><i class="fa fa-pencil mr-1"></i> {{ _("Edit profile") }}</a>
-      <a href="./?photos" class="tab {% if not photos %}in{% endif %}active"><i class="fa fa-image mr-1"></i>{{ _("Photos") }}</a>
+      <a href="{% url "planner_profile" GARDEN %}" class="tab {% if photos or species %}in{% endif %}active"><i class="fa fa-pencil mr-1"></i> {{ _("Edit profile") }}</a>
+      <a href="{% url "planner_profile_photos" GARDEN %}" class="tab {% if not photos %}in{% endif %}active"><i class="fa fa-image mr-1"></i>{{ _("Photos") }}</a>
       <a href="{{ garden.get_absolute_url }}" target="_blank" class="tab ml-auto inactive"><i class="fa fa-external-link mr-1"></i>{{ _("Preview") }}</a>
     </nav>
   </div>
@@ -37,7 +37,7 @@
           </div>
         </div>
 
-        {% if garden.location_file %}
+        {% if garden.location_file and False %}
           <div class="col-span-full">
             <label for="cover-photo" class="block text-sm/6 font-medium text-gray-900">{{ _("File") }}</label>
             <div class="mt-2 flex rounded-lg border border-dashed border-gray-900/25 px-6 py-10">
@@ -126,7 +126,7 @@
             <div class="grid grid-cols-6 gap-2 mb-6">
               {% for each in garden.photos.all %}
                 <div class="relative overflow-hidden rounded-lg shadow-lg aspect-w-16 aspect-h-9">
-                  <img src="{{ each.thumbnail }}" alt="" class="object-cover w-full h-full">
+                  <a href="{{ each.id }}/"><img src="{{ each.thumbnail }}" alt="" class="object-cover w-full h-full"></a>
                 </div>
               {% endfor %}
             </div>

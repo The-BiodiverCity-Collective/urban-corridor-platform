@@ -124,6 +124,8 @@ urlpatterns = [
     path("planner/<int:id>/support/", views.planner_support, name="planner_support"),
     path("planner/<int:id>/certification/", views.planner_certification, name="planner_certification"),
     path("planner/<int:id>/profile/", views.planner_profile, name="planner_profile"),
+    path("planner/<int:id>/profile/photos/", views.planner_profile, {"photos": True}, name="planner_profile_photos"),
+    path("planner/<int:id>/profile/photos/<int:photo>/", views.planner_profile_photo, name="planner_profile_photo"),
     path("planner/<int:id>/design/", views.planner_design, name="planner_design"),
 
     # Control Panel
