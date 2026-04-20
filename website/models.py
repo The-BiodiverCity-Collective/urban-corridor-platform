@@ -1,5 +1,6 @@
 from django.db import models
 from django.contrib.gis.db import models
+from django.contrib.gis import geos
 from stdimage.models import StdImageField
 from django.utils.text import slugify
 from markdown import markdown
@@ -17,6 +18,9 @@ from django.db.models import Q, UniqueConstraint
 import datetime
 import requests
 from django.contrib.postgres.fields import ArrayField
+import xml.etree.ElementTree as ET
+import zipfile
+from django.contrib.gis import geos
 
 from django.utils import timezone
 
@@ -664,6 +668,53 @@ class Garden(ReferenceSpace):
         self.vegetation_type = veg
 
         super().save(*args, **kwargs)
+
+
+    def process_location_file(self):
+        """
+        Returns (True, None) on success.
+        Returns (False, "error message") on failure.
+        """
+        try:
+            # Save the geometry in the model
+            location_file_path = self.location_file.path
+            directory = f"/tmp/kmz_extracted_{self.id}"
+            with zipfile.ZipFile(location_file_path, "r") as kmz:
+                kmz.extractall(directory)
+
+            # Find the KML file in the extracted contents
+            kml_file_path = None
+            for file in os.listdir(directory):
+                if file.endswith(".kml"):
+                    kml_file_path = os.path.join(directory, file)
+                    break
+
+            # Read the KML file and extract geometry
+            if kml_file_path:
+
+                tree = ET.parse(kml_file_path)
+                root = tree.getroot()
+
+                # Extract coordinates from KML (assuming simple KML with <coordinates> tag)
+                coordinates = root.findall('.//{http://www.opengis.net/kml/2.2}coordinates')[0].text.strip().split()
+
+                # Convert to a list of tuples of coordinates
+                coords = [(float(c.split(',')[0]), float(c.split(',')[1])) for c in coordinates]
+
+                # Create geometry (assuming it's a polygon)
+                polygon = geos.Polygon(coords)
+
+                self.geometry = polygon
+                self.save()
+                return True, None
+
+            else:
+
+                return False, _("No KML file found. Is this a valid KMZ file?")
+
+        except Exception as e:
+
+            return False, _("We were unable to save the coordinates, please make sure it is a valid KMZ file. Error: ") + str(e)
 
 class Event(models.Model):
     name = models.CharField(max_length=255, db_index=True)

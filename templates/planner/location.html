@@ -32,6 +32,15 @@
   .leaflet-container .leaflet-popup-content a {
     color:#fff
   }
+  .leaflet-pane {
+    z-index: 50;
+  }
+  .leaflet-control {
+    z-index: 60;
+  }
+  .leaflet-bottom {
+    z-index: 70;
+  }
 </style>
 {% endblock %}
 
@@ -45,10 +54,59 @@
   {{ info.get_content }}
 </div>
 
-<div class="mb-4 rounded shadow-sm" id="map">
+<div class="mb-4 rounded shadow-sm" id="map"></div>
+
+<div class="flex justify-between">
+  {% if show_next_buttons %}
+    <a href="?reset_location{% if "new_garden" in request.GET %}&new_garden=true{% endif %}" class="btn-white">
+      <i class="fa fa-arrow-left"></i>
+      {{ _("Reset location") }}
+    </a>
+    <a href="?confirm_location{% if "new_garden" in request.GET %}&new_garden=true{% endif %}" class="btn-green">
+      <i class="fa fa-arrow-right"></i>
+      {{ _("Confirm location") }}
+    </a>
+  {% else %}
+    {% include "planner/_returnlink.html" %}
+    <button type="button" id="kmz" class="btn btn-white">
+      <i class="fa fa-upload"></i>
+      {{ _("Upload KMZ file") }}
+    </button>
+  {% endif %}
 </div>
 
-{% include "planner/_returnlink.html" %}
+<el-dialog>
+  <dialog id="dialog" aria-labelledby="dialog-title" class="z-100 fixed inset-0 size-auto max-h-none max-w-none overflow-y-auto bg-transparent backdrop:bg-transparent">
+    <el-dialog-backdrop class="fixed inset-0 bg-gray-500/75 transition-opacity data-closed:opacity-0 data-enter:duration-300 data-enter:ease-out data-leave:duration-200 data-leave:ease-in dark:bg-gray-900/50"></el-dialog-backdrop>
+    <div tabindex="0" class="flex min-h-full items-end justify-center p-4 text-center focus:outline-none sm:items-center sm:p-0">
+      <el-dialog-panel class="relative transform overflow-hidden rounded-lg bg-white px-4 pt-5 pb-4 text-left shadow-xl transition-all data-closed:translate-y-4 data-closed:opacity-0 data-enter:duration-300 data-enter:ease-out data-leave:duration-200 data-leave:ease-in sm:my-8 sm:w-full sm:max-w-lg sm:p-6 data-closed:sm:translate-y-0 data-closed:sm:scale-95 dark:bg-gray-800 dark:outline dark:-outline-offset-1 dark:outline-white/10">
+      <form method="post" class="mt-2" enctype="multipart/form-data">
+        <div>
+          <div class="mt-3 text-center sm:mt-5">
+            <h3 id="dialog-title" class="text-base font-semibold text-gray-900">
+              {{ _("Upload KMZ file") }}
+            </h3>
+              <div class="mt-2">
+                <p class="text-sm text-gray-500 dark:text-gray-400">
+                  {{ _("You can use software like QGIS, ArcGIS, or Google Earth to draw a polygon around your garden and save it as a .kmz file. Upload that file here to record the exact shape of your garden.") }}
+                </p>
+                <input type="file" name="file" accept=".kmz" required />
+              </div>
+              {% csrf_token %}
+            </div>
+          </div>
+          <div class="mt-5 sm:mt-6 sm:grid sm:grid-flow-row-dense sm:grid-cols-2 sm:gap-3">
+            <button type="submit" class="btn-green inline-flex w-full justify-center sm:col-start-2">{{ _("Upload file") }}</button>
+            <button type="button" id="close_modal" class="mt-3 inline-flex w-full justify-center rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-xs inset-ring-1 inset-ring-gray-300 hover:bg-gray-50 sm:col-start-1 sm:mt-0 cursor-pointer">
+              {{ _("Close") }}
+            </button>
+          </div>
+        </form>
+      </el-dialog-panel>
+    </div>
+  </dialog>
+</el-dialog>
+
 
 {% endblock %}
 
@@ -63,12 +121,28 @@
 			.openOn(map);
 	}
 
-	map.on('click', onMapClick);
+	map.on("click", onMapClick);
 
   {% if garden.geometry %}
-    L.marker([{{ garden.geometry.centroid.y }}, {{ garden.geometry.centroid.x }}]).addTo(map);
+    {% if garden.geometry.geom_type == "Polygon" or garden.geometry.geom_type == "MultiPolygon" %}
+      var coords = {{ garden.geometry.geojson|safe }};
+      L.geoJSON(coords).addTo(map);
+      map.fitBounds(L.geoJSON(coords).getBounds());
+    {% else %}
+      L.marker([{{ garden.geometry.y }}, {{ garden.geometry.x }}]).addTo(map);
+      map.setView([{{ garden.geometry.y }}, {{ garden.geometry.x }}], 15);
+    {% endif %}
   {% endif %}
 
+  $(function(){
+    $("#kmz").click(function(){
+      $("#dialog").show();
+    });
+    $("#close_modal").click(function(){
+      $("#dialog").hide();
+    });
+  });
 
 </script>
+
 {% endblock %}

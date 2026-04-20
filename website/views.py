@@ -2085,6 +2085,7 @@ def planner(request, id=None):
         "score_future": get_garden_score(garden, "FUTURE") if garden else None,
         "planner_tab": "my_garden",
         "my_gardens": Garden.objects_unfiltered.filter(user=request.user) if request.user.is_authenticated else None,
+        "hide_bottom_planner_menu": True if not garden else False,
     }
     return render(request, "planner/index.html", context)
 
@@ -2094,6 +2095,30 @@ def planner_location(request, id):
 
     if not (garden := get_garden(request, id)):
         return redirect("planner")
+
+    show_next_buttons = False
+
+    if "reset_location" in request.GET:
+        garden.location_file = None
+        garden.geometry = None
+        garden.save()
+
+    if "confirm_location" in request.GET:
+        if "new_garden" in request.GET:
+            return redirect(reverse("planner_site", args=[garden.id]) + "?new_garden")
+        else:
+            messages.success(request, _("Your garden location was saved."))
+            return redirect(reverse("planner", args=[garden.id]))
+
+    if request.method == "POST" and request.FILES.get("file"):
+        garden.location_file = request.FILES.get("file")
+        garden.save()
+        success, err = garden.process_location_file()
+        if success:
+            messages.success(request, _("Your KML file was uploaded. Please review and confirm the polygon below"))
+            show_next_buttons = True
+        else:
+            messages.warning(request, err)
 
     if "lat" in request.GET and "lng" in request.GET:
         lat = float(request.GET.get("lat"))
@@ -2128,6 +2153,7 @@ def planner_location(request, id):
         "map_hide_save": True,
         "step": 1,
         "swapped_corridor_coords": get_swapped_corridor_coords(site),
+        "show_next_buttons": show_next_buttons,
     }
     return render(request, "planner/location.html", context)
 
@@ -2964,43 +2990,9 @@ def controlpanel_garden(request, id=None):
         messages.success(request, _("Information was saved."))
 
         if uploaded_file:
-            try:
-                location_file_path = info.location_file.path
-                directory = f"/tmp/kmz_extracted_{info.id}"
-                with zipfile.ZipFile(location_file_path, "r") as kmz:
-                    kmz.extractall(directory)
-
-                # Find the KML file in the extracted contents
-                kml_file_path = None
-                for file in os.listdir(directory):
-                    if file.endswith(".kml"):
-                        kml_file_path = os.path.join(directory, file)
-                        break
-
-                # Read the KML file and extract geometry
-                if kml_file_path:
-
-                    tree = ET.parse(kml_file_path)
-                    root = tree.getroot()
-
-                    # Extract coordinates from KML (assuming simple KML with <coordinates> tag)
-                    coordinates = root.findall('.//{http://www.opengis.net/kml/2.2}coordinates')[0].text.strip().split()
-
-                    # Convert to a list of tuples of coordinates
-                    coords = [(float(c.split(',')[0]), float(c.split(',')[1])) for c in coordinates]
-
-                    # Create geometry (assuming it's a polygon)
-                    polygon = geos.Polygon(coords)
-
-                    # Save the geometry in the model
-                    info.geometry = polygon
-                    info.save()
-                else:
-                    messages.warning(request, _("No KML file found. Is this a valid KMZ file?"))
-
-            except Exception as e:
-
-                messages.warning(request, _("We were unable to save the coordinates, please make sure it is a valid KMZ file. Error:") + str(e))
+            success, err = info.process_location_file()
+            if not success:
+                messages.warning(request, err)
 
         return redirect(reverse("controlpanel_gardens"))
 

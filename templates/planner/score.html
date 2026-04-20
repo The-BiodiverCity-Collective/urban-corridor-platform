@@ -64,6 +64,8 @@
 
 <div class="mt-20">
 
+  {% if scores %}
+
   <section class="break-before-page mb-20 bg-white p-6 rounded-lg shadow-sm" id="section-species-composition">
 
     <h2>{{ _("Species composition") }}</h2>
@@ -495,5 +497,7 @@
     </section>
 
   {% endfor %}
+
+  {% endif %}
 
 {% endblock %}
