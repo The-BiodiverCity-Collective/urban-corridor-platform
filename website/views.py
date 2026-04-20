@@ -2048,14 +2048,13 @@ def planner(request, id=None):
     if "my_garden" in request.POST:
         return redirect(reverse("planner", args=[request.POST["my_garden"]]))
 
-    if not id and "garden_uuid" in request.COOKIES and not "new" in request.GET:
+    if id and not "new" in request.GET:
+        garden = get_garden(request, id)
+    elif not id and "garden_uuid" in request.COOKIES and not "new" in request.GET:
         cookie_garden = Garden.objects_unfiltered.filter(uuid=request.COOKIES["garden_uuid"])
         if cookie_garden:
             cookie_garden = cookie_garden[0]
             garden = get_garden(request, cookie_garden.id, silent_fail=True)
-
-    if id and not "new" in request.GET:
-        garden = get_garden(request, id)
 
     if request.method == "POST" and "garden" in request.POST:
         garden = Garden.objects.create(
@@ -2087,6 +2086,13 @@ def planner(request, id=None):
         "my_gardens": Garden.objects_unfiltered.filter(user=request.user) if request.user.is_authenticated else None,
         "hide_bottom_planner_menu": True if not garden else False,
     }
+
+    # Cookie is not yet set but the garden is opened so let's update the context variable here manually
+    if garden and garden.id != request.COOKIES.get("garden_id"):
+        context.update({
+            "GARDEN": garden.id,
+        })
+
     return render(request, "planner/index.html", context)
 
 def planner_location(request, id):
