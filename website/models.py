@@ -226,7 +226,7 @@ class Document(models.Model):
 
     def get_absolute_url(self):
         if self.doc_type == "SPECIES_LIST":
-            return "/sources/" + str(self.id) + "/"
+            return "/species/sources/" + str(self.id) + "/"
         else:
             return "/maps/" + str(self.id) + "/"
 

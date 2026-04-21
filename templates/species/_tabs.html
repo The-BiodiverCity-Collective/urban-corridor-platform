@@ -23,6 +23,12 @@
         <i class="fa fa-image mr-1"></i>
         {{ _("Photos - extended") }}
       </a>
+      {% if show_bulk_add %}
+        <a href="{% querystring_plus view="table-bulk-add" %}" class="tab {% if request.GET.view == "table-bulk-add" %}active{% else %}inactive{% endif %}">
+          <i class="fa fa-plus mr-1"></i>
+          {{ _("Bulk add") }}
+        </a>
+      {% endif %}
     </nav>
   </div>
 </div>

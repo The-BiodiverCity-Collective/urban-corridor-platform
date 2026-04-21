@@ -889,6 +889,11 @@ def species_list(request, genus=None, family=None, vegetation_type=None, garden=
         except:
             info = None
 
+    if view == "table-bulk-add":
+        # Forget about all the species filtering and instead 
+        # show ALL the species so users can add them
+        species = Species.objects.filter(site=site)
+
     context = {
         "species_list": species,
         "load_datatables": True,
@@ -907,7 +912,8 @@ def species_list(request, genus=None, family=None, vegetation_type=None, garden=
         "planner_tab": "my_plants" if garden_status else None,
 
         # Because we have tabs above the <main>, we need to unround the top-left corner if the first tab is active
-        "main_classes": "rounded-tl-none" if request.GET.get("view", "table") == "table" else None,
+        "main_classes": "rounded-tl-none" if request.GET.get("view", "table") == "photos-data" else None,
+        "show_bulk_add": True if garden_status else False,
     }
 
     return render(request, "species/list.html", context)

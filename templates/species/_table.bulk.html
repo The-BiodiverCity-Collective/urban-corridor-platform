@@ -1,0 +1,56 @@
+<div class="alert alert-info">
+  {{ _("Use this page to quickly add species to your current or future plant lists. Click the relevant buttons under the OPTIONS column to add or remove from specific lists.") }}
+</div>
+
+<table class="table datatable species species_list" style="table-layout: fixed">
+  <thead>
+    <tr>
+      <th style="width:250px">{{ _("Scientific name") }}</th>
+      <th style="width:250px">{{ _("Common name") }}</th>
+      <th>{{ _("Options") }}</th>
+
+    </tr>
+  </thead>
+  <tbody>
+  {% for each in species_list %}
+    <tr class="species">
+      <td>
+        <a href="{% url "species" each.id %}" class="name">
+          <em>{{ each.name }}</em>
+        </a>
+      </td>
+
+      <td>{{ each.name_en }}</td>
+
+      <td>
+
+          {% if garden %}
+            <div class="mt-1">
+              <button 
+                data-species="{{ each.id }}" 
+                data-action="PRESENT" 
+                class="planner-action {% if each in in_garden_present %}btn-gray{% else %}btn-white{% endif %} btn-sm"
+              >
+                  <i class="fa fa-check-circle mr-1"></i>
+                {{ _("I have this") }}
+              </button>
+              <button 
+                data-species="{{ each.id }}" 
+                data-action="FUTURE" 
+                class="planner-action {% if each in in_garden_future %}btn-gray{% else %}btn-white{% endif %} btn-sm"
+              >
+                  <i class="fa fa-calendar-plus mr-1"></i>
+                {{ _("I want this") }}
+              </button>
+            </div>
+          {% endif %}
+      </td>
+
+    </tr>
+  {% endfor %}
+  </tbody>
+</table>
+
+{% if garden %}
+  {% include "species/_js.ajaxbuttons.html" %}
+{% endif %}

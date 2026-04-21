@@ -16,6 +16,8 @@
       {% include "species/_photos.html" %}
     {% elif request.GET.view == "photos-extended" %}
       {% include "species/_photos.extended.html" %}
+    {% elif request.GET.view == "table-bulk-add" %}
+      {% include "species/_table.bulk.html" %}
     {% endif %}
   </section>
 
