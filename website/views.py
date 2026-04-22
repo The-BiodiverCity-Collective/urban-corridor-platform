@@ -3400,7 +3400,9 @@ def controlpanel_ajax_get_inat_data(request, id):
     error = None
     if inat_info:
         success = True
-    else:
+        inat_names = info.get_common_names()
+    
+    if not inat_info or not inat_names:
         info = Species.objects.get(pk=id)
         error = info.meta_data["inat_error"]
 
@@ -3946,8 +3948,11 @@ def controlpanel_species(request, id=None):
                 "alternatives": each.alternative_names,
             }
 
+    inat_names = None
     try:
         inat = json.dumps(info.meta_data["inat"], indent=2)
+        if "inat_names" in info.meta_data:
+            inat_names = json.dumps(info.meta_data["inat_names"], indent=2)
     except:
         inat = None
 
@@ -3963,6 +3968,7 @@ def controlpanel_species(request, id=None):
         "texts": texts,
         "title": info.name if info.name else "Add new species",
         "inat": inat,
+        "inat_names": inat_names,
     }
 
     return render(request, "controlpanel/species.html", context)

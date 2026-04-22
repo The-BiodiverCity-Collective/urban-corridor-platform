@@ -6,7 +6,7 @@
   <thead>
     <tr>
       <th style="width:250px">{{ _("Scientific name") }}</th>
-      <th style="width:250px">{{ _("Common name") }}</th>
+      <th style="width:250px">{{ _("Common name(s)") }}</th>
       <th>{{ _("Options") }}</th>
 
     </tr>
@@ -20,7 +20,15 @@
         </a>
       </td>
 
-      <td>{{ each.name_en }}</td>
+      <td>
+        <ul>
+        {% for name in each.meta_data.inat_active_names %}
+          {% if name.locale == "en" %}
+            <li>{{ name.name|title }}</li>
+          {% endif %}
+        {% endfor %}
+        </ul>
+      </td>
 
       <td>
 

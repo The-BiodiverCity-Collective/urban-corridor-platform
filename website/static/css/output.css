@@ -1864,6 +1864,11 @@
     --tw-border-style: none;
     border-style: none;
   }
+  .alert-danger {
+    border-color: var(--color-red-500);
+    background-color: var(--color-red-100);
+    color: var(--color-red-700);
+  }
   .alert-info {
     border-color: var(--color-sky-500);
     background-color: var(--color-sky-100);

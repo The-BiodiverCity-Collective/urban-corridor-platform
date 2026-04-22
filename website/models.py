@@ -60,6 +60,9 @@ class Language(models.Model):
     def __str__(self):
         return self.name
 
+    def code_two_digits(self):
+        return self.code[:2]
+
 class Site(models.Model):
     name = models.CharField(max_length=255)
     url = models.CharField(max_length=255)
@@ -998,6 +1001,7 @@ class Species(models.Model):
                     if "results" in data and data["results"]:
                         info = data["results"][0]
                         self.meta_data["inat"] = info
+                        self.meta_data["inat_error"] = None
 
                         # If no family is set, let's get if from iNat
                         if not self.family_id:
@@ -1072,6 +1076,33 @@ class Species(models.Model):
 
             self.meta_data["pics_imported"] = True
             self.save()
+
+    def get_common_names(self):
+        taxon_id = self.inat_id
+        base_url = f"https://api.inaturalist.org/v1/taxa/{self.inat_id}?all_names=true"
+        error = None
+
+        try:
+            response = requests.get(base_url)
+            
+            if response.status_code == 200:
+                locales = [lang.code[:2] for lang in Language.objects.all()]
+                data = response.json()
+                names = data["results"][0]["names"]
+                self.meta_data["inat_names"] = names
+                self.meta_data["inat_active_names"] = [n for n in names if n["locale"] in locales and n["is_valid"]]
+                self.meta_data["inat_error"] = None
+                self.save()
+                return True
+            else:
+                error = f"Error: {response.status_code}"
+        except Exception as e:
+            error = f"An error occurred: {e}"
+
+        if error:
+            self.meta_data["inat_error"] = error
+            self.save()
+            return False
 
     @property
     def inat_photos(self):
