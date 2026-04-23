@@ -72,6 +72,7 @@ class Site(models.Model):
     logo = StdImageField(upload_to="logos", variations={"thumbnail": (350, 350), "medium": (800, 600)}, null=True, blank=True)
     meta_data = models.JSONField(null=True, blank=True)
     vegetation_types_map = models.ForeignKey("Document", on_delete=models.PROTECT, null=True, blank=True, related_name="primary_site_vegetation")
+    languages_species = models.ManyToManyField(Language, related_name="site_species")
 
     def __str__(self):
         return self.name

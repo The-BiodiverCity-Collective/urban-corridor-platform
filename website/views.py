@@ -913,8 +913,21 @@ def species_list(request, genus=None, family=None, vegetation_type=None, garden=
 
         # Because we have tabs above the <main>, we need to unround the top-left corner if the first tab is active
         "main_classes": "rounded-tl-none" if request.GET.get("view", "table") == "photos-data" else None,
-        "show_bulk_add": True if garden_status else False,
     }
+
+    if view == "table-bulk-add":
+        if request.GET.get("language"):
+            # The language GET param includes the id of the language + single/all to indicate how many 
+            # common names to show (e.g. 6_all). We need to split to get the language ID
+            language = Language.objects.get(pk=request.GET.get("language").split("_", 1)[0])
+        else:
+            language = site.language
+        context.update({
+            "show_bulk_add": True if garden_status else False,
+            "languages": Language.objects.filter(site_species=site) if garden_status else None,
+            "language": language,
+            "names": "all" if "_all" in request.GET.get("language","") else "single",
+        })
 
     return render(request, "species/list.html", context)
 

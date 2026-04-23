@@ -4400,6 +4400,9 @@
   color: var(--color-sky-600);
 }
 @layer utilities {
+  .show_only_first > *:not(:first-child) {
+    display: none;
+  }
   section.features svg, table.species svg {
     width: 20px;
     height: 20px;

@@ -2,6 +2,17 @@
   {{ _("Use this page to quickly add species to your current or future plant lists. Click the relevant buttons under the OPTIONS column to add or remove from specific lists.") }}
 </div>
 
+<div>
+  {{ _("Show common names in the following language:") }}
+</div>
+
+<select id="language" class="mt-2">
+  {% for each in languages %}
+    <option value="{{ each.id }}_single" {% if language == each and names == "single" %}selected{% endif %}>{{ each }} - {{ _("one common name per species") }}</option>
+    <option value="{{ each.id }}_all" {% if language == each and names == "all" %}selected{% endif %}>{{ each }} - {{ _("all common names available") }}</option>
+  {% endfor %}
+</select>
+
 <table class="table datatable species species_list" style="table-layout: fixed">
   <thead>
     <tr>
@@ -21,9 +32,9 @@
       </td>
 
       <td>
-        <ul>
+        <ul {% if names == "single" %}class="show_only_first"{% endif %}>
         {% for name in each.meta_data.inat_active_names %}
-          {% if name.locale == "en" %}
+          {% if name.locale == language.code_two_digits %}
             <li>{{ name.name|title }}</li>
           {% endif %}
         {% endfor %}
@@ -62,3 +73,16 @@
 {% if garden %}
   {% include "species/_js.ajaxbuttons.html" %}
 {% endif %}
+
+{% block js %}
+  <script type="text/javascript">
+  $(function(){
+    $("#language").on("change", function() {
+      var val = encodeURIComponent(this.value);
+      var url = new URL(window.location.href);
+      url.searchParams.set("language", val);
+      window.location.href = url.toString();
+    });
+  });
+  </script>
+{% endblock %}
