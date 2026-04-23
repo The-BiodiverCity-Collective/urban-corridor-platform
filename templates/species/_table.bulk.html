@@ -34,7 +34,7 @@
       <td>
         <ul {% if names == "single" %}class="show_only_first"{% endif %}>
         {% for name in each.meta_data.inat_active_names %}
-          {% if name.locale == language.code_two_digits %}
+          {% if name.lexicon == language.lexicon_code %}
             <li>{{ name.name|title }}</li>
           {% endif %}
         {% endfor %}
@@ -42,27 +42,26 @@
       </td>
 
       <td>
-
-          {% if garden %}
-            <div class="mt-1">
-              <button 
-                data-species="{{ each.id }}" 
-                data-action="PRESENT" 
-                class="planner-action {% if each in in_garden_present %}btn-gray{% else %}btn-white{% endif %} btn-sm"
-              >
-                  <i class="fa fa-check-circle mr-1"></i>
-                {{ _("I have this") }}
-              </button>
-              <button 
-                data-species="{{ each.id }}" 
-                data-action="FUTURE" 
-                class="planner-action {% if each in in_garden_future %}btn-gray{% else %}btn-white{% endif %} btn-sm"
-              >
-                  <i class="fa fa-calendar-plus mr-1"></i>
-                {{ _("I want this") }}
-              </button>
-            </div>
-          {% endif %}
+        {% if garden %}
+          <div class="mt-1">
+            <button 
+              data-species="{{ each.id }}" 
+              data-action="PRESENT" 
+              class="planner-action {% if each in in_garden_present %}btn-gray{% else %}btn-white{% endif %} btn-sm"
+            >
+                <i class="fa fa-check-circle mr-1"></i>
+              {{ _("I have this") }}
+            </button>
+            <button 
+              data-species="{{ each.id }}" 
+              data-action="FUTURE" 
+              class="planner-action {% if each in in_garden_future %}btn-gray{% else %}btn-white{% endif %} btn-sm"
+            >
+                <i class="fa fa-calendar-plus mr-1"></i>
+              {{ _("I want this") }}
+            </button>
+          </div>
+        {% endif %}
       </td>
 
     </tr>

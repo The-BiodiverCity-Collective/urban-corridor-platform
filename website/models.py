@@ -56,12 +56,10 @@ MONTH_CHOICES = [
 class Language(models.Model):
     name = models.CharField(max_length=255)
     code = models.CharField(max_length=5)
+    lexicon_code = models.CharField(max_length=30, help_text="Lexicon code in iNaturalist", null=True)
 
     def __str__(self):
         return self.name
-
-    def code_two_digits(self):
-        return self.code[:2]
 
 class Site(models.Model):
     name = models.CharField(max_length=255)
@@ -1087,11 +1085,11 @@ class Species(models.Model):
             response = requests.get(base_url)
             
             if response.status_code == 200:
-                locales = [lang.code[:2] for lang in Language.objects.all()]
+                locales = [lang.lexicon_code for lang in Language.objects.all()]
                 data = response.json()
                 names = data["results"][0]["names"]
                 self.meta_data["inat_names"] = names
-                self.meta_data["inat_active_names"] = [n for n in names if n["locale"] in locales and n["is_valid"]]
+                self.meta_data["inat_active_names"] = [n for n in names if n["lexicon"] in locales and n["is_valid"]]
                 self.meta_data["inat_error"] = None
                 self.save()
                 return True

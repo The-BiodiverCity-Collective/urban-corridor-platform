@@ -36,6 +36,7 @@ import uuid
 import wikipediaapi
 import xml.etree.ElementTree as ET
 import zipfile
+import time
 
 from PIL import Image
 from PIL.ExifTags import TAGS, GPSTAGS
@@ -913,6 +914,7 @@ def species_list(request, genus=None, family=None, vegetation_type=None, garden=
 
         # Because we have tabs above the <main>, we need to unround the top-left corner if the first tab is active
         "main_classes": "rounded-tl-none" if request.GET.get("view", "table") == "photos-data" else None,
+        "show_bulk_add": True if garden_status else False,
     }
 
     if view == "table-bulk-add":
@@ -922,8 +924,8 @@ def species_list(request, genus=None, family=None, vegetation_type=None, garden=
             language = Language.objects.get(pk=request.GET.get("language").split("_", 1)[0])
         else:
             language = site.language
+
         context.update({
-            "show_bulk_add": True if garden_status else False,
             "languages": Language.objects.filter(site_species=site) if garden_status else None,
             "language": language,
             "names": "all" if "_all" in request.GET.get("language","") else "single",
@@ -3413,6 +3415,7 @@ def controlpanel_ajax_get_inat_data(request, id):
     error = None
     if inat_info:
         success = True
+        time.sleep(1) # Making sure we don't trigger the max number of requests of the API
         inat_names = info.get_common_names()
     
     if not inat_info or not inat_names:
@@ -3962,10 +3965,13 @@ def controlpanel_species(request, id=None):
             }
 
     inat_names = None
+    inat_active_names = None
     try:
         inat = json.dumps(info.meta_data["inat"], indent=2)
         if "inat_names" in info.meta_data:
             inat_names = json.dumps(info.meta_data["inat_names"], indent=2)
+        if "inat_active_names" in info.meta_data:
+            inat_active_names = json.dumps(info.meta_data["inat_active_names"], indent=2)
     except:
         inat = None
 
@@ -3982,6 +3988,7 @@ def controlpanel_species(request, id=None):
         "title": info.name if info.name else "Add new species",
         "inat": inat,
         "inat_names": inat_names,
+        "inat_active_names": inat_active_names,
     }
 
     return render(request, "controlpanel/species.html", context)
