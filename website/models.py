@@ -37,6 +37,10 @@ from django.contrib.auth.models import User
 from django.contrib.auth import get_user_model
 User = get_user_model()
 
+# This is to raise an error if the monthly email quota is being exceeded
+from anymail.signals import pre_send, post_send
+from anymail.exceptions import AnymailCancelSend
+
 MONTH_CHOICES = [
     (1, _("Jan")),
     (2, _("Feb")),
@@ -1397,3 +1401,37 @@ class NurseryInventory(models.Model):
 
     def __str__(self):
         return str(self.species)
+
+# E-mail quota management
+class EmailQuota(models.Model):
+    count = models.PositiveIntegerField(default=0)
+    last_reset = models.DateTimeField(default=timezone.now)
+
+    def is_quota_exceeded(self):
+        return self.count >= settings.EMAIL_QUOTA
+
+    @classmethod
+    def get_quota(cls):
+        quota, created = cls.objects.get_or_create(pk=1)
+        return quota
+
+@receiver(pre_send)
+def handle_quota_limit(sender, message, **kwargs):
+    quota = EmailQuota.get_quota()
+    now = timezone.now()
+
+    # Reset if the current year/month is different from the last record
+    if (now.year, now.month) != (quota.last_reset.year, quota.last_reset.month):
+        quota.count = 0
+        quota.last_reset = now
+        quota.save()
+
+    if quota.is_quota_exceeded():
+        # Stops the send before hitting your provider's API
+        raise AnymailCancelSend("Monthly limit reached.")
+
+@receiver(post_send)
+def track_sent_emails(sender, message, status, **kwargs):
+    quota = EmailQuota.get_quota()
+    quota.count += 1
+    quota.save()

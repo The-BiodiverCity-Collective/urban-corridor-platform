@@ -1,22 +1,29 @@
 @import 'tailwindcss';
 
-@utility table {
-  @apply w-full border-collapse bg-white;
+@layer utility {
+  table {
+    @apply w-full border-collapse bg-white;
 
-  & th {
-    @apply bg-gray-100 text-left font-semibold p-3 border-b;
-    border-color: #dedede;
+    & th {
+      @apply bg-gray-100 text-left font-semibold p-3 border-b;
+      border-color: #dedede;
+    }
+
+    & td {
+      @apply p-3 border-b;
+      border-color: #dedede;
+    }
+
+    & tbody tr:nth-child(even) {
+      @apply bg-gray-50;
+    }
   }
+}
 
-  & td {
-    @apply p-3 border-b;
-    border-color: #dedede;
+@layer components {
+  em.species-sci {
+    @apply text-gray-700 font-normal;
   }
-
-  & tbody tr:nth-child(even) {
-    @apply bg-gray-50;
-  }
-
 }
 
 .dt-container table.dataTable > tbody > tr:nth-child(even) {

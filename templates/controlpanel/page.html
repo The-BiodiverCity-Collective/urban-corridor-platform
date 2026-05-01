@@ -14,6 +14,9 @@
       {% else %}
         <a {% if info.id %}href="./?photos"{% endif %} class="tab {% if not info.id %}opacity-60{% endif %} {% if not photos %}in{% endif %}active"><i class="fa fa-image mr-1"></i>{{ _("Photos") }}</a>
       {% endif %}
+      {% if info.id and page_type == 6 %}
+        <a href="{{ info.get_absolute_url }}" class="tab inactive ml-auto">{{ _("View online") }} <i class="fa fa-arrow-right"></i></a>
+      {% endif %}
     </nav>
   </div>
 </div>
@@ -261,7 +264,8 @@
             </table>
           {% endif %}
 
-          <div class="mt-10 grid grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6">
+          <h2 class="mt-5 mb-5">{{ _("Add without prices") }}</h2>
+          <div class="grid grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6 mb-10">
             <div class="sm:col-span-4">
               <label for="photo" class="block text-sm/6 font-medium text-gray-900">{{ _("Search species") }}</label>
               <div class="mb-4">
@@ -276,6 +280,7 @@
               </div>
             </div>
           </div>
+          <h2>{{ _("Add with prices") }}</h2>
 
         </div>
 

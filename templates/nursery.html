@@ -1,0 +1,56 @@
+{% extends "_base.html" %}
+
+{% block content %}
+  <h1>{{ info }}</h1>
+  {{ info.get_content }}
+
+  {% if info.inventory.all %}
+
+    <section class="mt-10">
+
+      <h2>{{ _("Nursery inventory") }}</h2>
+
+      <div class="alert alert-info">
+        {{ _("We do our best to provide you with the latest inventory availability of this nursery. Please note that some species may be out of stock, seasonally unavailable, or information might otherwise be incomplete. Use this as a general guide and always reach out to the nursery when in doubt.") }}
+        <br>
+        <em>
+          {{ _("This information was last updated on:") }}
+          <strong>LAST_UPDATE</strong>.
+        </em>
+      </div>
+
+      <table class="table table-striped">
+        <thead>
+          <tr>
+            <th>{{ _("Species") }}</th>
+            {% if each.price %}
+              <th>{{ _("Unit") }}</th>
+              <th>{{ _("Price") }}</th>
+            {% endif %}
+          </tr>
+        </thead>
+        <tbody>
+        {% for each in info.inventory.all %}
+          <tr>
+            <td>
+              <a href="{{ each.species.get_absolute_url }}">
+                {{ each.species.name_en }}
+                {% if each.species.name_en %}
+                  <br><em class="species-sci">{{ each.species.name }}</em>
+                {% endif %}
+              </a>
+            </td>
+            {% if each.price %}
+              <td>{{ each.unit }}</td>
+              <td>{{ each.price }}</td>
+            {% endif %}
+          </tr>
+        {% endfor %}
+        </tbody>
+      </table>
+
+    </section>
+
+  {% endif %}
+
+{% endblock %}
