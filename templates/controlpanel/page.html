@@ -240,7 +240,7 @@
 
   {% elif species %}
 
-    <form method="post">
+    <form method="post" enctype="multipart/form-data">
       {% csrf_token %}
       <div class="space-y-12">
         <div class="border-b border-gray-900/10 pb-12">
@@ -281,6 +281,7 @@
             </div>
           </div>
           <h2>{{ _("Add with prices") }}</h2>
+          <input type="file" accept=".xls,.xlsx,.xlsm,.xlsb,.odf,.ods,.odt" name="file" />
 
         </div>
 

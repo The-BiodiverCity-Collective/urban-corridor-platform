@@ -21,6 +21,7 @@ from django.contrib.postgres.fields import ArrayField
 import xml.etree.ElementTree as ET
 import zipfile
 from django.contrib.gis import geos
+from django.utils.dateparse import parse_date
 
 from django.utils import timezone
 
@@ -161,6 +162,17 @@ class Page(models.Model):
             return 100/min_species
         else:
             return 0
+
+    @property
+    def inventory_last_update(self):
+        """
+        Returns a proper date field for automatic |date formatting in the template if set
+        Only used for nurseries that have price lists
+        """
+        raw = self.meta_data.get("inventory_last_update")
+        if not raw:
+            return None
+        return parse_date(raw)
 
     class Meta:
         ordering = ["position", "name"]

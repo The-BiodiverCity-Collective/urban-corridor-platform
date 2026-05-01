@@ -14,7 +14,7 @@ from django.core.mail import send_mail
 from django.core.paginator import Paginator
 from django.db.models import OuterRef, Subquery, Value, CharField, Q, F, Count, Max, IntegerField
 from django.forms import modelform_factory
-from django.http import JsonResponse, HttpResponse, Http404
+from django.http import JsonResponse, HttpResponse, Http404, HttpResponseBadRequest
 from django.shortcuts import render, get_object_or_404, redirect
 from django.template.loader import render_to_string, get_template
 from django.utils import timezone
@@ -37,6 +37,7 @@ import wikipediaapi
 import xml.etree.ElementTree as ET
 import zipfile
 import time
+import math
 
 from PIL import Image
 from PIL.ExifTags import TAGS, GPSTAGS
@@ -2058,6 +2059,7 @@ def nursery(request, slug, garden=None, planner=False):
         "info": info,
         "menu": "planner" if garden else "about",
         "page": "nurseries",
+        "page_info": info,
     }
     return render(request, "nursery.html", context)
 
@@ -2882,18 +2884,74 @@ def controlpanel_page(request, id=None):
             messages.success(request, _("Species was added"))
             return redirect(request.path + "?species")
         elif request.method == "POST":
-            skip_success = False
-            for each in request.POST.get("species_list").split("\n"):
-                species = Species.objects.filter(name=each.strip())
-                if species:
-                    info.species.add(species.first())
-                else:
-                    messages.error(request, _("The following species was not found: ") + each)
-                    skip_success = True
-            if not skip_success:
-                messages.success(request, _("Species have been added"))
-            return redirect(request.path + "?species")
+            if request.POST.get("species_list"):
+                skip_success = False
+                for each in request.POST.get("species_list").split("\n"):
+                    species = Species.objects.filter(name=each.strip())
+                    if species:
+                        info.species.add(species.first())
+                    else:
+                        messages.error(request, _("The following species was not found: ") + each)
+                        skip_success = True
+                if not skip_success:
+                    messages.success(request, _("Species have been added"))
+                return redirect(request.path + "?species")
+            elif request.FILES.get("file"):
+                uploaded = request.FILES.get("file")
 
+                try:
+                    # Read file into pandas. Use BytesIO so it works with InMemoryUploadedFile.
+                    content = uploaded.read()
+                    df = pd.read_excel(io.BytesIO(content))
+                except Exception as e:
+                    msg = _("Failed to read Excel file. Make sure you save this as an Excel file — use the template if needed. Error: %(err)s") % {"err": str(e)}
+                    return HttpResponseBadRequest(msg)
+
+                cols_lower_map = {col.lower(): col for col in df.columns}
+                missing = {"species", "unit", "price"} - set(cols_lower_map.keys())
+                if missing:
+                    missing_list = ", ".join(sorted(missing))
+                    msg = _("Missing columns: %(cols)s") % {"cols": missing_list}
+                    return HttpResponseBadRequest(msg)
+
+                name_col = cols_lower_map["species"]
+                price_col = cols_lower_map["price"]
+                unit_col = cols_lower_map["unit"]
+
+                for idx, row in df.iterrows():
+                    name = row.get(name_col).strip()
+                    try:
+                        price = float(row.get(price_col))
+                    except Exception:
+                        return None
+                    price = None if math.isnan(price) else price
+                    unit = row.get(unit_col).strip()
+                    species = None
+                    try:
+                        species = Species.objects.get(name=name)
+                        try:
+                            unit = InventoryUnit.objects.get(unit__iexact=unit, site=site)
+                        except:
+                            messages.error(
+                                request,
+                                _("The following unit was not found in our database: %(unit)s (species: %(name)s) -- skipped")
+                                % {"unit": unit, "name": name},
+                            )
+                            unit = None
+                        if species and unit:
+                            NurseryInventory.objects.create(nursery=info, species=species, unit=unit, price=price)
+                            messages.success(
+                                request,
+                                _("The following info was added: %(name)s - %(unit)s") 
+                                % {"name": name, "unit": unit},
+                            )
+                    except:
+                        messages.error(
+                            request,
+                            _("The following species was not found in our database: %(name)s -- skipped") % {"name": name},
+                        )
+                info.meta_data["inventory_last_update"] = timezone.now().date().isoformat()
+                info.save()
     else:
         if request.method == "POST":
             info.name = request.POST["name"] 

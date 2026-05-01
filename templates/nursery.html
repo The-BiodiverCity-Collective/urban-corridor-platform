@@ -12,11 +12,13 @@
 
       <div class="alert alert-info">
         {{ _("We do our best to provide you with the latest inventory availability of this nursery. Please note that some species may be out of stock, seasonally unavailable, or information might otherwise be incomplete. Use this as a general guide and always reach out to the nursery when in doubt.") }}
-        <br>
-        <em>
-          {{ _("This information was last updated on:") }}
-          <strong>LAST_UPDATE</strong>.
-        </em>
+        {% if info.meta_data.inventory_last_update %}
+          <br>
+          <em>
+            {{ _("This information was last updated on:") }}
+            <strong>{{ info.inventory_last_update|date:"M d, Y" }}</strong>.
+          </em>
+        {% endif %}
       </div>
 
       <table class="table table-striped">
