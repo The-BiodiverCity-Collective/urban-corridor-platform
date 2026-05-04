@@ -1,11 +1,13 @@
 from .forms import *
 from .models import *
+
 from dateutil.relativedelta import relativedelta
 from django.conf import settings
 from django.contrib import messages
 from django.contrib.admin.views.decorators import staff_member_required
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
+from django.contrib.auth.tokens import default_token_generator
 from django.contrib.gis import geos
 from django.contrib.gis.measure import D
 from django.core import serializers
@@ -18,6 +20,8 @@ from django.http import JsonResponse, HttpResponse, Http404, HttpResponseBadRequ
 from django.shortcuts import render, get_object_or_404, redirect
 from django.template.loader import render_to_string, get_template
 from django.utils import timezone
+from django.utils.encoding import force_bytes
+from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
 from django.utils.safestring import mark_safe
 from django.utils.text import slugify
 from django.utils.translation import gettext_lazy as _
@@ -1898,6 +1902,65 @@ def user_login(request):
         "garden": garden,
     }
     return render(request, "account/login.html", context)
+
+def user_reset(request):
+
+    if request.method == "POST":
+        email = request.POST.get("email")
+        user = User.objects.filter(email=email).first()
+        site = get_site(request)
+
+        if user:
+            token = default_token_generator.make_token(user)
+            uid = urlsafe_base64_encode(force_bytes(user.pk))
+            reset_url = f"https://{site.url}/accounts/reset/{uid}/{token}/"
+
+            mailcontext = {
+                "reset_url": reset_url,
+                "user": user,
+                "site": site,
+            }
+            sender = f'"{site.name}" <{site.email}>'
+
+            msg_html = render_to_string("mailbody/password_reset.html", mailcontext)
+            msg_plain = render_to_string("mailbody/password_reset.txt", mailcontext)
+
+            send_mail(
+                _("Password Reset Request"),
+                msg_plain,
+                sender,
+                [user.email],
+                fail_silently=False,
+                html_message=msg_html,
+            )
+            messages.success(request, _("Check your email for reset instructions."))
+        else:
+            time.sleep(2)
+            messages.warning(request, _("User was not found"))
+
+    return render(request, "account/reset.html")
+
+def user_reset_form(request, uidb64, token):
+
+    try:
+        uid = urlsafe_base64_decode(uidb64).decode()
+        user = User.objects.get(pk=uid)
+    except (TypeError, ValueError, OverflowError, User.DoesNotExist):
+        user = None
+
+    if user is not None and default_token_generator.check_token(user, token):
+        if request.method == "POST":
+            new_password = request.POST.get("password")
+            user.set_password(new_password)
+            user.save()
+            messages.success(request, "Your password has been set. You can now use it to log in.")
+            return redirect("login")
+        
+    else:
+        messages.error(request, "The reset link is invalid or has expired.")
+        return redirect("reset")
+
+    return render(request, "account/reset.form.html")
 
 def user_logout(request):
     logout(request)

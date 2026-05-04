@@ -50,6 +50,8 @@ urlpatterns = [
     path("photos/", views.photos, name="photos"),
 
     path("accounts/login/", views.user_login, name="login"),
+    path("accounts/reset/", views.user_reset, name="reset"),
+    path("accounts/reset/<uidb64>/<token>/", views.user_reset_form),
     path("accounts/create/", views.account_create, name="create_account"),
     path("accounts/logout/", views.user_logout, name="logout"),
     path("accounts/gardens/", views.account_gardens, name="account_gardens"),
