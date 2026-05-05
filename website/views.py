@@ -1953,11 +1953,11 @@ def user_reset_form(request, uidb64, token):
             new_password = request.POST.get("password")
             user.set_password(new_password)
             user.save()
-            messages.success(request, "Your password has been set. You can now use it to log in.")
+            messages.success(request, _("Your password has been set. You can now use it to log in."))
             return redirect("login")
         
     else:
-        messages.error(request, "The reset link is invalid or has expired.")
+        messages.error(request, _("The reset link is invalid or has expired."))
         return redirect("reset")
 
     return render(request, "account/reset.form.html")
@@ -2947,6 +2947,10 @@ def controlpanel_page(request, id=None):
             messages.success(request, _("Species was added"))
             return redirect(request.path + "?species")
         elif request.method == "POST":
+            if request.POST.get("delete_all"):
+                NurseryInventory.objects.filter(nursery=info).delete()
+                messages.success(request, _("All items were removed."))
+                return redirect(request.path + "?species")
             if request.POST.get("species_list"):
                 skip_success = False
                 for each in request.POST.get("species_list").split("\n"):
@@ -3015,6 +3019,7 @@ def controlpanel_page(request, id=None):
                         )
                 info.meta_data["inventory_last_update"] = timezone.now().date().isoformat()
                 info.save()
+                return redirect(request.path + "?species")
     else:
         if request.method == "POST":
             info.name = request.POST["name"] 

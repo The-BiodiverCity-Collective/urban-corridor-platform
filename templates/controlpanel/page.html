@@ -240,8 +240,6 @@
 
   {% elif species %}
 
-    <form method="post" enctype="multipart/form-data">
-      {% csrf_token %}
       <div class="space-y-12">
         <div class="border-b border-gray-900/10 pb-12">
 
@@ -250,38 +248,71 @@
               <thead>
                 <tr>
                   <th>{{ _("Species") }}</th>
+                  <th>{{ _("Price") }}</th>
                   <th>{{ _("Options") }}</th>
                 </tr>
               </thead>
               <tbody>
               {% for each in info.inventory.all %}
                 <tr>
-                  <td>{{ each }}</td>
+                  <td>
+                    {% ifchanged each.species %}
+                      {{ each.species }}
+                    {% endifchanged %}
+                  </td>
+                  <td>
+                    {% if each.price %}
+                      {{ each.price }}
+                      ({{ each.unit }})
+                    {% endif %}
+                  </td>
                   <td><a href="?species&amp;delete_species={{ each.id }}"><i class="fa fa-trash"></i></a></td>
                 </tr>
               {% endfor %}
               </tbody>
             </table>
+
+            <form method="post" class="pt-3 flex justify-end">
+              <button class="btn btn-danger btn-sm" type="submit" onclick="javascript:return confirm('{{ _("Are you sure?") }}')">
+                <i class="fa fa-trash"></i>
+                {{ _("Delete ALL entries") }}
+                <input type="hidden" name="delete_all" value="true" />
+              </button>
+              {% csrf_token %}
+            </form>
+
           {% endif %}
 
           <h2 class="mt-5 mb-5">{{ _("Add without prices") }}</h2>
-          <div class="grid grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6 mb-10">
-            <div class="sm:col-span-4">
-              <label for="photo" class="block text-sm/6 font-medium text-gray-900">{{ _("Search species") }}</label>
-              <div class="mb-4">
-                <select id="search_species" style="width: 100%;">
-                  <option value="" disabled selected hidden>{{ _("Enter (part of) a species name...") }}</option>
-                </select>
-              </div>
+          <form method="post" enctype="multipart/form-data">
+            {% csrf_token %}
 
-              <label for="photo" class="mt-5 block text-sm/6 font-medium text-gray-900">{{ _("Enter multiple species") }}</label>
-              <div class="mt-2">
-                <textarea name="species_list" placeholder="{{ _("Enter multiple species (scientific names), each on a new line") }}"></textarea>
+            <div class="grid grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6 mb-10">
+              <div class="sm:col-span-4">
+                <label for="photo" class="block text-sm/6 font-medium text-gray-900">{{ _("Search species") }}</label>
+                <div class="mb-4">
+                  <select id="search_species" style="width: 100%;">
+                    <option value="" disabled selected hidden>{{ _("Enter (part of) a species name...") }}</option>
+                  </select>
+                </div>
+
+                <label for="photo" class="mt-5 block text-sm/6 font-medium text-gray-900">{{ _("Enter multiple species") }}</label>
+                <div class="mt-2">
+                  <textarea name="species_list" placeholder="{{ _("Enter multiple species (scientific names), each on a new line") }}"></textarea>
+                </div>
               </div>
             </div>
-          </div>
-          <h2>{{ _("Add with prices") }}</h2>
-          <input type="file" accept=".xls,.xlsx,.xlsm,.xlsb,.odf,.ods,.odt" name="file" />
+            <h2>{{ _("Add with prices") }}</h2>
+            <input type="file" accept=".xls,.xlsx,.xlsm,.xlsb,.odf,.ods,.odt" name="file" class="mb-2" />
+            <h3 class="mt-5">{{ _("Instructions") }}</h3>
+            <ul class="list-disc ml-4">
+              <li>{{ _("Upload a spreadsheet with 3 columns: SPECIES, PRICE, UNIT") }}</li>
+              <li>{{ _("Do not include other headers than the 3 above, and no special formatting or empty rows") }}</li>
+              <li>{{ _("Make sure the units you use are in line with the units defined in the system:") }}
+                <a href="{% url "controlpanel_units" %}">{{ _("View/manage units") }}</a>
+              </li>
+              <li>{{ _("Prices should NOT include VAT") }}</li>
+            </ul>
 
         </div>
 
@@ -289,7 +320,7 @@
 
       <div class="mt-6 flex items-center justify-end gap-x-6">
         <button type="submit" class="px-4 py-2 bg-lime-600 hover:bg-lime-700 text-white font-bold rounded-md focus:outline-hidden focus:ring-3 focus:ring-lime-300">
-          {{ _("Add species") }}
+          {{ _("Save") }}
         </button>
       </div>
     </form>

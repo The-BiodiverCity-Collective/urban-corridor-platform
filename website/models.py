@@ -1439,7 +1439,6 @@ def handle_quota_limit(sender, message, **kwargs):
         quota.save()
 
     if quota.is_quota_exceeded():
-        # Stops the send before hitting your provider's API
         raise AnymailCancelSend("Monthly limit reached.")
 
 @receiver(post_send)
