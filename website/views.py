@@ -2936,6 +2936,7 @@ def controlpanel_page(request, id=None):
     elif "species" in request.GET:
         # For nurseries we can manage which species are stocked
         species = True
+        errors = []
 
         title = _("Species") + f": {info.name}"
         if "delete_species" in request.GET:
@@ -2989,36 +2990,33 @@ def controlpanel_page(request, id=None):
                     name = row.get(name_col).strip()
                     try:
                         price = float(row.get(price_col))
+                        price = None if math.isnan(price) else price
+                        unit = row.get(unit_col).strip()
                     except Exception:
-                        return None
-                    price = None if math.isnan(price) else price
-                    unit = row.get(unit_col).strip()
+                        price = None
+                        unit = None
                     species = None
                     try:
                         species = Species.objects.get(name=name)
-                        try:
-                            unit = InventoryUnit.objects.get(unit__iexact=unit, site=site)
-                        except:
-                            messages.error(
-                                request,
-                                _("The following unit was not found in our database: %(unit)s (species: %(name)s) -- skipped")
-                                % {"unit": unit, "name": name},
-                            )
-                            unit = None
-                        if species and unit:
+                        if unit:
+                            try:
+                                unit = InventoryUnit.objects.get(unit__iexact=unit, site=site)
+                            except:
+                                errors.append(_("The following unit was not found in our database: %(unit)s (species: %(name)s)") % {"unit": unit, "name": name})
+                                unit = None
+                        if species and unit and price:
                             NurseryInventory.objects.create(nursery=info, species=species, unit=unit, price=price)
-                            messages.success(
-                                request,
-                                _("The following info was added: %(name)s - %(unit)s") 
-                                % {"name": name, "unit": unit},
-                            )
+                        elif species:
+                            NurseryInventory.objects.create(nursery=info, species=species)
                     except:
-                        messages.error(
-                            request,
-                            _("The following species was not found in our database: %(name)s -- skipped") % {"name": name},
-                        )
+                        error = _("The following species was not found in our database: %(name)s") % {"name": name}
+                        if error not in errors:
+                            errors.append(error)
                 info.meta_data["inventory_last_update"] = timezone.now().date().isoformat()
                 info.save()
+                if errors:
+                    for error in errors:
+                        messages.error(request, error)
                 return redirect(request.path + "?species")
     else:
         if request.method == "POST":
