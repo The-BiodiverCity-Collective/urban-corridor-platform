@@ -57,6 +57,9 @@ MONTH_CHOICES = [
     (12, _("Dec")),
 ]
 
+class ActiveRecordManager(models.Manager):
+    def get_queryset(self):
+        return super().get_queryset().filter(is_active=True)
 
 class Language(models.Model):
     name = models.CharField(max_length=255)
@@ -99,6 +102,9 @@ class Page(models.Model):
     is_active = models.BooleanField(default=True, db_index=True)
     date = models.DateField(null=True, blank=True)
     meta_data = models.JSONField(null=True, blank=True, default=dict)
+
+    objects = ActiveRecordManager()
+    objects_unfiltered = models.Manager()
 
     class PageType(models.IntegerChoices):
         REGULAR = 1, "Regular page"
@@ -599,10 +605,6 @@ class ReferenceSpace(models.Model):
 
     class Meta:
         ordering = ["name"]
-
-class ActiveRecordManager(models.Manager):
-    def get_queryset(self):
-        return super().get_queryset().filter(is_active=True)
 
 class Garden(ReferenceSpace):
     is_active = models.BooleanField(default=True, db_index=True)
