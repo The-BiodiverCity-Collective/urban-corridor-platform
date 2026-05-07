@@ -210,6 +210,7 @@ def quill_cleanup(content):
     string_to_remove = [
         ' rel="noopener noreferrer" target="_blank"',
         '<p><br></p>',
+        '<p></p>',
         '<ol><li data-list="bullet"><span class="ql-ui" contenteditable="false"></span><br></li></ol>',
     ]
     for each in string_to_remove:
@@ -820,6 +821,7 @@ def species_list(request, genus=None, family=None, vegetation_type=None, garden=
     menu = "species"
     page = request.GET.get("page")
     title = _("Search results")
+    nursery = None
 
     species = Species.objects.filter(site=site)
     total_species = species.count()
@@ -881,6 +883,13 @@ def species_list(request, genus=None, family=None, vegetation_type=None, garden=
         else:
             species = species.filter(features__in=features)
 
+    if "nursery" in request.GET:
+        nursery = Page.objects.get(page_type=Page.PageType.NURSERY, slug=request.GET["nursery"], is_active=True, site=site)
+        species = species.filter(inventory__nursery=nursery)
+        if "in_stock" in request.GET:
+            species = species.filter(inventory__in_stock=True)
+        title = _("Nursery inventory:") + " " + str(nursery)
+        
     species = species.distinct()
 
     info = None
@@ -916,9 +925,10 @@ def species_list(request, genus=None, family=None, vegetation_type=None, garden=
         "hide_species_tabs": True,
         "total_species": total_species,
         "planner_tab": "my_plants" if garden_status else None,
+        "nursery": nursery,
 
         # Because we have tabs above the <main>, we need to unround the top-left corner if the first tab is active
-        "main_classes": "rounded-tl-none" if request.GET.get("view", "table") == "photos-data" else None,
+        "main_classes": "rounded-tl-none" if view == "photos-data" or not view else None,
         "show_bulk_add": True if garden_status else False,
     }
 
@@ -2115,7 +2125,7 @@ def nursery(request, slug, garden=None, planner=False):
     info = Page.objects.get(page_type=Page.PageType.NURSERY, slug=slug, is_active=True, site=site)
 
     if garden:
-        if not (garden := get_garden(request, id)):
+        if not (garden := get_garden(request, garden)):
             return redirect("planner")
 
     context = {
@@ -2123,6 +2133,9 @@ def nursery(request, slug, garden=None, planner=False):
         "menu": "planner" if garden else "about",
         "page": "nurseries",
         "page_info": info,
+        "prices_present": NurseryInventory.objects.filter(nursery=info, price__isnull=False).exists(),
+        "future_list": Species.objects.filter(garden_plants__garden=garden, garden_plants__status="FUTURE") if garden else None,
+        "inventory": NurseryInventory.objects.filter(nursery=info, species__site=site),
     }
     return render(request, "nursery.html", context)
 
@@ -2412,7 +2425,7 @@ def planner_suggestions(request, id):
         "filter_text": filter_text,
 
         # Because we have tabs above the <main>, we need to unround the top-left corner if the first tab is active
-        "main_classes": "rounded-tl-none" if request.GET.get("view", "table") == "table" else None,
+        "main_classes": "rounded-tl-none" if view == "photos-data" else None,
     }
     return render(request, "planner/plants.suggestions.html", context)
 
@@ -2515,12 +2528,21 @@ def planner_nurseries(request, id):
     if not (garden := get_garden(request, id)):
         return redirect("planner")
 
+    plants = Species.objects.filter(garden_plants__garden=garden, garden_plants__status="FUTURE")
+    nurseries = Page.objects.filter(site=site, page_type=Page.PageType.NURSERY).order_by("name")
+    nurseries = nurseries.annotate(
+        stock_count=Count(
+            "inventory__species",
+            filter=Q(inventory__species__in=plants),
+            distinct=True
+        )
+    )
     context = {
         "menu": "planner",
         "page": "nurseries",
         "title": _("Nurseries"),
         "garden": garden,
-        "nurseries": Page.objects.filter(site=site, page_type=Page.PageType.NURSERY),
+        "nurseries": nurseries,
         "page_info": Page.objects.get(site=site, slug="nurseries"),
     }
     return render(request, "planner/nurseries.html", context)
@@ -2975,8 +2997,8 @@ def controlpanel_page(request, id=None):
                     msg = _("Failed to read Excel file. Make sure you save this as an Excel file — use the template if needed. Error: %(err)s") % {"err": str(e)}
                     return HttpResponseBadRequest(msg)
 
-                cols_lower_map = {col.lower(): col for col in df.columns}
-                missing = {"species", "unit", "price"} - set(cols_lower_map.keys())
+                cols_lower_map = {col.lower().strip(): col for col in df.columns}
+                missing = {"species", "unit", "price", "available"} - set(cols_lower_map.keys())
                 if missing:
                     missing_list = ", ".join(sorted(missing))
                     msg = _("Missing columns: %(cols)s") % {"cols": missing_list}
@@ -2985,6 +3007,8 @@ def controlpanel_page(request, id=None):
                 name_col = cols_lower_map["species"]
                 price_col = cols_lower_map["price"]
                 unit_col = cols_lower_map["unit"]
+                available_col = cols_lower_map["available"]
+                all_species = []
 
                 for idx, row in df.iterrows():
                     name = row.get(name_col).strip()
@@ -2997,21 +3021,33 @@ def controlpanel_page(request, id=None):
                         unit = None
                     species = None
                     try:
+                        available = row.get(available_col).strip().lower()
+                        if available == "yes":
+                            available = True
+                        elif available == "no":
+                            available = False
+                        else:
+                            available = None
+                    except:
+                        available = None
+                    try:
                         species = Species.objects.get(name=name)
-                        if unit:
-                            try:
-                                unit = InventoryUnit.objects.get(unit__iexact=unit, site=site)
-                            except:
-                                errors.append(_("The following unit was not found in our database: %(unit)s (species: %(name)s)") % {"unit": unit, "name": name})
-                                unit = None
-                        if species and unit and price:
-                            NurseryInventory.objects.create(nursery=info, species=species, unit=unit, price=price)
-                        elif species:
-                            NurseryInventory.objects.create(nursery=info, species=species)
                     except:
                         error = _("The following species was not found in our database: %(name)s") % {"name": name}
                         if error not in errors:
                             errors.append(error)
+                    if unit:
+                        try:
+                            unit = InventoryUnit.objects.get(unit__iexact=unit, site=site)
+                        except:
+                            errors.append(_("The following unit was not found in our database: %(unit)s (species: %(name)s)") % {"unit": unit, "name": name})
+                            unit = None
+                    if species and unit and price:
+                        NurseryInventory.objects.create(nursery=info, species=species, unit=unit, price=price, in_stock=available)
+                        all_species.append(species)
+                    elif species and species not in all_species:
+                        NurseryInventory.objects.create(nursery=info, species=species, in_stock=available)
+                        all_species.append(species)
                 info.meta_data["inventory_last_update"] = timezone.now().date().isoformat()
                 info.save()
                 if errors:

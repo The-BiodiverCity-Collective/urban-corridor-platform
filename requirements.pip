@@ -14,5 +14,6 @@ folium
 bleach
 openpyxl
 odfpy
+xlrd
 wikipedia-api
 django-anymail

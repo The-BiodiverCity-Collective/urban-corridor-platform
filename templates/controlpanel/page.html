@@ -306,8 +306,8 @@
             <input type="file" accept=".xls,.xlsx,.xlsm,.xlsb,.odf,.ods,.odt" name="file" class="mb-2" />
             <h3 class="mt-5">{{ _("Instructions") }}</h3>
             <ul class="list-disc ml-4">
-              <li>{{ _("Upload a spreadsheet with 3 columns: SPECIES, PRICE, UNIT") }}</li>
-              <li>{{ _("Do not include other headers than the 3 above, and no special formatting or empty rows") }}</li>
+              <li>{{ _("Upload a spreadsheet with 4 columns: SPECIES, PRICE, UNIT, AVAILABLE") }}</li>
+              <li>{{ _("Do not include other headers than the 4 above, and no special formatting or empty rows") }}</li>
               <li>{{ _("Make sure the units you use are in line with the units defined in the system:") }}
                 <a href="{% url "controlpanel_units" %}">{{ _("View/manage units") }}</a>
               </li>

@@ -42,7 +42,7 @@
       </h1>
   {% endif %}
 
-  {% if features or vegetation_type or plant_form and not info %}
+  {% if features or vegetation_type or plant_form or nursery and not info %}
     <div class="alert alert-warning relative">
       <h4>Filters</h4>
       <p>
@@ -70,6 +70,19 @@
       </ul>
       {% if vegetation_type %}
         <p>{{ _("Vegetation type") }}: <a href="{{ vegetation_type.get_absolute_url }}">{{ vegetation_type }}</a></p>
+      {% endif %}
+
+      {% if nursery %}
+        <p>{{ _("Nursery") }}: <a class="text-amber-700" href="{{ nursery.get_absolute_url }}">{{ nursery }}</a></p>
+        <p class="mb-4">{{ _("Availability") }}: 
+          <strong>
+            {% if request.GET.in_stock %}
+              {{ _("available stock") }}
+            {% else %}
+              {{ _("general stock") }}
+            {% endif %}
+          </strong>
+        </p>
       {% endif %}
 
       <a class="btn-blue btn-sm mr-2" href="{% url "species_search" %}{% querystring %}"><i class="fa fa-pencil mr-1"></i> {{ _("Edit search") }}</a> 

@@ -1,58 +1,116 @@
 {% extends "_base.html" %}
+{% load i18n %}
+
+{% block css %}
+  <style type="text/css">
+  tr.in-stock{background:var(--color-lime-600) !important}
+  .in-stock a,.in-stock .species-sci{color: #fff !important}
+  </style>
+{% endblock %}
 
 {% block content %}
-  <h1>{{ info }}</h1>
-  {{ info.get_content }}
 
-  {% if info.inventory.all %}
-
-    <section class="mt-10">
-
-      <h2>{{ _("Nursery inventory") }}</h2>
-
-      <div class="alert alert-info">
-        {{ _("We do our best to provide you with the latest inventory availability of this nursery. Please note that some species may be out of stock, seasonally unavailable, or information might otherwise be incomplete. Use this as a general guide and always reach out to the nursery when in doubt.") }}
-        {% if info.meta_data.inventory_last_update %}
-          <br>
-          <em>
-            {{ _("This information was last updated on:") }}
-            <strong>{{ info.inventory_last_update|date:"M d, Y" }}</strong>.
-          </em>
-        {% endif %}
+  <div class="p-10">
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+      <div class="md:col-span-2">
+        <h1>{{ info }}</h1>
+        {{ info.get_content }}
       </div>
+      <div class="md:col-span-1">
+        <img src="{{ info.image.medium.url }}" />
+        <div class="mt-6 text-center "><a class="no-underline badge" href="{{ info.meta_data.url }}"><i class="fa fa-link mr-2"></i> {{ _("Website") }}</a></div>
+      </div>
+    </div>
 
-      <table class="table table-striped">
-        <thead>
-          <tr>
-            <th>{{ _("Species") }}</th>
-            {% if each.price %}
-              <th>{{ _("Unit") }}</th>
-              <th>{{ _("Price") }}</th>
-            {% endif %}
-          </tr>
-        </thead>
-        <tbody>
-        {% for each in info.inventory.all %}
-          <tr>
-            <td>
-              <a href="{{ each.species.get_absolute_url }}">
-                {{ each.species.name_en }}
-                {% if each.species.name_en %}
-                  <br><em class="species-sci">{{ each.species.name }}</em>
-                {% endif %}
-              </a>
-            </td>
-            {% if each.price %}
-              <td>{{ each.unit }}</td>
-              <td>{{ each.price }}</td>
-            {% endif %}
-          </tr>
-        {% endfor %}
-        </tbody>
-      </table>
+    {% if inventory %}
 
-    </section>
+      <section class="mt-10">
 
-  {% endif %}
+        <h2>{{ _("Nursery stock") }}</h2>
+
+        <div class="alert alert-info">
+          {{ _("We do our best to provide you with the latest stock availability of this nursery. Please note that some species may be unexpectedly out of stock, seasonally unavailable, or information might otherwise be incomplete. This is not the ENTIRE nursery stock but instead the stock of those plants that we have within our database. Use this as a general guide and always reach out to the nursery when in doubt.") }}
+          {% if info.meta_data.inventory_last_update %}
+            <br>
+            <em>
+              {{ _("This information was last updated on:") }}
+              <strong>{{ info.inventory_last_update|date:"M d, Y" }}</strong>.
+            </em>
+          {% endif %}
+        </div>
+
+        <div class="grid grid-cols-2 gap-4">
+          <a href="{% url "species_list" %}?nursery={{ info.slug }}&amp;in_stock=true" class="group bg-gray-100 rounded p-4 mt-4 block relative no-underline hover:bg-gray-200">
+            <h4 class="text-xl text-gray-700"><i class="fa fa-seedling fa-fw text-lg mr-2"></i>{{ _("Plant explorer") }}</h4>
+            <p class="mb-0">{{ _("Currently available stock") }}</p>
+            <p class="font-normal text-gray-500">{{ _("Based on our latest inventory data, these species are available right now at this nursery.") }}</p>
+            <i class="fa fa-arrow-right absolute bottom-2 right-2 text-gray-700 group-hover:text-sky-700"></i>
+          </a>
+          <a href="{% url "species_list" %}?nursery={{ info.slug }}" class="group bg-gray-100 rounded p-4 mt-4 block relative no-underline hover:bg-gray-200">
+            <h4 class="text-xl text-gray-700"><i class="fa fa-seedling fa-fw text-lg mr-2"></i>{{ _("Plant explorer") }}</h4>
+            <p class="mb-0">{{ _("General stock") }}</p>
+            <p class="font-normal text-gray-500">{{ _("These are ALL the species the nursery stocks, although some species will have a lead time to order.") }}</p>
+            <i class="fa fa-arrow-right absolute bottom-2 right-2 text-gray-700 group-hover:text-sky-700"></i>
+          </a>
+        </div>
+
+        <h3 class="mt-10">{{ _("Price list") }}</h3>
+        <div class="mt-5 mb-3 text-sm">
+          {% blocktranslate with green_start='<span class="bg-lime-600 p-1 text-white">' green_end='</span>' %}
+            Note: species highlighted {{ green_start }}in green{{ green_end }} are the ones that you have selected for your garden.
+          {% endblocktranslate %}
+        </div>
+
+        <table class="table table-striped">
+          <thead>
+            <tr>
+              <th>{{ _("Species") }}</th>
+              {% if prices_present %}
+                <th>{{ _("Unit") }}</th>
+                <th>{{ _("Price") }}</th>
+                <th>{{ _("Availability") }}</th>
+              {% endif %}
+            </tr>
+          </thead>
+          <tbody>
+          {% for each in inventory %}
+            <tr {% if each.species in future_list %}class="in-stock"{% endif %}>
+              <td>
+                {% ifchanged each.species %}
+                  <a href="{{ each.species.get_absolute_url }}">
+                    {% if each.species.name_en %}
+                      {{ each.species.name_en }}
+                      <br><em class="species-sci">{{ each.species.name }}</em>
+                    {% else %}
+                      <em>{{ each.species.name }}</em>
+                    {% endif %}
+                  </a>
+                {% endifchanged %}
+              </td>
+              {% if each.price %}
+                <td>{{ each.unit }}</td>
+                <td>{{ each.price }}</td>
+                <td>
+                  {% if each.in_stock %}
+                    <span class="badge-success">{{ _("In stock") }}</span>
+                  {% elif each.in_stock == False %}
+                    <span class="badge-warning">{{ _("On request") }}</span>
+                  {% elif each.in_stock == None %}
+                    <span class="badge-info">{{ _("Unknown") }}</span>
+                  {% endif %}
+                </td>
+              {% elif prices_present %}
+                <td colspan="3"></td>
+              {% endif %}
+            </tr>
+          {% endfor %}
+          </tbody>
+        </table>
+
+      </section>
+
+    {% endif %}
+
+  </div>
 
 {% endblock %}

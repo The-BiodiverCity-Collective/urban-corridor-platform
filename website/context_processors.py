@@ -1,6 +1,6 @@
 from django.conf import settings
 import random
-from website.models import Site, Garden
+from website.models import Site, Garden, Page
 
 def site(request):
 
@@ -37,4 +37,5 @@ def site(request):
         "SITES": sites,
         "GARDEN": garden,
         "GARDEN_NAME": garden_name,
+        "NURSERIES": Page.objects.filter(site=site, page_type=Page.PageType.NURSERY),
     }

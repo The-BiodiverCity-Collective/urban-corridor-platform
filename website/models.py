@@ -1407,9 +1407,10 @@ class InventoryUnit(models.Model):
 
 class NurseryInventory(models.Model):
     nursery = models.ForeignKey(Page, on_delete=models.CASCADE, related_name="inventory")
-    species = models.ForeignKey(Species, on_delete=models.CASCADE)
+    species = models.ForeignKey(Species, on_delete=models.CASCADE, related_name="inventory")
     unit = models.ForeignKey(InventoryUnit, on_delete=models.CASCADE, null=True, blank=True)
     price = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True)
+    in_stock = models.BooleanField(db_index=True, null=True)
 
     def __str__(self):
         return str(self.species)
