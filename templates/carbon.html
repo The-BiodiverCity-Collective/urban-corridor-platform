@@ -1,0 +1,39 @@
+{% extends "_base.html" %}
+{% load humanize %}
+
+{% block content %}
+
+  <div class="p-10">
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+      <div class="md:col-span-2">
+        <h1>{{ info }}</h1>
+        {{ info.get_content }}
+      </div>
+      <div class="md:col-span-1">
+        <h2>{{ _("Your garden") }}</h2>
+        <h3>{{ _("Garden size") }}</h3>
+        {% if garden.size %}
+          {{ garden.size.sq_m|floatformat:0|intcomma }} m²
+        {% else %}
+          <div class="alert alert-warning">
+            {{ _("Size unavailable. Please configure your garden's size first.") }}
+            <br>
+            <a href="http://">{{ _("Set size") }}</a>
+          </div>
+        {% endif %}
+        <h3 class="mt-5">{{ _("Tree count") }}</h3>
+        {% if garden.meta_data.trees %}
+          {{ garden.meta_data.trees }}
+        {% else %}
+          <div class="alert alert-warning">
+            {{ _("Tree count unavailable") }}
+            <br>
+            <a href="http://">{{ _("Set tree count") }}</a>
+          </div>
+        {% endif %}
+      </div>
+    </div>
+
+  </div>
+
+{% endblock %}

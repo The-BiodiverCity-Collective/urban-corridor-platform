@@ -114,6 +114,7 @@ urlpatterns = [
     path("planner/<int:garden>/plants/future/list/", views.species_list, {"garden_status": "FUTURE"}, name="planner_plants_future_list"),
     path("planner/<int:id>/plants/", views.planner_plants, {"status": "FUTURE"}, name="planner_plants"),
     path("planner/<int:id>/calendar/", views.planner_calendar, name="planner_calendar"),
+    path("planner/<int:id>/carbon/", views.carbon_report, {"planner": True}, name="carbon_report"),
     path("planner/<int:id>/plants/nurseries/", views.planner_nurseries, name="planner_nurseries"),
     path("planner/<int:garden>/plants/nurseries/<slug:slug>/", views.nursery, name="planner_nursery"),
     path("planner/<int:id>/score/", views.planner_score_overview, name="planner_score"),

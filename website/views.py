@@ -9,6 +9,7 @@ from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.tokens import default_token_generator
 from django.contrib.gis import geos
+from django.contrib.gis.db.models.functions import Area, Transform
 from django.contrib.gis.measure import D
 from django.core import serializers
 from django.core.files import File
@@ -2119,6 +2120,27 @@ def event(request, slug):
         "page": "event",
     }
     return render(request, "event.html", context)
+
+def carbon_report(request, id, planner=False):
+    site = get_site(request)
+    info = Page.objects.get(slug="carbon-report", is_active=True, site=site)
+
+    # SRID 6933 (WGS 84 / Cylindrical Equal-Area). 
+    # This projection is structurally designed to keep area measurements perfectly accurate globally. 
+    # Transform to this and get the area.
+    if planner:
+        garden = Garden.objects_unfiltered.annotate(size=Area(Transform("geometry", 6933))).get(pk=id, user=request.user)
+    else:
+        garden = Garden.objects.annotate(size=Area(Transform("geometry", 6933))).get(pk=id)
+
+    context = {
+        "info": info,
+        "menu": "planner" if garden else "resources",
+        "page": "carbon",
+        "page_info": info,
+        "garden": garden,
+    }
+    return render(request, "carbon.html", context)
 
 def nursery(request, slug, garden=None, planner=False):
     site = get_site(request)
