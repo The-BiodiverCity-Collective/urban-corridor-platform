@@ -30,22 +30,22 @@
         
         <div class="bg-amber-50 text-amber-700 border border-amber-500 p-6 rounded-xl shadow-md flex flex-col justify-between items-center text-center relative w-full h-full">
           <div class="flex space-x-4 mb-4 border-b border-amber-300 pb-2 w-full justify-center">
-            <button id="tab-plane" class="cursor-pointer text-xl focus:outline-none text-amber-700 font-bold border-b-2 border-amber-700 pb-1" aria-label="Plane View">
-              <i class="fas fa-plane"></i>
-            </button>
-            <button id="tab-car" class="cursor-pointer text-xl focus:outline-none text-amber-400 hover:text-amber-600 pb-1" aria-label="Car View">
+            <button id="tab-car" class="cursor-pointer text-xl focus:outline-none text-amber-700 font-bold border-b-2 border-amber-700 pb-1" aria-label="Car View">
               <i class="fas fa-car"></i>
+            </button>
+            <button id="tab-plane" class="cursor-pointer text-xl focus:outline-none text-amber-400 hover:text-amber-600 pb-1" aria-label="Plane View">
+              <i class="fas fa-plane"></i>
             </button>
           </div>
 
-          <div id="view-plane" class="tab-content flex flex-col items-center justify-center flex-grow w-full">
+          <div id="view-plane" class="tab-content hidden flex flex-col items-center justify-center flex-grow w-full">
             <span class="text-xs uppercase tracking-widest opacity-80 mb-2">Flight Equivalent</span>
             <div class="text-5xl font-black mb-1">{{ trips|floatformat:1 }}</div>
             <p class="text-sm font-medium">Annual flights to Cape Town</p>
             <p class="text-[10px] mt-4 opacity-70 italic">Calculated at ~291 kg CO₂e per one-way flight</p>
           </div>
 
-          <div id="view-car" class="tab-content hidden flex flex-col items-center justify-center flex-grow w-full">
+          <div id="view-car" class="tab-content flex flex-col items-center justify-center flex-grow w-full">
             <span class="text-xs uppercase tracking-widest opacity-80 mb-2">Car Distance Equivalent</span>
             <div class="text-5xl font-black mb-1">{{ kms|floatformat:0|intcomma }}</div>
             <p class="text-sm font-medium">Kilometers driven every year</p>
@@ -285,7 +285,7 @@
                   africabusiness.com
                 </a>
                 <p class="text-sm text-gray-600">
-                  The Grassland Restoration and Stewardship is South Africa
+                  The Grassland Restoration and Stewardship in South Africa
                   (GRASS) project sold 266 255 carbon credits (Verified Carbon
                   Units) from 95 364 hectares of South African grasslands
                   managed within a two-year monitoring period. This project
@@ -348,13 +348,17 @@
               <span class="faq-icon transition-transform text-xs duration-300">▼</span>
             </button>
             <div class="faq-content hidden pb-4 text-sm text-gray-600 leading-relaxed">
-              These are estimates based on local research. While not a formal
-              audit, they provide a scientifically-grounded ballpark for the
-              positive impact of indigenous gardening. Read our methodology to
-              understand how we calculate these numbers. If we find more
-              locally-specific data sources or more up-to-date figures from
-              recent research then we will update our carbon reports
-              accordingly. Feedback is always welcome.
+              These are estimates based on local research. This is not an
+              in-depth carbon analysis, but the report does provide a
+              scientifically-grounded ballpark for the positive impact of
+              indigenous gardening. While research on carbon sequestration is
+              growing, it's important to mention that locally specific
+              peer-reviewed data on sequestration potential is limited. Read
+              our methodology to understand how we calculate these numbers. If
+              we find more locally-specific data sources or more up-to-date
+              figures from recent research then we will update our carbon
+              reports accordingly. Feedback is always
+              welcome.
             </div>
           </div>
           <div class="faq-item border-b border-gray-100">
@@ -363,10 +367,10 @@
               <span class="faq-icon transition-transform text-xs duration-300">▼</span>
             </button>
             <div class="faq-content hidden pb-4 text-sm text-gray-600 leading-relaxed">
-              Any type of garden can help sequester CO₂ include those using alien vegetation.
-              However, indigenous species are adapted to our climate, requiring
-              less water and no synthetic fertilisers, which lowers the overall
-              carbon footprint of your garden's maintenance.
+              Any type of garden can help sequester CO₂ including those using
+              alien vegetation.  However, indigenous species are adapted to our
+              climate, requiring less water and no synthetic fertilisers, which
+              lowers the overall carbon footprint of your garden's maintenance.
             </div>
           </div>
           <div class="faq-item border-b border-gray-100">
