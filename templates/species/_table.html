@@ -42,7 +42,13 @@
       </td>
 
       {% if not table_hide_form %}
-        <td class="text-sm text-gray-700">{{ each.plant_form|default_if_none:"" }}</td>
+        <td class="text-sm text-gray-700">
+          {% for feature in each.features.all %}
+            {% if feature.species_type == 7 %}
+              {{ feature.get_icon }}
+            {% endif %}
+          {% endfor %}
+        </td>
       {% endif %}
 
       <td>

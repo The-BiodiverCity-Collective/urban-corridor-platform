@@ -4,7 +4,7 @@ This repository contains the source code of the Urban Corridor Platform. This pl
 
 The following technologies are used:
 
-- Django 5
+- Django 6
 - Python 3
 - PostgreSQL/PostGIS
 - Docker

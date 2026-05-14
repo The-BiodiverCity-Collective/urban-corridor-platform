@@ -2210,11 +2210,13 @@ def nursery(request, slug, garden=None, planner=False):
     context = {
         "info": info,
         "menu": "planner" if garden else "about",
-        "page": "nurseries",
+        "page": "resources",
         "page_info": info,
         "prices_present": NurseryInventory.objects.filter(nursery=info, price__isnull=False).exists(),
         "future_list": Species.objects.filter(garden_plants__garden=garden, garden_plants__status="FUTURE") if garden else None,
         "inventory": NurseryInventory.objects.filter(nursery=info, species__site=site),
+        "slug": "nursery",
+        "planner": planner,
     }
     return render(request, "nursery.html", context)
 
@@ -2563,10 +2565,11 @@ def planner_calendar(request, id):
         "menu": "planner",
         "page_info": page_info,
         "garden": garden,
-        "page": "calendar",
+        "page": "resources",
         "months": MONTH_CHOICES,
         "rows": rows,
         "monthly_totals": monthly_totals,
+        "slug": "calendar",
     }
     return render(request, "planner/calendar.html", context)
 
@@ -2618,11 +2621,12 @@ def planner_nurseries(request, id):
     )
     context = {
         "menu": "planner",
-        "page": "nurseries",
+        "page": "resources",
         "title": _("Nurseries"),
         "garden": garden,
         "nurseries": nurseries,
         "page_info": Page.objects.get(site=site, slug="nurseries"),
+        "slug": "nurseries",
     }
     return render(request, "planner/nurseries.html", context)
 

@@ -68,12 +68,12 @@
           <div class="-my-2">
             <h3 class="mt-4 mb-4 text-sm/6 font-medium text-gray-500">4. Prepare your space</h3>
             <a href="{% url "planner_calendar" GARDEN %}" class="flex gap-x-4 py-2 text-sm/6 font-semibold hover:text-sky-600
-              {% if page == "calendar" and menu == "planner" %}text-sky-600{% else %}text-gray-900{% endif %}">
+              {% if slug == "calendar" and menu == "planner" %}text-sky-600{% else %}text-gray-900{% endif %}">
               <i class="fa fa-calendar-alt fa-fw text-lg text-gray-400 mr-1"></i>
               Garden care calendar
             </a>
             <a href="{% url "planner_nurseries" GARDEN %}" class="flex gap-x-4 py-2 text-sm/6 font-semibold hover:text-sky-600
-              {% if page == "nurseries" and menu == "planner" %}text-sky-600{% else %}text-gray-900{% endif %}">
+              {% if slug == "nurseries" and menu == "planner" %}text-sky-600{% else %}text-gray-900{% endif %}">
               <i class="fa fa-hand-holding-seedling fa-fw text-lg text-gray-400 mr-1"></i>
               Find your plants: nurseries
             </a>
