@@ -2133,13 +2133,14 @@ def event(request, slug):
 def carbon_report(request, id, planner=False):
     site = get_site(request)
     info = Page.objects.get(slug="carbon-report", is_active=True, site=site)
+    garden = get_garden(request, id, silent_fail=True)
 
     # SRID 6933 (WGS 84 / Cylindrical Equal-Area). 
     # This projection is structurally designed to keep area measurements perfectly accurate globally. 
     # Transform to this and get the area.
-    if planner and request.user.is_authenticated:
+    if planner and garden:
         # Must either be a private garden that belongs to the user...
-        garden = Garden.objects_unfiltered.annotate(size=Area(Transform("geometry", 6933))).filter(pk=id, user=request.user).first()
+        garden = Garden.objects_unfiltered.annotate(size=Area(Transform("geometry", 6933))).get(pk=id)
     else:
         # ... or a public garden
         garden = Garden.objects.annotate(size=Area(Transform("geometry", 6933))).filter(pk=id).first()
@@ -2186,8 +2187,8 @@ def carbon_report(request, id, planner=False):
 
     context = {
         "info": info,
-        "menu": "planner" if garden else "resources",
-        "page": "resources",
+        "menu": "planner" if garden else "score",
+        "page": "score",
         "page_info": info,
         "garden": garden,
         "carbon_sequestered": int(carbon_sequestered),
@@ -2503,7 +2504,7 @@ def planner_suggestions(request, id):
         "filter_text": filter_text,
 
         # Because we have tabs above the <main>, we need to unround the top-left corner if the first tab is active
-        "main_classes": "rounded-tl-none" if view == "photos-data" else None,
+        "main_classes": "rounded-tl-none" if view == "photos-data" or not view else None,
     }
     return render(request, "planner/plants.suggestions.html", context)
 

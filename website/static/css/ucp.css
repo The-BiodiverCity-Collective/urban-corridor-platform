@@ -54,6 +54,10 @@
   @apply text-sm bg-orange-600 text-white px-3.5 py-2.5 rounded-sm hover:bg-orange-500 focus:outline-hidden font-semibold focus:ring-orange-300 no-underline hover:text-white inline-block cursor-pointer;
 }
 
+@utility btn-dark {
+  @apply text-sm bg-gray-600 text-white px-3.5 py-2.5 rounded-sm hover:bg-gray-700 focus:outline-hidden font-semibold focus:ring-gray-300 no-underline hover:text-white inline-block cursor-pointer;
+}
+
 @utility btn-yellow {
   @apply text-sm bg-yellow-500 text-white px-3.5 py-2.5 rounded-sm hover:bg-yellow-600 focus:outline-hidden font-semibold focus:ring-yellow-300 no-underline hover:text-white inline-block cursor-pointer;
 }

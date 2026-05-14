@@ -27,4 +27,27 @@
     </div>
   </div>
 
+    <div class="mt-8 mx-4 p-4 sm:p-5 bg-slate-50 border border-slate-100 rounded-xl flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+      <div class="flex items-start gap-4">
+        <div class="p-3 rounded-lg text-sky-700 shrink-0">
+          <i class="fa fa-cloud text-2xl"></i>
+        </div>
+        <div>
+          <h3 class="text-sm font-semibold text-gray-900">
+              {{ _("Carbon report") }}
+          </h3>
+          <p class="mt-0.5 text-sm text-gray-500">
+            {{ _("Learn more about the carbon sequestration potential of your garden") }}
+          </p>
+        </div>
+      </div>
+      <div class="shrink-0 self-end sm:self-center">
+        <a class="btn-dark btn-sm" href="{% url "carbon_report" GARDEN %}">
+          <i class="fas fa-chart-line mr-2"></i>
+          {{ _("View carbon report") }}
+        </a>
+      </div>
+    </div>
+  </div>
+
 {% endblock %}

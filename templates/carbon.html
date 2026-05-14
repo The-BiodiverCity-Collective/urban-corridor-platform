@@ -244,7 +244,10 @@
               GRASSES
             </h2>
             <p class="text-base text-gray-700 mb-6">
-              The average carbon sequestration figures for grasses were derived from the sources listed below.  These sources provide local data that can be used to calculate estimates for average carbon sequestration. 
+              The average carbon sequestration figures for grasses were derived
+              from the sources listed below.  These sources provide local data
+              that can be used to calculate estimates for average carbon
+              sequestration. 
             </p>
 
             <div class="space-y-8">
@@ -482,39 +485,38 @@
       $("#size form").show();
     });
 
-  $('#tab-plane, #tab-car').on('click', function() {
-    const isPlane = $(this).attr('id') === 'tab-plane';
-    
-    $('#view-plane').toggleClass('hidden', !isPlane);
-    $('#view-car').toggleClass('hidden', isPlane);
-    
-    $('#tab-plane, #tab-car')
-      .removeClass('text-amber-700 font-bold border-b-2 border-amber-700')
-      .addClass('text-amber-400 hover:text-amber-600');
-    
-    $(this)
-      .removeClass('text-amber-400 hover:text-amber-600')
-      .addClass('text-amber-700 font-bold border-b-2 border-amber-700');
-  });
+    $('#tab-plane, #tab-car').on('click', function() {
+      const isPlane = $(this).attr('id') === 'tab-plane';
+      
+      $('#view-plane').toggleClass('hidden', !isPlane);
+      $('#view-car').toggleClass('hidden', isPlane);
+      
+      $('#tab-plane, #tab-car')
+        .removeClass('text-amber-700 font-bold border-b-2 border-amber-700')
+        .addClass('text-amber-400 hover:text-amber-600');
+      
+      $(this)
+        .removeClass('text-amber-400 hover:text-amber-600')
+        .addClass('text-amber-700 font-bold border-b-2 border-amber-700');
+    });
 
-  $('.faq-trigger').on('click', function() {
-    const content = $(this).next('.faq-content');
-    const icon = $(this).find('.faq-icon');
-    
-    $('.faq-content').not(content).slideUp();
-    $('.faq-icon').not(icon).css('transform', 'rotate(0deg)');
-    
-    content.slideToggle();
-    const currentRotation = icon.css('transform');
-    icon.css('transform', currentRotation === 'none' || currentRotation === 'matrix(1, 0, 0, 1, 0, 0)' ? 'rotate(180deg)' : 'rotate(0deg)');
-  });
+    $('.faq-trigger').on('click', function() {
+      const content = $(this).next('.faq-content');
+      const icon = $(this).find('.faq-icon');
+      
+      $('.faq-content').not(content).slideUp();
+      $('.faq-icon').not(icon).css('transform', 'rotate(0deg)');
+      
+      content.slideToggle();
+      const currentRotation = icon.css('transform');
+      icon.css('transform', currentRotation === 'none' || currentRotation === 'matrix(1, 0, 0, 1, 0, 0)' ? 'rotate(180deg)' : 'rotate(0deg)');
+    });
 
-  $('#toggle-methodology').on('click', function() {
-    const isHidden = $('#methodology-full').is(':hidden');
-    $('#methodology-full').slideToggle();
-    $(this).text(isHidden ? 'Hide details ↑' : 'View details ↓');
-  });
-
+    $('#toggle-methodology').on('click', function() {
+      const isHidden = $('#methodology-full').is(':hidden');
+      $('#methodology-full').slideToggle();
+      $(this).text(isHidden ? 'Hide details ↑' : 'View details ↓');
+    });
 
   });
   </script>
