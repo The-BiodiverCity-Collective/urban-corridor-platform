@@ -658,19 +658,8 @@ class Garden(ReferenceSpace):
         return reverse("garden", args=[self.id])
 
     @property
-    def garden_photo(self):
-        if self.photo:
-            return photo
-
-        photos = Photo.objects.filter(species__garden_plants__garden=self, species__garden_plants__status="PRESENT")
-        if photos:
-            return photos.first()
-
-        photos = Photo.objects.filter(species__garden_plants__garden=self, species__garden_plants__status="FUTURE")
-        if photos:
-            return photos.first()
-
-        return None
+    def photo(self):
+        return Photo.objects.filter(garden=self).order_by("position", "date").first()
 
     def save(self, *args, **kwargs):
         vegetation = Document.objects.get(pk=983172)
@@ -1196,7 +1185,8 @@ class Photo(models.Model):
     @property
     def credit(self):
         license = self.license_code
-        license = license.upper()
+        if license:
+            license = license.upper()
         return f"© {self.author} ({license})"
 
     @property

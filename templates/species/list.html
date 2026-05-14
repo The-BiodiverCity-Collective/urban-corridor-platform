@@ -72,6 +72,10 @@
         <p>{{ _("Vegetation type") }}: <a href="{{ vegetation_type.get_absolute_url }}">{{ vegetation_type }}</a></p>
       {% endif %}
 
+      {% if source %}
+        <p>{{ _("Linked to source") }}: <a href="{{ source.get_absolute_url }}">{{ source }}</a></p>
+      {% endif %}
+
       {% if nursery %}
         <p>{{ _("Nursery") }}: <a class="text-amber-700" href="{{ nursery.get_absolute_url }}">{{ nursery }}</a></p>
         <p class="mb-4">{{ _("Availability") }}: 

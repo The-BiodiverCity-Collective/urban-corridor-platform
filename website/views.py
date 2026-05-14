@@ -59,6 +59,7 @@ def p(text):
 SATELLITE_TILES = "https://api.mapbox.com/v4/mapbox.satellite/{z}/{x}/{y}@2x.png?access_token=" + settings.MAPBOX_API_KEY
 STREET_TILES = "https://api.mapbox.com/styles/v1/mapbox/streets-v11/tiles/{z}/{x}/{y}?access_token=" + settings.MAPBOX_API_KEY
 LIGHT_TILES = "https://api.mapbox.com/styles/v1/mapbox/light-v10/tiles/{z}/{x}/{y}?access_token=" + settings.MAPBOX_API_KEY
+OTHER_CHARACTERISTICS = ["Time (flowering)", "Name", "Colour (flower)", "Form", "Link"]
 
 COLOR_SCHEMES = {
     "moc": ["#144d58","#a6cee3","#33a02c","#b2df8a","#e31a1c","#fb9a99","#ff7f00","#fdbf6f","#6a3d9a","#cab2d6","#b15928","#ffff99"],
@@ -812,7 +813,9 @@ def species_search(request, vegetation_type=None):
         "show_total_box": True,
         "page": "search",
         "get_features": request.GET.getlist("feature"),
+        "get_sources": request.GET.getlist("source"),
         "load_select2": True,
+        "sources": Document.objects.filter(site=site, doc_type="SPECIES_LIST"),
     }
     return render(request, "species/search.html", context)
 
@@ -884,6 +887,11 @@ def species_list(request, genus=None, family=None, vegetation_type=None, garden=
         else:
             species = species.filter(features__in=features)
 
+    source = None
+    if "source" in request.GET:
+        source = Document.objects.get(pk=request.GET["source"])
+        species = species.filter(log__file__attached_to=source, site=site)
+
     if "nursery" in request.GET:
         nursery = Page.objects.get(page_type=Page.PageType.NURSERY, slug=request.GET["nursery"], is_active=True, site=site)
         species = species.filter(inventory__nursery=nursery)
@@ -927,6 +935,7 @@ def species_list(request, genus=None, family=None, vegetation_type=None, garden=
         "total_species": total_species,
         "planner_tab": "my_plants" if garden_status else None,
         "nursery": nursery,
+        "source": source,
 
         # Because we have tabs above the <main>, we need to unround the top-left corner if the first tab is active
         "main_classes": "rounded-tl-none" if view == "photos-data" or not view else None,
@@ -2128,17 +2137,64 @@ def carbon_report(request, id, planner=False):
     # SRID 6933 (WGS 84 / Cylindrical Equal-Area). 
     # This projection is structurally designed to keep area measurements perfectly accurate globally. 
     # Transform to this and get the area.
-    if planner:
-        garden = Garden.objects_unfiltered.annotate(size=Area(Transform("geometry", 6933))).get(pk=id, user=request.user)
+    if planner and request.user.is_authenticated:
+        # Must either be a private garden that belongs to the user...
+        garden = Garden.objects_unfiltered.annotate(size=Area(Transform("geometry", 6933))).filter(pk=id, user=request.user).first()
     else:
-        garden = Garden.objects.annotate(size=Area(Transform("geometry", 6933))).get(pk=id)
+        # ... or a public garden
+        garden = Garden.objects.annotate(size=Area(Transform("geometry", 6933))).filter(pk=id).first()
+
+    if not garden:
+        if request.user.is_authenticated:
+            messages.warning(request, _("Garden was not found or you do not have access to view this garden."))
+            return redirect("account_gardens")
+        else:
+            messages.warning(request, _("Please log in to view this page."))
+            return redirect(reverse("login") + "?next=" + request.get_full_path())
+
+    if request.method == "POST":
+        if not garden.meta_data:
+            garden.meta_data = {}
+        if "trees" in request.POST:
+            garden.meta_data["trees"] = request.POST.get("trees", None)
+        elif "size" in request.POST:
+            garden.meta_data["size"] = request.POST.get("size", None)
+        garden.save()
+        messages.success(request, _("Number of trees has been updated."))
+        return redirect(request.get_full_path())
+
+    TRIP_TO_CPT = 291 # kg co2
+    TREE_CO2 = 33.7615 # kg per tree
+    SOIL_CO2 = 0.242266 # kg per m2
+    KM_CO2 = 0.16272 # kg of co2 per km in petrol car
+
+    carbon_sequestered = 0
+    if garden.meta_data and "trees" in garden.meta_data:
+        trees = int(garden.meta_data["trees"])
+        carbon_sequestered += trees * TREE_CO2 # kg per tree
+
+    # We prioritize manually set size
+    garden_size = int(garden.meta_data.get("size", 0)) if garden.meta_data else 0
+    if not garden_size and garden.size: # If the size is available based on location we use that
+        garden_size = garden.size.sq_m
+
+    if garden_size:
+        carbon_sequestered += SOIL_CO2*garden_size
+
+    trips = carbon_sequestered / TRIP_TO_CPT
+    kms = carbon_sequestered / KM_CO2
 
     context = {
         "info": info,
         "menu": "planner" if garden else "resources",
-        "page": "carbon",
+        "page": "resources",
         "page_info": info,
         "garden": garden,
+        "carbon_sequestered": int(carbon_sequestered),
+        "trips": trips,
+        "kms": kms,
+        "KM_CO2": KM_CO2,
+        "garden_size": garden_size,
     }
     return render(request, "carbon.html", context)
 
@@ -3375,6 +3431,8 @@ def controlpanel_document(request, id=None, tab=None):
         "info": info,
         "doc_types": Document.DOC_TYPES,
         "tab": tab,
+        "other_characteristics": OTHER_CHARACTERISTICS,
+        "features": SpeciesFeatures.objects.all(),
     }
     return render(request, "controlpanel/document.html", context)
 
@@ -3389,7 +3447,7 @@ def controlpanel_document_species(request, id):
     existing_features = []
     nonexisting_features = []
     features = {}
-    other_characteristics = ["Time (flowering)", "Name", "Colour (flower)", "Form", "Link"]
+    other_characteristics = OTHER_CHARACTERISTICS
     error = None
 
     try:
@@ -3548,31 +3606,52 @@ def controlpanel_document_species(request, id):
             df = df[:200]
             messages.warning(request, _("Your spreadsheet has more rows, but we only show 200 below. When you import them, ALL records will be imported"))
         try:
-            for index, row in df.iterrows():
-                # We take the name row, and we check if each species exists. We then add a column with the result.
-                name = row["Name"]
-                if name: # Check how to deal with NaN fields of empty rows TODO
-                    name_words = name.split()
+            required_columns = ["Name"]
+            missing_columns = [col for col in required_columns if col not in df.columns]
+            
+            if missing_columns:
+                missing_str = ", ".join(missing_columns)
+                found_str = ", ".join([f"'{col}'" for col in df.columns]) if not df.columns.empty else _("None")
+                
+                error = _("Your file is missing required columns: ") + f"<strong>{missing_str}</strong>.<br>"
+                error += _("The following column names were found instead: ") + f"<strong>{found_str}</strong>.<br><br>"
+                error += _("Please ensure your file matches the template exactly. Remember that we expect one top row which groups the headers (and which we do NOT analyse), followed by the header names on row 2).")
+                
+                messages.error(request, error)
 
+            if not error:
+                for index, row in df.iterrows():
+                    # Handle NaN or empty values cleanly
+                    name = row["Name"]
+                    if pd.isna(name) or str(name).strip() == "":
+                        alerts.append(_("Row skipped: Name field is empty."))
+                        results.append("✖️")
+                        continue
+
+                    name = str(name).strip()
+                    name_words = name.split()
                     exists = False
+                    
                     if len(name_words) < 2:
-                        alerts.append("Species names must contain genus + species. This row is invalid and will NOT be added.")
+                        alerts.append(_("Species names must contain genus + species. This row is invalid and will NOT be added."))
                     else:
                         alerts.append("")
-                        exists = Species.objects.filter(name=name.strip()).exists()
+                        exists = Species.objects.filter(name=name).exists()
+                    
                     results.append("✓" if exists else "✖️")
                     species_count += 1
                     if not exists:
                         new_species.append(name)
 
-            df.insert(1, "Exists", results)
-            df.insert(2, "Details", alerts)
-            df = df.fillna("")
-            html_table = df.to_html(classes="table", escape=False)
+                df.insert(1, "Exists", results)
+                df.insert(2, "Details", alerts)
+                df = df.fillna("")
+                html_table = df.to_html(classes="table", escape=False)
 
         except Exception as e:
-            error = _("There was a problem with your file. Make sure it is formatted according to the template.")
-            error += _("Specific error: ") + "<br><strong>" + str(e) + "</strong>"
+            # 3. Catch unexpected system or database errors
+            error = _("An unexpected error occurred while processing the file.")
+            error += "<br><br>" + _("Technical details: ") + f"<strong>{type(e).__name__}: {str(e)}</strong>"
             messages.error(request, error)
 
     context = {

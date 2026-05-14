@@ -58,6 +58,22 @@
               <label for="id_features_{{ feature.id }}" class="ml-2 text-gray-700">{{ feature.name }}</label>
             </span>
           {% endfor %}
+              </div>
+              <div>
+                <h4>{{ _("Sources") }}</h4>
+          {% for source in sources %}
+            <span class="flex items-center">
+              <input 
+                type="checkbox" 
+                name="source" 
+                id="id_source{{ source.id }}" 
+                value="{{ source.id }}" 
+                class="form-checkbox h-5 w-5 text-blue-500" 
+                {% if source.id|stringformat:"d" in get_sources %}checked{% endif %}
+              >
+              <label for="id_source{{ source.id }}" class="ml-2 text-gray-700">{{ source.name|truncatechars:30 }}</label>
+            </span>
+          {% endfor %}
         </div>
         </div>
       </div>

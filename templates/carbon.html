@@ -1,39 +1,452 @@
 {% extends "_base.html" %}
 {% load humanize %}
 
+{% block css %}
+  <style type="text/css">
+  .faq-trigger{cursor:pointer}
+  </style>
+{% endblock %}
+
 {% block content %}
 
-  <div class="p-10">
-    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-      <div class="md:col-span-2">
-        <h1>{{ info }}</h1>
-        {{ info.get_content }}
+<div class="p-10">
+  <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+    
+    <div class="md:col-span-2 space-y-10">
+      <div>
+        <h1 class="text-4xl font-bold text-gray-800 mb-2">Carbon Report</h1>
+        <p class="text-gray-600">An estimate of the sequestration potential for <strong>{{ garden }}</strong>.</p>
       </div>
-      <div class="md:col-span-1">
-        <h2>{{ _("Your garden") }}</h2>
-        <h3>{{ _("Garden size") }}</h3>
-        {% if garden.size %}
-          {{ garden.size.sq_m|floatformat:0|intcomma }} m²
-        {% else %}
-          <div class="alert alert-warning">
-            {{ _("Size unavailable. Please configure your garden's size first.") }}
-            <br>
-            <a href="http://">{{ _("Set size") }}</a>
+
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 items-stretch">
+        <div class="bg-lime-600 p-6 rounded-xl shadow-md flex flex-col justify-between items-center text-center text-white h-full">
+          <div class="flex flex-col items-center justify-center flex-grow">
+            <span class="text-xs uppercase tracking-widest font-bold mb-2">Annual Sequestration</span>
+            <div class="text-5xl font-black mb-1">{{ carbon_sequestered }}</div>
+            <p class="text-sm font-medium">kg of CO₂ per year</p>
           </div>
-        {% endif %}
-        <h3 class="mt-5">{{ _("Tree count") }}</h3>
-        {% if garden.meta_data.trees %}
-          {{ garden.meta_data.trees }}
-        {% else %}
-          <div class="alert alert-warning">
-            {{ _("Tree count unavailable") }}
-            <br>
-            <a href="http://">{{ _("Set tree count") }}</a>
+          <p class="text-[10px] mt-4 italic">Combined tree &amp; soil estimatestimate</p>
+        </div>
+        
+        <div class="bg-amber-50 text-amber-700 border border-amber-500 p-6 rounded-xl shadow-md flex flex-col justify-between items-center text-center relative w-full h-full">
+          <div class="flex space-x-4 mb-4 border-b border-amber-300 pb-2 w-full justify-center">
+            <button id="tab-plane" class="cursor-pointer text-xl focus:outline-none text-amber-700 font-bold border-b-2 border-amber-700 pb-1" aria-label="Plane View">
+              <i class="fas fa-plane"></i>
+            </button>
+            <button id="tab-car" class="cursor-pointer text-xl focus:outline-none text-amber-400 hover:text-amber-600 pb-1" aria-label="Car View">
+              <i class="fas fa-car"></i>
+            </button>
           </div>
-        {% endif %}
+
+          <div id="view-plane" class="tab-content flex flex-col items-center justify-center flex-grow w-full">
+            <span class="text-xs uppercase tracking-widest opacity-80 mb-2">Flight Equivalent</span>
+            <div class="text-5xl font-black mb-1">{{ trips|floatformat:1 }}</div>
+            <p class="text-sm font-medium">Annual flights to Cape Town</p>
+            <p class="text-[10px] mt-4 opacity-70 italic">Calculated at ~291 kg CO₂e per one-way flight</p>
+          </div>
+
+          <div id="view-car" class="tab-content hidden flex flex-col items-center justify-center flex-grow w-full">
+            <span class="text-xs uppercase tracking-widest opacity-80 mb-2">Car Distance Equivalent</span>
+            <div class="text-5xl font-black mb-1">{{ kms|floatformat:0|intcomma }}</div>
+            <p class="text-sm font-medium">Kilometers driven every year</p>
+            <p class="text-[10px] mt-4 opacity-70 italic">Average petrol car at {{ KM_CO2 }} kg CO₂e per km</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="prose prose-sm max-w-none border-l-4 border-gray-700 pl-6 py-2">
+        <p class="text-lg leading-relaxed italic">
+          Establishing and improving an indigenous garden benefits not only native
+          animals and plants, but it will also contribute positively to the climate.
+          This report estimates your garden's annual sequestration potential based on 
+          its specific size and tree count. Read more below on our methodology, how
+          to maximise your impact, and why well-functioning indigenous grasslands
+          can be a great source of sequestering CO₂.
+        </p>
+      </div>
+
+      <div class="bg-gray-50 p-8 rounded-xl border border-gray-200">
+        <h2 class="text-2xl font-bold text-lime-600 mb-6">Maximizing Your Impact</h2>
+        <div class="grid gap-6">
+          <div class="flex gap-4">
+            <span class="font-bold text-lime-600 text-xl">1</span>
+            <p class="text-sm leading-relaxed"><strong>Compost Locally:</strong> 
+              Composting green waste and kitchen waste, instead of relying on synthetic
+              fertilisers. This diverts organic waste from landfill where it releases methane
+              and greenhouse gases. Organic compost also contributes nutrients to the soil.
+            </p>
+          </div>
+          <div class="flex gap-4">
+            <span class="font-bold text-lime-600 text-xl">2</span>
+            <div class="text-sm leading-relaxed">
+              <strong>The "No-Dig" Rule:</strong> 
+                Digging or tilling exposes soil microbes to oxygen and sunlight,
+                causing them to burn through organic matter and release CO₂. To
+                maximise storage, leave the soil structure intact so carbon
+                remains "locked" in stable aggregates.  
+            </div>
+          </div>
+          <div class="flex gap-4">
+            <span class="font-bold text-lime-600 text-xl">3</span>
+            <div class="text-sm leading-relaxed">
+              <strong>Layered Planting:</strong> Instead of a flat garden, create a "vertical tapestry." Plant tall indigenous trees, underplant them with shrubs, and finish with perennials and groundcovers. This mimics a natural ecosystem and increases the total biomass and photosynthetic surface area per square meter.
+            </div>
+          </div>
+          <div class="flex gap-4">
+            <span class="font-bold text-lime-600 text-xl">4</span>
+            <p class="text-sm leading-relaxed"><strong>Low-Power Maintenance:</strong> 
+              Reduce the frequency of mowing lawns and using other powered tools like
+              trimmers, leaf blowers, and vacuums. This helps to reduce energy / fuel usage
+              associated with tools like lawn mowers, trimmers. Approximately 2.2 kg of
+              CO₂ are emitted per litre of petrol combusted. If a small petrol lawn mower
+              uses 0.5 litres of petrol for 30 minutes, that would equate to 1.1 kg CO₂e
+              being emitted into the atmosphere. Equivalent to driving several km in a car.
+            </p>
+          </div>
+          <div class="flex gap-4">
+            <span class="font-bold text-lime-600 text-xl">5</span>
+            <div class="text-sm leading-relaxed">
+              <strong>Mulch and Protected Soil:</strong> Never leave soil bare. In the Gauteng sun, bare soil loses carbon through oxidation. Use a thick layer of organic mulch (wood chips, leaves) to act as a "weighted blanket," cooling the soil and allowing decomposition to happen slowly, which builds topsoil over time.
+            </div>
+          </div>
+          <div class="flex gap-4">
+            <span class="font-bold text-lime-600 text-xl">6</span>
+            <p class="text-sm leading-relaxed"><strong>Water Wisely:</strong>
+              Pumping water through irrigation systems also carries a carbon footprint.
+              Rather use low / no energy irrigation systems like rainwater harvesting, or
+              mulching.
+            </p>
+          </div>
+          <div class="flex gap-4">
+            <span class="font-bold text-lime-600 text-xl">7</span>
+            <p class="text-sm leading-relaxed"><strong>Expand Your Garden:</strong>
+              Carbon sequestering depends on the number of growing trees, and the total 
+              size of your garden (for soil carbon capture). A great way to increase your
+              impact is by increasing your garden size and/or the number of trees!
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <div class="max-w-4xl mx-auto p-6 bg-white text-gray-800 font-sans leading-relaxed">
+        
+        <section class="mb-10">
+          <h1 class="text-2xl font-extrabold text-gray-900 border-b pb-3 mb-4 flex items-center gap-3">
+            <i class="fas fa-calculator text-2xl"></i>
+            Methodology
+          </h1>
+          <p class="text-base text-gray-700 mb-4">
+            Our calculations are based primarily on peer-reviewed South African research. We combine tree-specific growth data with soil organic carbon (SOC) metrics from the Highveld. Below we describe how the sequestration factors were calculated. You can also download the spreadsheet with the calculations and a more detailed overview of the research publications that were considered.
+          </p>
+        </section>
+
+        <div id="methodology-full" class="hidden">
+
+          <section class="mb-10">
+            <h2 class="text-xl font-bold text-lime-700 mb-6 flex items-center gap-3 border-b pb-2">
+              <i class="fas fa-tree-alt"></i>
+              TREES
+            </h2>
+            <p class="text-base text-gray-700 mb-6">
+              The average carbon sequestration figures for trees were derived from the sources listed below.  These sources provide local data that can be used to calculate estimates for average carbon sequestration of a single tree per year. 
+            </p>
+
+            <div class="space-y-8">
+              <div class="bg-gray-50 p-5 rounded-lg border-l-4 border-lime-500 shadow-sm">
+                <h3 class="font-semibold text-lg text-gray-900 mb-2">
+                  Carbon sequestration estimates of indigenous street trees in the City of Tshwane, South Africa
+                </h3>
+                <a href="https://www.sciencedirect.com/science/article/abs/pii/S1618866709000648" target="_blank" rel="noopener noreferrer" class="text-sm text-sky-700 break-all flex items-center gap-1.5 mb-3 font-medium">
+                  <i class="fas fa-external-link-alt text-xs"></i>
+                  sciencedirect.com
+                </a>
+                <p class="text-sm text-gray-600">
+                  To calculate the carbon sequestration potential, the growth rates of Combretum erythrophyllum, Searsia lancea and Searsia pendulina were determined. The results from growth regression relationships were used in a generic allometric biomass regression to calculate the carbon sequestration rate of each species, which was extrapolated to determine the total quantity of carbon to be sequestrated by the street trees over a 30-year period (2002–2032). It is estimated that the tree planting will result in 200,492 tonnes CO₂ equivalent reduction and that 54,630 tonnes carbon will be sequestrated.
+                </p>
+              </div>
+
+              <div class="bg-gray-50 p-5 rounded-lg border-l-4 border-lime-500 shadow-sm">
+                <h3 class="font-semibold text-lg text-gray-900 mb-2">
+                  The potential of Vachellia kosiensis (Acacia kosiensis) as a dryland forestry species in terms of its water use, growth rates and resultant water-use efficiency
+                </h3>
+                <a href="https://www.nisc.co.za/products/abstracts/29016/the-potential-of-vachellia-kosiensis-acacia-kosiensis-as-a-dryland-forestry-species-in-terms-of-its-water-use-growth-rates-and-resultant-water-use" target="_blank" rel="noopener noreferrer" class="text-sm text-sky-700 break-all flex items-center gap-1.5 mb-3 font-medium">
+                  <i class="fas fa-external-link-alt text-xs"></i>
+                  nisc.co.za
+                </a>
+                <p class="text-sm text-gray-600">
+                  In this study, the water use, growth rates and resultant water-use efficiency of Vachellia kosiensis (Acacia kosiensis) (dune sweet thorn) were quantified within a mature stand of these trees situated on rehabilitated dune mining land in the Richards Bay area of South Africa. The growth rates of individual Acacia kosiensis yielded a mean annual increment of 7.2 t/ha/year. The growth rate / biomass increment per year, was used to determine the carbon content per year. 
+                </p>
+              </div>
+
+              <div class="bg-gray-50 p-5 rounded-lg border-l-4 border-lime-500 shadow-sm">
+                <h3 class="font-semibold text-lg text-gray-900 mb-2">
+                  Is carbon sequestration a viable option for reducing carbon tax?
+                </h3>
+                <a href="https://www.deloitte.com/za/en/services/tax/analysis/is-carbon-sequestration-a-viable-option-for-reducing-carbon-tax.html" target="_blank" rel="noopener noreferrer" class="text-sm text-sky-700 break-all flex items-center gap-1.5 mb-3 font-medium">
+                  <i class="fas fa-external-link-alt text-xs"></i>
+                  deloitte.com
+                </a>
+                <p class="text-sm text-gray-600">
+                  This article by Deloitte provides a summary of an academic study analysing the carbon storage potential of Johannesburg in conjunction with similar studies. Based on these studies, the article suggests that on average around 1 800 trees are found in high tree density urban area sample sites (1km² quadrants) across Johannesburg, which equates to around 1 500 tonnes of CO₂ (tCO₂) per square kilometre. Areas with low tree density had an average of 900 trees in sampled sites which equates to around 50 tCO₂ per square kilometre. Research indicates that the average carbon sequestration rates of common South African trees can vary from 0.001 tCO₂ per year per tree to 0.07 tCO₂ per year per tree. 
+                </p>
+              </div>
+            </div>
+
+          </section>
+
+          <section class="mb-6">
+            <h2 class="text-xl font-bold text-amber-700 mb-6 flex items-center gap-3 border-b pb-2">
+              <i class="fas fa-seedling text-amber-700"></i>
+              GRASSES
+            </h2>
+            <p class="text-base text-gray-700 mb-6">
+              The average carbon sequestration figures for grasses were derived from the sources listed below.  These sources provide local data that can be used to calculate estimates for average carbon sequestration. 
+            </p>
+
+            <div class="space-y-8">
+              <div class="bg-gray-50 p-5 rounded-lg border-l-4 border-amber-300 shadow-sm">
+                <h3 class="font-semibold text-lg text-gray-900 mb-2">
+                  Lignin dynamics in secondary pasture soils of the South African Highveld
+                </h3>
+                <a href="https://www.sciencedirect.com/science/article/abs/pii/S0016706117313198" 
+                target="_blank" rel="noopener noreferrer" class="text-sm text-sky-700 break-all flex items-center gap-1.5 mb-3 font-medium">
+                  <i class="fas fa-external-link-alt text-xs"></i>
+                  sciencedirect.com
+                </a>
+                <p class="text-sm text-gray-600">
+                  Reseeding grasses into degraded cropland and using it as permanent secondary pasture may combat desertification and promote sequestration of soil organic carbon (SOC). Our objective was to assess the contribution of lignin and grass-derived carbon to the rates of SOC accrual upon such land-use change. After establishment of the secondary pastures, between 9.0 and 15.3 t of SOC were sequestered in the 0–20 cm of surface soil. 
+                  <strong>
+                  The total SOC was used to calculate the tCO₂/ha/year.
+                  </strong>
+                </p>
+              </div>
+
+              <div class="bg-gray-50 p-5 rounded-lg border-l-4 border-amber-300 shadow-sm">
+                <h3 class="font-semibold text-lg text-gray-900 mb-2">
+                  South Africa’s grasslands set a global first for community-led carbon markets
+                </h3>
+                <a href="https://africabusiness.com/2026/01/24/south-africas-grasslands-set-a-global-first-for-community-led-carbon-markets/" 
+                target="_blank" rel="noopener noreferrer" class="text-sm text-sky-700 break-all flex items-center gap-1.5 mb-3 font-medium">
+                  <i class="fas fa-external-link-alt text-xs"></i>
+                  africabusiness.com
+                </a>
+                <p class="text-sm text-gray-600">
+                  The Grassland Restoration and Stewardship is South Africa (GRASS) project sold 266 255 carbon credits (Verified Carbon Units) from 95 364 hectares of South African grasslands managed within a two-year monitoring period. This project carries the Climate, Community &amp; Biodiversity (CCB) label under Verra’s VM0042 methodology. 
+                  <strong>
+                  The results of the initial two-year monitoring period were used to estimate the tonnes of carbon dioxide per hectare sequestrated per year.
+                  </strong>
+                </p>
+              </div>
+            </div>
+          </section>
+        </div>
+
+        <div class="flex justify-between">
+          <a href="/media/carbon-calculations.xlsx" class="btn-blue"><i class="fa fa-download"></i> Download calculations (xlsx)</a>
+          <button id="toggle-methodology" class="mt-4 text-lime-700 cursor-pointer font-bold text-sm hover:underline">View details ↓</button>
+        </div>
+
+      </div>
+
+      <div class="bg-white p-8 rounded-xl border border-gray-200">
+        <h2 class="text-2xl font-bold text-gray-800 mb-6">FAQ</h2>
+        <div class="space-y-2">
+          <div class="faq-item border-b border-gray-100">
+            <button class="faq-trigger w-full py-5 text-left flex justify-between items-center font-bold hover:text-sky-700 transition-colors">
+              <span>Does soil store more carbon than trees?</span>
+              <span class="faq-icon transition-transform text-xs duration-300">▼</span>
+            </button>
+            <div class="faq-content hidden pb-5 text-sm text-gray-600 leading-relaxed">
+              In grassland biomes like the Highveld, soil is the real hero of long-term sequestration, holding up to 90% of the ecosystem's total carbon (<em>Source: SANBI / Grasslands Programme</em>). While trees are visible, soil carbon is more stable. In Gauteng’s climate, where high temperatures speed up decomposition, maximizing impact requires shifting focus from "growing big plants" to "building deep soil" through no-dig practices and permanent groundcover.
+            </div>
+          </div>
+          <div class="faq-item border-b border-gray-100">
+            <button class="faq-trigger w-full py-5 text-left flex justify-between items-center font-bold hover:text-sky-700 transition-colors">
+              <span>From a carbon perspective, what happens if grasslands burn?</span>
+              <span class="faq-icon transition-transform text-xs duration-300">▼</span>
+            </button>
+            <div class="faq-content hidden pb-5 text-sm text-gray-600 leading-relaxed">
+              While fire releases above-ground carbon, Gauteng's indigenous grasslands store the vast majority of their carbon underground. Grasses evolve to survive fire by pushing carbon into deep root systems. Unlike forests, where a fire destroys the "carbon vault" (the trunks), a grassland fire leaves the soil carbon largely intact, allowing for rapid regrowth and continued sequestration.
+            </div>
+          </div>
+          <div class="faq-item border-b border-gray-100">
+            <button class="faq-trigger w-full py-5 text-left flex justify-between items-center font-bold hover:text-sky-700 transition-colors">
+              <span>How accurate are these numbers?</span>
+              <span class="faq-icon transition-transform text-xs duration-300">▼</span>
+            </button>
+            <div class="faq-content hidden pb-4 text-sm text-gray-600 leading-relaxed">
+              These are estimates based on local research. While not a formal audit, they provide a scientifically-grounded "ballpark" for the positive impact of indigenous gardening. Read our methodology to understand how we calculate these numbers. If we find more locally-specific data sources or more up-to-date figures from recent research then we will update our carbon reports accordingly. Feedback is always welcome.
+            </div>
+          </div>
+          <div class="faq-item border-b border-gray-100">
+            <button class="faq-trigger w-full py-5 text-left flex justify-between items-center font-bold hover:text-sky-700 transition-colors">
+              <span>Why choose indigenous plants?</span>
+              <span class="faq-icon transition-transform text-xs duration-300">▼</span>
+            </button>
+            <div class="faq-content hidden pb-4 text-sm text-gray-600 leading-relaxed">
+              Any type of garden can help sequester CO₂ include those using alien vegetation.
+              However, indigenous species are adapted to our climate, requiring less water and no synthetic fertilizers, which lowers the overall carbon footprint of your garden's maintenance.
+            </div>
+          </div>
+          <div class="faq-item border-b border-gray-100">
+            <button class="faq-trigger w-full py-5 text-left flex justify-between items-center font-bold hover:text-sky-700 transition-colors">
+              <span>How to do a more detailed carbon analysis of my garden?</span>
+              <span class="faq-icon transition-transform text-xs duration-300">▼</span>
+            </button>
+            <div class="faq-content hidden pb-4 text-sm text-gray-600 leading-relaxed">
+              There are many aspects of carbon emissions and sequestrations related to setting up and maintaining an indigenous 
+              garden. If you want to do a more thorough carbon analysis, we recommend you contact our partner, 
+              Red Root, who helped create this carbon report and is available for carbon-impact consultancies.
+            </div>
+          </div>
+        </div>
       </div>
     </div>
 
-  </div>
+    <div class="md:col-span-1">
+      <div class="bg-white rounded-xl shadow-md border border-gray-200 overflow-hidden sticky top-10">
+        {% if garden.photo %}
+          <img src="{{ garden.photo.thumbnail }}" alt="" class="w-full h-50 object-cover">
+        {% endif %}
+        <div class="p-6">
+          <div class="space-y-4 pt-4">
+            <div>
+              <p class="text-[10px] text-gray-600 uppercase">{{ _("Garden") }}</p>
+              <p class="text-lg font-bold text-gray-700">{{ garden }}</p>
+            </div>
+            <div id="size">
+              <p class="text-[10px] text-gray-600 uppercase">{{ _("Garden size") }}</p>
+                {% if garden_size %}
+                  <p class="text-lg font-bold text-gray-700 flex justify-between">
+                    <span>{{ garden_size|floatformat:0|intcomma }} m²</span>
+                    <a href="#" class="text-sm" id="set_size">{{ _("Set size") }}</a>
+                  </p>
+                {% else %}
+                  <div class="alert alert-warning">
+                    {{ _("Size unavailable. Please configure your garden's size first.") }}
+                    <br>
+                    <a href="#" id="set_size">{{ _("Set size") }}</a>
+                  </div>
+                {% endif %}
+              <form method="post" class="hidden">
+                <p class="text-sm">
+                  {{ _("What is the size of your garden? You can also upload a KMZ outline of your garden to your location page and the size will be calculated automatically.") }}
+                </p>
 
+                <div class="relative w-full max-w-xs">
+                  <input
+                    type="number"
+                    name="size"
+                    class="w-full pr-14 px-4 py-2 border border-gray-300 rounded-lg bg-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    placeholder="0.00"
+                    value="{{ garden.meta_data.size }}"
+                  />
+                  <span class="absolute inset-y-0 right-3 flex items-center text-sm text-gray-600 pointer-events-none">
+                    m²
+                  </span>
+                </div>
+
+                <button class="btn-green mt-2">{{ _("Save") }}</button>
+                {% csrf_token %}
+              </form>
+            </div>
+            <div id="trees">
+              <p class="text-[10px] text-gray-600 uppercase">{{ _("Tree count") }}</p>
+              {% if garden.meta_data.trees %}
+                  <p class="text-lg font-bold text-gray-700 flex justify-between">
+                    <span>{{ garden.meta_data.trees }}</span>
+                    <a class="text-sm" href="#" id="set_trees">{{ _("Set tree count") }}</a>
+                  </p>
+              {% else %}
+                <div class="alert alert-warning">
+                  {{ _("Tree count unavailable") }}
+                  <br>
+                  <a href="#" id="set_trees">{{ _("Set tree count") }}</a>
+                </div>
+              {% endif %}
+              <form method="post" class="hidden">
+                <p class="text-sm">
+                  {{ _("Please count how many individual trees you have in your garden. Enter the number below. You can also temporarily increase the number to see what impact adding trees to your garden would have.") }}
+                </p>
+                <input type="number" name="trees" value="{{ garden.meta_data.trees }}" />
+                <button class="btn-green mt-2">{{ _("Save") }}</button>
+                {% csrf_token %}
+              </form>
+            </div>
+            <div>
+              <p class="text-[10px] text-gray-600 uppercase">{{ _("Annual sequestration estimate") }}</p>
+              <p class="text-lg font-bold text-gray-700">{{ carbon_sequestered|intcomma }} kg CO₂</p>
+            </div>
+          </div>
+          
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+$(document).ready(function() {
+  // FAQ Accordion
+  $('.faq-trigger').on('click', function() {
+    const content = $(this).next('.faq-content');
+    const icon = $(this).find('.faq-icon');
+    
+    $('.faq-content').not(content).slideUp();
+    $('.faq-icon').not(icon).css('transform', 'rotate(0deg)');
+    
+    content.slideToggle();
+    const currentRotation = icon.css('transform');
+    icon.css('transform', currentRotation === 'none' || currentRotation === 'matrix(1, 0, 0, 1, 0, 0)' ? 'rotate(180deg)' : 'rotate(0deg)');
+  });
+
+  // Methodology Toggle
+  $('#toggle-methodology').on('click', function() {
+    const isHidden = $('#methodology-full').is(':hidden');
+    $('#methodology-full').slideToggle();
+    $(this).text(isHidden ? 'Hide details ↑' : 'View details ↓');
+  });
+});
+</script>
+
+{% endblock %}
+
+{% block js %}
+  <script type="text/javascript">
+  $(function(){
+    $("#set_trees").click(function(e){
+      e.preventDefault();
+      $("#trees .alert").hide();
+      $("#trees form").show();
+    });
+
+    $("#set_size").click(function(e){
+      e.preventDefault();
+      $("#size .alert").hide();
+      $("#size form").show();
+    });
+
+  $('#tab-plane, #tab-car').on('click', function() {
+    // Determine target view
+    const isPlane = $(this).attr('id') === 'tab-plane';
+    
+    // Toggle view visibility
+    $('#view-plane').toggleClass('hidden', !isPlane);
+    $('#view-car').toggleClass('hidden', isPlane);
+    
+    // Reset tab styling
+    $('#tab-plane, #tab-car')
+      .removeClass('text-amber-700 font-bold border-b-2 border-amber-700')
+      .addClass('text-amber-400 hover:text-amber-600');
+    
+    // Apply active styling to clicked tab
+    $(this)
+      .removeClass('text-amber-400 hover:text-amber-600')
+      .addClass('text-amber-700 font-bold border-b-2 border-amber-700');
+  });
+
+
+
+  });
+  </script>
 {% endblock %}

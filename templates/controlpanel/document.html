@@ -114,7 +114,6 @@
 
 </form>
 
-
 {% else %}
 
   <ul role="list" class="grid grid-cols-1 gap-6 sm:grid-cols-1 lg:grid-cols-2 mt-10">
@@ -201,6 +200,22 @@
     </li>
 
   </ul>
+
+{% if info.doc_type == "SPECIES_LIST" %}
+
+  <div class="mt-5 alert alert-info">
+    {{ _("You can use ANY of the following features as column headers. Make sure you spell them exactly the same.") }}
+    <ul class="list-disc ml-4 mt-5">
+      {% for each in features %}
+        <li>{{ each }}</li>
+      {% endfor %}
+      {% for each in other_characteristics %}
+        <li>{{ each }}</li>
+      {% endfor %}
+    </ul>
+  </div>
+
+{% endif %}
 
 {% endif %}
 
