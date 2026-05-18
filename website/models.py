@@ -817,6 +817,7 @@ class SpeciesFeatures(models.Model):
         TYPE = 7, _("Plant types")
         SUCCESSION = 8, _("Succession")
         SOIL = 9, _("Soils")
+        CLASSIFICATION = 10, _("Spatial classification")
 
     species_type = models.IntegerField(choices=SpeciesType.choices, db_index=True, default=0)
     site = models.ManyToManyField(Site, blank=True, related_name="features")
