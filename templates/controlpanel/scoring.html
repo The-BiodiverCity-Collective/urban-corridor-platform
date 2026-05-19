@@ -113,7 +113,7 @@
     <div class="grid grid-cols-3 gap-4">
       <section class="p-2 mb-5 bg-gray-100 rounded-lg">
         {% for each in feature_scores %}
-          <div class="flex gap-6 mb-3">
+          <div class="flex gap-6 mb-3 {% ifchanged each.feature.species_type %}{% if not forloop.first %}border-t pt-3 border-dashed border-gray-500{% endif %}{% endifchanged %}">
             <div class="flex-1">{{ each.feature }}</div>
             <div class="flex-1"><input name="feature_points_{{ each.id }}" value="{{ each.points }}" type="number" /></div>
           </div>

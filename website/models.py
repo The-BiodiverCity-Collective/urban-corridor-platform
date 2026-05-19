@@ -79,6 +79,7 @@ class Site(models.Model):
     meta_data = models.JSONField(null=True, blank=True)
     vegetation_types_map = models.ForeignKey("Document", on_delete=models.PROTECT, null=True, blank=True, related_name="primary_site_vegetation")
     languages_species = models.ManyToManyField(Language, related_name="site_species")
+    features = models.ManyToManyField("SpeciesFeatures", blank=True, help_text="Rank species using these automatic filters", related_name="defaults_for_site")
 
     def __str__(self):
         return self.name
@@ -783,6 +784,7 @@ class VegetationType(models.Model):
     name = models.CharField(max_length=255, db_index=True)
     description = models.TextField(null=True, blank=True)
     redlist = models.ForeignKey(Redlist, on_delete=models.SET_NULL, null=True)
+    feature = models.ForeignKey("SpeciesFeatures", on_delete=models.SET_NULL, null=True)
     slug = models.SlugField(max_length=255)
     spaces = models.ManyToManyField(ReferenceSpace, blank=True, limit_choices_to={"source_id": 983172})
     site = models.ForeignKey(Site, on_delete=models.CASCADE, related_name="vegetation_types")
@@ -878,8 +880,8 @@ class SpeciesFeatures(models.Model):
 
 class FeatureSiteScore(models.Model):
     feature = models.ForeignKey(SpeciesFeatures, related_name="score", on_delete=models.CASCADE)
-    site = models.ForeignKey(Site, related_name="features", on_delete=models.CASCADE)
-    points = models.PositiveSmallIntegerField(db_index=True, default=1)
+    site = models.ForeignKey(Site, on_delete=models.CASCADE)
+    points = models.SmallIntegerField(db_index=True, default=1)
 
 class Species(models.Model):
     name = models.CharField(max_length=255, unique=True, db_index=True)

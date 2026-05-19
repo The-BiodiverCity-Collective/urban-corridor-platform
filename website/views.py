@@ -16,6 +16,7 @@ from django.core.files import File
 from django.core.mail import send_mail
 from django.core.paginator import Paginator
 from django.db.models import OuterRef, Subquery, Value, CharField, Q, F, Count, Max, IntegerField, Sum
+from django.db.models.functions import Coalesce
 from django.forms import modelform_factory
 from django.http import JsonResponse, HttpResponse, Http404, HttpResponseBadRequest
 from django.shortcuts import render, get_object_or_404, redirect
@@ -1097,7 +1098,29 @@ def species_sources(request):
 def species_source(request, id):
     site = get_site(request)
     info = Document.objects.get(site=site, doc_type="SPECIES_LIST", pk=id)
-    species = Species.objects.filter(log__file__attached_to=info, site=site)
+    species = Species.objects.filter(log__file__attached_to=info, site=site).prefetch_related("features").all()
+
+    view = request.GET.get("view")
+    if view == "photos":
+        species = species.select_related("photo")
+    elif view == "photos-extended" or view == "photos-data":
+        species = species.prefetch_related("photos").all()
+    if view == "table-extended":
+        species = species.prefetch_related("vegetation_types").all()
+        species = species.prefetch_related("colors").all()
+
+    # temp code
+    a = {}
+    species = species.filter(features=SpeciesFeatures.objects.get(name="Good garden plant"))
+    for each in species:
+        for feature in each.features.filter(species_type=7):
+            if feature not in a:
+                a[feature] = 1
+            else:
+                a[feature] += 1
+    for key,vallue in a.items():
+        print(key, vallue)
+    # end temp code
 
     context = {
         "menu": "species",
@@ -2457,10 +2480,31 @@ def planner_suggestions(request, id):
         vegetation_type = garden.vegetation_type
 
     # Check which features are linked to this garden
-    features = SpeciesFeatures.objects.filter(Q(page__garden_targets=garden)|Q(page__garden_site_features=garden))
+    # And also always select the vegetation type feature
+    features = SpeciesFeatures.objects.filter(
+        Q(page__garden_targets=garden) |
+        Q(page__garden_site_features=garden) | 
+        Q(pk=vegetation_type.feature_id)
+    )
 
-    # Annotate species with the SUM of points from FeatureSiteScore for this specific garden
-    species = species.annotate(total_points=Sum("features__score__points", filter=Q(features__in=features, features__score__site=site))).order_by("-total_points")
+    # We combine the ones above with the site-wide feature if any
+    features = features | site.features.all()
+
+    score_subquery = (
+        FeatureSiteScore.objects.filter(
+            site=site,
+            feature__in=features,
+            feature__species=OuterRef("pk"),
+        )
+        .values("feature__species")
+        .annotate(total=Sum("points"))
+        .values("total")
+    )
+
+    # Annotate the species list with the subquery result
+    species = species.annotate(
+        total_points=Coalesce(Subquery(score_subquery), Value(0))
+    ).order_by("-total_points")
 
     # We use this to create bars showing relative score
     max_points = species.aggregate(Max("total_points"))["total_points__max"]
@@ -4452,7 +4496,7 @@ def controlpanel_scoring(request):
         "features": Page.objects.filter(site=site, page_type=Page.PageType.TARGET),
         "diversity": diversity,
         "criteria": criteria,
-        "feature_scores": FeatureSiteScore.objects.filter(site=site),
+        "feature_scores": FeatureSiteScore.objects.filter(site=site).order_by("feature__species_type", "feature__name"),
     }
     if request.method == "POST":
         for each in context["features"]:
