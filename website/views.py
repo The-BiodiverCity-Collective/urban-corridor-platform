@@ -15,7 +15,7 @@ from django.core import serializers
 from django.core.files import File
 from django.core.mail import send_mail
 from django.core.paginator import Paginator
-from django.db.models import OuterRef, Subquery, Value, CharField, Q, F, Count, Max, IntegerField
+from django.db.models import OuterRef, Subquery, Value, CharField, Q, F, Count, Max, IntegerField, Sum
 from django.forms import modelform_factory
 from django.http import JsonResponse, HttpResponse, Http404, HttpResponseBadRequest
 from django.shortcuts import render, get_object_or_404, redirect
@@ -223,6 +223,16 @@ def quill_cleanup(content):
 
 # START OF REGULAR views
 def index(request):
+
+    # TEMP CODE
+
+    if "update" in request.GET:
+        for each in SpeciesFeatures.objects.all():
+            for site in each.site.all():
+                FeatureSiteScore.objects.create(feature=each, site=site)
+
+    # END TEMP CODE
+
     context = {
         "hide_bottom_planner_menu": True,
 
@@ -2458,13 +2468,13 @@ def planner_suggestions(request, id):
     # Check which features are linked to this garden
     features = SpeciesFeatures.objects.filter(Q(page__garden_targets=garden)|Q(page__garden_site_features=garden))
 
-    # Then we annotate to count the number of features per species
-    species = species.annotate(num_features=Count("features", filter=Q(features__in=features))).order_by("-num_features")
+    # Annotate species with the SUM of points from FeatureSiteScore for this specific garden
+    species = species.annotate(total_points=Sum("features__score__points", filter=Q(features__in=features, features__score__site=garden))).order_by("-total_points")
 
     # We use this to create bars showing relative score
-    max_features = species.aggregate(Max("num_features"))["num_features__max"]
-    if vegetation_type and species.exists():
-        max_features += 1 # Add one because it will also meet the vegetation type parameter
+    max_points = species.aggregate(Max("total_points"))["total_points__max"]
+    #if vegetation_type and species.exists():
+    #    max_points += 1 # Add one because it will also meet the vegetation type parameter
 
     # Get the top 50 species only
     more_species_available = False
@@ -2495,7 +2505,7 @@ def planner_suggestions(request, id):
         "load_datatables": True,
         "vegetation_type": vegetation_type,
         "features": features,
-        "max_features": max_features,
+        "max_points": max_points,
         "table_hide_vegetation": True,
         "table_hide_form": True,
         "table_show_score": True,
@@ -4451,6 +4461,7 @@ def controlpanel_scoring(request):
         "features": Page.objects.filter(site=site, page_type=Page.PageType.TARGET),
         "diversity": diversity,
         "criteria": criteria,
+        "feature_scores": FeatureSiteScore.objects.filter(site=site),
     }
     if request.method == "POST":
         for each in context["features"]:
@@ -4479,6 +4490,10 @@ def controlpanel_scoring(request):
         for each in context["invasives"]:
             negative_points = request.POST.get(f"negative_points_{each.id}") or None
             each.negative_points = negative_points
+            each.save()
+
+        for each in context["feature_scores"]:
+            each.points = request.POST.get(f"feature_points_{each.id}")
             each.save()
 
         messages.success(request, _("The new monthly highlight has been saved."))

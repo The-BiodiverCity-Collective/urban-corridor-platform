@@ -83,7 +83,7 @@
         <td>
           <div aria-hidden="true">
             <div class="overflow-hidden rounded-full bg-gray-200">
-              <div style="width: calc(({{ each.num_features }} + 1) / {{ max_features }} * 100%)" class="h-2 rounded-full bg-lime-600"></div>
+              <div style="width: calc(({{ each.total_points }} + 1) / {{ max_points }} * 100%)" class="h-2 rounded-full bg-lime-600"></div>
             </div>
           </div>
 
@@ -112,7 +112,7 @@
       {% endif %}
 
       {% if table_show_actions %}
-        <td data-sort="{{ each.num_features }}">
+        <td data-sort="{{ each.total_points }}">
           <form method="post">
             <button type="submit" class="px-2 py-1 cursor-pointer hover:text-red-700 text-red-400" name="delete" value="{{ each.id }}">
               <i class="fa fa-trash"></i>

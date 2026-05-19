@@ -820,7 +820,7 @@ class SpeciesFeatures(models.Model):
         CLASSIFICATION = 10, _("Spatial classification")
 
     species_type = models.IntegerField(choices=SpeciesType.choices, db_index=True, default=0)
-    site = models.ManyToManyField(Site, blank=True, related_name="features")
+    site = models.ManyToManyField(Site, blank=True)
     icon = models.CharField(max_length=50, null=True, blank=True, help_text="Enter all the classes we need to add to the <i> tag")
     icon_svg = models.TextField(null=True, blank=True)
 
@@ -874,6 +874,11 @@ class SpeciesFeatures(models.Model):
     @property
     def get_text_icon(self):
         return self._generate_icon(True)
+
+class FeatureSiteScore(models.Model):
+    feature = models.ForeignKey(SpeciesFeatures, related_name="score", on_delete=models.CASCADE)
+    site = models.ForeignKey(Site, related_name="features", on_delete=models.CASCADE)
+    points = models.PositiveSmallIntegerField(db_index=True, default=1)
 
 class Species(models.Model):
     name = models.CharField(max_length=255, unique=True, db_index=True)
