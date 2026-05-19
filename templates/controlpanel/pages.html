@@ -46,6 +46,19 @@
             {% if page_type != 4 and page_type != 5 and page_type != 7 %}
               <a class="btn-orange btn-sm" href="{{ each.get_absolute_url }}">{{ _("View page") }}</a>
             {% endif %}
+
+            {% if not request.GET.ordering %}
+              <form method="post" class="inline">
+                {% csrf_token %}
+                <input type="hidden" name="delete" value="{{ each.id }}">
+                <button type="submit" class="text-gray-700 ml-5 hover:text-red-700 bg-transparent border-0 p-0 m-0 cursor-pointer focus:outline-none"
+                  onclick="javascript:return confirm('{{ _("Are you sure you want to delete this item?") }}')"
+                >
+                  <i class="fa fa-trash" aria-hidden="true"></i>
+                </button>
+              </form>
+            {% endif %}
+
           </td>
           <td>{% if each.is_active %}<i class="fa fa-check text-lime-700"></i>{% else %}<i class="fa fa-ban text-red-700"></i>{% endif %}</td>
         </tr>

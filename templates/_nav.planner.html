@@ -18,12 +18,12 @@
             <a href="{% url "planner_site" GARDEN %}" class="flex gap-x-4 py-2 text-sm/6 font-semibold hover:text-sky-600
               {% if page == "site" and menu == "planner" %}text-sky-600{% else %}text-gray-900{% endif %}">
               <i class="fa fa-cog fa-fw text-lg text-gray-400 mr-1"></i>
-              My site features
+              My garden features
             </a>
             <a href="{% url "planner_target_species" GARDEN %}" class="flex gap-x-4 py-2 text-sm/6 font-semibold hover:text-sky-600
               {% if page == "target" and menu == "planner" %}text-sky-600{% else %}text-gray-900{% endif %}">
               <i class="fa fa-crow fa-fw text-lg text-gray-400 mr-1"></i>
-              My target animals
+              My garden targets
             </a>
             <a href="{% url "planner_suggestions" GARDEN %}" class="flex gap-x-4 py-2 text-sm/6 font-semibold hover:text-sky-600
               {% if page == "suggestions" and menu == "planner" %}text-sky-600{% else %}text-gray-900{% endif %}">

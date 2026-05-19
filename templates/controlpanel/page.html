@@ -170,9 +170,19 @@
               </select>
             </div>
           </div>
+
         {% endif %}
 
         {% if page_type == 4 %}
+          <div class="mt-10">
+            <legend class="text-sm/6 font-semibold text-gray-900">{{ _("Target type") }}</legend>
+            <div class="mt-2 space-y-2">
+              <select name="target_type">
+                  <option {% if info.meta_data.target_type == "animal" %}selected{% endif %} value="animal">{{ _("Animal target") }}</option>
+                  <option {% if info.meta_data.target_type == "plant" %}selected{% endif %} value="plant">{{ _("Plant target") }}</option>
+              </select>
+            </div>
+          </div>
 
           <div class="flex mt-10 gap-4">
             <div class="flex-1">
@@ -210,7 +220,7 @@
             <div class="grid grid-cols-12 gap-2 mb-6">
               {% for each in info.photos.all %}
                 <div class="relative overflow-hidden rounded-lg shadow-lg aspect-w-16 aspect-h-9">
-                  <a href="?delete_photo={{ each.id }}">
+                  <a href="?photos&amp;delete_photo={{ each.id }}">
                     <img src="{{ each.thumbnail }}" alt="" class="object-cover w-full h-full" onclick="javascript:return confirm('Delete from page?')">
                   </a>
                 </div>

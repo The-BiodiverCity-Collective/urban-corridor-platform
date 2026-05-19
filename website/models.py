@@ -111,8 +111,8 @@ class Page(models.Model):
         REGULAR = 1, "Regular page"
         BLOG = 2, "Blog"
         EVENT = 3, "Event"
-        TARGET = 4, "Target species"
-        FEATURES = 5, "Site features"
+        TARGET = 4, "Garden targets"
+        FEATURES = 5, "Garden features"
         NURSERY = 6, "Nursery"
         BLURB = 7, "Blurb"
     page_type = models.IntegerField(choices=PageType.choices, db_index=True, default=1)
@@ -149,7 +149,7 @@ class Page(models.Model):
             return "/about/" + self.slug
 
     def photo(self):
-        if self.photos:
+        if self.photos.all():
             return self.photos.all()[0]
         else:
             return None

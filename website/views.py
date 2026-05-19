@@ -1109,19 +1109,6 @@ def species_source(request, id):
         species = species.prefetch_related("vegetation_types").all()
         species = species.prefetch_related("colors").all()
 
-    # temp code
-    a = {}
-    species = species.filter(features=SpeciesFeatures.objects.get(name="Good garden plant"))
-    for each in species:
-        for feature in each.features.filter(species_type=7):
-            if feature not in a:
-                a[feature] = 1
-            else:
-                a[feature] += 1
-    for key,vallue in a.items():
-        print(key, vallue)
-    # end temp code
-
     context = {
         "menu": "species",
         "info": info,
@@ -3013,6 +3000,14 @@ def controlpanel_pages(request):
     if page_type in [4,5,6]:
         menu = "planner"
 
+    if "delete" in request.POST:
+        info = pages.get(pk=request.POST["delete"])
+        log_action(request, Log.LogAction.DELETE, f"Page: {info.name}")
+        info.is_active = False
+        info.save()
+        messages.success(request, _("Removal was successful"))
+        return redirect(request.get_full_path())
+
     if "ordering" in request.GET:
         # The ordering is not necessarily set, so we will load the numbers
         # in case they are missing
@@ -3187,7 +3182,12 @@ def controlpanel_page(request, id=None):
             info.name = request.POST["name"] 
             info.content = quill_cleanup(request.POST.get("description"))
             info.slug = request.POST.get("slug")
-            info.position = 0
+            if not info.id:
+                position = Page.objects.filter(page_type=page_type, site=site).aggregate(Max("position"))["position__max"]
+                if not position:
+                    position = 0
+                info.position = position + 1
+
             info.page_type = page_type
             info.format = "HTML"
             info.is_active = True if request.POST.get("is_active") == "1" else False
@@ -3223,6 +3223,7 @@ def controlpanel_page(request, id=None):
                     info.meta_data["score_minimum_flowering"] = request.POST["minimum_flowering"]
                 elif "score_minimum_flowering" in info.meta_data:
                     del info.meta_data["score_minimum_flowering"]
+                info.meta_data["target_type"] = request.POST["target_type"]
 
             info.save()
             log_action(request, action, f"Page: {info.name}")

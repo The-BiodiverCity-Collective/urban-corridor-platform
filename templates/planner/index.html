@@ -79,7 +79,7 @@
       <div class="relative flex h-full flex-col overflow-hidden rounded-[calc(var(--radius-lg)+1px)]">
         <img src="/media/planner.soil.jpg" title="Photo by Nicolas Postiglioni: https://www.pexels.com/photo/gray-sands-closeup-photo-943500/" class="h-40 object-cover object-center" />
         <div class="p-10 pt-4">
-          <p class="mt-2 text-lg font-medium tracking-tight text-gray-950">{{ _("Site features") }}</p>
+          <p class="mt-2 text-lg font-medium tracking-tight text-gray-950">{{ _("Garden features") }}</p>
           <p class="mt-2 mb-5 max-w-lg text-sm/6 text-gray-600 font-normal">{{ _("Select soil type and other typology options for your garden.") }}</p>
           {% if garden and garden.site_features.count %}
             <h3 class="text-sm/4 font-semibold text-lime-600"><i class="fa fa-check"></i> {{ _("Saved") }}</h3>
@@ -96,9 +96,9 @@
       <div class="relative flex h-full flex-col overflow-hidden rounded-[calc(var(--radius-lg)+1px)]">
         <img src="https://inaturalist-open-data.s3.amazonaws.com/photos/118240906/medium.jpeg" alt="" class="h-40 object-cover object-center" />
         <div class="p-10 pt-4">
-          <p class="mt-2 text-lg font-medium tracking-tight text-gray-950">{{ _("Target animals") }}</p>
+          <p class="mt-2 text-lg font-medium tracking-tight text-gray-950">{{ _("Garden targets") }}</p>
           <p class="mt-2 mb-5 max-w-lg text-sm/6 text-gray-600 font-normal">
-            {{ _("Define which animal species you want to focus on in your restoration efforts.") }}
+            {{ _("Pick animal and plant species to focus on in your restoration efforts.") }}
           </p>
           {% if garden and garden.targets.count %}
             <h3 class="text-sm/4 font-semibold text-lime-600"><i class="fa fa-check"></i> {{ _("Saved") }}</h3>
