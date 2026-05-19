@@ -842,6 +842,7 @@ class SpeciesFeatures(models.Model):
             7: "fuchsia",
             8: "amber",
             9: "lime",
+            10: "purple",
         }
         return colors[self.species_type]
         
