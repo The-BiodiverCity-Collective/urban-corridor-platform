@@ -224,15 +224,6 @@ def quill_cleanup(content):
 # START OF REGULAR views
 def index(request):
 
-    # TEMP CODE
-
-    if "update" in request.GET:
-        for each in SpeciesFeatures.objects.all():
-            for site in each.site.all():
-                FeatureSiteScore.objects.create(feature=each, site=site)
-
-    # END TEMP CODE
-
     context = {
         "hide_bottom_planner_menu": True,
 
@@ -2469,7 +2460,7 @@ def planner_suggestions(request, id):
     features = SpeciesFeatures.objects.filter(Q(page__garden_targets=garden)|Q(page__garden_site_features=garden))
 
     # Annotate species with the SUM of points from FeatureSiteScore for this specific garden
-    species = species.annotate(total_points=Sum("features__score__points", filter=Q(features__in=features, features__score__site=garden))).order_by("-total_points")
+    species = species.annotate(total_points=Sum("features__score__points", filter=Q(features__in=features, features__score__site=site))).order_by("-total_points")
 
     # We use this to create bars showing relative score
     max_points = species.aggregate(Max("total_points"))["total_points__max"]
@@ -3602,7 +3593,7 @@ def controlpanel_document_species(request, id):
                             feature = row[each];
                             if isinstance(feature, str):
                                 feature = feature.strip().lower()
-                            if feature == "x":
+                            if feature == "x" or feature == "yes":
                                 species.features.add(features[each])
                                 log.features.add(features[each])
 
