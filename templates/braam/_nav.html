@@ -122,8 +122,8 @@
           <div class="mt-6 mb-6 flow-root">
             <div class="-my-2">
               {% for each in NURSERIES %}
-              <a href="/species/list/?nursery={{ each.slug }}" 
-              class="flex gap-x-4 py-2 text-sm/6 font-semibold hover:text-sky-600 {% if request.GET.nursery == each.slug %}text-sky-600{% else %}text-gray-900{% endif %}">
+              <a href="/species/list/?nursery={{ each.id }}" 
+              class="flex gap-x-4 py-2 text-sm/6 font-semibold hover:text-sky-600 {% if request.GET.nursery == each.id|slugify %}text-sky-600{% else %}text-gray-900{% endif %}">
                 <i class="fa fa-list fa-fw text-lg text-gray-400 mr-1"></i>
                 {{ each }}
               </a>

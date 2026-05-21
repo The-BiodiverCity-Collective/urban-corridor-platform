@@ -783,7 +783,8 @@ def species_search(request, vegetation_type=None):
     veg_types = VegetationType.objects.filter(site=site).annotate(
         total=Count("species", filter=Q(species__site=site))
     ).filter(total__gt=0)
-    features = SpeciesFeatures.objects.filter(site=site)
+    features = SpeciesFeatures.objects.filter(site=site).exclude(species_type=SpeciesFeatures.SpeciesType.CLASSIFICATION)
+    spatial_classification = SpeciesFeatures.objects.filter(site=site, species_type=SpeciesFeatures.SpeciesType.CLASSIFICATION)
 
     if vegetation_type:
         vegetation_type = VegetationType.objects.get(slug=vegetation_type)
@@ -818,6 +819,7 @@ def species_search(request, vegetation_type=None):
         "get_sources": request.GET.getlist("source"),
         "get_nurseries": request.GET.getlist("nursery"),
         "load_select2": True,
+        "spatial_classification": spatial_classification,
         "nurseries": Page.objects.filter(site=site, page_type=Page.PageType.NURSERY),
 
         # Sources is confusing to the regular user so let's now show that, only if they are editing a sources-related search result
@@ -905,6 +907,11 @@ def species_list(request, genus=None, family=None, vegetation_type=None, garden=
             species = species.filter(inventory__in_stock=True)
         title = _("Nursery inventory:") + " " + ", ".join(nurseries.values_list("name", flat=True))
         
+    colors = None
+    if "color" in request.GET:
+        colors = Color.objects.filter(pk__in=request.GET.getlist("color"))
+        species = species.filter(colors__in=colors)
+
     species = species.distinct()
 
     info = None
@@ -942,6 +949,7 @@ def species_list(request, genus=None, family=None, vegetation_type=None, garden=
         "planner_tab": "my_plants" if garden_status else None,
         "nurseries": nurseries,
         "source": source,
+        "colors": colors,
 
         # Because we have tabs above the <main>, we need to unround the top-left corner if the first tab is active
         "main_classes": "rounded-tl-none" if view == "photos-data" or not view else None,

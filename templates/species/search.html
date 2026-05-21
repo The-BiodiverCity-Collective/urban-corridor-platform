@@ -17,97 +17,139 @@
   </div>
 {% endif %}
 
-<div class="">
-  <h2>{{ _("Search species list") }}</h2>
+<h2>{{ _("Search species list") }}</h2>
 
-  <form method="get" action="{% url "controlpanel_species_list" %}" class="space-y-6">
+<form method="get" action="{% url "controlpanel_species_list" %}" class="space-y-6">
 
-    <div class="mb-4">
-      <select id="search_species" style="width: 100%;">
-        <option disabled selected hidden>{{ _("Search by name...") }}</option>
-      </select>
+  <div class="mb-4">
+    <select id="search_species" style="width: 100%;">
+      <option disabled selected hidden>{{ _("Search by name...") }}</option>
+    </select>
+  </div>
+
+</form>
+</div>
+
+
+<div class="mt-5">
+
+<form action="/species/list/">
+  <div class="bg-white rounded-lg shadow-sm overflow-hidden">
+    <div class="bg-gray-50 border-b border-gray-200 px-6 py-4 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+      <div>
+        <h3 class="text-lg font-semibold text-gray-900">Plant Features</h3>
+        <p class="text-sm text-gray-500">Select the traits and characteristics you are looking for.</p>
+      </div>
+      <div class="flex items-center bg-gray-200/80 p-1 rounded-lg self-start sm:self-center">
+        <label class="relative flex items-center justify-center px-4 py-1.5 text-sm font-medium text-gray-700 cursor-pointer rounded-md has-[:checked]:bg-white has-[:checked]:text-sky-600 has-[:checked]:shadow-sm transition-all">
+          <input type="radio" name="search" value="any" {% if not request.GET.search or request.GET.search == "any" %}checked{% endif %} class="sr-only">
+          <span>{{ _("Match any feature") }}</span>
+        </label>
+        <label class="relative flex items-center justify-center px-4 py-1.5 text-sm font-medium text-gray-700 cursor-pointer rounded-md has-[:checked]:bg-white has-[:checked]:text-sky-600 has-[:checked]:shadow-sm transition-all">
+          <input type="radio" name="search" value="all" {% if request.GET.search == "all" %}checked{% endif %} class="sr-only">
+          <span>{{ _("Match all features") }}</span>
+        </label>
+      </div>
     </div>
 
-  </form>
+    <div class="p-6">
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
 
-  <form action="{% url "species_list" %}">
-    {% if vegetation_type %}
-      <input type="hidden" name="vegetation_type" value="{{ vegetation_type.id }}" />
-    {% endif %}
-
-    <div class="mb-4 bg-gray-100 p-4 rounded">
-      <div class="container mx-auto">
-        <div class="grid grid-cols-3 gap-4">
           {% for feature in features %}
             {% ifchanged feature.species_type %}
               {% if not forloop.first %}
               </div>
               {% endif %}
-              <div>
-                <h4>{{ feature.get_species_type_display }}</h4>
+              <div class="space-y-3">
+                <h4 class="font-medium text-gray-900 border-b border-gray-100 pb-1">{{ feature.get_species_type_display }}</h4>
             {% endifchanged %}
-            <span class="flex items-center">
-              <input 
-                type="checkbox" 
-                name="feature" 
-                id="id_features_{{ feature.id }}" 
-                value="{{ feature.id }}" 
-                class="form-checkbox h-5 w-5 text-blue-500" 
-                {% if feature.id|stringformat:"d" in get_features %}checked{% endif %}
-              >
-              <label for="id_features_{{ feature.id }}" class="ml-2 text-gray-700">{{ feature.name }}</label>
-            </span>
-          {% endfor %}
-              </div>
-              <div class="border p-4 border-gray-400 rounded">
-                <h4>{{ _("Limit to nursery stock from:") }}</h4>
-                {% for nursery in nurseries %}
-                  <span class="flex items-center">
-                    <input 
-                      type="checkbox" 
-                      name="nursery" 
-                      id="id_nursery{{ nursery.id }}" 
-                      value="{{ nursery.id }}" 
-                      class="form-checkbox h-5 w-5 text-blue-500" 
-                      {% if nursery.id|stringformat:"d" in get_nurseries %}checked{% endif %}
-                    >
-                    <label for="id_nursery{{ nursery.id }}" class="ml-2 text-gray-700">{{ nursery }}</label>
-                  </span>
-                {% endfor %}
-              </div>
-              {% if sources %}
-                <div>
-                  <h4>{{ _("Sources") }}</h4>
-                  {% for source in sources %}
-                    <span class="flex items-center">
-                      <input 
-                        type="checkbox" 
-                        name="source" 
-                        id="id_source{{ source.id }}" 
-                        value="{{ source.id }}" 
-                        class="form-checkbox h-5 w-5 text-blue-500" 
-                        {% if source.id|stringformat:"d" in get_sources %}checked{% endif %}
-                      >
-                      <label for="id_source{{ source.id }}" class="ml-2 text-gray-700">{{ source.name|truncatechars:30 }}</label>
-                    </span>
-                  {% endfor %}
-                </div>
-              {% endif %}
+
+            <div class="space-y-2">
+              <label class="flex items-center text-sm text-gray-600 hover:text-gray-900 cursor-pointer">
+                <input 
+                  type="checkbox" 
+                  name="feature" 
+                  value="{{ feature.id }}" 
+                  class="rounded border-gray-300 text-blue-600 focus:ring-blue-500 h-4 w-4"
+                  {% if feature.id|stringformat:"d" in get_features %}checked{% endif %}
+                >
+                <span class="ml-2.5">{{ feature.name }}</span>
+              </label>
             </div>
+
+          {% endfor %}
           </div>
-        </div>
 
-    <div class="mt-4 flex gap-2">
-      <select name="search" class="w-5/6">
-        <option value="any">{{ _("Matches ANY of these properties (a OR b)") }}</option>
-        <option value="all" {% if request.GET.search == "all" %}selected{% endif %}>{{ _("Must match ALL of these properties (a AND b)") }}</option>
-      </select>
-      <button type="submit" class="btn-blue bg-gray-600 w-1/6"><i class="fa fa-search fa-fw"></i> {{ _("Search") }}</button>
+      </div>
     </div>
+  </div>
 
-  </form>
+  <div class="bg-white shadow-sm rounded-lg p-6 mt-5">
+    <div class="mb-5">
+      <h3 class="text-base font-semibold text-slate-900">{{ _("General search restrictions") }}</h3>
+      <p class="text-xs text-slate-500">These parameters strictly isolate matching results independent of the features above.</p>
+    </div>
+    
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+      <div class="space-y-3">
+        <label for="spatial_classification" class="block text-sm font-medium text-slate-700">{{ _("Spatial classification") }}</label>
+        <select id="spatial_classification" name="feature" class="w-full rounded-lg border-slate-300 bg-white text-sm shadow-sm focus:border-blue-500 focus:ring-blue-500">
+          {% for each in spatial_classification %}
+            <option value="{{ each.id }}">{{ each }}</option>
+          {% endfor %}
+        </select>
+      </div>
 
-</div>
+      <div class="space-y-3">
+        <span class="block text-sm font-medium text-slate-700">{{ _("Limit to nursery stock from:") }}</span>
+        <div class="space-y-2">
+          {% for nursery in nurseries %}
+            <label class="flex items-center text-sm text-slate-600 hover:text-slate-900 cursor-pointer">
+              <input type="checkbox" name="nursery" value="{{ nursery.id }}" class="rounded border-slate-300 text-blue-600 focus:ring-blue-500 h-4 w-4" {% if nursery.id|stringformat:"d" in get_nurseries %}checked{% endif %}>
+              <span class="ml-2.5">{{ nursery }}</span>
+            </label>
+          {% endfor %}
+        </div>
+      </div>
+
+      <div class="space-y-3">
+        <span class="block text-sm font-medium text-slate-700">{{ _("Limit by flower colour:") }}</span>
+        <div class="flex flex-wrap gap-3">
+          {% for color in SITE.colors.all %}
+          <span>
+            <input type="checkbox" name="color" id="color_{{ color.id }}" value="{{ color.id }}" class="peer sr-only">
+            <label for="color_{{ color.id }}" class="block w-8 h-8 rounded-full cursor-pointer ring-2 ring-transparent peer-checked:ring-blue-500 peer-checked:ring-offset-2 shadow-sm transition-all" style="background-color: {{ color.color }};" title="{{ color.name|title }}"></label>
+          </span>
+          {% endfor %}
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+    {% if sources %}
+      <div>
+        <h4>{{ _("Sources") }}</h4>
+        {% for source in sources %}
+          <span class="flex items-center">
+            <input 
+              type="checkbox" 
+              name="source" 
+              id="id_source{{ source.id }}" 
+              value="{{ source.id }}" 
+              class="form-checkbox h-5 w-5 text-blue-500" 
+              {% if source.id|stringformat:"d" in get_sources %}checked{% endif %}
+            >
+            <label for="id_source{{ source.id }}" class="ml-2 text-gray-700">{{ source.name|truncatechars:30 }}</label>
+          </span>
+        {% endfor %}
+      </div>
+    {% endif %}
+
+  <div class="flex justify-end pt-4">
+    <button type="submit" class="btn-blue bg-gray-600 w-1/6"><i class="fa fa-search fa-fw"></i> {{ _("Search") }}</button>
+  </div>
+</form>
 
 {% endblock %}
 

@@ -69,6 +69,16 @@ class Language(models.Model):
     def __str__(self):
         return self.name
 
+class Color(models.Model):
+    name = models.CharField(max_length=100)
+    color = models.CharField(max_length=20, help_text="Color HTML code or name")
+
+    def __str__(self):
+        return self.name
+
+    class Meta:
+        ordering = ["name"]
+
 class Site(models.Model):
     name = models.CharField(max_length=255)
     url = models.CharField(max_length=255)
@@ -80,6 +90,7 @@ class Site(models.Model):
     vegetation_types_map = models.ForeignKey("Document", on_delete=models.PROTECT, null=True, blank=True, related_name="primary_site_vegetation")
     languages_species = models.ManyToManyField(Language, related_name="site_species")
     features = models.ManyToManyField("SpeciesFeatures", blank=True, help_text="Rank species using these automatic filters", related_name="defaults_for_site")
+    colors = models.ManyToManyField(Color, blank=True, help_text="Select the colors that should be shown on the search page")
 
     def __str__(self):
         return self.name
@@ -830,7 +841,7 @@ class SpeciesFeatures(models.Model):
         return self.name
 
     class Meta:
-        ordering = ["species_type", "icon", "icon_svg", "name"]
+        ordering = ["species_type", "name"]
 
     @property
     def color(self):
@@ -898,7 +909,7 @@ class Species(models.Model):
     features = models.ManyToManyField(SpeciesFeatures, blank=True, related_name="species")
     vegetation_types = models.ManyToManyField(VegetationType, blank=True, related_name="species")
     photo = models.ForeignKey("Photo", on_delete=models.SET_NULL, null=True, blank=True, related_name="main_species")
-    colors = models.ManyToManyField("Color", blank=True, related_name="species")
+    colors = models.ManyToManyField(Color, blank=True, related_name="species")
 
     flowering = ArrayField(models.PositiveSmallIntegerField(choices=MONTH_CHOICES), blank=True, default=list)
     meta_data = models.JSONField(null=True, blank=True)
@@ -1341,16 +1352,6 @@ class Dataviz(models.Model):
 
     def __str__(self):
         return f"Dataviz for {self.shapefile.name}"
-
-class Color(models.Model):
-    name = models.CharField(max_length=100)
-    color = models.CharField(max_length=20, help_text="Color HTML code or name")
-
-    def __str__(self):
-        return self.name
-
-    class Meta:
-        ordering = ["name"]
 
 class FileLog(models.Model):
     species = models.ForeignKey(Species, on_delete=models.CASCADE, related_name="log")

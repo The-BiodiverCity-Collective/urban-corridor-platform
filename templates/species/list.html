@@ -43,7 +43,7 @@
       </h1>
   {% endif %}
 
-  {% if features or vegetation_type or plant_form or nurseries and not info %}
+  {% if features or vegetation_type or plant_form or nurseries or colors and not info %}
     <div class="alert alert-warning relative">
       <h4>Filters</h4>
       <p>
@@ -95,6 +95,16 @@
             {% endif %}
           </strong>
         </p>
+      {% endif %}
+
+      {% if colors %}
+        <div class="flex flex-wrap gap-3 mb-5">
+          {{ _("Colours") }}:
+          {% for color in colors %}
+            <span class="block w-8 h-8 rounded-full ring-2 ring-amber-500 ring-offset-2 shadow-sm" style="background-color: {{ color.color }};" title="{{ color.name|title }}"></span>
+          {% endfor %}
+        </div>
+
       {% endif %}
 
       <a class="btn-blue btn-sm mr-2" href="{% url "species_search" %}{% querystring_plus %}"><i class="fa fa-pencil mr-1"></i> {{ _("Edit search") }}</a> 
