@@ -865,6 +865,9 @@ def species_list(request, genus=None, family=None, vegetation_type=None, garden=
     elif vegetation_type:
         vegetation_type = VegetationType.objects.get(slug=vegetation_type)
         species = species.filter(vegetation_types=vegetation_type)
+    elif "spatial_classification" in request.GET:
+        vegetation_type = SpeciesFeatures.objects.get(pk=request.GET["spatial_classification"])
+        species = species.filter(features=vegetation_type)
 
     if garden is not None:
         # This is for when we open the list of species for a particular garden
