@@ -637,8 +637,8 @@ class Garden(ReferenceSpace):
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     user = models.ForeignKey(User, null=True, blank=True, on_delete=models.SET_NULL, related_name="gardens")
-    targets = models.ManyToManyField("Page", blank=True, related_name="garden_targets")
-    site_features = models.ManyToManyField("Page", blank=True, related_name="garden_site_features")
+    targets = models.ManyToManyField("Page", blank=True, related_name="garden_targets", limit_choices_to={"page_type": 4})
+    site_features = models.ManyToManyField("Page", blank=True, related_name="garden_site_features", limit_choices_to={"page_type": 5})
 
     class GardenType(models.IntegerChoices):
         PUBLIC = 1, _("Public space")

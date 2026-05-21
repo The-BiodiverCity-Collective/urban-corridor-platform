@@ -816,8 +816,12 @@ def species_search(request, vegetation_type=None):
         "page": "search",
         "get_features": request.GET.getlist("feature"),
         "get_sources": request.GET.getlist("source"),
+        "get_nurseries": request.GET.getlist("nursery"),
         "load_select2": True,
-        "sources": Document.objects.filter(site=site, doc_type="SPECIES_LIST"),
+        "nurseries": Page.objects.filter(site=site, page_type=Page.PageType.NURSERY),
+
+        # Sources is confusing to the regular user so let's now show that, only if they are editing a sources-related search result
+        "sources": Document.objects.filter(site=site, doc_type="SPECIES_LIST") if request.GET.getlist("source") else None,
     }
     return render(request, "species/search.html", context)
 
@@ -827,7 +831,7 @@ def species_list(request, genus=None, family=None, vegetation_type=None, garden=
     menu = "species"
     page = request.GET.get("page")
     title = _("Search results")
-    nursery = None
+    nurseries = None
 
     species = Species.objects.filter(site=site)
     total_species = species.count()
@@ -895,11 +899,11 @@ def species_list(request, genus=None, family=None, vegetation_type=None, garden=
         species = species.filter(log__file__attached_to=source, site=site)
 
     if "nursery" in request.GET:
-        nursery = Page.objects.get(page_type=Page.PageType.NURSERY, slug=request.GET["nursery"], is_active=True, site=site)
-        species = species.filter(inventory__nursery=nursery)
+        nurseries = Page.objects.filter(page_type=Page.PageType.NURSERY, pk__in=request.GET.getlist("nursery"), is_active=True, site=site)
+        species = species.filter(inventory__nursery__in=nurseries)
         if "in_stock" in request.GET:
             species = species.filter(inventory__in_stock=True)
-        title = _("Nursery inventory:") + " " + str(nursery)
+        title = _("Nursery inventory:") + " " + ", ".join(nurseries.values_list("name", flat=True))
         
     species = species.distinct()
 
@@ -936,7 +940,7 @@ def species_list(request, genus=None, family=None, vegetation_type=None, garden=
         "hide_species_tabs": True,
         "total_species": total_species,
         "planner_tab": "my_plants" if garden_status else None,
-        "nursery": nursery,
+        "nurseries": nurseries,
         "source": source,
 
         # Because we have tabs above the <main>, we need to unround the top-left corner if the first tab is active
@@ -3207,6 +3211,9 @@ def controlpanel_page(request, id=None):
 
             if "url" in request.POST:
                 info.meta_data["url"] = request.POST.get("url")
+
+            if "byline" in request.POST:
+                info.meta_data["byline"] = request.POST.get("byline")
 
             if "date" in request.POST and request.POST["date"]:
                 info.date = request.POST["date"]

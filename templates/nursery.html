@@ -40,13 +40,13 @@
         </div>
 
         <div class="grid grid-cols-2 gap-4">
-          <a href="{% url "species_list" %}?nursery={{ info.slug }}&amp;in_stock=true" class="group bg-gray-100 rounded p-4 mt-4 block relative no-underline hover:bg-gray-200">
+          <a href="{% url "species_list" %}?nursery={{ info.id }}&amp;in_stock=true" class="group bg-gray-100 rounded p-4 mt-4 block relative no-underline hover:bg-gray-200">
             <h4 class="text-xl text-gray-700"><i class="fa fa-seedling fa-fw text-lg mr-2"></i>{{ _("Plant explorer") }}</h4>
             <p class="mb-0">{{ _("Currently available stock") }}</p>
             <p class="font-normal text-gray-500">{{ _("Based on our latest inventory data, these species are available right now at this nursery.") }}</p>
             <i class="fa fa-arrow-right absolute bottom-2 right-2 text-gray-700 group-hover:text-sky-700"></i>
           </a>
-          <a href="{% url "species_list" %}?nursery={{ info.slug }}" class="group bg-gray-100 rounded p-4 mt-4 block relative no-underline hover:bg-gray-200">
+          <a href="{% url "species_list" %}?nursery={{ info.id }}" class="group bg-gray-100 rounded p-4 mt-4 block relative no-underline hover:bg-gray-200">
             <h4 class="text-xl text-gray-700"><i class="fa fa-seedling fa-fw text-lg mr-2"></i>{{ _("Plant explorer") }}</h4>
             <p class="mb-0">{{ _("General stock") }}</p>
             <p class="font-normal text-gray-500">{{ _("These are ALL the species the nursery stocks, although some species will have a lead time to order.") }}</p>

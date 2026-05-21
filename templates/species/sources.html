@@ -16,25 +16,18 @@
             {{ each }}
           </h3>
 
-          {% if each.author %}
-            <span class="badge">
-              {{ each.author }}
-            </span>
-          {% endif %}
+          <span class="badge">
+            {{ each.author }}
+          </span>
 
           <p class="text-gray-500 mt-4" id="description-{{ each.id }}">
-            {% if each.description|length > 400 %}
-              <span class="truncated">{{ each.description|truncatewords:70 }}</span>
-              <span class="hidden full-text" aria-hidden="true">{{ each.description }}</span>
-            {% else %}
-              {{ each.description }}
-            {% endif %}
+            <span class="truncated">{{ each.description|truncatewords:70 }}</span>
           </p>
 
-            <a href="{% url "species_source" each.id %}" class="btn-blue mt-4">
-              {{ _("View details") }}
-              <i class="fa fa-arrow-right"></i>
-            </a>
+          <a href="{% url "species_source" each.id %}" class="btn-blue mt-4">
+            {{ _("View details") }}
+            <i class="fa fa-arrow-right"></i>
+          </a>
 
         </div>
       </li>

@@ -1,4 +1,5 @@
 {% extends "_base.html" %}
+{% load querystring_plus %}
 
 {% block pre_main %}
   {% include "species/_tabs.html" %}
@@ -42,7 +43,7 @@
       </h1>
   {% endif %}
 
-  {% if features or vegetation_type or plant_form or nursery and not info %}
+  {% if features or vegetation_type or plant_form or nurseries and not info %}
     <div class="alert alert-warning relative">
       <h4>Filters</h4>
       <p>
@@ -76,8 +77,15 @@
         <p>{{ _("Linked to source") }}: <a href="{{ source.get_absolute_url }}">{{ source }}</a></p>
       {% endif %}
 
-      {% if nursery %}
-        <p>{{ _("Nursery") }}: <a class="text-amber-700" href="{{ nursery.get_absolute_url }}">{{ nursery }}</a></p>
+      {% if nurseries %}
+        <p>
+          {% if nurseries.count > 1 %}
+            {{ _("Nurseries") }}:
+          {% else %}
+            {{ _("Nursery") }}: 
+          {% endif %}
+          {% for nursery in nurseries %}<a class="badge badge-warning no-underline" href="{{ nursery.get_absolute_url }}">{{ nursery }}</a>{% endfor %}
+        </p>
         <p class="mb-4">{{ _("Availability") }}: 
           <strong>
             {% if request.GET.in_stock %}
@@ -89,7 +97,7 @@
         </p>
       {% endif %}
 
-      <a class="btn-blue btn-sm mr-2" href="{% url "species_search" %}{% querystring %}"><i class="fa fa-pencil mr-1"></i> {{ _("Edit search") }}</a> 
+      <a class="btn-blue btn-sm mr-2" href="{% url "species_search" %}{% querystring_plus %}"><i class="fa fa-pencil mr-1"></i> {{ _("Edit search") }}</a> 
 
       <p class="absolute top-2 right-2">
         {% if vegetation_type %}

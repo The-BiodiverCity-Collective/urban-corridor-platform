@@ -22,9 +22,15 @@
         <li class="text-center border border-gray-300 p-3 rounded">
           <a href="{% url "planner_nursery" garden.id each.slug %}">
             <img src="{{ each.image.medium.url }}" alt="" class="aspect-3/2 w-full rounded-2xl object-contain" />
-            <span class="badge badge-success mt-3">
+            <span class="badge badge-warning mt-3">
               {{ each.stock_count }} {{ _("wish list species available") }}
             </span>
+            {% if each.meta_data.byline %}
+              <span class="badge badge-success mt-3">
+                <i class="mr-1 fa fa-star"></i>
+                {{ each.meta_data.byline }}
+              </span>
+            {% endif %}
           </a>
         </li>
       {% endfor %}

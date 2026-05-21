@@ -4,7 +4,7 @@ register = template.Library()
 
 # Django overwrites multiple params that have the same name, using the regular querystring function
 # E.g. ?feature=10&feature=11 will change to ?feature=10 when querystring is used. So we need this
-# for the photo tabs that depend on this being preserved quite a bit.
+# for the photo tabs that depend on this being preserved quite a bit, as well as on the species list (EDIT SEARCH button)
 
 @register.simple_tag(takes_context=True)
 def querystring_plus(context, **kwargs):

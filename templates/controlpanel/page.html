@@ -133,7 +133,15 @@
               <div class="col-span-full">
                 <label for="url" class="block text-sm/6 font-medium text-gray-900">{{ _("Website") }}</label>
                 <div class="mt-2">
-                  <input type="text" placeholder="{{ _("URL") }}" name="url" id="url" class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-xs ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-sky-600 sm:text-sm/6" value="{{ info.meta_data.url }}">
+                  <input type="text" placeholder="{{ _("URL") }}" name="url" id="url" value="{{ info.meta_data.url }}">
+                </div>
+              </div>
+            </div>
+            <div class="flex-1 mt-5">
+              <div class="col-span-full">
+                <label for="byline" class="block text-sm/6 font-medium text-gray-900">{{ _("Byline (optional)") }}</label>
+                <div class="mt-2">
+                  <input type="text" name="byline" id="byline" value="{{ info.meta_data.byline }}">
                 </div>
               </div>
             </div>

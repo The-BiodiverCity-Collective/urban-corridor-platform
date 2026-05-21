@@ -59,30 +59,48 @@
             </span>
           {% endfor %}
               </div>
-              <div>
-                <h4>{{ _("Sources") }}</h4>
-          {% for source in sources %}
-            <span class="flex items-center">
-              <input 
-                type="checkbox" 
-                name="source" 
-                id="id_source{{ source.id }}" 
-                value="{{ source.id }}" 
-                class="form-checkbox h-5 w-5 text-blue-500" 
-                {% if source.id|stringformat:"d" in get_sources %}checked{% endif %}
-              >
-              <label for="id_source{{ source.id }}" class="ml-2 text-gray-700">{{ source.name|truncatechars:30 }}</label>
-            </span>
-          {% endfor %}
+              <div class="border p-4 border-gray-400 rounded">
+                <h4>{{ _("Limit to nursery stock from:") }}</h4>
+                {% for nursery in nurseries %}
+                  <span class="flex items-center">
+                    <input 
+                      type="checkbox" 
+                      name="nursery" 
+                      id="id_nursery{{ nursery.id }}" 
+                      value="{{ nursery.id }}" 
+                      class="form-checkbox h-5 w-5 text-blue-500" 
+                      {% if nursery.id|stringformat:"d" in get_nurseries %}checked{% endif %}
+                    >
+                    <label for="id_nursery{{ nursery.id }}" class="ml-2 text-gray-700">{{ nursery }}</label>
+                  </span>
+                {% endfor %}
+              </div>
+              {% if sources %}
+                <div>
+                  <h4>{{ _("Sources") }}</h4>
+                  {% for source in sources %}
+                    <span class="flex items-center">
+                      <input 
+                        type="checkbox" 
+                        name="source" 
+                        id="id_source{{ source.id }}" 
+                        value="{{ source.id }}" 
+                        class="form-checkbox h-5 w-5 text-blue-500" 
+                        {% if source.id|stringformat:"d" in get_sources %}checked{% endif %}
+                      >
+                      <label for="id_source{{ source.id }}" class="ml-2 text-gray-700">{{ source.name|truncatechars:30 }}</label>
+                    </span>
+                  {% endfor %}
+                </div>
+              {% endif %}
+            </div>
+          </div>
         </div>
-        </div>
-      </div>
-    </div>
 
     <div class="mt-4 flex gap-2">
       <select name="search" class="w-5/6">
-        <option value="any">{{ _("Match ANY one of these properties") }}</option>
-        <option value="all" {% if request.GET.search == "all" %}selected{% endif %}>{{ _("Match ALL one of these properties") }}</option>
+        <option value="any">{{ _("Matches ANY of these properties (a OR b)") }}</option>
+        <option value="all" {% if request.GET.search == "all" %}selected{% endif %}>{{ _("Must match ALL of these properties (a AND b)") }}</option>
       </select>
       <button type="submit" class="btn-blue bg-gray-600 w-1/6"><i class="fa fa-search fa-fw"></i> {{ _("Search") }}</button>
     </div>
