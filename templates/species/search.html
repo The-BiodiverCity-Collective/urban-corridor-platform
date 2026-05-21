@@ -1,35 +1,13 @@
 {% extends "_base.html" %}
 {% load static %}
 
+{% block title %}
+  {{ _("Search species") }} | {{ _("Plant explorer") }}
+{% endblock %}
+
 {% block content %}
 
-{% if vegetation_type %}
-  <h2>
-    {{ vegetation_type }}
-  </h2>
-  <div class="alert alert-warning">
-    There are <strong>{{ all }}</strong> species found in this vegetation type.
-    Use the filters below to locate the species of your interest.
-    <br>
-    <br>
-    <a href="{% url "species_full_list" %}{{ veg_link }}">View all {{ all }} species</a><br>
-    <a href="{% url "species" %}">Back to main species list</a>
-  </div>
-{% endif %}
-
-<h2>{{ _("Search species list") }}</h2>
-
-<form method="get" action="{% url "controlpanel_species_list" %}" class="space-y-6">
-
-  <div class="mb-4">
-    <select id="search_species" style="width: 100%;">
-      <option disabled selected hidden>{{ _("Search by name...") }}</option>
-    </select>
-  </div>
-
-</form>
 </div>
-
 
 <div class="mt-5">
 
@@ -37,7 +15,7 @@
   <div class="bg-white rounded-lg shadow-sm overflow-hidden">
     <div class="bg-gray-50 border-b border-gray-200 px-6 py-4 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
       <div>
-        <h3 class="text-lg font-semibold text-gray-900">Plant Features</h3>
+        <h2 class="text-2xl mt-2 mb-0 font-semibold text-gray-900">{{ _("Search species") }}</h2>
         <p class="text-sm text-gray-500">Select the traits and characteristics you are looking for.</p>
       </div>
       <div class="flex items-center bg-gray-200/80 p-1 rounded-lg self-start sm:self-center">
@@ -87,7 +65,7 @@
   <div class="bg-white shadow-sm rounded-lg p-6 mt-5">
     <div class="mb-5">
       <h3 class="text-base font-semibold text-slate-900">{{ _("General search restrictions") }}</h3>
-      <p class="text-xs text-slate-500">These parameters strictly isolate matching results independent of the features above.</p>
+      <p class="text-xs text-slate-500">{{ _("These parameters restrict results independent of the features above.") }}</p>
     </div>
     
     <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
@@ -147,9 +125,28 @@
     {% endif %}
 
   <div class="flex justify-end pt-4">
-    <button type="submit" class="btn-blue bg-gray-600 w-1/6"><i class="fa fa-search fa-fw"></i> {{ _("Search") }}</button>
+    <button type="submit" class="btn-blue bg-sky-600 w-1/6"><i class="fa fa-search fa-fw"></i> {{ _("Search") }}</button>
   </div>
 </form>
+
+<div class="bg-white rounded-lg shadow-sm mt-10 p-4">
+  <h2>{{ _("Name search") }}</h2>
+  <p>{{ _("If you already know the name of the species you are looking for, enter it below to search.") }}</p>
+
+  <form method="get" action="/species/list/" class="space-y-6">
+
+    <div class="mb-4">
+      <select id="search_species" style="width: 100%;" name="name">
+        <option disabled selected hidden>{{ _("Search by name...") }}</option>
+      </select>
+    </div>
+
+    <div class="flex justify-end pt-4">
+      <button type="submit" class="btn-blue bg-gray-600 w-1/6"><i class="fa fa-search fa-fw"></i> {{ _("Search") }}</button>
+    </div>
+
+  </form>
+</div>
 
 {% endblock %}
 

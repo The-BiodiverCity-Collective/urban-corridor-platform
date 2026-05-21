@@ -821,6 +821,7 @@ def species_search(request, vegetation_type=None):
         "load_select2": True,
         "spatial_classification": spatial_classification,
         "nurseries": Page.objects.filter(site=site, page_type=Page.PageType.NURSERY),
+        "main_classes": "hidden",
 
         # Sources is confusing to the regular user so let's now show that, only if they are editing a sources-related search result
         "sources": Document.objects.filter(site=site, doc_type="SPECIES_LIST") if request.GET.getlist("source") else None,
