@@ -762,9 +762,9 @@ def species_overview(request, vegetation_type=None):
         "load_datatables": True,
         "samples": samples,
         "all": species.count(),
-        "features": features.exclude(species_type=SpeciesFeatures.SpeciesType.TYPE),
+        "features": features.exclude(species_type__in=[SpeciesFeatures.SpeciesType.TYPE, SpeciesFeatures.SpeciesType.CLASSIFICATION]),
         "plant_types": features.filter(species_type=SpeciesFeatures.SpeciesType.TYPE),
-        "vegetation_types": veg_types,
+        #"vegetation_types": veg_types, ### Taking this out for now - migrated to a Feature
         "vegetation_type": vegetation_type,
         "veg_link": f"?vegetation_type={vegetation_type.id}" if vegetation_type else "",
         "menu": "species",
@@ -4467,7 +4467,20 @@ def controlpanel_features(request):
     site = get_site(request)
 
     if request.method == "POST":
-        site.features.set(SpeciesFeatures.objects.filter(id__in=request.POST.getlist("feature")))
+        selected_ids = [int(f_id) for f_id in request.POST.getlist("feature")]
+
+        # Delete any features that were unchecked
+        FeatureSiteScore.objects.filter(site=site).exclude(feature_id__in=selected_ids).delete()
+
+        # Find which selected IDs don't exist yet for this site
+        existing_ids = FeatureSiteScore.objects.filter(site=site).values_list("feature_id", flat=True)
+        missing_ids = set(selected_ids) - set(existing_ids)
+        new_features = [
+            FeatureSiteScore(site=site, feature_id=f_id) 
+            for f_id in missing_ids
+        ]
+        FeatureSiteScore.objects.bulk_create(new_features)
+
         messages.success(request, _("Feature configuration has been saved."))
         return redirect(request.path)
 
