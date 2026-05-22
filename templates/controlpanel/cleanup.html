@@ -10,7 +10,7 @@
 </h1>
 
 {% if not species %}
-  <div class="alert alert-info mb-5">{{ _("Nothing to clean up...") }}</div>
+  <div class="alert alert-success mb-5">{{ _("No orphaned species...") }}</div>
 {% else %}
   <div class="mb-4">
     {{ _("The following species are not linked to any source document and should be deactivated.") }}
@@ -33,8 +33,43 @@
   <form method="post">
     <button type="submit" class="btn-green">{{ _("Deactivate these species for my site") }}</button>
     {% csrf_token %}
+    <input type="hidden" name="remove_orphan_species" value="true" />
   </form>
 
+{% endif %}
+
+{% if unbacked_features %}
+  <h2>Unbacked features</h2>
+
+  <table class="table table-striped datatable">
+    <thead>
+      <tr>
+        <th>Species</th>
+        <th>Feature</th>
+      </tr>
+    </thead>
+    <tbody>
+    {% for each in unbacked_features %}
+      <tr>
+        <td data-sort="{{ each.species }}">
+          {% ifchanged each.species %}
+            <a href="{{ each.species.get_absolute_url }}">{{ each.species }}</a>
+          {% endifchanged %}
+        </td>
+        <td>{{ each.speciesfeatures.name }}</td>
+      </tr>
+    {% endfor %}
+    </tbody>
+  </table>
+
+  <form method="post">
+    <button type="submit" class="btn-green">{{ _("Remove unbacked features") }}</button>
+    {% csrf_token %}
+    <input type="hidden" name="remove_unbacked_features" value="true" />
+  </form>
+
+{% else %}
+  <div class="alert alert-success mb-5">{{ _("No orphaned features...") }}</div>
 {% endif %}
 
 {% endblock %}

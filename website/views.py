@@ -3807,9 +3807,29 @@ def controlpanel_cleanup(request):
     site = get_site(request)
     species = Species.objects.filter(site=site).exclude(species_links__vegetation_type__site=site)
 
-    if request.method == "POST":
+    if "remove_orphan_species" in request.POST:
         for each in species:
             each.site.remove(site)
+        messages.success(request, "Orphan species were removed")
+        return redirect(request.get_full_path())
+
+    # We try to figure out which features exist but are not backed up by a reference
+    SpeciesFeatureThrough = Species.features.through
+
+    unbacked_features = SpeciesFeatureThrough.objects.exclude(
+        species__log__features=F("speciesfeatures")
+    ).select_related("species", "speciesfeatures")
+
+    unbacked_features = SpeciesFeatureThrough.objects.filter(
+        species__site=site
+    ).exclude(
+        species__log__features=F("speciesfeatures")
+    ).select_related("species", "speciesfeatures").order_by("species")
+
+    if "remove_unbacked_features" in request.POST:
+        unbacked_features.delete()
+        messages.success(request, "Unbacked features were removed")
+        return redirect(request.get_full_path())
 
     context = {
         "controlpanel": True,
@@ -3817,6 +3837,8 @@ def controlpanel_cleanup(request):
         "page": "cleanup",
         "load_select2": True,
         "species": species,
+        "unbacked_features": unbacked_features,
+        "load_datatables": True,
     }
     return render(request, "controlpanel/cleanup.html", context)
 
