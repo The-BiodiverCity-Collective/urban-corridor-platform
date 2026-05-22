@@ -864,10 +864,12 @@ class SpeciesFeatures(models.Model):
     def _generate_icon(self, label=False):
         color = self.color
         icon = ""
+        style = ""
         if self.icon:
             icon = f'<i class="{self.icon} text-lg" title="{self.name}"></i>'
         elif self.icon_svg:
             icon = self.icon_svg
+            style = 'style="position:relative;top:3px"'
         elif not label:
             icon = self.name
 
@@ -878,7 +880,7 @@ class SpeciesFeatures(models.Model):
             label = ""
             margin = ""
 
-        tag = f'<span class="badge bg-{color}-100 text-{color}-700 {margin}">{icon} {label}</span>'
+        tag = f'<span {style} class="badge bg-{color}-100 text-{color}-700 {margin}">{icon} {label}</span>'
         if not label:
             tag += f'<span class="sr-only">{self.name}</span>' # Add the name for screenreaders if not printed on the page
         return mark_safe(tag)

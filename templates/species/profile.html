@@ -4,7 +4,7 @@
 
 {% block css %}
   <style type="text/css">
-    .features svg{max-height:24px;max-width:24px;color:#fff;display:inline}
+    .features svg{max-height:24px;max-width:24px;display:inline}
   </style>
 {% endblock %}
 
@@ -48,8 +48,8 @@
 
         <!-- Description -->
         <div class="mt-8 pt-6 border-t border-gray-100">
-          <h3 class="text-xs font-bold uppercase tracking-wider text-gray-400 mb-3">{{ _("Profile Overview") }}</h3>
-          <p class="text-base/7 text-gray-700 whitespace-pre-line">
+          <h3 class="text-xs font-bold uppercase tracking-wider text-gray-500 mb-3">{{ _("Profile Overview") }}</h3>
+          <p class="text-base/7 text-gray-700">
             {% if details.description %}
               {{ details.description|linebreaksbr }}
             {% elif details.description_wikipedia %}
@@ -103,7 +103,7 @@
           {% if info.colors.all or info.flowering %}
             <div class="mt-6 pt-5 border-t border-stone-200">
               <div class="flex items-center justify-between mb-3">
-                <span class="text-xs font-semibold text-emerald-800">{{ _("Flowering Period") }}</span>
+                <span class="text-xs font-bold uppercase tracking-wider text-sky-800">{{ _("Flowering Period") }}</span>
                 <ul class="flex gap-1 p-0 m-0 list-none">
                   {% for color in info.colors.all %}
                     <li class="colorbox w-3.5 h-3.5 rounded-full border border-stone-300" style="background:{{ color.color }}" title="{{ color|title }}">
@@ -146,7 +146,7 @@
         <section class="bg-white border border-stone-200 rounded-lg p-6 shadow-xs">
           
           <div class="mb-4">
-            <h3 class="text-xs font-bold uppercase tracking-wider text-stone-500 flex items-center gap-2">
+            <h3 class="text-xs font-bold uppercase tracking-wider text-gray-500">
               {{ _("Nursery availability") }}
             </h3>
           </div>
@@ -197,7 +197,7 @@
           <!-- Garden Planner Module Card -->
           <section class="bg-white border border-gray-200 shadow-xs rounded-lg p-6">
 
-            <h3 class="text-xs font-bold uppercase tracking-wider text-stone-500 flex justify-between">
+            <h3 class="text-xs font-bold uppercase tracking-wider text-gray-500 flex justify-between">
               <span>{{ _("Garden planner") }}</span>
               <span class="text-gray-800">{{ garden }}</span>
             </h3>
