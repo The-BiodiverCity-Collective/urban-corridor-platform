@@ -80,9 +80,19 @@
             {{ _("Save new names") }}
           </button>
         </form>
-      {% elif not "import" in request.GET %}
+      {% elif "capitalize_names" in request.GET %}
+        <form method="post" class="inline m-0">
+          {% csrf_token %}
+          <button type="submit" class="btn-green">
+            {{ _("Save capitalized names") }}
+          </button>
+        </form>
+      {% elif not "import" in request.GET and not "capitalize_names" in request.GET %}
         <a href="?check_names{% if request.GET.file %}&amp;file={{ request.GET.file }}{% endif %}" class="inline-flex items-center justify-center px-4 py-2 bg-sky-600 hover:bg-sky-700 text-white font-medium text-sm rounded transition-colors focus:outline-none focus:ring-1 focus:ring-sky-400 no-underline">
-          {{ _("Check latest common names") }}
+          {{ _("Verify inat names") }}
+        </a>
+        <a href="?capitalize_names=true{% if request.GET.file %}&amp;file={{ request.GET.file }}{% endif %}" class="inline-flex items-center justify-center px-4 py-2 bg-sky-600 hover:bg-sky-700 text-white font-medium text-sm rounded transition-colors focus:outline-none focus:ring-1 focus:ring-sky-400 no-underline">
+          {{ _("Verify capitalization") }}
         </a>
       {% endif %}
     </div>
@@ -113,6 +123,9 @@
         - 
         {% if each.name_en %}
           {{ each.name_en }}
+          {% if request.GET.capitalize_names %}
+            - {{ each.name_en|title }}
+          {% endif %}
         {% else %}
           <span class="text-red-600">{{ _("No common name available") }}
         {% endif %}

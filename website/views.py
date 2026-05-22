@@ -36,6 +36,7 @@ import pandas as pd
 import random
 import secrets
 import shutil
+import string
 import sys
 import urllib.request, json 
 import uuid
@@ -3013,12 +3014,6 @@ def favicon(request):
 @staff_member_required
 def controlpanel(request):
 
-    # TEMP CODE
-    if "update" in request.GET:
-        SpeciesText.objects.all().update(description=None)
-        messages.success(request, _("All descriptions are reset"))
-    # END TEMP CODE
-
     context = {
         "controlpanel": True,
         "menu": "index",
@@ -4176,6 +4171,22 @@ def controlpanel_species_list(request):
         species = species.filter(pk__in=include_ids)
         if not species:
             messages.success(request, _("All names are in sync with iNaturalist"))
+
+    if "capitalize_names" in request.GET:
+        include_ids = []
+        for each in species:
+            if each.name_en:
+                name_en = each.name_en
+                if name_en != string.capwords(name_en):
+                    include_ids.append(each.id)
+                    if request.method == "POST":
+                        old = name_en
+                        old = str(old)
+                        english = each.texts.get(language_id=1)
+                        english.common_name = string.capwords(name_en)
+                        english.save()
+                        messages.success(request, f"Name was changed from {old} to {english.common_name}")
+        species = species.filter(pk__in=include_ids)
 
     context = {
         "controlpanel": True,
