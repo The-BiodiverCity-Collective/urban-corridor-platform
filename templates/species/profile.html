@@ -167,19 +167,19 @@
                     </div>
                   </div>
 
-                    {% if each.in_stock %}
-                      <span class="shrink-0 text-[11px] uppercase tracking-wide font-bold text-lime-700 bg-lime-100 px-2 py-1 rounded">
-                        {{ _("In stock") }}
-                      </span>
-                    {% elif each.in_stock == False %}
-                      <span class="shrink-0 text-[11px] uppercase tracking-wide font-bold text-amber-700 bg-amber-100 px-2 py-1 rounded">
-                        {{ _("On request") }}
-                      </span>
-                    {% else %}
-                      <span class="shrink-0 text-[11px] uppercase tracking-wide font-bold text-sky-700 bg-sky-100 px-2 py-1 rounded">
-                        {{ _("Unknown") }}
-                      </span>
-                    {% endif %}
+                  {% if each.in_stock %}
+                    <span class="shrink-0 text-[11px] uppercase tracking-wide font-bold text-lime-700 bg-lime-100 px-2 py-1 rounded">
+                      {{ _("In stock") }}
+                    </span>
+                  {% elif each.in_stock == False %}
+                    <span class="shrink-0 text-[11px] uppercase tracking-wide font-bold text-amber-700 bg-amber-100 px-2 py-1 rounded">
+                      {{ _("On request") }}
+                    </span>
+                  {% else %}
+                    <span class="shrink-0 text-[11px] uppercase tracking-wide font-bold text-sky-700 bg-sky-100 px-2 py-1 rounded">
+                      {{ _("Unknown") }}
+                    </span>
+                  {% endif %}
 
                 </div>
               {% endfor %}

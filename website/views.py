@@ -2217,6 +2217,7 @@ def carbon_report(request, id, planner=False):
         "info": info,
         "menu": "planner" if garden else "score",
         "page": "score",
+        "tab": "carbon",
         "page_info": info,
         "garden": garden,
         "carbon_sequestered": int(carbon_sequestered),
@@ -2696,10 +2697,14 @@ def planner_score_overview(request, id):
     context = {
         "menu": "planner",
         "page": "score",
+        "tab": "overview",
         "title": _("Score"),
         "garden": garden,
         "score_present": get_garden_score(garden, "PRESENT"),
         "score_future": get_garden_score(garden, "FUTURE") if GardenSpecies.objects.filter(garden=garden, status="FUTURE").exists() else None,
+
+        # Because we have tabs above the <main>, we need to unround the top-left corner if the first tab is active
+        "main_classes": "rounded-tl-none",
     }
     return render(request, "planner/score.overview.html", context)
 
@@ -2763,7 +2768,6 @@ def planner_score(request, id, status):
         "page": "score",
         "status": status,
         "garden": garden,
-        "main_classes": "relative",
         "species_list": species,
         "feature_species": feature_species,
         "months": MONTH_CHOICES,

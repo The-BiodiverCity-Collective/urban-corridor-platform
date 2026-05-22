@@ -1,0 +1,22 @@
+{% load querystring_plus %}
+
+<div class="sm:block z-1000">
+  <nav class="tabs -mb-px flex space-x-2" aria-label="{{ _("Tabs") }}">
+    <a href="{% url "planner_score" GARDEN %}" class="tab {% if tab == "overview" %}active{% else %}inactive{% endif %}">
+      <i class="fa fa-home mr-1"></i>
+      {{ _("Score overview") }}
+    </a>
+    <a href="{% url "planner_score_present" GARDEN %}" class="tab {% if status == "PRESENT" %}active{% else %}inactive {% endif %}">
+      <i class="fa fa-chart-line mr-1"></i>
+      {{ _("Current score") }}
+    </a>
+    <a href="{% url "planner_score_future" GARDEN %}" class="tab {% if status == "FUTURE" %}active{% else %}inactive{% endif %}">
+      <i class="fa fa-chart-line mr-1"></i>
+      {{ _("Future score") }}
+    </a>
+    <a href="{% url "carbon_report" GARDEN %}" class="tab {% if tab == "carbon" %}active{% else %}inactive{% endif %}">
+      <i class="fa fa-cloud mr-1"></i>
+      {{ _("Carbon report") }}
+    </a>
+  </nav>
+</div>

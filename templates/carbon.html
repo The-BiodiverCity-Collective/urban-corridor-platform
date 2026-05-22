@@ -1,10 +1,18 @@
 {% extends "_base.html" %}
 {% load humanize %}
 
+{% block title %}
+  {{ _("Carbon Report") }} | {{ garden }}
+{% endblock %}
+
 {% block css %}
   <style type="text/css">
   .faq-trigger{cursor:pointer}
   </style>
+{% endblock %}
+
+{% block pre_main %}
+  {% include "planner/_scoretabs.html" %}
 {% endblock %}
 
 {% block content %}

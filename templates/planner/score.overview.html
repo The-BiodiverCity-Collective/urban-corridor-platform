@@ -1,5 +1,9 @@
 {% extends "_base.html" %}
 
+{% block pre_main %}
+  {% include "planner/_scoretabs.html" %}
+{% endblock %}
+
 {% block content %}
 
   <div class="container mx-auto">
@@ -43,7 +47,7 @@
     </div>
     <div class="shrink-0 self-end sm:self-center">
       <a class="btn-dark btn-sm" href="{% url "carbon_report" GARDEN %}">
-        <i class="fas fa-chart-line mr-2"></i>
+        <i class="fas fa-cloud mr-2"></i>
         {{ _("View carbon report") }}
       </a>
     </div>
