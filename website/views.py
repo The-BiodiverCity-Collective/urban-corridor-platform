@@ -232,6 +232,7 @@ def index(request):
         "replace_main_classes": "rounded-lg bg-white pl-5 pb-20 shadow-sm sm:pl-6",
     }
     site = get_site(request)
+
     if site.id == 2:
         return render(request, "fcc/index.html", context)
     else:
@@ -3011,6 +3012,13 @@ def favicon(request):
 
 @staff_member_required
 def controlpanel(request):
+
+    # TEMP CODE
+    if "update" in request.GET:
+        SpeciesText.objects.all().update(description=None)
+        messages.success(request, _("All descriptions are reset"))
+    # END TEMP CODE
+
     context = {
         "controlpanel": True,
         "menu": "index",
@@ -3781,7 +3789,7 @@ def controlpanel_ajax_get_wikipedia(request, id):
         url = info.meta_data["inat"]["wikipedia_url"]
         if url:
             title = url.split("/")[-1] #Get the page title from the URL
-            wiki_wiki = wikipediaapi.Wikipedia("Urban Corridor Platform (info@fynboscorridors.org)", "en")
+            wiki_wiki = wikipediaapi.Wikipedia("BiodiverCity Collective Platform (info@biodivercitycollective.org)", "en")
             page = wiki_wiki.page(title)
 
             if page.exists():
@@ -3796,8 +3804,13 @@ def controlpanel_ajax_get_wikipedia(request, id):
                 species_text.save()
                 description = page.text
                 summary = page.summary
+                if not info.meta_data:
+                    info.meta_data = {}
+                info.meta_data["wikipedia"] = timezone.now().date().isoformat()
+                info.save()
             else:
                 error = "Page does not exist"
+            time.sleep(1) # Making sure we don't trigger the max number of requests of the API
         else:
             error = _("No wikipedia page found in the species profile")
     except Exception as e:

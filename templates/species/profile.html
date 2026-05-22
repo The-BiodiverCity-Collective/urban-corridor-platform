@@ -48,14 +48,16 @@
 
         <!-- Description -->
         <div class="mt-8 pt-6 border-t border-gray-100">
-          <h3 class="text-xs font-bold uppercase tracking-wider text-gray-500 mb-3">{{ _("Profile Overview") }}</h3>
+          <h3 class="text-xs font-bold uppercase tracking-wider text-gray-500 mb-3">
+            {{ _("Description") }}
+            {% if not details.description and details.description_wikipedia %}
+              - <a href="{{ info.meta_data.inat.wikipedia_url }}">{{ _("from Wikipedia") }}</a>
+            {% endif %}
+          </h3>
           <p class="text-base/7 text-gray-700">
             {% if details.description %}
               {{ details.description|linebreaksbr }}
             {% elif details.description_wikipedia %}
-              {% if details.summary_wikipedia %}
-                <strong>{{ details.summary_wikipedia|linebreaksbr }}</strong><br><br>
-              {% endif %}
               {{ details.description_wikipedia|linebreaksbr }}
             {% else %}
               {{ _("No description available.") }}
