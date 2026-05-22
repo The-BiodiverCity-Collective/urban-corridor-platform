@@ -23,7 +23,7 @@
     <tbody>
     {% for each in synonyms %}
       <tr>
-        <td>{{ each.name }}</td>
+        <td>{{ each.name|capfirst }}</td>
         <td><a href="{{ each.species.get_absolute_url }}">{{ each.species }}</a></td>
         <td>
           <form method="post" class="inline">

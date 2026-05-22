@@ -3540,7 +3540,7 @@ def controlpanel_document_species(request, id):
     features = {}
     other_characteristics = OTHER_CHARACTERISTICS
     error = None
-    synonyms = dict(SpeciesSynonym.objects.values_list("name", "species_id"))
+    synonyms = dict(SpeciesSynonym.objects.values_list("name", "species__name"))
 
     try:
         # We assume 2 sheets; one Meta Data followed by Plants; we read the 2nd
@@ -3598,6 +3598,8 @@ def controlpanel_document_species(request, id):
             for index,row in df.iterrows():
 
                 name = row["Name"].strip()
+                if name.lower() in synonyms:
+                    name = synonyms[name.lower()]
 
                 # Only process if there are at least 2 words
                 if len(name.split()) >= 2:
@@ -3723,14 +3725,23 @@ def controlpanel_document_species(request, id):
                     name = str(name).strip()
                     name_words = name.split()
                     exists = False
+                    synonym = False
                     
                     if len(name_words) < 2:
                         alerts.append(_("Species names must contain genus + species. This row is invalid and will NOT be added."))
                     else:
                         alerts.append("")
-                        exists = Species.objects.filter(name=name).exists()
+                        if name.lower() in synonyms:
+                            name = synonyms[name.lower()]
+                            synonym = True
+                            exists = True
+                        else:
+                            exists = Species.objects.filter(name=name).exists()
                     
-                    results.append("✓" if exists else "✖️")
+                    if synonym:
+                        results.append("✓ SYN")
+                    else:
+                        results.append("✓" if exists else "✖️")
                     species_count += 1
                     if not exists:
                         new_species.append(name)
@@ -3766,14 +3777,6 @@ def controlpanel_synonyms(request):
     site = get_site(request)
     synonyms = SpeciesSynonym.objects.all()
     
-    # temp
-    if "upgrade" in request.GET:
-        for each in synonyms:
-            name = each.name
-            each.name = name.lower()
-            each.save()
-    # end temp
-
     if request.method == "POST":
         if "delete" in request.POST:
             info = SpeciesSynonym.objects.get(pk=request.POST["delete"])
