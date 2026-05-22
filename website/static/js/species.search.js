@@ -34,7 +34,10 @@ $(function(){
     }
   }).on("select2:select", function (e) {
     const id = e.params.data.id;
-    window.location.href = getRedirectURL(id);
+    url = getRedirectURL(id);
+    if (url) {
+      window.location.href = url;
+    }
   });
 
 });

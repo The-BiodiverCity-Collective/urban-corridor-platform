@@ -181,4 +181,5 @@ urlpatterns = [
     path("controlpanel/users/", views.controlpanel_users, name="controlpanel_users"),
     path("controlpanel/users/<int:id>/", views.controlpanel_user, name="controlpanel_user"),
     path("controlpanel/users/create/", views.controlpanel_user, name="controlpanel_user"),
+    path("controlpanel/synonyms/", views.controlpanel_synonyms, name="controlpanel_synonyms"),
 ]

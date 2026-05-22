@@ -1173,6 +1173,10 @@ class SpeciesVegetationTypeLink(models.Model):
     vegetation_type = models.ForeignKey(VegetationType, on_delete=models.CASCADE)
     file = models.ForeignKey(Attachment, on_delete=models.CASCADE, related_name="species")
 
+class SpeciesSynonym(models.Model):
+    name = models.CharField(max_length=255)
+    species = models.ForeignKey(Species, on_delete=models.CASCADE)
+
 class Photo(models.Model):
     description = models.TextField(null=True, blank=True)
     image = StdImageField(upload_to="photos", variations={"thumbnail": (350, 350), "medium": (800, 600), "large": (1280, 1024)}, delete_orphans=True, null=True, blank=True)

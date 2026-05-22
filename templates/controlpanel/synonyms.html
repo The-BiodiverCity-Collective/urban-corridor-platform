@@ -1,0 +1,76 @@
+{% extends "_base.html" %}
+{% load static %}
+
+{% block content %}
+
+<h1 class="text-3xl">
+  {% block title %}
+    {{ _("Synonyms") }}
+  {% endblock %}
+</h1>
+
+{% if not synonyms %}
+  <div class="alert alert-info mb-5">{{ _("No synonyms found") }}</div>
+{% else %}
+  <table class="table mb-5">
+    <thead>
+      <tr>
+        <th>{{ _("Incorrect/old name") }}</th>
+        <th>{{ _("Species") }}</th>
+        <th>{{ _("Options") }}</th>
+      </tr>
+    </thead>
+    <tbody>
+    {% for each in synonyms %}
+      <tr>
+        <td>{{ each.name }}</td>
+        <td><a href="{{ each.species.get_absolute_url }}">{{ each.species }}</a></td>
+        <td>
+          <form method="post" class="inline">
+            {% csrf_token %}
+            <input type="hidden" name="delete" value="{{ each.id }}">
+            <button type="submit" class="text-gray-700 ml-5 hover:text-red-700 bg-transparent border-0 p-0 m-0 cursor-pointer focus:outline-none"
+              onclick="javascript:return confirm('{{ _("Are you sure you want to delete this item?") }}')"
+            >
+              <i class="fa fa-trash" aria-hidden="true"></i>
+            </button>
+          </form>
+        </td>
+      </tr>
+    {% endfor %}
+    </tbody>
+  </table>
+{% endif %}
+
+<form method="post" class="mt-10">
+  <h2>{{ _("Add new synonym") }}</h2>
+  <div class="mb-4">
+    <label>{{ _("Old or misspelled name") }}</label>
+    <input name="name" />
+  </div>
+  {% csrf_token %}
+
+  <div class="mb-4">
+    <select id="search_species" style="width: 100%;" name="species">
+      <option disabled selected hidden>{{ _("Search by name...") }}</option>
+    </select>
+  </div>
+
+  <div class="flex justify-end pt-4">
+    <button type="submit" class="btn-green">{{ _("Save") }}</button>
+  </div>
+
+</form>
+
+{% endblock %}
+
+{% block js %}
+  <script type="text/javascript">
+    // Settings for the species search ajax field
+    var search_active_only = true;
+    function getRedirectURL(id) {
+      return false;
+    }
+  </script>
+  <script type="text/javascript" src="{% static "js/species.search.js" %}?rf"></script>
+{% endblock %}

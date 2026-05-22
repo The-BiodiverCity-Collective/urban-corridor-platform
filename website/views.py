@@ -3013,6 +3013,13 @@ def favicon(request):
 
 @staff_member_required
 def controlpanel(request):
+    
+    # temp code
+
+    if "update" in request.GET:
+        pass
+
+    # end temp code
 
     context = {
         "controlpanel": True,
@@ -3752,6 +3759,31 @@ def controlpanel_document_species(request, id):
         "species_count": species_count,
     }
     return render(request, "controlpanel/document.species.html", context)
+
+@staff_member_required
+def controlpanel_synonyms(request):
+
+    site = get_site(request)
+    synonyms = SpeciesSynonym.objects.all()
+
+    if request.method == "POST":
+        if "delete" in request.POST:
+            info = SpeciesSynonym.objects.get(pk=request.POST["delete"])
+            info.delete()
+            messages.success(request, _("Information was deleted."))
+        elif "species" in request.POST and "name" in request.POST:
+            SpeciesSynonym.objects.create(species_id=request.POST["species"], name=request.POST["name"])
+            messages.success(request, _("Information was saved."))
+        return redirect(request.get_full_path())
+
+    context = {
+        "controlpanel": True,
+        "menu": "config",
+        "page": "synonyms",
+        "synonyms": synonyms,
+        "load_select2": True,
+    }
+    return render(request, "controlpanel/synonyms.html", context)
 
 @staff_member_required
 def controlpanel_ajax_get_inat_data(request, id):
