@@ -37,12 +37,12 @@
   {% if request.GET.online_tailwind %}
     <script src="https://unpkg.com/@tailwindcss/browser@4"></script>
   {% else %}
-    <link rel="stylesheet" href="{% static "css/output.css" %}?id=0035-2105">
+    <link rel="stylesheet" href="{% static "css/output.css" %}?id=0204-2205">
   {% endif %}
 
   {% if load_tooltip %}
-    <script src="https://unpkg.com/@popperjs/core@2"></script>
-    <script src="https://unpkg.com/tippy.js@6"></script>
+    <script src="https://unpkg.com/@popperjs/core@2" defer></script>
+    <script src="https://unpkg.com/tippy.js@6" defer></script>
   {% endif %}
 
   <link rel="icon" href="{{ SITE.logo.thumbnail.url }}" type="image/png">

@@ -36,11 +36,13 @@
 
         <!-- Thumbnails Gallery Row -->
         <div class="mt-4 w-full">
-          <div class="flex flex-wrap gap-3 gallery" aria-orientation="horizontal" role="tablist">
+          <div class="flex flex-wrap gap-2 gallery" aria-orientation="horizontal" role="tablist">
             {% for each in photos %}
-              <button data-target="{{ each.large }}" id="tabs-1-tab-1" class="relative flex size-16 shrink-0 cursor-pointer items-center justify-center rounded-lg overflow-hidden border transition hover:opacity-90" aria-controls="tabs-1-panel-1" role="tab" type="button" data-credit="{{ each.credit }}">
-                <img src="{{ each.thumbnail }}" alt="" class="size-full object-cover">
-                <span class="pointer-events-none absolute inset-0 {% if each == photo %}ring-2 ring-emerald-500 ring-offset-1{% endif %}"></span>
+              <button data-target="{{ each.large }}" id="tabs-1-tab-1" class="relative flex h-24 w-24 cursor-pointer items-center justify-center rounded-md bg-white text-sm font-medium uppercase text-gray-900 hover:bg-gray-50 focus:outline-hidden focus:ring-3 focus:ring-sky-500/50 focus:ring-offset-4" aria-controls="tabs-1-panel-1" role="tab" type="button" data-credit="{{ each.credit }}">
+                <span class="absolute inset-0 rounded-md">
+                  <img src="{{ each.thumbnail }}" alt="" class="size-full object-cover">
+                </span>
+                <span class="pointer-events-none absolute inset-0 rounded-md ring-2 {% if each == photo %}ring-sky-500{% else %}ring-transparent{% endif %} ring-offset-2" ></span>
               </button>
             {% endfor %}
           </div>
