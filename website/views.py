@@ -2232,16 +2232,20 @@ def carbon_report(request, id, planner=False):
 def nursery(request, slug, garden=None, planner=False):
     site = get_site(request)
     info = Page.objects.get(page_type=Page.PageType.NURSERY, slug=slug, is_active=True, site=site)
+    future_list = None
+    has_hits = False
+    species = None
+
+    inventory = NurseryInventory.objects.filter(nursery=info, species__site=site)
+    if "inventory" in request.GET:
+        species = Species.objects.get(pk=request.GET["inventory"])
+        inventory = inventory.filter(species=species)
 
     if garden:
         if not (garden := get_garden(request, garden)):
             return redirect("planner")
-
-    inventory = NurseryInventory.objects.filter(nursery=info, species__site=site)
-    species = None
-    if "inventory" in request.GET:
-        species = Species.objects.get(pk=request.GET["inventory"])
-        inventory = inventory.filter(species=species)
+        future_list = Species.objects.filter(garden_plants__garden=garden, garden_plants__status="FUTURE")
+        has_hits = inventory.filter(species__in=future_list).exists()
 
     context = {
         "info": info,
@@ -2249,11 +2253,12 @@ def nursery(request, slug, garden=None, planner=False):
         "page": "resources",
         "page_info": info,
         "prices_present": NurseryInventory.objects.filter(nursery=info, price__isnull=False).exists(),
-        "future_list": Species.objects.filter(garden_plants__garden=garden, garden_plants__status="FUTURE") if garden else None,
+        "future_list": future_list,
         "inventory": inventory,
         "slug": "nursery",
         "planner": planner,
         "species": species,
+        "has_hits": has_hits,
     }
     return render(request, "nursery.html", context)
 

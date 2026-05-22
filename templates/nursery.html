@@ -56,12 +56,13 @@
         </div>
 
         <h3 class="mt-10">{{ _("Price list") }}</h3>
+
         <div class="mt-5 mb-3 text-sm">
           {% if species %}
             {% blocktranslate %}
               Note: only showing the prices for <em><strong>{{ species }}</strong></em>. Click here to view the <a href="./">entire price list</a>.
             {% endblocktranslate %}
-          {% else %}
+          {% elif has_hits %}
             {% blocktranslate with green_start='<span class="bg-lime-600 p-1 text-white">' green_end='</span>' %}
               Note: species highlighted {{ green_start }}in green{{ green_end }} are the ones that you have selected for your garden.
             {% endblocktranslate %}
@@ -74,7 +75,7 @@
               <th>{{ _("Species") }}</th>
               {% if prices_present %}
                 <th>{{ _("Unit") }}</th>
-                <th>{{ _("Price") }}</th>
+                <th>{{ _("Price excl. VAT") }}</th>
                 <th>{{ _("Availability") }}</th>
               {% endif %}
             </tr>
