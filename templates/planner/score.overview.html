@@ -7,9 +7,9 @@
 {% block content %}
 
   <div class="container mx-auto">
-    <div class="grid grid-cols-2 gap-4">
+    <div class="grid grid-cols-1 gap-4 lg:grid-cols-2">
       <div class="p-4 relative">
-        <div class="absolute top-5 right-5 text-center">
+        <div class="absolute top-0 md:top-5 right-5 bg-white right-5 text-center">
           <span class="text-black font-bold block text-3xl">{{ score_present.total|default:0 }}</span>
           <span class="text-gray-700 text-sm">{{ _("Total score") }}</span>
         </div>
@@ -19,7 +19,7 @@
       </div>
       <div class="p-4 relative">
         {% if score_future or not score_present %}
-          <div class="absolute top-5 right-5 text-center">
+          <div class="absolute top-0 md:top-5 right-5 bg-white right-5 text-center">
             <span class="text-black font-bold block text-3xl">{{ score_future.total|default:0 }}</span>
             <span class="text-gray-700 text-sm">{{ _("Total score") }}</span>
           </div>

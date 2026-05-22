@@ -5,10 +5,10 @@
 
 {% block content %}
 
-<div class="container mt-10 mb-20">
-  <div class="flex gap-4">
+<div class="container mx-auto px-4 mt-10 mb-20">
+  <div class="grid grid-cols-1 gap-6 lg:grid-cols-5 lg:gap-4">
 
-    <div class="flex-2 pt-10 pl-10 pr-2">
+    <div class="lg:col-span-2 pt-6 pl-0 pr-0 lg:pt-10 lg:pl-10 lg:pr-2">
       <h1 class="text-4xl font-semibold tracking-tight text-pretty text-gray-900 sm:text-5xl">
         {{ page_info }}
         <i class="fas fa-shovel"></i>
@@ -38,7 +38,7 @@
           {% elif my_gardens %}
             {{ _("Manage existing garden") }}
             <form method="post">
-              <select name="my_garden" required>
+              <select name="my_garden" required class="w-full max-w-xs block rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-lime-600 sm:text-sm/6">
                 <option value=""></option>
                 {% for each in my_gardens %}
                   <option value="{{ each.id }}">{{ each }}</option>
@@ -57,11 +57,11 @@
       {% endif %}
     </div>
 
-    <a {% if garden %} href="{% url "planner_location" GARDEN %}" {% endif %} class="flex-1 relative no-underline {% if garden %} hover:opacity-75{% else %}opacity-40{% endif %}">
+    <a {% if garden %} href="{% url "planner_location" GARDEN %}" {% endif %} class="{% if not garden %}hidden lg:block{% endif %} lg:col-span-1 relative no-underline {% if garden %} hover:opacity-75{% else %}opacity-40{% endif %}">
       <div class="absolute inset-0 rounded-lg bg-white lg:rounded-bl-4xl"></div>
       <div class="relative flex h-full flex-col overflow-hidden rounded-[calc(var(--radius-lg)+1px)] lg:rounded-bl-[calc(2rem+1px)]">
-        <img src="/media/planner.location.jpg" alt="" class="h-40 object-cover object-center" />
-        <div class="p-10 pt-4">
+        <img src="/media/planner.location.jpg" alt="" class="h-40 w-full object-cover object-center" />
+        <div class="p-6 pt-4 lg:p-10 lg:pt-4">
           <p class="mt-2 text-lg font-medium tracking-tight text-gray-950">{{ _("Location") }}</p>
           <p class="mt-2 mb-5 max-w-lg text-sm/6 text-gray-600 font-normal">{{ _("Select the exact location and size of your restoration project.") }}</p>
           {% if garden and garden.geometry %}
@@ -74,11 +74,11 @@
       <div class="pointer-events-none absolute inset-0 rounded-lg shadow-sm outline outline-black/5 lg:rounded-bl-4xl"></div>
     </a>
 
-    <a {% if garden %} href="{% url "planner_site" GARDEN %}" {% endif %} class="flex-1 relative no-underline {% if garden %} hover:opacity-75{% else %}opacity-40{% endif %}">
+    <a {% if garden %} href="{% url "planner_site" GARDEN %}" {% endif %} class="{% if not garden %}hidden lg:block{% endif %} lg:col-span-1 relative no-underline {% if garden %} hover:opacity-75{% else %}opacity-40{% endif %}">
       <div class="absolute inset-0 rounded-lg bg-white"></div>
       <div class="relative flex h-full flex-col overflow-hidden rounded-[calc(var(--radius-lg)+1px)]">
-        <img src="/media/planner.soil.jpg" title="Photo by Nicolas Postiglioni: https://www.pexels.com/photo/gray-sands-closeup-photo-943500/" class="h-40 object-cover object-center" />
-        <div class="p-10 pt-4">
+        <img src="/media/planner.soil.jpg" title="Photo by Nicolas Postiglioni: https://www.pexels.com/photo/gray-sands-closeup-photo-943500/" class="h-40 w-full object-cover object-center" />
+        <div class="p-6 pt-4 lg:p-10 lg:pt-4">
           <p class="mt-2 text-lg font-medium tracking-tight text-gray-950">{{ _("Garden features") }}</p>
           <p class="mt-2 mb-5 max-w-lg text-sm/6 text-gray-600 font-normal">{{ _("Select soil type and other typology options for your garden.") }}</p>
           {% if garden and garden.site_features.count %}
@@ -91,11 +91,11 @@
       <div class="pointer-events-none absolute inset-0 rounded-lg shadow-sm outline outline-black/5"></div>
     </a>
 
-    <a {% if garden %} href="{% url "planner_target_species" GARDEN %}" {% endif %} class="flex-1 relative no-underline {% if garden %} hover:opacity-75{% else %}opacity-40{% endif %}">
+    <a {% if garden %} href="{% url "planner_target_species" GARDEN %}" {% endif %} class="{% if not garden %}hidden lg:block{% endif %} lg:col-span-1 relative no-underline {% if garden %} hover:opacity-75{% else %}opacity-40{% endif %}">
       <div class="absolute inset-0 rounded-lg bg-white"></div>
       <div class="relative flex h-full flex-col overflow-hidden rounded-[calc(var(--radius-lg)+1px)]">
-        <img src="https://inaturalist-open-data.s3.amazonaws.com/photos/118240906/medium.jpeg" alt="" class="h-40 object-cover object-center" />
-        <div class="p-10 pt-4">
+        <img src="https://inaturalist-open-data.s3.amazonaws.com/photos/118240906/medium.jpeg" alt="" class="h-40 w-full object-cover object-center" />
+        <div class="p-6 pt-4 lg:p-10 lg:pt-4">
           <p class="mt-2 text-lg font-medium tracking-tight text-gray-950">{{ _("Garden targets") }}</p>
           <p class="mt-2 mb-5 max-w-lg text-sm/6 text-gray-600 font-normal">
             {{ _("Pick animal and plant species to focus on in your restoration efforts.") }}
@@ -114,20 +114,23 @@
 </div>
 
 {% if not garden %}
-  <form method="post" class="mt-5">
+  <form method="post" class="mt-5 px-4">
     {% if my_gardens %}
-      <h2>{{ _("Enter a garden name below to create a new garden") }}</h2>
+      <h2 class="text-lg font-semibold text-gray-900 mb-2">{{ _("Enter a garden name below to get started") }}</h2>
     {% else %}
-      <h2>{{ _("To start using our tools, enter your garden name") }}</h2>
+      <h2 class="text-lg font-semibold text-gray-900 mb-2">{{ _("To start using our tools, enter your garden name") }}</h2>
     {% endif %}
     {% csrf_token %}
     <label for="garden" class="sr-only">{{ _("Garden name") }}</label>
-    <input id="garden" name="garden" type="text" required class="min-w-0 flex-auto rounded-md border-0 bg-gray/5 px-3.5 py-2 text-gray shadow-xs ring-1 ring-inset ring-gray/10 focus:ring-2 focus:ring-inset focus:ring-lime-500 sm:text-sm/6" placeholder="{{ _("Enter a name for your garden") }}" autocomplete="off">
-    <button type="submit" class="btn-green mt-2">{{ _("Next &raquo;") }}</button>
+    <input id="garden" name="garden" type="text" required class="w-full rounded-md border-0 bg-gray-50 px-3.5 py-2 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-lime-500 sm:text-sm/6" placeholder="{{ _("Enter a name for your garden") }}" autocomplete="off">
+    <button type="submit" class="btn-green mt-2 w-full sm:w-auto">{{ _("Next &raquo;") }}</button>
   </form>
 {% endif %}
 
-<div class="bg-white {% if not garden %}opacity-40 cursor-not-allowed{% endif %}" hidden>
+{% endblock %}
+
+
+<div class="bg-white {% if not garden %}opacity-40 cursor-not-allowed{% endif %}">
   <div class="mx-auto max-w-7xl py-24 sm:px-2 sm:py-32 lg:px-4">
     <div class="mx-auto max-w-2xl px-4 lg:max-w-none">
       <div class="max-w-3xl">
@@ -199,7 +202,7 @@
 </div>
 
 
-<div class="bg-white {% if not garden %}opacity-40 cursor-not-allowed{% endif %}" hidden>
+<div class="bg-white {% if not garden %}opacity-40 cursor-not-allowed{% endif %}">
   <div class="mx-auto mb-15 lg:px-4">
     <div class="mx-auto max-w-2xl px-4 lg:max-w-none">
       <div class="max-w-3xl">
@@ -216,7 +219,7 @@
   </div>
 </div>
 
-<div class="container pl-10 {% if not garden %}opacity-40 cursor-not-allowed{% endif %}" hidden>
+<div class="container pl-10 {% if not garden %}opacity-40 cursor-not-allowed{% endif %}">
   <div class="flex gap-4">
 
     <a href="{% url "planner_plants_present_list" GARDEN %}?view=photos-data" class="flex-1 relative no-underline hover:opacity-75">
@@ -334,9 +337,7 @@
       {% endif %}
 
     </div>
-
   </div>
 </div>
 
 
-{% endblock %}

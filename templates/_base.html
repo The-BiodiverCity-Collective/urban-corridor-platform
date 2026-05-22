@@ -37,7 +37,7 @@
   {% if request.GET.online_tailwind %}
     <script src="https://unpkg.com/@tailwindcss/browser@4"></script>
   {% else %}
-    <link rel="stylesheet" href="{% static "css/output.css" %}?id=0213-2205">
+    <link rel="stylesheet" href="{% static "css/output.css" %}?id=0259-2205">
   {% endif %}
 
   {% if load_tooltip %}
@@ -234,7 +234,7 @@
       {% with garden_id=garden.id|default:GARDEN %}
       <div class="bg-gray-100 px-6 relative z-0">
         <div class="max-w-7xl mx-auto">
-          <div class="flex space-x-1 text-sm font-medium py-1 bottomnav">
+          <div class="flex space-x-1 text-sm font-medium py-1 bottomnav [&_i]:max-lg:!hidden">
             <a href="{% url "planner" garden_id %}" class="group {% if planner_tab == "my_garden" %}active{% endif %}"><i class="fas fa-seedling mr-2 "></i>My garden</a>
             <a href="{% url "planner_suggestions" garden_id %}" class="group {% if page == "suggestions" %}active{% endif %}"><i class="fas fa-list mr-2 "></i>Suggested plant list</a>
             <a href="{% url "planner_plants" garden_id %}" class="group {% if planner_tab == "my_plants" %}active{% endif %}"><i class="fas fa-leaf mr-2 "></i>My plant lists</a>

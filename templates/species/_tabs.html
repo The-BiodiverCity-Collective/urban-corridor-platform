@@ -1,6 +1,6 @@
 {% load querystring_plus %}
 
-<div class="sm:block">
+<div class="hidden md:block">
   <div class="{% if tabs_border %}border-b border-gray-200{% endif %}">
     <nav class="tabs -mb-px flex {% if tabs_border %}space-x-8{% else %}space-x-2{% endif %}" aria-label="Tabs">
       <a href="{% querystring_plus view="photos-data" %}" class="tab {% if not request.GET.view or request.GET.view == "photos-data" %}active{% else %}inactive{% endif %}">
