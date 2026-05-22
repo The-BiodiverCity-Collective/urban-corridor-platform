@@ -1,5 +1,6 @@
 {% extends "_base.html" %}
 {% load ucp_extras %}
+{% load humanize %}
 
 {% block css %}
   <style type="text/css">
@@ -9,188 +10,239 @@
 
 {% block content %}
 
-  <div class="absolute top-2 right-2">
-    <a href="{% url "species_data" info.id %}" class="btn-blue btn-sm">
-      <i class="fa fa-info mr-2"></i>
-      {{ _("Data sources") }}
+  <!-- Floating clean action badge -->
+  <div class="absolute top-6 right-6 z-10">
+    <a href="{% url "species_data" info.id %}" class="inline-flex items-center gap-1.5 bg-gray-500 text-white no-underline rounded-sm opacity-60 hover:opacity-100 btn-sm rounded-tl-none rounded-br-none">
+      <i class="fa fa-info-circle"></i>{{ _("Data sources") }}
     </a>
   </div>
 
-  <div class="mx-auto max-w-2xl px-4 sm:px-6 pt-5 pb-5 lg:max-w-7xl lg:px-8">
-    <div class="lg:grid lg:grid-cols-2 lg:items-start lg:gap-x-8 mb-5">
-      <div class="flex flex-col-reverse">
-        <div class="mx-auto mt-6 w-full max-w-2xl sm:block lg:max-w-none">
-          <div class="grid grid-cols-4 gap-6 gallery" aria-orientation="horizontal" role="tablist">
+  <div class="max-w-7xl mx-auto">
+    <!-- Split Layout: Big Main Left Column, Clean Sidebar Right Column -->
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+      
+      <!-- Primary Core Column (Photos + Variable Length Text) -->
+      <div class="lg:col-span-7 p-6">
+        {% if details.common_name %}
+          <h1 class="text-5xl font-extrabold tracking-tight text-gray-900 mb-2">{{ details.common_name }}</h1>
+        {% endif %}
+        <p class="text-2xl text-gray-500 mt-1 mb-6"><em>{{ info }}</em></p>
 
+        <!-- Main Photo Frame -->
+        <div id="headshot" aria-labelledby="headshot" tabindex="0" class="relative rounded overflow-hidden bg-gray-100">
+          <img src="{{ photo.large }}" alt="" class="w-full h-auto max-h-[450px] object-cover mx-auto">
+          <span id="credit" class="absolute bottom-2 left-2 text-xs bg-black/50 text-white/90 px-2 py-1 rounded-md backdrop-blur-xs">{{ photo.credit }}</span>
+        </div>
+
+        <!-- Thumbnails Gallery Row -->
+        <div class="mt-4 w-full">
+          <div class="flex flex-wrap gap-3 gallery" aria-orientation="horizontal" role="tablist">
             {% for each in photos %}
-              <button data-target="{{ each.large }}" id="tabs-1-tab-1" class="relative flex h-24 cursor-pointer items-center justify-center rounded-md bg-white text-sm font-medium uppercase text-gray-900 hover:bg-gray-50 focus:outline-hidden focus:ring-3 focus:ring-sky-500/50 focus:ring-offset-4" aria-controls="tabs-1-panel-1" role="tab" type="button" data-credit="{{ each.credit }}">
-                <span class="absolute inset-0 rounded-md">
-                  <img src="{{ each.thumbnail }}" alt="" class="size-full object-cover">
-                </span>
-                <span class="pointer-events-none absolute inset-0 rounded-md ring-2 {% if each == photo %}ring-sky-500{% else %}ring-transparent{% endif %} ring-offset-2" ></span>
+              <button data-target="{{ each.large }}" id="tabs-1-tab-1" class="relative flex size-16 shrink-0 cursor-pointer items-center justify-center rounded-lg overflow-hidden border transition hover:opacity-90" aria-controls="tabs-1-panel-1" role="tab" type="button" data-credit="{{ each.credit }}">
+                <img src="{{ each.thumbnail }}" alt="" class="size-full object-cover">
+                <span class="pointer-events-none absolute inset-0 {% if each == photo %}ring-2 ring-emerald-500 ring-offset-1{% endif %}"></span>
               </button>
             {% endfor %}
-
           </div>
         </div>
 
-        <div>
-          <div id="headshot" aria-labelledby="headshot" tabindex="0" class="relative">
-            <img src="{{ photo.large }}" alt="" class="aspect-square w-full object-cover sm:rounded-lg">
-            <span id="credit" class="absolute text-sm bg-gray-50 opacity-90 p-1 rounded-tr-md" style="bottom:0;">{{ photo.credit }}</span>
-          </div>
+        <!-- Description -->
+        <div class="mt-8 pt-6 border-t border-gray-100">
+          <h3 class="text-xs font-bold uppercase tracking-wider text-gray-400 mb-3">{{ _("Profile Overview") }}</h3>
+          <p class="text-base/7 text-gray-700 whitespace-pre-line">
+            {% if details.description %}
+              {{ details.description|linebreaksbr }}
+            {% elif details.description_wikipedia %}
+              {% if details.summary_wikipedia %}
+                <strong>{{ details.summary_wikipedia|linebreaksbr }}</strong><br><br>
+              {% endif %}
+              {{ details.description_wikipedia|linebreaksbr }}
+            {% else %}
+              {{ _("No description available.") }}
+            {% endif %}
+          </p>
         </div>
-
       </div>
 
-      <div class="mt-10 px-4 sm:mt-16 sm:px-0 lg:mt-0">
-        {% if details.common_name %}
-          <h1 class="text-3xl font-bold tracking-tight text-gray-900 mb-1">{{ details.common_name }}</h1>
-        {% endif %}
-        <p class="text-3xl tracking-tight text-gray-900"><em>{{ info }}</em></p>
-
+      <!-- Secondary Data Sidebar -->
+      <div class="lg:col-span-5 space-y-6">
+        
+        <!-- Combined Features Sidebar Panel -->
+        <div class="bg-stone-50 border border-stone-200/60 rounded-lg p-6">
+          <h2 class="text-sm font-bold uppercase tracking-wider text-stone-800 border-b border-stone-200 pb-3 mb-4">{{ _("Species Characteristics") }}</h2>
+          
         {% if info.features %}
-          <section class="container mx-auto features mt-5">
-            <div class="grid grid-cols-2 gap-4">
+          <section class="container mx-auto features mb-8">
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-x-8 gap-y-6 border-t border-gray-100 pt-6">
               {% for each in info.features.all %}
                 {% ifchanged each.species_type %}
                   {% if not forloop.first %}
-                  </div>
+                    </div></div>
                   {% endif %}
-                  <div class="bg-gray-100 p-3 rounded">
-                  <h3 class="text-sky-700">{{ each.get_species_type_display }}</h3>
+                  <div class="space-y-2">
+                  <h3 class="text-xs font-bold uppercase tracking-wider text-sky-800">{{ each.get_species_type_display }}</h3>
+                  <div class="space-y-1.5 text-gray-600 text-sm">
                 {% endifchanged %}
-                <div class="mb-1">
+                <div class="flex items-center">
                   {% if each.icon or each.icon_svg %}
-                    <span class="mr-1 relative">
+                    <span class="mr-2 opacity-70 scale-90 inline-block">
                       {{ each.get_icon }}
                     </span>
                   {% endif %}
-                  <a href="/species/list/?feature={{ each.id }}" class="text-gray-700 hover:text-black font-normal hover:underline no-underline">
+                  <a href="/species/list/?feature={{ each.id }}" class="text-gray-600 hover:text-emerald-700 font-normal hover:underline no-underline transition-colors">
                     {{ each }}
                   </a>
                 </div>
               {% endfor %}
+              </div></div> <!-- Close last loop item tags -->
             </div>
           </section>
-
         {% endif %}
 
-        {% if info.colors.all or info.flowering %}
-          <div class="rounded bg-gray-100 mt-5 p-3">
-            <div class="flex justify-between">
-              <h3 class="text-sky-700">{{ _("Flowering") }}</h3>
-              <ul>
-                {% for color in info.colors.all %}
-                  <li class="colorbox" style="background:{{ color.color }}" title="{{ color }}">
-                    <span class="sr-only">{{ color }}</span>
-                  </li>
-                {% endfor %}
-              </ul>
+          <!-- Flowering Row Inside Sidebar -->
+          {% if info.colors.all or info.flowering %}
+            <div class="mt-6 pt-5 border-t border-stone-200">
+              <div class="flex items-center justify-between mb-3">
+                <span class="text-xs font-semibold text-emerald-800">{{ _("Flowering Period") }}</span>
+                <ul class="flex gap-1 p-0 m-0 list-none">
+                  {% for color in info.colors.all %}
+                    <li class="colorbox w-3.5 h-3.5 rounded-full border border-stone-300" style="background:{{ color.color }}" title="{{ color|title }}">
+                      <span class="sr-only">{{ color|title }}</span>
+                    </li>
+                  {% endfor %}
+                </ul>
+              </div>
+              {% if info.flowering %}
+                <div class="flex flex-wrap gap-1">
+                  {% for month in info.flowering_months %}
+                      <span class="bg-stone-200 text-stone-700 text-xs px-2 py-0.5 rounded font-medium">{{ month }}</span>
+                  {% endfor %}
+                </div>
+              {% endif %}
             </div>
-            {% if info.flowering %}
+          {% endif %}
+        </div>
+
+        <!-- Propagation Options -->
+        {% if details.propagation_seed or details.propagation_cutting %}
+          <div class="bg-emerald-50/40 border border-emerald-600/10 rounded-lg p-6 space-y-4">
+            <h2 class="text-sm font-bold uppercase tracking-wider text-emerald-900">{{ _("Propagation") }}</h2>
+            {% if details.propagation_seed %}
               <div>
-                {% for month in info.flowering_months %}
-                    <span class="badge-success">{{ month }}</span>
-                {% endfor %}
+                <h4 class="text-xs font-bold text-emerald-800 mb-0.5">{{ _("By Seed") }}</h4>
+                <div class="text-sm text-emerald-950/80">{{ details.propagation_seed|linebreaksbr }}</div>
+              </div>
+            {% endif %}
+            {% if details.propagation_cutting %}
+              <div class="pt-2 border-t border-emerald-600/10">
+                <h4 class="text-xs font-bold text-emerald-800 mb-0.5">{{ _("By Cutting") }}</h4>
+                <div class="text-sm text-emerald-950/80">{{ details.propagation_cutting|linebreaksbr }}</div>
               </div>
             {% endif %}
           </div>
         {% endif %}
 
-        <p class="mt-6 text-base/7 text-gray-600">
-          {% if details.description %}
-          {{ details.description|linebreaksbr }}
-          {% elif details.description_wikipedia %}
-            {% if details.summary_wikipedia %}
-              <strong>{{ details.summary_wikipedia|linebreaksbr }}</strong><br><br>
-            {% endif %}
-            {{ details.description_wikipedia|linebreaksbr }}
+        <!-- Nursery availability -->
+        <section class="bg-white border border-stone-200 rounded-lg p-6 shadow-xs">
+          
+          <div class="mb-4">
+            <h3 class="text-xs font-bold uppercase tracking-wider text-stone-500 flex items-center gap-2">
+              {{ _("Nursery availability") }}
+            </h3>
+          </div>
+
+          {% if nursery_stock %}
+            <div class="divide-y divide-stone-100">
+              {% for each in nursery_stock %}
+                <div class="flex items-center justify-between py-3 first:pt-0 last:pb-0">
+
+                  <div class="min-w-0">
+                    <a href="{{ each.nursery.get_absolute_url }}?inventory={{ info.id }}"
+                       class="block text-sm font-semibold text-stone-800 hover:text-sky-700 no-underline truncate">
+                      {{ each.nursery }}
+                    </a>
+
+                    <div class="mt-1 text-xs text-stone-500">
+                      {{ each.unit }} - R{{ each.price|intcomma }}
+                    </div>
+                  </div>
+
+                    {% if each.in_stock %}
+                      <span class="shrink-0 text-[11px] uppercase tracking-wide font-bold text-lime-700 bg-lime-100 px-2 py-1 rounded">
+                        {{ _("In stock") }}
+                      </span>
+                    {% elif each.in_stock == False %}
+                      <span class="shrink-0 text-[11px] uppercase tracking-wide font-bold text-amber-700 bg-amber-100 px-2 py-1 rounded">
+                        {{ _("On request") }}
+                      </span>
+                    {% else %}
+                      <span class="shrink-0 text-[11px] uppercase tracking-wide font-bold text-sky-700 bg-sky-100 px-2 py-1 rounded">
+                        {{ _("Unknown") }}
+                      </span>
+                    {% endif %}
+
+                </div>
+              {% endfor %}
+            </div>
+
+          {% else %}
+            <div class="rounded-md bg-stone-50 border border-dashed border-stone-200 px-4 py-3 text-sm text-stone-500">
+              {{ _("No nursery stock found.") }}
+            </div>
           {% endif %}
-        </p>
+        </section>
 
 
-        {% if sources %}
-          <h3 class="mt-10">{{ _("Inclusion rationale") }}</h3>
+        {% if garden %}
+          <!-- Garden Planner Module Card -->
+          <section class="bg-white border border-gray-200 shadow-xs rounded-lg p-6">
 
-          <p>{{ _("Why did we include this species on our website? Because it was mentioned in the following source(s):") }}</p>
+            <h3 class="text-xs font-bold uppercase tracking-wider text-stone-500 flex justify-between">
+              <span>{{ _("Garden planner") }}</span>
+              <span class="text-gray-800">{{ garden }}</span>
+            </h3>
 
-          <ul class="list-disc ml-4 mt-3">
-            {% for each in sources %}
-              <li><a href="{% url "species_source" each.file.attached_to.id %}">{{ each.file.attached_to }}</a></li>
-            {% endfor %}
-          </ul>
+            <div class="space-y-2.5">
+
+              <button data-species="{{ info.id }}" data-action="PRESENT" 
+                class="planner-action w-full flex items-center justify-center gap-2 py-2 text-xs
+              {% if in_garden.status == "PRESENT" %}btn-green{% else %}btn-light{% endif %} cursor-pointer"
+             >
+                <i class="fa fa-check-circle"></i>{{ _("I have this in my garden") }}
+              </button>
+
+              <button data-species="{{ info.id }}" data-action="FUTURE" 
+                class="planner-action w-full flex items-center justify-center gap-2 py-2 text-xs
+              {% if in_garden.status == "FUTURE" %}btn-green{% else %}btn-light{% endif %} cursor-pointer"
+             >
+                <i class="fa fa-calendar-plus"></i>{{ _("I want this in my garden") }}
+              </button>
+
+              <a href="{% url "planner_plants" garden.id %}" class="w-full flex items-center justify-center gap-2 rounded bg-orange-600 px-3 py-2 text-xs font-semibold text-white shadow-2xs hover:bg-orange-500 transition no-underline">
+                <i class="fa fa-leaf"></i>{{ _("View my plants") }}
+              </a>
+            </div>
+          </section>
         {% endif %}
+
+        <!-- References Row inside Sidebar Footer -->
+        <section class="pt-2 px-2">
+          <h4 class="text-xs font-bold uppercase tracking-wider text-gray-400 mb-2">{{ _("References") }}</h4>
+          <div class="flex flex-wrap gap-1.5">
+            {% for label,url in info.get_links.items %}
+              <a href="{{ url }}" class="btn-white btn-sm">
+                <i class="fa fa-link text-[10px]"></i> {{ label }}
+              </a>
+            {% endfor %}
+          </div>
+        </section>
 
       </div>
     </div>
   </div>
 
-  <div class="px-4 sm:px-6 lg:px-8 pb-10">
-    {% if details.propagation_seed or details.propagation_cutting %}
-      <div class="lg:grid lg:grid-cols-2 lg:items-start lg:gap-x-8 bg-gray-100 p-5 mb-5 rounded">
-        {% if details.propagation_seed %}
-          <section>
-            <h3>{{ _("Propagation by seed") }}</h3>
-            {{ details.propagation_seed|linebreaksbr }}
-          </section>
-        {% endif %}
+</div>
 
-        {% if details.propagation_cutting %}
-          <section>
-            <h3>{{ _("Propagation by cutting") }}</h3>
-            {{ details.propagation_cutting|linebreaksbr }}
-          </section>
-        {% endif %}
-      </div>
-    {% endif %}
-
-    {% if garden %}
-      <section class="bg-gray-100 rounded p-5">
-        <h3><i class="fas fa-shovel"></i> {{ _("Garden planner") }} - {{ garden }}</h3>
-        <div class="flex justify-between">
-          <div>
-            <button data-species="{{ info.id }}" data-action="PRESENT" class="planner-action {% if in_garden.status == "PRESENT" %}btn-green{% else %}btn-white{% endif %} mb-3 mr-3 cursor-pointer">
-              <i class="fa fa-check-circle mr-1"></i>
-              {{ _("I have this in my garden") }}
-            </button>
-            <button data-species="{{ info.id }}" data-action="FUTURE" class="planner-action {% if in_garden.status == "FUTURE" %}btn-green{% else %}btn-white{% endif %} mb-3 mr-3 cursor-pointer">
-              <i class="fa fa-calendar-plus mr-1"></i>
-              {{ _("I want this in my garden") }}
-            </button>
-          </div>
-          <div>
-          <a href="{% url "planner_plants" garden.id %}" class="no-underline rounded-md bg-orange-600 px-3.5 py-2.5 text-sm font-semibold text-white shadow-xs hover:text-white hover:bg-orange-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-orange-600 flex mb-3 mr-3">
-            <i class="fa fa-leaf mr-2 relative" style="top:2px"></i>
-            {{ _("View my plants") }}
-          </a>
-          </div>
-        </div>
-      </section>
-    {% endif %}
-
-    <section>
-      <h3 class="mt-10">{{ _("Sources and references") }}</h3>
-      <ul class="flex flex-wrap list-none">
-      {% for label,url in info.get_links.items %}
-        <li>
-          <a href="{{ url }}" class="btn-blue mr-2">
-            <i class="fa fa-link mr-1"></i> 
-            {{ label }}
-          </a>
-        </li>
-      {% endfor %}
-
-        <li>
-          <a href="{% url "species_data" info.id %}" class="btn-blue">
-            <i class="fa fa-info mr-2"></i>
-            {{ _("Data sources") }}
-          </a>
-        </li>
-      </ul>
-    </section>
-
-  </div>
 
   {% if request.user.is_staff %}
     <a class="btn-warning btn-edit" href="{% url "controlpanel_species" info.id %}?redirect={{ request.get_full_path }}">
@@ -218,7 +270,7 @@
           success: function(response) {
             if (response.success) {
               $("button.planner-action").removeClass("btn-green");
-              $("button.planner-action").addClass("btn-white");
+              $("button.planner-action").addClass("btn-light");
               if (!classes.includes("btn-green")) {
                 // We only show the dialog and add green if the user is clicking a button not already green
                 // If they do, then we actually REMOVE a species from a list, so no modal/green class to be added

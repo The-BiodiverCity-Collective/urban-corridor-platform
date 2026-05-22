@@ -152,12 +152,14 @@ class Page(models.Model):
         return self.name
 
     def get_absolute_url(self):
+        # TODO
+        # Yeah this can be done MUCH better, but when time allows...
         if self.page_type == 6:
-            return "/nurseries/" + self.slug
+            return "/nurseries/" + self.slug + "/"
         if self.page_type == 2:
-            return "/blog/" + self.slug
+            return "/blog/" + self.slug + "/"
         else:
-            return "/about/" + self.slug
+            return "/about/" + self.slug + "/"
 
     def photo(self):
         if self.photos.all():

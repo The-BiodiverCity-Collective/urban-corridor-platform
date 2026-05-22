@@ -1,5 +1,6 @@
 {% extends "_base.html" %}
 {% load i18n %}
+{% load humanize %}
 
 {% block css %}
   <style type="text/css">
@@ -18,7 +19,7 @@
       </div>
       <div class="md:col-span-1">
         <img src="{{ info.image.medium.url }}" />
-        <div class="mt-6 text-center "><a class="no-underline badge" href="{{ info.meta_data.url }}"><i class="fa fa-link mr-2"></i> {{ _("Website") }}</a></div>
+        <div class="mt-6 text-center "><a class="btn-white btn-sm" href="{{ info.meta_data.url }}"><i class="fa fa-link mr-2"></i> {{ _("Website") }}</a></div>
       </div>
     </div>
 
@@ -56,9 +57,15 @@
 
         <h3 class="mt-10">{{ _("Price list") }}</h3>
         <div class="mt-5 mb-3 text-sm">
-          {% blocktranslate with green_start='<span class="bg-lime-600 p-1 text-white">' green_end='</span>' %}
-            Note: species highlighted {{ green_start }}in green{{ green_end }} are the ones that you have selected for your garden.
-          {% endblocktranslate %}
+          {% if species %}
+            {% blocktranslate %}
+              Note: only showing the prices for <em><strong>{{ species }}</strong></em>. Click here to view the <a href="./">entire price list</a>.
+            {% endblocktranslate %}
+          {% else %}
+            {% blocktranslate with green_start='<span class="bg-lime-600 p-1 text-white">' green_end='</span>' %}
+              Note: species highlighted {{ green_start }}in green{{ green_end }} are the ones that you have selected for your garden.
+            {% endblocktranslate %}
+          {% endif %}
         </div>
 
         <table class="table table-striped">
@@ -87,17 +94,23 @@
                   </a>
                 {% endifchanged %}
               </td>
-              {% if each.price %}
-                <td>{{ each.unit }}</td>
-                <td>{{ each.price }}</td>
+              {% if prices_present %}
+                <td>{{ each.unit|default_if_none:"" }}</td>
+                <td>{% if each.price %}R{{ each.price|intcomma }}{% endif %}</td>
                 <td>
-                  {% if each.in_stock %}
-                    <span class="badge-success">{{ _("In stock") }}</span>
-                  {% elif each.in_stock == False %}
-                    <span class="badge-warning">{{ _("On request") }}</span>
-                  {% elif each.in_stock == None %}
-                    <span class="badge-info">{{ _("Unknown") }}</span>
-                  {% endif %}
+                    {% if each.in_stock %}
+                      <span class="shrink-0 text-[11px] uppercase tracking-wide font-bold text-lime-700 bg-lime-100 px-2 py-1 rounded">
+                        {{ _("In stock") }}
+                      </span>
+                    {% elif each.price %}
+                      <span class="shrink-0 text-[11px] uppercase tracking-wide font-bold text-amber-700 bg-amber-100 px-2 py-1 rounded">
+                        {{ _("On request") }}
+                      </span>
+                    {% else %}
+                      <span class="shrink-0 text-[11px] uppercase tracking-wide font-bold text-sky-700 bg-sky-100 px-2 py-1 rounded">
+                        {{ _("Unknown") }}
+                      </span>
+                    {% endif %}
                 </td>
               {% elif prices_present %}
                 <td colspan="3"></td>

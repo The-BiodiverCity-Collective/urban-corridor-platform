@@ -1046,7 +1046,7 @@ def species(request, id):
             # User wants to remove a species
             GardenSpecies.objects.filter(garden=garden, species=info).delete()
             response["action"] = "removed"
-        elif "btn-white" in classes:
+        elif "btn-white" in classes or "btn-light" in classes:
             if in_garden:
                 in_garden.status = request.POST["action"]
                 in_garden.save()
@@ -1076,6 +1076,7 @@ def species(request, id):
         "garden": garden,
         "in_garden": in_garden,
         "photo": photo,
+        "nursery_stock": NurseryInventory.objects.filter(species=info, nursery__site=site).order_by("nursery", "price"),
         "main_classes": "relative",
     }
 
@@ -2234,6 +2235,12 @@ def nursery(request, slug, garden=None, planner=False):
         if not (garden := get_garden(request, garden)):
             return redirect("planner")
 
+    inventory = NurseryInventory.objects.filter(nursery=info, species__site=site)
+    species = None
+    if "inventory" in request.GET:
+        species = Species.objects.get(pk=request.GET["inventory"])
+        inventory = inventory.filter(species=species)
+
     context = {
         "info": info,
         "menu": "planner" if garden else "about",
@@ -2241,9 +2248,10 @@ def nursery(request, slug, garden=None, planner=False):
         "page_info": info,
         "prices_present": NurseryInventory.objects.filter(nursery=info, price__isnull=False).exists(),
         "future_list": Species.objects.filter(garden_plants__garden=garden, garden_plants__status="FUTURE") if garden else None,
-        "inventory": NurseryInventory.objects.filter(nursery=info, species__site=site),
+        "inventory": inventory,
         "slug": "nursery",
         "planner": planner,
+        "species": species,
     }
     return render(request, "nursery.html", context)
 

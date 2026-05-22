@@ -67,8 +67,13 @@
 }
 
 @utility btn-white {
-  @apply text-sm bg-white border border-gray-200 text-gray-500 px-3.5 py-2.5  rounded-sm hover:bg-gray-200 focus:outline-hidden font-semibold focus:ring-sky-300 no-underline inline-block cursor-pointer;
+  @apply text-sm bg-white border border-gray-200 text-gray-500 px-3.5 py-2.5 rounded-sm hover:bg-gray-200 focus:outline-hidden font-semibold focus:ring-sky-300 no-underline inline-block cursor-pointer;
 }
+
+@utility btn-light {
+  @apply text-sm bg-gray-200 border border-gray-200 text-gray-500 px-3.5 py-2.5 rounded-sm hover:bg-white focus:outline-hidden font-semibold focus:ring-sky-300 no-underline inline-block cursor-pointer;
+}
+
 @utility btn-sm {
   @apply px-2 py-1 text-xs;
 }
