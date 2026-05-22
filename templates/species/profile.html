@@ -68,8 +68,8 @@
       <div class="lg:col-span-5 space-y-6">
         
         <!-- Combined Features Sidebar Panel -->
-        <div class="bg-stone-50 border border-stone-200/60 rounded-lg p-6">
-          <h2 class="text-sm font-bold uppercase tracking-wider text-stone-800 border-b border-stone-200 pb-3 mb-4">{{ _("Species Characteristics") }}</h2>
+        <div class="bg-gray-50 border border-gray-200/60 rounded-lg p-6">
+          <h2 class="text-sm font-bold uppercase tracking-wider text-gray-800 border-b border-gray-200 pb-3 mb-4">{{ _("Species Characteristics") }}</h2>
           
         {% if info.features %}
           <section class="container mx-auto features mb-8">
@@ -89,7 +89,7 @@
                       {{ each.get_icon }}
                     </span>
                   {% endif %}
-                  <a href="/species/list/?feature={{ each.id }}" class="text-gray-600 hover:text-emerald-700 font-normal hover:underline no-underline transition-colors">
+                  <a href="/species/list/?feature={{ each.id }}" class="text-gray-600 hover:text-sky-700 font-normal hover:underline no-underline transition-colors">
                     {{ each }}
                   </a>
                 </div>
@@ -101,24 +101,26 @@
 
           <!-- Flowering Row Inside Sidebar -->
           {% if info.colors.all or info.flowering %}
-            <div class="mt-6 pt-5 border-t border-stone-200">
+            <div class="mt-6 pt-5 border-t border-gray-200">
               <div class="flex items-center justify-between mb-3">
                 <span class="text-xs font-bold uppercase tracking-wider text-sky-800">{{ _("Flowering Period") }}</span>
                 <ul class="flex gap-1 p-0 m-0 list-none">
                   {% for color in info.colors.all %}
-                    <li class="colorbox w-3.5 h-3.5 rounded-full border border-stone-300" style="background:{{ color.color }}" title="{{ color|title }}">
+                    <li class="colorbox" style="background:{{ color.color }}" title="{{ color|title }}">
                       <span class="sr-only">{{ color|title }}</span>
                     </li>
                   {% endfor %}
                 </ul>
               </div>
-              {% if info.flowering %}
-                <div class="flex flex-wrap gap-1">
+              <div class="flex flex-wrap gap-1">
+                {% if info.flowering %}
                   {% for month in info.flowering_months %}
-                      <span class="bg-stone-200 text-stone-700 text-xs px-2 py-0.5 rounded font-medium">{{ month }}</span>
+                      <span class="flw">{{ month }}</span>
                   {% endfor %}
-                </div>
-              {% endif %}
+                {% else %}
+                  <span class="flw">{{ _("No flowering data available") }}</span>
+                {% endif %}
+              </div>
             </div>
           {% endif %}
         </div>
@@ -143,7 +145,7 @@
         {% endif %}
 
         <!-- Nursery availability -->
-        <section class="bg-white border border-stone-200 rounded-lg p-6 shadow-xs">
+        <section class="bg-white border border-gray-200 rounded-lg p-6 shadow-xs">
           
           <div class="mb-4">
             <h3 class="text-xs font-bold uppercase tracking-wider text-gray-500">
@@ -152,18 +154,18 @@
           </div>
 
           {% if nursery_stock %}
-            <div class="divide-y divide-stone-100">
+            <div class="divide-y divide-gray-100">
               {% for each in nursery_stock %}
                 <div class="flex items-center justify-between py-3 first:pt-0 last:pb-0">
 
                   <div class="min-w-0">
                     <a href="{{ each.nursery.get_absolute_url }}?inventory={{ info.id }}"
-                       class="block text-sm font-semibold text-stone-800 hover:text-sky-700 no-underline truncate">
+                       class="block text-sm font-semibold text-gray-800 hover:text-sky-700 no-underline truncate">
                       {{ each.nursery }}
                     </a>
 
-                    <div class="mt-1 text-xs text-stone-500">
-                      {{ each.unit }} - R{{ each.price|intcomma }}
+                    <div class="mt-1 text-xs text-gray-500">
+                      {{ each.unit|default_if_none:"" }} {% if each.price %}- R{{ each.price|intcomma }}{% endif %}
                     </div>
                   </div>
 
@@ -186,7 +188,7 @@
             </div>
 
           {% else %}
-            <div class="rounded-md bg-stone-50 border border-dashed border-stone-200 px-4 py-3 text-sm text-stone-500">
+            <div class="rounded-md bg-gray-50 border border-dashed border-gray-200 px-4 py-3 text-sm text-gray-500">
               {{ _("No nursery stock found.") }}
             </div>
           {% endif %}

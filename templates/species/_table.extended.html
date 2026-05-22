@@ -68,9 +68,9 @@
           {% endfor %}
         </ul>
         {% if each.flowering %}
-          <div>
+          <div class="mb-2 pb-2 border-b border-gray-200">
             {% for month in each.flowering_months %}
-                <span class="badge-success">{{ month }}</span>
+              <span class="flw">{{ month }}</span>
             {% endfor %}
           </div>
         {% endif %}

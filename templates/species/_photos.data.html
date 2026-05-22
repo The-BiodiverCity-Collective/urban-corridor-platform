@@ -49,13 +49,13 @@
       <li class="relative rounded-lg">
         <div class="group overflow-hidden rounded-lg focus-within:ring-2 focus-within:ring-sky-500 focus-within:ring-offset-2 focus-within:ring-offset-gray-100">
           {% if each.flowering %}
-            <div class="mb-2">
-              <span class="text-gray-700 text-sm">
+            <div class="mb-2 pb-2 border-b border-gray-200">
+              <span class="text-xs font-bold uppercase tracking-wider text-gray-500">
                 {{ _("Flowering:") }}
               </span>
               <div>
                 {% for month in each.flowering_months %}
-                  <span class="badge-success">{{ month }}</span>
+                  <span class="flw">{{ month }}</span>
                 {% endfor %}
               </div>
             </div>
