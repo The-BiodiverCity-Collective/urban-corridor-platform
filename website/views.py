@@ -770,7 +770,7 @@ def species_overview(request, vegetation_type=None):
         "vegetation_type": vegetation_type,
         "veg_link": f"?vegetation_type={vegetation_type.id}" if vegetation_type else "",
         "menu": "species",
-        "show_total_box": True,
+        "show_total_box": Species.objects.filter(site=site).count(),
         "page": "all_species",
     }
     return render(request, "species/overview.html", context)
@@ -815,7 +815,6 @@ def species_search(request, vegetation_type=None):
         "vegetation_type": vegetation_type,
         "veg_link": f"?vegetation_type={vegetation_type.id}" if vegetation_type else "",
         "menu": "species",
-        "show_total_box": True,
         "page": "search",
         "get_features": request.GET.getlist("feature"),
         "get_sources": request.GET.getlist("source"),
@@ -3541,6 +3540,7 @@ def controlpanel_document_species(request, id):
     features = {}
     other_characteristics = OTHER_CHARACTERISTICS
     error = None
+    synonyms = dict(SpeciesSynonym.objects.values_list("name", "species_id"))
 
     try:
         # We assume 2 sheets; one Meta Data followed by Plants; we read the 2nd
@@ -3765,6 +3765,14 @@ def controlpanel_synonyms(request):
 
     site = get_site(request)
     synonyms = SpeciesSynonym.objects.all()
+    
+    # temp
+    if "upgrade" in request.GET:
+        for each in synonyms:
+            name = each.name
+            each.name = name.lower()
+            each.save()
+    # end temp
 
     if request.method == "POST":
         if "delete" in request.POST:
@@ -3772,7 +3780,7 @@ def controlpanel_synonyms(request):
             info.delete()
             messages.success(request, _("Information was deleted."))
         elif "species" in request.POST and "name" in request.POST:
-            SpeciesSynonym.objects.create(species_id=request.POST["species"], name=request.POST["name"])
+            SpeciesSynonym.objects.create(species_id=request.POST["species"], name=request.POST["name"].lower())
             messages.success(request, _("Information was saved."))
         return redirect(request.get_full_path())
 
@@ -3784,6 +3792,25 @@ def controlpanel_synonyms(request):
         "load_select2": True,
     }
     return render(request, "controlpanel/synonyms.html", context)
+
+@staff_member_required
+def controlpanel_cleanup(request):
+
+    site = get_site(request)
+    species = Species.objects.filter(site=site).exclude(species_links__vegetation_type__site=site)
+
+    if request.method == "POST":
+        for each in species:
+            each.site.remove(site)
+
+    context = {
+        "controlpanel": True,
+        "menu": "config",
+        "page": "cleanup",
+        "load_select2": True,
+        "species": species,
+    }
+    return render(request, "controlpanel/cleanup.html", context)
 
 @staff_member_required
 def controlpanel_ajax_get_inat_data(request, id):

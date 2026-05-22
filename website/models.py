@@ -1174,7 +1174,7 @@ class SpeciesVegetationTypeLink(models.Model):
     file = models.ForeignKey(Attachment, on_delete=models.CASCADE, related_name="species")
 
 class SpeciesSynonym(models.Model):
-    name = models.CharField(max_length=255)
+    name = models.CharField(max_length=255, unique=True)
     species = models.ForeignKey(Species, on_delete=models.CASCADE)
 
 class Photo(models.Model):

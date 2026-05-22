@@ -1,0 +1,40 @@
+{% extends "_base.html" %}
+{% load static %}
+
+{% block content %}
+
+<h1 class="text-3xl">
+  {% block title %}
+    {{ _("Cleanup") }}
+  {% endblock %}
+</h1>
+
+{% if not species %}
+  <div class="alert alert-info mb-5">{{ _("Nothing to clean up...") }}</div>
+{% else %}
+  <div class="mb-4">
+    {{ _("The following species are not linked to any source document and should be deactivated.") }}
+  </div>
+  <table class="table mb-5">
+    <thead>
+      <tr>
+        <th>{{ _("Species") }}</th>
+      </tr>
+    </thead>
+    <tbody>
+    {% for each in species %}
+      <tr>
+        <td><a href="{{ each.get_absolute_url }}">{{ each }}</a></td>
+      </tr>
+    {% endfor %}
+    </tbody>
+  </table>
+
+  <form method="post">
+    <button type="submit" class="btn-green">{{ _("Deactivate these species for my site") }}</button>
+    {% csrf_token %}
+  </form>
+
+{% endif %}
+
+{% endblock %}
