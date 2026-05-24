@@ -1,0 +1,14 @@
+  <nav class="tabs -mb-px flex space-x-2" aria-label="{{ _("Tabs") }}">
+    <a href="{% url "planner_nurseries" GARDEN %}" class="tab {% if slug == "nurseries" or slug == "nursery" %}active{% else %}inactive{% endif %}">
+      <i class="fa fa-seedling mr-1"></i>
+      {{ _("Nurseries") }}
+    </a>
+    <a href="{% url "planner_plants_availability" GARDEN %}" class="tab {% if slug == "availability" %}active{% else %}inactive{% endif %}">
+      <i class="fa fa-clipboard-check mr-1"></i>
+      {{ _("Plants - availability") }}
+    </a>
+    <a href="{% url "planner_plants_download" GARDEN %}" class="tab {% if slug == "download" %}active{% else %}inactive{% endif %}">
+      <i class="fa fa-download mr-1"></i>
+      {{ _("Plants - download list") }}
+    </a>
+  </nav>

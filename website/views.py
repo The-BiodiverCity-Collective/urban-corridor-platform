@@ -49,6 +49,8 @@ import math
 from PIL import Image
 from PIL.ExifTags import TAGS, GPSTAGS
 from folium.plugins import Fullscreen
+from openpyxl import Workbook
+from openpyxl.styles import Font
 
 # Quick debugging, sometimes it's tricky to locate the PRINT in all the Django 
 # output in the console, so just using a simply function to highlight it better
@@ -2282,6 +2284,9 @@ def nursery(request, slug, garden=None, planner=False):
         future_list = Species.objects.filter(garden_plants__garden=garden, garden_plants__status="FUTURE")
         has_hits = inventory.filter(species__in=future_list).exists()
 
+        if "my_plants_only" in request.GET:
+            inventory = inventory.filter(species__in=future_list)
+
     context = {
         "info": info,
         "menu": "planner" if garden else "about",
@@ -2294,6 +2299,9 @@ def nursery(request, slug, garden=None, planner=False):
         "planner": planner,
         "species": species,
         "has_hits": has_hits,
+
+        # Because we have tabs above the <main>, we need to unround the top-left corner if the first tab is active
+        "main_classes": "rounded-tl-none" if garden else None,
     }
     return render(request, "nursery.html", context)
 
@@ -2700,8 +2708,80 @@ def planner_nurseries(request, id):
         "nurseries": nurseries,
         "page_info": Page.objects.get(site=site, slug="nurseries"),
         "slug": "nurseries",
+        "plants": plants,
+
+        # Because we have tabs above the <main>, we need to unround the top-left corner if the first tab is active
+        "main_classes": "rounded-tl-none",
     }
     return render(request, "planner/nurseries.html", context)
+
+def planner_plants_availability(request, id):
+
+    site = get_site(request)
+
+    if not (garden := get_garden(request, id)):
+        return redirect("planner")
+
+    plants = Species.objects.filter(garden_plants__garden=garden, garden_plants__status="FUTURE")
+    inventory = NurseryInventory.objects.filter(nursery__site=site, species__in=plants).order_by("species__name", "unit__unit", "nursery__name")
+
+    context = {
+        "menu": "planner",
+        "page": "resources",
+        "title": _("Plant availability"),
+        "garden": garden,
+        "slug": "availability",
+        "inventory": inventory,
+    }
+    return render(request, "planner/plants.availability.html", context)
+
+def planner_plants_download(request, id):
+
+    site = get_site(request)
+
+    if not (garden := get_garden(request, id)):
+        return redirect("planner")
+
+    plants = Species.objects.filter(garden_plants__garden=garden, garden_plants__status="FUTURE")
+
+    if request.method == "POST":
+        wb = Workbook()
+        ws = wb.active
+        ws.title = "Species"
+
+        headers = ["Species", "Common name", "Link"]
+        bold_font = Font(bold=True)
+        ws.append(headers)
+        for col_idx, ignore in enumerate(headers, start=1):
+            cell = ws.cell(row=1, column=col_idx)
+            cell.font = bold_font
+
+        for each in plants:
+            url = f"https://{site.url}{each.get_absolute_url()}"
+            ws.append([each.name, each.name_en, url])
+
+        # Save workbook to in-memory bytes buffer
+        output = io.BytesIO()
+        wb.save(output)
+        output.seek(0)
+
+        # Build response
+        response = HttpResponse(
+            output.read(),
+            content_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+        )
+        response["Content-Disposition"] = 'attachment; filename="species.xlsx"'
+        return response
+
+    context = {
+        "menu": "planner",
+        "page": "resources",
+        "title": _("Plants - download"),
+        "garden": garden,
+        "slug": "download",
+        "plants": plants,
+    }
+    return render(request, "planner/plants.download.html", context)
 
 def planner_score_overview(request, id):
 

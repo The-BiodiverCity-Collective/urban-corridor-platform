@@ -9,6 +9,12 @@
   </style>
 {% endblock %}
 
+{% block pre_main %}
+  {% if menu == "planner" %}
+    {% include "planner/_getplanttabs.html" %}
+  {% endif %}
+{% endblock %}
+
 {% block content %}
 
   <div class="p-10">
@@ -58,7 +64,11 @@
         <h3 class="mt-10">{{ _("Price list") }}</h3>
 
         <div class="mt-5 mb-3 text-sm">
-          {% if species %}
+          {% if "my_plants_only" in request.GET %}
+            {% blocktranslate %}
+              Note: only showing the prices for your plants. Click here to view the <a href="./">entire price list</a>.
+            {% endblocktranslate %}
+          {% elif species %}
             {% blocktranslate %}
               Note: only showing the prices for <em><strong>{{ species }}</strong></em>. Click here to view the <a href="./">entire price list</a>.
             {% endblocktranslate %}
@@ -66,6 +76,7 @@
             {% blocktranslate with green_start='<span class="bg-lime-600 p-1 text-white">' green_end='</span>' %}
               Note: species highlighted {{ green_start }}in green{{ green_end }} are the ones that you have selected for your garden.
             {% endblocktranslate %}
+            <a href="?my_plants_only">{{ _("View price list for my plants only") }}</a>
           {% endif %}
         </div>
 
@@ -82,7 +93,7 @@
           </thead>
           <tbody>
           {% for each in inventory %}
-            <tr {% if each.species in future_list %}class="in-stock"{% endif %}>
+            <tr {% if each.species in future_list and not "my_plants_only" in request.GET %}class="in-stock"{% endif %}>
               <td>
                 {% ifchanged each.species %}
                   <a href="{{ each.species.get_absolute_url }}">

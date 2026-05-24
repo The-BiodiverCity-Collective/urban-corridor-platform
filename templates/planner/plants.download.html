@@ -1,0 +1,55 @@
+{% extends "_base.html" %}
+{% load i18n %}
+{% load humanize %}
+
+{% block css %}
+  <style type="text/css">
+  tr.in-stock{background:var(--color-lime-600) !important}
+  .in-stock a,.in-stock .species-sci{color: #fff !important}
+  </style>
+{% endblock %}
+
+{% block pre_main %}
+  {% if menu == "planner" %}
+    {% include "planner/_getplanttabs.html" %}
+  {% endif %}
+{% endblock %}
+
+{% block content %}
+
+  <div class="p-10">
+
+    <div class="flex justify-between">
+      <h2>{{ _("Download species list") }}</h2>
+      <form method="post">
+        <button type="submit" class="btn-blue"><i class="fa fa-download mr-1"></i> {{ _("Download (xls)") }}</button>
+        {% csrf_token %}
+      </form>
+    </div>
+
+    <p>
+      {{ _("You can download the species list here. It will provide a spreadsheet of the information below.") }}
+    </p>
+
+    <table class="table table-striped">
+      <thead>
+        <tr>
+          <th>{{ _("Species") }}</th>
+          <th>{{ _("Common name") }}</th>
+          <th>{{ _("Link") }}</th>
+        </tr>
+      </thead>
+      <tbody>
+      {% for each in plants %}
+        <tr>
+          <td><em>{{ each.name }}</em></td>
+          <td>{{ each.name_en|default_if_none:"" }}</td>
+          <td class="text-sm"><a href="{{ each.get_absolute_url }}">https://{{ SITE.url }}{{ each.get_absolute_url }}</td>
+        </tr>
+      {% endfor %}
+      </tbody>
+    </table>
+
+  </div>
+
+{% endblock %}

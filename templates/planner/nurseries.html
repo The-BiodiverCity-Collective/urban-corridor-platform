@@ -1,18 +1,18 @@
 {% extends "_base.html" %}
 
+{% block pre_main %}
+  {% include "planner/_getplanttabs.html" %}
+{% endblock %}
+
 {% block content %}
 
-{% with this_page=page_info.name %}
-  {% include "planner/_breadcrumbs.html" %}
-{% endwith %}
-
-<div class="bg-white py-24 md:py-32 lg:py-40 dark:bg-gray-900">
+<div class="bg-white py-24 md:py-32 lg:py-40">
   <div class="mx-auto grid max-w-7xl grid-cols-1 gap-20 px-6 lg:px-8 xl:grid-cols-3">
     <div class="mx-auto max-w-2xl lg:mx-0">
-      <h2 class="text-4xl font-semibold tracking-tight text-pretty text-gray-900 sm:text-5xl dark:text-white">
+      <h2 class="text-4xl font-semibold tracking-tight text-pretty text-gray-900 sm:text-5xl">
         {{ page_info }}
       </h2>
-      <div class="mt-6 text-lg/8 text-gray-600 dark:text-gray-400">
+      <div class="mt-6 text-lg/8 text-gray-600">
         {{ page_info.get_content }}
       </div>
     </div>

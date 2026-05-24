@@ -111,4 +111,15 @@
   </div>
 </div>
 
+{% if plants_future or plants_present %}
+  <div class="mt-10">
+    <h2>{{ _("Did you finish plant selection?") }}</h2>
+    <ul class="flex gap-4 list-none p-0">
+      <li><a class="btn btn-light" href="{% url "planner_score" GARDEN %}"><i class="fa fa-chart-line mr-1"></i> {{ _("View my score") }}</a></li>
+      <li><a class="btn btn-light" href="{% url "planner_nurseries" GARDEN %}"><i class="fa fa-seedling mr-1"></i> {{ _("Get plants") }}</a></li>
+      <li><a class="btn btn-light" href="{% url "planner_plants_download" GARDEN %}"><i class="fa fa-download mr-1"></i> {{ _("Download plant list") }}</a></li>
+    </ul>
+  </div>
+{% endif %}
+
 {% endblock %}
