@@ -1918,6 +1918,31 @@ def resources(request, slug=None):
     }
     return render(request, "documents.html", context)
 
+def calendar(request):
+
+    site = get_site(request)
+
+    page_info = Page.objects.get(site=site, slug="calendar", is_active=True)
+    activities = ActivityCalendar.objects.filter(activity__site=site).select_related("activity").order_by("activity__position", "activity__name", "month")
+    rows = {}
+    monthly_totals = {m: 0 for m, _ in MONTH_CHOICES}
+    for a in activities:
+        rows.setdefault(a.activity, {})[a.month] = a
+        monthly_totals[a.month] += a.intensity
+
+    context = {
+        "menu": "resources",
+        "page_info": page_info,
+        "garden": garden,
+        "page": "resources",
+        "months": MONTH_CHOICES,
+        "rows": rows,
+        "monthly_totals": monthly_totals,
+        "slug": "calendar",
+    }
+    return render(request, "calendar.html", context)
+
+
 # ACCOUNT FUNCTIONS
 
 def user_login(request):
@@ -2615,33 +2640,6 @@ def planner_plants(request, id, status):
         "planner_tab": "my_plants",
     }
     return render(request, "planner/plants.html", context)
-
-def planner_calendar(request, id):
-
-    site = get_site(request)
-
-    if not (garden := get_garden(request, id)):
-        return redirect("planner")
-
-    page_info = Page.objects.get(site=site, slug="calendar", is_active=True)
-    activities = ActivityCalendar.objects.filter(activity__site=site).select_related("activity").order_by("activity__position", "activity__name", "month")
-    rows = {}
-    monthly_totals = {m: 0 for m, _ in MONTH_CHOICES}
-    for a in activities:
-        rows.setdefault(a.activity, {})[a.month] = a
-        monthly_totals[a.month] += a.intensity
-
-    context = {
-        "menu": "planner",
-        "page_info": page_info,
-        "garden": garden,
-        "page": "resources",
-        "months": MONTH_CHOICES,
-        "rows": rows,
-        "monthly_totals": monthly_totals,
-        "slug": "calendar",
-    }
-    return render(request, "planner/calendar.html", context)
 
 def planner_resources(request, id):
 

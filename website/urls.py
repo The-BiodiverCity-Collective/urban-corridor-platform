@@ -61,7 +61,8 @@ urlpatterns = [
     path("about/newsletter/", views.newsletter, name="newsletter"),
     path("about/", RedirectView.as_view(url="/about/introduction", permanent=True)),
     path("about/<slug:slug>/", views.page, {"menu": "about"}, name="about"),
-    path("join/<slug:slug>/", views.page, {"menu": "planner"}, name="join"),
+    path("join/<slug:slug>/", views.page, {"menu": "join"}, name="join"),
+    path("resources/calendar/", views.calendar, name="calendar"),
     path("resources/<slug:slug>/", views.resources, name="resources"),
     path("page/<slug:slug>/", views.page, name="page"),
 
@@ -113,7 +114,6 @@ urlpatterns = [
     path("planner/<int:garden>/plants/present/list/", views.species_list, {"garden_status": "PRESENT"}, name="planner_plants_present_list"),
     path("planner/<int:garden>/plants/future/list/", views.species_list, {"garden_status": "FUTURE"}, name="planner_plants_future_list"),
     path("planner/<int:id>/plants/", views.planner_plants, {"status": "FUTURE"}, name="planner_plants"),
-    path("planner/<int:id>/calendar/", views.planner_calendar, name="planner_calendar"),
     path("planner/<int:id>/carbon/", views.carbon_report, {"planner": True}, name="carbon_report"),
     path("planner/<int:id>/plants/nurseries/", views.planner_nurseries, name="planner_nurseries"),
     path("planner/<int:garden>/plants/nurseries/<slug:slug>/", views.nursery, name="planner_nursery"),
