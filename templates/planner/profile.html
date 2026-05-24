@@ -1,119 +1,141 @@
 {% extends "_base.html" %}
 {% load static %}
 
+{% block pre_main %}
+  {% include "planner/_signuptabs.html" %}
+{% endblock %}
+
 {% block content %}
 
-<h1 class="text-3xl">{{ title }}</h1>
+<h1 class="text-3xl">
+  {{ title }}
+</h1>
 
 <div class="sm:block">
   <div class="border-b border-gray-200">
     <nav class="tabs -mb-px flex space-x-8" aria-label="Tabs">
-      <a href="{% url "planner_profile" GARDEN %}" class="tab {% if photos or species %}in{% endif %}active"><i class="fa fa-pencil mr-1"></i> {{ _("Edit profile") }}</a>
-      <a href="{% url "planner_profile_photos" GARDEN %}" class="tab {% if not photos %}in{% endif %}active"><i class="fa fa-image mr-1"></i>{{ _("Photos") }}</a>
-      <a href="{{ garden.get_absolute_url }}" target="_blank" class="tab ml-auto inactive"><i class="fa fa-external-link mr-1"></i>{{ _("Preview") }}</a>
     </nav>
   </div>
 </div>
 
-<div class="bg-gray-100 p-5">
+<div>
 
   <div class="space-y-12">
 
-    {% if not photos and not species %}
+    {% if not photos %}
 
-      <form method="post" enctype="multipart/form-data">
+      {% if request.method == "POST" %}
 
-        <div class="col-span-full mt-2">
-          <label class="block text-sm/6 font-medium text-gray-900">{{ _("Garden name") }}</label>
-          <div class="mt-2">
-            <input type="text" name="name" value="{{ garden.name|default_if_none:"" }}" required>
+        <div role="status" aria-live="polite" class="mt-6  p-5 md:p-6 flex gap-4 items-start">
+          <span class="flex-shrink-0 inline-flex items-center justify-center h-12 w-12 rounded-full bg-lime-50 text-lime-600">
+            <i class="fas fa-check-circle fa-lg" aria-hidden="true"></i>
+          </span>
+
+          <div class="flex-1">
+            <h2>{{ _("Your profile was saved") }}</h2>
+            <p class="text-sm text-gray-600">{{ _("What do you want to do next?") }}</p>
+          </div>
+
+          <div class="mt-4 grid grid-cols-1 sm:grid-cols-3 gap-3">
+            <a href="{{ garden.get_absolute_url }}?return={{ request.get_full_path }}" class="btn-white text-center">
+              <i class="fas fa-eye mr-1" aria-hidden="true"></i>
+              <span>{{ _("Preview profile") }}</span>
+            </a>
+
+            <a href="{% url "planner_profile_photos" GARDEN %}" class="btn-white text-center">
+              <i class="fas fa-image mr-1" aria-hidden="true"></i>
+              <span>{{ _("Upload photos") }}</span>
+            </a>
+
+            <a href="{% url "planner_activate" GARDEN %}" class="btn-blue text-center">
+              <i class="fas fa-check-circle mr-1" aria-hidden="true"></i>
+              <span>{{ _("Activate") }}</span>
+            </a>
+
           </div>
         </div>
 
-        <div class="col-span-full mt-4">
-          <label for="description" class="block text-sm/6 font-medium text-gray-900">{{ _("Description") }}</label>
-          <div class="mt-2">
-            <textarea name="description" id="description">{{ garden.description|default_if_none:"" }}</textarea>
-          </div>
-        </div>
+      {% else %}
 
-        {% if garden.location_file and False %}
-          <div class="col-span-full">
-            <label for="cover-photo" class="block text-sm/6 font-medium text-gray-900">{{ _("File") }}</label>
-            <div class="mt-2 flex rounded-lg border border-dashed border-gray-900/25 px-6 py-10">
-              <ul>
-                  <li class="mb-5">
-                    <i class="fa-fw fa fa-{{ garden.location_file.get_icon }}"></i>
-                    <a href="{{ garden.location_file.file.url }}">
-                    {{ garden.location_file }}
-                    </a>
-                    <span class="text-xs/5 text-gray-600">
-                      ({{ garden.location_file.file.size|filesizeformat }})
-                    </span>
-                </li>
-              </ul>
+        <form method="post" enctype="multipart/form-data">
+
+          <div class="col-span-full mt-2">
+            <label class="block text-sm/6 font-medium text-gray-900">{{ _("Garden name") }}</label>
+            <div class="mt-2">
+              <input type="text" name="name" value="{{ garden.name|default_if_none:"" }}" required>
             </div>
           </div>
-        {% endif %}
 
-        <div class="mt-10">
-          <legend class="text-sm/6 font-semibold text-gray-900">{{ _("Type") }}</legend>
-          <div class="mt-2 space-y-2">
-            <select name="type" required>
-              <option value=""></option>
-              {% for each in garden_types %}
-                <option {% if each == garden.garden_type %}selected{% endif %} value="{{ each }}">{{ each.label }}</option>
-              {% endfor %}
-            </select>
+          <div class="col-span-full mt-4">
+            <label for="description" class="block text-sm/6 font-medium text-gray-900">{{ _("Description") }}</label>
+            <div class="mt-2">
+              <textarea name="description" id="description">{{ garden.description|default_if_none:"" }}</textarea>
+            </div>
           </div>
-        </div>
 
-        <h2 class="mb-5 mt-10">{{ _("Who manages this space?") }}</h2>
-
-        <div class="col-span-full mt-2">
-          <label class="block text-sm/6 font-medium text-gray-900">{{ _("Contact name") }}</label>
-          <div class="mt-2">
-            <input type="text" name="contact_name" value="{{ garden.contact_name|default_if_none:"" }}">
-          </div>
-        </div>
-
-        <div class="col-span-full mt-2">
-          <label class="block text-sm/6 font-medium text-gray-900">{{ _("Contact phone (optional)") }}</label>
-          <div class="mt-2">
-            <input type="text" name="contact_phone" value="{{ garden.contact_phone|default_if_none:"" }}">
-          </div>
-        </div>
-
-        <div class="col-span-full mt-2">
-          <label class="block text-sm/6 font-medium text-gray-900">{{ _("Contact e-mail (optional)") }}</label>
-          <div class="mt-2">
-            <input type="text" name="contact_email" value="{{ garden.contact_email|default_if_none:"" }}">
-          </div>
-        </div>
-
-        <div class="mt-10 space-y-10">
-          <fieldset>
-            <legend class="text-sm/6 font-semibold text-gray-900">{{ _("Published?") }}</legend>
-            <div class="mt-6 space-y-2">
-              <div class="flex items-center gap-x-3">
-                <input {% if garden.is_active %}checked{% endif %} id="is_active" name="is_active" value="1" type="radio" class="size-4 border-gray-300 text-sky-600 focus:ring-sky-600">
-                <label for="is_active" class="block text-sm/6 font-medium text-gray-900">{{ _("Active") }}</label>
-              </div>
-              <div class="flex items-center gap-x-3">
-                <input {% if not garden.is_active %}checked{% endif %} id="is_not_active" name="is_active" value="0" type="radio" class="size-4 border-gray-300 text-sky-600 focus:ring-sky-600">
-                <label for="is_not_active" class="block text-sm/6 font-medium text-gray-900">{{ _("Inactive") }}</label>
+          {% if garden.location_file and False %}
+            <div class="col-span-full">
+              <label for="cover-photo" class="block text-sm/6 font-medium text-gray-900">{{ _("File") }}</label>
+              <div class="mt-2 flex rounded-lg border border-dashed border-gray-900/25 px-6 py-10">
+                <ul>
+                    <li class="mb-5">
+                      <i class="fa-fw fa fa-{{ garden.location_file.get_icon }}"></i>
+                      <a href="{{ garden.location_file.file.url }}">
+                      {{ garden.location_file }}
+                      </a>
+                      <span class="text-xs/5 text-gray-600">
+                        ({{ garden.location_file.file.size|filesizeformat }})
+                      </span>
+                  </li>
+                </ul>
               </div>
             </div>
-          </fieldset>
-        </div>
+          {% endif %}
 
-        <div class="mt-6 flex items-center justify-end gap-x-6">
-          <button type="submit" class="btn-green">{{ _("Save") }}</button>
-        </div>
-        {% csrf_token %}
+          <div class="mt-10">
+            <legend class="text-sm/6 font-semibold text-gray-900">{{ _("Type") }}</legend>
+            <div class="mt-2 space-y-2">
+              <select name="type" required>
+                <option value=""></option>
+                {% for each in garden_types %}
+                  <option {% if each == garden.garden_type %}selected{% endif %} value="{{ each }}">{{ each.label }}</option>
+                {% endfor %}
+              </select>
+            </div>
+          </div>
 
-      </div>
-    </form>
+          <h2 class="mb-5 mt-10">{{ _("Who manages this space?") }}</h2>
+
+          <div class="col-span-full mt-2">
+            <label class="block text-sm/6 font-medium text-gray-900">{{ _("Contact name") }}</label>
+            <div class="mt-2">
+              <input type="text" name="contact_name" value="{{ garden.contact_name|default_if_none:"" }}">
+            </div>
+          </div>
+
+          <div class="col-span-full mt-2">
+            <label class="block text-sm/6 font-medium text-gray-900">{{ _("Contact phone (optional)") }}</label>
+            <div class="mt-2">
+              <input type="text" name="contact_phone" value="{{ garden.contact_phone|default_if_none:"" }}">
+            </div>
+          </div>
+
+          <div class="col-span-full mt-2">
+            <label class="block text-sm/6 font-medium text-gray-900">{{ _("Contact e-mail (optional)") }}</label>
+            <div class="mt-2">
+              <input type="text" name="contact_email" value="{{ garden.contact_email|default_if_none:"" }}">
+            </div>
+          </div>
+
+          <div class="mt-6 flex items-center justify-end gap-x-6">
+            <button type="submit" class="btn-green">{{ _("Save") }}</button>
+          </div>
+          {% csrf_token %}
+
+        </div>
+      </form>
+
+    {% endif %}
 
   {% elif photos %}
 

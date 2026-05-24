@@ -57,10 +57,6 @@ def p(text):
     print(text)
     print("----------------------")
 
-# Also defined in context_processor for templates, but we need it sometimes in the Folium map configuration
-SATELLITE_TILES = "https://api.mapbox.com/v4/mapbox.satellite/{z}/{x}/{y}@2x.png?access_token=" + settings.MAPBOX_API_KEY
-STREET_TILES = "https://api.mapbox.com/styles/v1/mapbox/streets-v11/tiles/{z}/{x}/{y}?access_token=" + settings.MAPBOX_API_KEY
-LIGHT_TILES = "https://api.mapbox.com/styles/v1/mapbox/light-v10/tiles/{z}/{x}/{y}?access_token=" + settings.MAPBOX_API_KEY
 OTHER_CHARACTERISTICS = ["Time (flowering)", "Name", "Colour (flower)", "Form", "Link"]
 
 COLOR_SCHEMES = {
@@ -105,6 +101,8 @@ def get_garden(request, id, silent_fail=False):
                 request._garden_uuid = garden.uuid
                 request._garden_id = garden.id
                 request._garden_name = garden.name
+                if garden.is_active:
+                    request._garden_active = garden.is_active
             return garden
     if "garden_id" in request.COOKIES and "garden_uuid" in request.COOKIES:
         garden = Garden.objects_unfiltered.filter(pk=request.COOKIES.get("garden_id"), is_user_created=True, user__isnull=True, uuid=request.COOKIES["garden_uuid"])
@@ -377,7 +375,6 @@ def space(request, id):
         location=[info.geometry.centroid[1], info.geometry.centroid[0]],
         zoom_start=14,
         scrollWheelZoom=False,
-        tiles=STREET_TILES,
         attr="Mapbox",
     )
 
@@ -483,7 +480,6 @@ def report(request, show_map=False, lat=False, lng=False, site_selection=False):
             location=[-34.070078, 18.571595],
             zoom_start=10,
             scrollWheelZoom=True,
-            tiles=STREET_TILES,
             attr="Mapbox",
         )
         context = {
@@ -729,6 +725,13 @@ def species_overview(request, vegetation_type=None):
     genus = Genus.objects.filter(species__site=site)
     families = Family.objects.filter(species__site=site)
     species = Species.objects.filter(site=site)
+
+
+    # temp
+    species = species.filter(features__in=site.features.all())
+    # end temp
+
+
     veg_types = VegetationType.objects.filter(site=site).annotate(
         total=Count("species", filter=Q(species__site=site))
     ).filter(total__gt=0)
@@ -770,7 +773,7 @@ def species_overview(request, vegetation_type=None):
         "vegetation_type": vegetation_type,
         "veg_link": f"?vegetation_type={vegetation_type.id}" if vegetation_type else "",
         "menu": "species",
-        "show_total_box": Species.objects.filter(site=site).count(),
+        "show_total_box": Species.objects.filter(site=site, features__in=site.features.all()).count(),
         "page": "all_species",
     }
     return render(request, "species/overview.html", context)
@@ -1200,7 +1203,6 @@ def garden(request, id):
             zoom_start=14,
             scrollWheelZoom=False,
             location=[info.geometry.centroid[1],info.geometry.centroid[0]],
-            tiles=STREET_TILES,
             attr="Mapbox",
         )
 
@@ -1468,7 +1470,6 @@ def vegetation_type(request, slug):
     map = folium.Map(
         zoom_start=14,
         scrollWheelZoom=False,
-        tiles=STREET_TILES,
         attr="Mapbox",
     )
 
@@ -1598,7 +1599,6 @@ def profile(request, section=None, lat=None, lng=None, id=None, subsection=None)
             location=[lat,lng],
             zoom_start=14,
             scrollWheelZoom=False,
-            tiles=STREET_TILES,
             attr="Mapbox",
         )
 
@@ -2065,6 +2065,10 @@ def account_create(request):
 @login_required
 def account_gardens(request):
     site = get_site(request)
+    if "id" in request.GET:
+        # We use a redirect here so that the cookies are refreshed once have the actual garden page open 
+        garden = get_garden(request, request.GET["id"])
+        return redirect(reverse("planner", args=[garden.id]))
     context = {
         "gardens": Garden.objects_unfiltered.filter(user=request.user, site=site),
         "menu": "account",
@@ -2203,10 +2207,11 @@ def carbon_report(request, id, planner=False):
         trees = int(garden.meta_data["trees"])
         carbon_sequestered += trees * TREE_CO2 # kg per tree
 
-    # We prioritize manually set size
-    garden_size = int(garden.meta_data.get("size", 0)) if garden.meta_data else 0
-    if not garden_size and garden.size: # If the size is available based on location we use that
+    # We prioritize calculated size
+    if garden.size:
         garden_size = garden.size.sq_m
+    else:
+        garden_size = int(garden.meta_data.get("size", 0)) if garden.meta_data else 0
 
     if garden_size:
         carbon_sequestered += SOIL_CO2*garden_size
@@ -2293,6 +2298,7 @@ def planner(request, id=None):
         response.set_cookie("garden_uuid", garden.uuid)
         response.set_cookie("garden_id", garden.id)
         response.set_cookie("garden_name", garden.name)
+        response.set_cookie("garden_active", garden.is_active)
         return response
 
     context = {
@@ -2382,6 +2388,7 @@ def planner_location(request, id):
         "step": 1,
         "swapped_corridor_coords": get_swapped_corridor_coords(site),
         "show_next_buttons": show_next_buttons,
+        "map_draw_polygon": True if request.GET.get("view") == "polygon" else False,
     }
     return render(request, "planner/location.html", context)
 
@@ -2886,18 +2893,17 @@ def planner_profile(request, id, photos=False):
             garden.contact_email = request.POST.get("contact_email")
             garden.is_active = True if request.POST.get("is_active") == "1" else False
             garden.save()
-            messages.success(request, _("Information has been saved."))
-            return redirect(request.get_full_path())
 
     context = {
         "menu": "planner",
         "page": "join",
         "slug": "profile",
-        "title": _("Manage your garden profile"),
+        "title": _("Manage your garden profile") if not photos else _("Garden photos"),
         "garden": garden,
         "garden_types": Garden.GardenType,
         "photos": photos,
         "licenses": Photo.LICENSE_CHOICES,
+        "body_padding": True,
     }
     return render(request, "planner/profile.html", context)
 
@@ -2914,20 +2920,26 @@ def planner_profile_photo(request, id, photo):
     photo = Photo.objects.get(pk=photo, garden=garden)
 
     if request.method == "POST":
-        photo.author = request.POST["photographer"]
-        photo.license_code = request.POST["license"]
-        photo.save()
-        messages.success(request, "Information was saved.")
+        if "delete" in request.POST:
+            photo.delete()
+            messages.success(request, "Photo was removed")
+        else:
+            photo.author = request.POST["photographer"]
+            photo.license_code = request.POST["license"]
+            photo.save()
+            messages.success(request, "Information was saved.")
         return redirect(reverse("planner_profile_photos", args=[garden.id]))
 
     context = {
         "menu": "planner",
         "page": "join",
         "slug": "profile",
-        "title": _("Manage your garden profile"),
+        "title": _("Garden photos"),
         "garden": garden,
         "photo": photo,
+        "photos": True,
         "licenses": Photo.LICENSE_CHOICES,
+        "body_padding": True,
     }
     return render(request, "planner/profile.photo.html", context)
 
@@ -2963,22 +2975,79 @@ def planner_support(request, id):
     }
     return render(request, "planner/underconstruction.html", context)
 
-def planner_design(request, id):
+def planner_requirements(request, id):
 
     site = get_site(request)
 
     if not (garden := get_garden(request, id)):
         return redirect("planner")
 
+    if request.method == "POST":
+        polygon_data = request.POST.get("polygon_data")
+
+        if polygon_data:
+            geojson_list = json.loads(polygon_data)
+
+            polygons = []
+            for feature in geojson_list:
+                geom = geos.GEOSGeometry(json.dumps(feature["geometry"]))
+                polygons.append(geom)
+
+            # If multiple polygons, use MultiPolygon
+            if len(polygons) == 1:
+                garden.geometry = polygons[0]
+            else:
+                garden.geometry = geos.MultiPolygon(polygons)
+
+            garden.save()
+            messages.success(request, _("Your garden location was saved. Review it below."))
+            return redirect(request.get_full_path())
+
     context = {
         "menu": "planner",
-        "slug": "design",
+        "slug": "requirements",
         "page": "join",
-        "title": _("Garden design: measure your garden"),
+        "title": _("Requirements"),
         "garden": garden,
-    }
-    return render(request, "planner/underconstruction.html", context)
+        "info": get_object_or_404(Page, slug="requirements", is_active=True, site=site),
 
+        # Because we have tabs above the <main>, we need to unround the top-left corner if the first tab is active
+        "main_classes": "rounded-tl-none",
+    }
+    return render(request, "planner/requirements.html", context)
+
+def planner_activate(request, id):
+
+    site = get_site(request)
+
+    if not (garden := get_garden(request, id)):
+        return redirect("planner")
+
+    if request.method == "POST":
+        garden.published_at = timezone.now()
+        garden.is_active = True
+        garden.save()
+        response = redirect(request.path)
+        response.set_cookie("garden_active", garden.is_active)
+        return response
+
+    if "deactivate" in request.GET and garden.published_at:
+        garden.published_at = None
+        garden.is_active = False
+        garden.save()
+        response = redirect(request.path)
+        response.delete_cookie("garden_active")
+        return response
+
+    context = {
+        "menu": "planner",
+        "slug": "activate",
+        "page": "join",
+        "title": _("Activate your garden"),
+        "garden": garden,
+        "info": get_object_or_404(Page, slug="requirements", is_active=True, site=site),
+    }
+    return render(request, "planner/activate.html", context)
 
 # END OF PLANNER
 

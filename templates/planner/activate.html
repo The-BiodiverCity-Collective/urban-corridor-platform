@@ -1,0 +1,106 @@
+{% extends "_base.html" %}
+
+{% block head %}
+  <style type="text/css">
+  main p{margin-bottom:1em}
+  main #checklist p{margin-bottom:0.5em}
+  main #checklist li{margin-bottom:2em}
+  main #checklist a{color:#333;font-weight:normal}
+  </style>
+{% endblock %}
+
+{% block pre_main %}
+  {% include "planner/_signuptabs.html" %}
+{% endblock %}
+
+{% block content %}
+
+  <div class="grid grid-cols-1 md:grid-cols-3 gap-4 m-5">
+    <div class="md:col-span-2 p-4">
+      <h1>{{ _("Activate your garden") }}</h1>
+
+      {% if garden.is_active %}
+
+        <div class="w-64 h-[350px] p-4 rounded-lg bg-slate-50 border-l-4 border-transparent shadow-md flex flex-col justify-between" style="width:250px; height:350px;">
+
+            <div>
+
+              <div class="flex items-center gap-3">
+                <div class="w-12 h-12 flex items-center justify-center rounded-full bg-slate-100">
+                    <i class="fas fa-check text-lime-500 text-xl"></i>
+                </div>
+                <div>
+                  <div class="text-xs text-gray-500">Garden</div>
+                    <div class="font-semibold text-gray-900">{{ GARDEN_NAME }}</div>
+                </div>
+              </div>
+
+              <div class="mt-5">
+
+                  <h3 class="text-lg font-bold text-gray-800">Your garden is part of our corridor</h3>
+                  <p id="sub-3" class="text-sm text-gray-600 mt-2">
+                    You are garden #7 of the Braamfontein Spruit Ecological Corridor!
+                  </p>
+
+              </div>
+            </div>
+
+            <div class="mt-4">
+              <a href="{{ garden.get_absolute_url }}" class="bg-lime-600 hover:bg-lime-700 text-white py-2 rounded-md text-center block no-underline">
+                {{ _("View profile") }}
+              </a>
+              <div class="text-xs text-gray-500 mt-3">
+                If you want to deactivate your profile, <a class="text-gray-700" onclick="javascript:return confirm('{{ _("Are you sure you want to deactivate your profile?") }}')" href="?deactivate">click here</a>.
+              </div>
+            </div>
+
+        </div>
+
+      {% elif garden.geometry and garden.targets.all and garden.plants.all and garden.description and garden.photos.count %} 
+          <div class="w-64 h-[350px] p-4 rounded-lg bg-slate-50 border-l-4 border-transparent shadow-md flex flex-col justify-between" style="width:250px; height:350px;">
+            <div>
+              <div class="flex items-center gap-3">
+                <div class="w-12 h-12 flex items-center justify-center rounded-full bg-slate-100">
+                    <i class="fas fa-dot-circle text-gray-400 text-xl"></i>
+                </div>
+                <div>
+                  <div class="text-xs text-gray-500">Garden</div>
+                    <div class="font-semibold text-gray-900">{{ GARDEN_NAME }}</div>
+                </div>
+              </div>
+              <div class="mt-5">
+                  <h3 class="text-lg font-bold text-gray-800">Your garden is not yet part of our corridor</h3>
+                  <p id="sub-3" class="text-sm text-gray-600 mt-2">
+                    Ready to go live? Click the button below to become part of our corridor!
+                  </p>
+              </div>
+            </div>
+          </div>
+      <div class="border-t border-gray-300 mt-5 pt-5">
+        <form method="post">
+          <button class="btn-green" type="submit"><i class="fa fa-check-circle"></i> {{ _("Activate your garden") }}</button>
+          {% csrf_token %}
+        </form>
+      </div>
+
+      {% else %}
+      <p>
+        {{ _("Almost there. Have a look at the parts that are missing and once they are done, you can activate your garden here.") }}
+      </p>
+
+      {% endif %}
+
+    </div>
+    <div class="md:col-span-1 p-4">
+      <h2>{{ _("Checklist") }}</h2>
+      {% include "planner/_checklist.html" %}
+    </div>
+  </div>
+
+{% if request.user.is_staff %}
+  <a class="btn-warning btn-edit" href="{% url "controlpanel_page" info.id %}?redirect={{ request.get_full_path }}">
+    <i class="fa fa-pencil"></i>
+  </a>
+{% endif %}
+
+{% endblock %}

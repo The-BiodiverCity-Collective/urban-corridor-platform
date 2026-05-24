@@ -16,7 +16,7 @@
       <tr>
         <td>{{ each.name }}</td>
         <td>{{ each.created_at }}</td>
-        <td><a class="btn-blue btn-sm" href="{% url "planner" each.id %}"><i class="fa fa-shovel"></i> {{ _("Garden planner") }}</a></td>
+        <td><a class="btn-blue btn-sm" href="./?id={{ each.id }}"><i class="fa fa-shovel"></i> {{ _("Garden planner") }}</a></td>
       </tr>
     {% endfor %}
     </tbody>

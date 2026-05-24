@@ -9,5 +9,9 @@ class GardenCookieMiddleware:
             response.set_cookie("garden_uuid", getattr(request, "_garden_uuid"))
             response.set_cookie("garden_id", getattr(request, "_garden_id"))
             response.set_cookie("garden_name", getattr(request, "_garden_name"))
+            if getattr(request, "_garden_active", None):
+                response.set_cookie("garden_active", getattr(request, "_garden_active"))
+            else:
+                response.delete_cookie("garden_active")
 
         return response

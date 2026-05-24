@@ -1,0 +1,40 @@
+{% extends "_base.html" %}
+
+{% block head %}
+  <style type="text/css">
+  main p{margin-bottom:1em}
+  main #checklist p{margin-bottom:0.5em}
+  main #checklist li{margin-bottom:2em}
+  main #checklist a{color:#333;font-weight:normal}
+  </style>
+{% endblock %}
+
+{% block pre_main %}
+  {% include "planner/_signuptabs.html" %}
+{% endblock %}
+
+{% block content %}
+
+  <div class="grid grid-cols-1 md:grid-cols-3 gap-4 m-5">
+    <div class="md:col-span-2 p-4">
+      <h1>{{ info }}</h1>
+      {{ info.get_content }}
+
+      <div class="border-t border-gray-300 mt-5 pt-5">
+        <a class="btn-blue" href="{% url "planner_profile" GARDEN %}">{{ _("Configure garden profile") }} &raquo;</a>
+      </div>
+
+    </div>
+    <div class="md:col-span-1 p-4">
+      <h2>{{ _("Checklist") }}</h2>
+      {% include "planner/_checklist.html" %}
+    </div>
+  </div>
+
+{% if request.user.is_staff %}
+  <a class="btn-warning btn-edit" href="{% url "controlpanel_page" info.id %}?redirect={{ request.get_full_path }}">
+    <i class="fa fa-pencil"></i>
+  </a>
+{% endif %}
+
+{% endblock %}

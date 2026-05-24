@@ -1,9 +1,4 @@
 {% extends "_base.html" %}
-{% load querystring_plus %}
-
-{% block title %}
-  {{ info }}
-{% endblock %}
 
 {% block css %}
 <style>
@@ -46,47 +41,28 @@
 </style>
 {% endblock %}
 
+{% block title %}
+  {{ garden }}
+{% endblock %}
+
+
 {% block content %}
 
-{% with this_page=_("Location") %}
-  {% include "planner/_breadcrumbs.html" %}
-{% endwith %}
+  <h1>{{ title }}</h1>
+  <div class="mb-4 rounded shadow-sm" id="map"></div>
 
-<div>
-  {{ info.get_content }}
-</div>
-
-<nav class="mt-4 sm_tabs -mb-px flex space-x-5" aria-label="{{ _("Tabs") }} color-tabs">
-  <a href="{% querystring_plus view="point" %}" class="tab {% if not request.GET.view or request.GET.view == "point" %}active{% else %}inactive{% endif %}">
-    <i class="fa fa-map-marker-alt mr-1"></i>
-    {{ _("Select location") }}
-  </a>
-  <a href="{% querystring_plus view="polygon" %}" class="tab {% if request.GET.view == "polygon" %}active{% else %}inactive {% endif %}">
-    <i class="fa fa-hexagon mr-1"></i>
-    {{ _("Draw exact garden outline") }}
-  </a>
-  <a id="kmz" class="tab inactive cursor-pointer">
+  <button type="button" id="kmz" class="btn btn-white">
     <i class="fa fa-upload"></i>
     {{ _("Upload KMZ file") }}
-  </a>
-</nav>
+  </button>
 
-<div class="mb-4 rounded shadow-sm" id="map"></div>
-
-<div class="flex justify-between">
-  {% if show_next_buttons %}
-    <a href="?reset_location{% if "new_garden" in request.GET %}&new_garden=true{% endif %}" class="btn-white">
-      <i class="fa fa-arrow-left"></i>
-      {{ _("Reset location") }}
-    </a>
-    <a href="?confirm_location{% if "new_garden" in request.GET %}&new_garden=true{% endif %}" class="btn-green">
-      <i class="fa fa-arrow-right"></i>
-      {{ _("Confirm location") }}
-    </a>
-  {% else %}
-    {% include "planner/_returnlink.html" %}
-  {% endif %}
-</div>
+  <form method="post">
+    <input type="hidden" id="polygon-data" name="polygon_data" />
+    <button id="save-polygon" type="submit" class="btn-green">
+      {{ _("Save") }}
+    </button>
+    {% csrf_token %}
+  </form>
 
 <el-dialog>
   <dialog id="dialog" aria-labelledby="dialog-title" class="z-100 fixed inset-0 size-auto max-h-none max-w-none overflow-y-auto bg-transparent backdrop:bg-transparent">
@@ -119,31 +95,15 @@
     </div>
   </dialog>
 </el-dialog>
-
 {% endblock %}
 
 {% block js %}
 <script type="text/javascript">
-	var popup = L.popup();
-
-	function onMapClick(e) {
-		popup
-			.setLatLng(e.latlng)
-			.setContent("{% if garden.geometry %}{{ _("Change your existing location to this location?") }}{% else %}{{ _("Confirm location?") }}{% endif %}<br><br><a href='./?lat=" + e.latlng.lat + "&amp;lng=" + e.latlng.lng + "{% if "new_garden" in request.GET %}&amp;new_garden{% endif %}' class='btn btn-green'>Confirm</a>")
-			.openOn(map);
-	}
-
-  {% if request.GET.view != "polygon" %}
-    map.on("click", onMapClick);
-  {% endif %}
 
   {% if garden.geometry %}
     {% if garden.geometry.geom_type == "Polygon" or garden.geometry.geom_type == "MultiPolygon" %}
-      var coords = {{ garden.geometry.geojson|safe }};
-      L.geoJSON(coords).addTo(map);
-      map.fitBounds(L.geoJSON(coords).getBounds());
+      // See _leaflet.html where we add this to the map
     {% else %}
-      L.marker([{{ garden.geometry.y }}, {{ garden.geometry.x }}]).addTo(map);
       map.setView([{{ garden.geometry.y }}, {{ garden.geometry.x }}], 15);
     {% endif %}
   {% endif %}

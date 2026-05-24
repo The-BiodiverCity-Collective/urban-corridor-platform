@@ -66,6 +66,18 @@
             {% endif %}
           </p>
         </div>
+
+        <section class="mt-8">
+          <h3 class="text-xs font-bold uppercase tracking-wider text-gray-500 mb-3">{{ _("Read more here") }}<h3>
+          <div class="flex flex-wrap gap-1.5">
+            {% for label,url in info.get_links.items %}
+              <a href="{{ url }}" class="btn-light btn-sm">
+                <i class="fa fa-link text-[10px]"></i> {{ label }}
+              </a>
+            {% endfor %}
+          </div>
+        </section>
+
       </div>
 
       <!-- Secondary Data Sidebar -->
@@ -230,18 +242,6 @@
             </div>
           </section>
         {% endif %}
-
-        <!-- References Row inside Sidebar Footer -->
-        <section class="pt-2 px-2">
-          <h4 class="text-xs font-bold uppercase tracking-wider text-gray-400 mb-2">{{ _("References") }}</h4>
-          <div class="flex flex-wrap gap-1.5">
-            {% for label,url in info.get_links.items %}
-              <a href="{{ url }}" class="btn-white btn-sm">
-                <i class="fa fa-link text-[10px]"></i> {{ label }}
-              </a>
-            {% endfor %}
-          </div>
-        </section>
 
       </div>
     </div>

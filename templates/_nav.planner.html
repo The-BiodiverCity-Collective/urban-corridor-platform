@@ -1,6 +1,103 @@
 <div id="dropdown-planner" class="dropdown absolute inset-x-0 top-0 -z-10 bg-white pt-16 shadow-lg ring-1 ring-gray-900/5 max-h-[85vh] overflow-y-auto lg:max-h-none lg:overflow-visible">
   <div class="mx-auto grid max-w-7xl grid-cols-1 gap-x-8 gap-y-10 px-6 py-10 lg:grid-cols-2 lg:px-8">
     <div class="grid grid-cols-1 gap-y-10 sm:grid-cols-2 sm:gap-x-6 sm:gap-y-0">
+
+      <article class="relative isolate flex max-w-2xl flex-col gap-y-3 lg:gap-y-6">
+
+        <div class="w-64 h-[350px] p-4 rounded-lg bg-slate-50 border-l-4 border-transparent shadow-md flex flex-col justify-between" style="width:250px; height:350px;">
+          {% if GARDEN %}
+
+            <div>
+
+              <div class="flex items-center gap-3">
+                <div class="w-12 h-12 flex items-center justify-center rounded-full bg-slate-100">
+                  {% if GARDEN_ACTIVE %}
+                    <i class="fas fa-check text-lime-500 text-xl"></i>
+                  {% elif GARDEN %}
+                    <i class="fas fa-dot-circle text-gray-400 text-xl"></i>
+                  {% endif %}
+                </div>
+                <div>
+                  <div class="text-xs text-gray-500">Garden</div>
+                  {% if GARDEN %}
+                    <div class="font-semibold text-gray-900">{{ GARDEN_NAME }}</div>
+                  {% else %}
+                    <div class="font-semibold text-gray-900">{{ _("No garden created yet") }}</div>
+                  {% endif %}
+                </div>
+              </div>
+
+              <div class="mt-5">
+
+                {% if GARDEN_ACTIVE %}
+                  <h3 class="text-lg font-bold text-gray-800">Your garden is part of our corridor</h3>
+                  <p id="sub-3" class="text-sm text-gray-600 mt-2">
+                    You are garden #7 of the Braamfontein Spruit Ecological Corridor!
+                  </p>
+                {% elif GARDEN %}
+                  <h3 class="text-lg font-bold text-gray-800">Your garden is not yet part of our corridor</h3>
+                  <p id="sub-3" class="text-sm text-gray-600 mt-2">
+                    Review the requirements below and join our corridor once you are ready!
+                  </p>
+                {% endif %}
+
+              </div>
+            </div>
+
+          {% else %}
+
+            <div class="flex flex-col items-center text-center mt-4">
+              <div class="w-14 h-14 rounded-full bg-lime-50 flex items-center justify-center mb-5">
+                <svg xmlns="http://www.w3.org/2000/svg"
+                     class="w-7 h-7 text-lime-600"
+                     fill="none"
+                     viewBox="0 0 24 24"
+                     stroke="currentColor">
+                  <path stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="1.8"
+                        d="M12 21c4.97-2.09 8-5.88 8-10V5l-8-3-8 3v6c0 4.12 3.03 7.91 8 10z" />
+                </svg>
+              </div>
+              <div>
+                <h3 class="text-lg font-semibold text-slate-800 mb-2">
+                  {{ _("No garden yet") }}
+                </h3>
+
+                <p class="text-sm leading-relaxed text-slate-500">
+                  {{ _("Start a new restoration project or register your existing garden to become part of our corridor!") }}
+                </p>
+              </div>
+            </div>
+
+          {% endif %}
+
+          {% if GARDEN_ACTIVE %}
+            <div class="mt-4">
+              <a href="/gardens/{{ GARDEN }}/" class="bg-lime-600 hover:bg-lime-700 text-white py-2 rounded-md text-center block">
+                {{ _("View profile") }}
+              </a>
+              <div class="text-xs text-gray-500 mt-3">Joining helps connect habitat for native species.</div>
+            </div>
+          {% elif GARDEN %}
+            <div>
+              <a href="{% url "planner_requirements" GARDEN %}" class="btn-blue py-2 rounded-md text-center block">
+                {{ _("Review requirements") }}
+              </a>
+            </div>
+          {% else %}
+            <div>
+              <a href="{% url "planner" %}" class="btn-blue py-2 rounded-md text-center block">
+                {{ _("Start now") }}
+              </a>
+            </div>
+          {% endif %}
+
+        </div>
+
+
+      </article>
+
       <div>
         <h3 class="text-sm/6 font-medium text-gray-500">1. Choose your plants</h3>
         <div class="mt-6 flow-root">
@@ -38,6 +135,11 @@
           </div>
         </div>
       </div>
+
+    </div>
+
+    <div class="grid grid-cols-1 gap-y-10 sm:grid-cols-2 sm:gap-x-6 sm:gap-y-0 lg:grid-cols-2 lg:gap-8">
+
       <article class="relative isolate flex max-w-2xl flex-col gap-y-3 lg:gap-y-6">
         <h3 class="text-sm/6 font-medium text-gray-500">2. Improve your score</h3>
         <a href="{% url "planner_score" GARDEN %}" class="hover:text-sky-600">
@@ -51,68 +153,51 @@
           </p>
         </a>
       </article>
-    </div>
-    <div class="grid grid-cols-1 gap-y-10 sm:grid-cols-2 sm:gap-x-6 sm:gap-y-0 lg:grid-cols-2 lg:gap-8">
-      <div>
-        <h3 class="text-sm/6 font-medium text-gray-500">3. Design your space</h3>
+
+      <div class="lg:pl-5">
+        <h3 class="text-sm/6 font-medium text-gray-500">3. Get your plants</h3>
         <div class="mt-6 mb-6 flow-root">
           <div class="-my-2">
-            <a href="{% url "planner_design" GARDEN %}" class="flex gap-x-4 py-2 text-sm/6 font-semibold hover:text-sky-600
-              {% if slug == "design" and menu == "planner" %}text-sky-600{% else %}text-gray-900{% endif %}">
-              <i class="fa fa-ruler fa-fw text-lg text-gray-400 mr-1"></i>
-              Measure your garden
-            </a>
-          </div>
-        </div>
-        <div class="flow-root">
-          <div class="-my-2">
-            <h3 class="mt-4 mb-4 text-sm/6 font-medium text-gray-500">4. Prepare your space</h3>
-            <a href="{% url "planner_calendar" GARDEN %}" class="flex gap-x-4 py-2 text-sm/6 font-semibold hover:text-sky-600
-              {% if slug == "calendar" and menu == "planner" %}text-sky-600{% else %}text-gray-900{% endif %}">
-              <i class="fa fa-calendar-alt fa-fw text-lg text-gray-400 mr-1"></i>
-              Garden care calendar
-            </a>
             <a href="{% url "planner_nurseries" GARDEN %}" class="flex gap-x-4 py-2 text-sm/6 font-semibold hover:text-sky-600
               {% if slug == "nurseries" and menu == "planner" %}text-sky-600{% else %}text-gray-900{% endif %}">
               <i class="fa fa-hand-holding-seedling fa-fw text-lg text-gray-400 mr-1"></i>
-              Find your plants: nurseries
+              Get plants
             </a>
           </div>
         </div>
-      </div>
-
-      <article class="relative isolate flex max-w-2xl flex-col gap-y-3 lg:gap-y-6">
-        <h3 class="text-sm/6 font-medium text-gray-500">5. Sign up</h3>
         <div class="flow-root">
           <div class="-my-2">
-            <a href="/join/requirements/?page=join" class="flex gap-x-4 py-2 text-sm/6 font-semibold hover:text-sky-600
+            <h3 class="mt-4 mb-4 text-sm/6 font-medium text-gray-500">4. Sign up</h3>
+            <a href="{% url "planner_requirements" GARDEN %}" class="flex gap-x-4 py-2 text-sm/6 font-semibold hover:text-sky-600
               {% if slug == "requirements" and menu == "planner" %}text-sky-600{% else %}text-gray-900{% endif %}">
               <i class="fal fa-clipboard-check fa-fw text-lg text-gray-400 mr-1"></i>
               Review requirements
             </a>
             <a href="{% url "planner_profile" GARDEN %}" class="flex gap-x-4 py-2 text-sm/6 font-semibold hover:text-sky-600
-              {% if slug == "profile" and menu == "planner" %}text-sky-600{% else %}text-gray-900{% endif %}">
-              <i class="fal fa-file-image fa-fw text-lg text-gray-400 mr-1"></i>
-              Register your garden
+              {% if slug == "profile" and menu == "planner" and not photos %}text-sky-600{% else %}text-gray-900{% endif %}">
+              <i class="fal fa-file-alt fa-fw text-lg text-gray-400 mr-1"></i>
+              Garden profile
             </a>
-            <a href="{% url "planner_events" GARDEN %}" class="flex gap-x-4 py-2 text-sm/6 font-semibold hover:text-sky-600
-              {% if slug == "events" and menu == "planner" %}text-sky-600{% else %}text-gray-900{% endif %}">
-              <i class="fal fa-calendar-edit fa-fw text-lg text-gray-400 mr-1"></i>
-              Events
+            <a href="{% url "planner_profile_photos" GARDEN %}" class="flex gap-x-4 py-2 text-sm/6 font-semibold hover:text-sky-600
+              {% if slug == "profile" and menu == "planner" and photos %}text-sky-600{% else %}text-gray-900{% endif %}">
+              <i class="fal fa-image fa-fw text-lg text-gray-400 mr-1"></i>
+              Upload photos
             </a>
-            <a href="{% url "planner_support" GARDEN %}" class="flex gap-x-4 py-2 text-sm/6 font-semibold hover:text-sky-600
-              {% if slug == "support" and menu == "planner" %}text-sky-600{% else %}text-gray-900{% endif %}">
-              <i class="fal fa-people-carry fa-fw text-lg text-gray-400 mr-1"></i>
-              Support
+            <a href="{% url "planner_activate" GARDEN %}" class="flex gap-x-4 py-2 text-sm/6 font-semibold hover:text-sky-600
+              {% if slug == "activate" and menu == "planner" %}text-sky-600{% else %}text-gray-900{% endif %}">
+              <i class="fa fa-check-circle fa-fw text-lg text-gray-400 mr-1"></i>
+              Activate garden
             </a>
-            <a href="{% url "planner_certification" GARDEN %}" class="flex gap-x-4 py-2 text-sm/6 font-semibold hover:text-sky-600
-              {% if slug == "certification" and menu == "planner" %}text-sky-600{% else %}text-gray-900{% endif %}">
-              <i class="fal fa-file-certificate fa-fw text-lg text-gray-400 mr-1"></i>
-              Certify your garden
+
+            <a hidden href="{% url "planner_calendar" GARDEN %}" class="flex gap-x-4 py-2 text-sm/6 font-semibold hover:text-sky-600
+              {% if slug == "calendar" and menu == "planner" %}text-sky-600{% else %}text-gray-900{% endif %}">
+              <i class="fa fa-calendar-alt fa-fw text-lg text-gray-400 mr-1"></i>
+              Garden care calendar
             </a>
           </div>
         </div>
-      </article>
+      </div>
+
     </div>
   </div>
 </div>

@@ -1,6 +1,6 @@
 from django.conf import settings
 import random
-from website.models import Site, Garden, Page
+from website.models import Site, Page
 
 def site(request):
 
@@ -28,14 +28,15 @@ def site(request):
     # garden is being actively managed.
     garden = request.COOKIES.get("garden_id", 0)
     garden_name = request.COOKIES.get("garden_name", None)
+    garden_active = request.COOKIES.get("garden_active", None)
 
     return {
         "DEBUG": settings.DEBUG,
         "WORK_OFFLINE": True if work_offline else False,
-        "MAPBOX_API_KEY": "pk.eyJ1IjoiY29tbXVuaXRyZWUiLCJhIjoiY2lzdHZuanl1MDAwODJvcHR1dzU5NHZrbiJ9.0ETJ3fXYJ_biD7R7FiwAEg",
         "SITE": site,
         "SITES": sites,
         "GARDEN": garden,
         "GARDEN_NAME": garden_name,
+        "GARDEN_ACTIVE": garden_active,
         "NURSERIES": Page.objects.filter(site=site, page_type=Page.PageType.NURSERY),
     }

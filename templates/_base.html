@@ -37,7 +37,7 @@
   {% if request.GET.online_tailwind %}
     <script src="https://unpkg.com/@tailwindcss/browser@4"></script>
   {% else %}
-    <link rel="stylesheet" href="{% static "css/output.css" %}?id=0259-2205">
+    <link rel="stylesheet" href="{% static "css/output.css" %}?id=1838-2305">
   {% endif %}
 
   {% if load_tooltip %}
@@ -130,8 +130,10 @@
           {% endfor %}
         {% endif %}
 
+        <div {% if body_padding %}class="p-10"{% endif %}>
         {% block content %}
         {% endblock %}
+        </div>
 
         {% if page_info and request.user.is_staff and not hide_edit_button %}
           <a class="btn-warning btn-edit" href="{% url "controlpanel_page" page_info.id %}?redirect={{ request.get_full_path }}">
@@ -239,8 +241,8 @@
             <a href="{% url "planner_suggestions" garden_id %}" class="group {% if page == "suggestions" %}active{% endif %}"><i class="fas fa-list mr-2 "></i>Suggested plant list</a>
             <a href="{% url "planner_plants" garden_id %}" class="group {% if planner_tab == "my_plants" %}active{% endif %}"><i class="fas fa-leaf mr-2 "></i>My plant lists</a>
             <a href="{% url "planner_score" garden_id %}" class="group {% if page == "score" %}active{% endif %}"><i class="fas fa-chart-line mr-2 "></i>My score</a>
-            <a href="{% url "planner_resources" garden_id %}" class="group {% if page == "resources" %}active{% endif %}"><i class="fas fa-folder mr-2 "></i>Resources</a>
-            <a href="{% url "planner_join" garden_id %}" class="group {% if page == "join" or request.GET.page == "join" %}active{% endif %}"><i class="fas fa-users mr-2 "></i>Join us</a>
+            <a href="{% url "planner_nurseries" garden_id %}" class="group {% if page == "resources" %}active{% endif %}"><i class="fas fa-seedling mr-2 "></i>Get plants</a>
+            <a href="{% url "planner_requirements" garden_id %}" class="group {% if page == "join" or request.GET.page == "join" %}active{% endif %}"><i class="fas fa-users mr-2 "></i>Sign up</a>
           </div>
         </div>
       </div>

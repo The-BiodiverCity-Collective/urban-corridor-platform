@@ -195,6 +195,24 @@
 }
 
 
+@utility tab {
+  .sm_tabs & {
+    @apply no-underline whitespace-nowrap py-3 px-3 text-sm font-medium border-0;
+  }
+  .sm_tabs &.active {
+    @apply text-sky-600 bg-gray-100 border-t border-l border-r border-gray-300;
+  }
+  .sm_tabs &.inactive {
+    @apply text-gray-800 opacity-70 hover:opacity-100;
+  }
+}
+
+@utility active {
+  .sm_tabs &.tab {
+    @apply text-sky-600 rounded-t-md;
+  }
+}
+
 @layer utilities {
   .show_only_first > *:not(:first-child) {
     @apply hidden;
@@ -429,4 +447,7 @@
 }
 .select2-container--default .select2-search--dropdown .select2-search__field {
   border-radius: 0.25rem;
+}
+.mainnav .svgicon svg {
+  width: 20px; 
 }

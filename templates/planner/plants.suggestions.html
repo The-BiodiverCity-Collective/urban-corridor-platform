@@ -12,7 +12,6 @@
 
 <h1>{{ title }}</h1>
 
-{% if request.GET.view == "table" or not request.GET.view %}
   <div class="flex">
     <div class="flex-4">
       {% if request.GET.back_box %}
@@ -93,7 +92,6 @@
       {% endif %}
     </div>
   </div>
-{% endif %}
 
 {% include "species/_grid.html" %}
 

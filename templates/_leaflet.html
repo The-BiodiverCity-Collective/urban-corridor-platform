@@ -1,14 +1,27 @@
-<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+        integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
+        crossorigin=""></script>
+
 <script src="https://unpkg.com/leaflet-image@0.4.0/leaflet-image.js"></script>
-<script src="https://api.mapbox.com/mapbox.js/plugins/leaflet-fullscreen/v1.0.1/Leaflet.fullscreen.min.js"></script>
+
+<link rel="stylesheet"
+      href="https://unpkg.com/leaflet.fullscreen@3.0.0/Control.FullScreen.css" />
+
+<script src="https://unpkg.com/leaflet.fullscreen@3.0.0/Control.FullScreen.js"></script>
+
+{% if map_draw_polygon %}
+  <link rel="stylesheet" href="https://unpkg.com/leaflet-draw@1.0.4/dist/leaflet.draw.css" />
+  <script src="https://unpkg.com/leaflet-draw@1.0.4/dist/leaflet.draw.js"></script>
+{% endif %}
 
 <script>
-  // create leaflet map - https://leafletjs.com/reference-1.6.0.html
+  // create leaflet map
   var map = L.map("map", {
     zoom: 12,
     scrollWheelZoom: false,
     fullscreenControl: true,
     renderer: L.canvas(),
+
     {% if lat and lng %}
       center: [{{ lat }}, {{ lng }}],
     {% else %}
@@ -20,29 +33,95 @@
   {% if mapstyle %}
     var tileLayer = L.tileLayer("{{ mapstyle.get_tilelayer|safe }}", {
       attribution: "{{ mapstyle.attribution|safe }}",
-      id: "{{ mapstyle.style }}",
-      tileSize: 512,
-      zoomOffset: -1,
-      // this "layer" option must be kept, as it prevents the tiles from disappearing when removing all other layers from the map
       layer: "tiles",
-    })
+    });
+
   {% else %}
-    var tileLayer = L.tileLayer("https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_token={{ MAPBOX_API_KEY }}", {
-      attribution: "Map data &copy; <a href='https://www.openstreetmap.org/'>OpenStreetMap</a> contributors, <a href='https://creativecommons.org/licenses/by-sa/2.0/'>CC-BY-SA</a>, Imagery © <a href='https://www.mapbox.com/'>Mapbox</a>",
-      id: "{% if leaflet.style %}{{ leaflet.style }}{% elif properties.map_layer_style %}mapbox/{{ properties.map_layer_style }}{% else %}mapbox/streets-v11{% endif %}",
-      tileSize: 512,
-      zoomOffset: -1,
-      // this "layer" option must be kept, as it prevents the tiles from disappearing when removing all other layers from the map
-      layer: "tiles",
-    })
+    var tileLayer = L.tileLayer(
+      "https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png",
+      {
+        attribution:
+          '&copy; OpenStreetMap contributors &copy; CARTO',
+        subdomains: 'abcd',
+        maxZoom: 20,
+        layer: "tiles",
+      }
+    );
   {% endif %}
 
   tileLayer.addTo(map);
 
+  {% if map_draw_polygon %}
+    var drawnItems = new L.FeatureGroup();
+    map.addLayer(drawnItems);
+
+    var drawControl = new L.Control.Draw({
+      draw: {
+        polygon: true,
+        polyline: false,
+        rectangle: false,
+        circle: false,
+        marker: false,
+        circlemarker: false
+      },
+
+      edit: {
+        featureGroup: drawnItems
+      }
+    });
+
+    map.addControl(drawControl);
+
+    map.on(L.Draw.Event.CREATED, function (event) {
+      var layer = event.layer;
+      drawnItems.addLayer(layer);
+    });
+
+  {% if garden.geometry %}
+    {% if garden.geometry.geom_type == "Polygon" or garden.geometry.geom_type == "MultiPolygon" %}
+      var geom = {{ garden.geometry.geojson|safe }};
+
+      // Wrap raw geometry into a Feature
+      var feature = {
+        type: "Feature",
+        geometry: geom,
+        properties: {}
+      };
+
+      // Now handle MultiPolygon
+      if (geom.type === "Polygon") {
+        var layer = L.geoJSON(feature).getLayers()[0];
+        drawnItems.addLayer(layer);
+      }
+
+      if (geom.type === "MultiPolygon") {
+        geom.coordinates.forEach(function(polygonCoords) {
+          var polyFeature = {
+            type: "Feature",
+            geometry: {
+              type: "Polygon",
+              coordinates: polygonCoords
+            },
+            properties: {}
+          };
+          var layer = L.geoJSON(polyFeature).getLayers()[0];
+          drawnItems.addLayer(layer);
+        });
+      }
+
+      // Only fit bounds if drawnItems has layers
+      if (drawnItems.getLayers().length > 0) {
+        map.fitBounds(drawnItems.getBounds());
+      }
+      {% endif %}
+    {% endif %}
+
+  {% endif %}
+
   {% if swapped_corridor_coords %}
     /* START OF CUTOUT SCRIPT */
 
-    // This is the whole globe's bounds:
+    // Whole globe bounds
     const globeBounds = [
       [-90, -180],
       [-90, 180],
@@ -54,11 +133,10 @@
     const polygonCoords = {{ swapped_corridor_coords }};
     const corridorCoords = {{ swapped_corridor_coords }};
 
-    // Create a mask layer that will fill the map with a transparent black layer
-    // and create a hole based on the polygon shape:  
-    const mask = L.polygon([ // The outer rectangle
+    // Create mask layer
+    const mask = L.polygon([
       ...globeBounds,
-      ...polygonCoords.reverse() // The polygon as a hole
+      ...polygonCoords.reverse()
     ], {
       color: "black",
       fillColor: "black",
@@ -67,14 +145,14 @@
     }).addTo(map);
 
     const polygon = L.polygon(polygonCoords, {
-        stroke: false,
-        fillOpacity: 0
+      stroke: false,
+      fillOpacity: 0
     }).addTo(map);
 
     /* END OF CUTOUT SCRIPT */
   {% endif %}
 
-  // function to convert canvas data to png and simulate click on download button
+  // convert canvas to downloadable PNG
   function downloadImage(err, canvas) {
     var downloadLink = document.createElement("a");
     downloadLink.href = canvas.toDataURL("image/png");
@@ -83,37 +161,73 @@
   }
 
   {% if not map_hide_save %}
-    // define the download button's details
+    // download button control
     L.Control.Download = L.Control.extend({
       onAdd: function(map) {
-        var downloadButtonWrapper = L.DomUtil.create("div", "download-map-wrapper");
-        var downloadButton = L.DomUtil.create("div", "download-map");
-        downloadButton.innerHTML = "<i class='fas fa-fw fa-save'></i>";
+        var downloadButtonWrapper = L.DomUtil.create(
+          "div",
+          "download-map-wrapper"
+        );
+
+        var downloadButton = L.DomUtil.create(
+          "div",
+          "download-map"
+        );
+
+        downloadButton.innerHTML =
+          "<i class='fas fa-fw fa-save'></i>";
+
         downloadButtonWrapper.appendChild(downloadButton);
+
         return downloadButtonWrapper;
       }
     });
+    // create control
+    L.control.Download = function(opts) {
+      return new L.Control.Download(opts);
+    };
+
+    // add button
+    L.control.Download({
+      position: "topleft"
+    }).addTo(map);
+
   {% endif %}
 
-  // create a new leaflet control and apply download button details
-  L.control.Download = function(opts) {
-    return new L.Control.Download(opts);
-  }
-
-  // add download button to the map
-  L.control.Download({ position: "topleft" }).addTo(map);
-
-  // run function when clicking the button
+  // export map image
   $(".download-map").click(function() {
     leafletImage(map, downloadImage);
-  })
+  });
 
-  // toggle scrollwheel zoom when entering/exiting fullscreen
+  // toggle scroll wheel zoom in fullscreen
   map.on("fullscreenchange", function () {
     if (map.isFullscreen()) {
-      map.scrollWheelZoom.enable()
+      map.scrollWheelZoom.enable();
     } else {
-      map.scrollWheelZoom.disable()
+      map.scrollWheelZoom.disable();
     }
   });
 </script>
+
+{% if map_draw_polygon %}
+<script type="text/javascript">
+$(function(){
+  $("#save-polygon").on("click", function(e) {
+    var allPolygons = [];
+    drawnItems.eachLayer(function(layer) {
+        if (layer instanceof L.Polygon) {
+            allPolygons.push(layer.toGeoJSON());
+        }
+    });
+
+    if(allPolygons.length === 0){
+        alert("No polygons drawn! Please draw at least one polygon.");
+        e.preventDefault();
+        return false;
+    }
+
+    $("#polygon-data").val(JSON.stringify(allPolygons));
+  });
+});
+</script>
+{% endif %}
