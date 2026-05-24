@@ -108,11 +108,16 @@ def get_garden(request, id, silent_fail=False):
         garden = Garden.objects_unfiltered.filter(pk=request.COOKIES.get("garden_id"), is_user_created=True, user__isnull=True, uuid=request.COOKIES["garden_uuid"])
         if garden:
             return garden[0]
+
+    # If validation failed, let's remove the cookies
+    request._delete_garden_cookie = True
+
     if not silent_fail:
         if id == 0:
             messages.warning(request, _("Please create your own garden to get started."))
         else:
             messages.warning(request, _("Garden not found. Please log in to access your saved gardens."))
+
     return None
 
 # To show the corridor by blacking out everything that is NOT the corridor, we need to 
@@ -2323,7 +2328,7 @@ def planner(request, id=None):
         response.set_cookie("garden_uuid", garden.uuid)
         response.set_cookie("garden_id", garden.id)
         response.set_cookie("garden_name", garden.name)
-        response.set_cookie("garden_active", garden.is_active)
+        response.delete_cookie("garden_active")
         return response
 
     context = {

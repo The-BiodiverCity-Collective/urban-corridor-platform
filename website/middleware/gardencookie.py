@@ -14,4 +14,10 @@ class GardenCookieMiddleware:
             else:
                 response.delete_cookie("garden_active")
 
+        if getattr(request, "_delete_garden_cookie", False):
+            response.delete_cookie("garden_uuid")
+            response.delete_cookie("garden_id")
+            response.delete_cookie("garden_name")
+            response.delete_cookie("garden_active")
+
         return response
