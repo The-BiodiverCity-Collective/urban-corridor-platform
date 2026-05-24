@@ -14,72 +14,82 @@
       <h1>{{ info }}</h1>
       {{ info.get_content }}
 
-      <section class="mt-10">
-        <div>
-          <header class="mb-6">
-            <h1 class="text-2xl font-semibold text-gray-900">{{ _("Keen to team up?") }}</h1>
-            <p class="mt-1 text-gray-500">
-              {{ _("Fill out the form below or send us an e-mail at ") }}
-              {{ SITE.email }}.
-            </p>
-          </header>
+      {% if info.meta_data.header == "Create or register your garden" and slug != "recruit-others-to-register" %}
 
-          <form class="space-y-6" method="POST">
-            {% csrf_token %}
-            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        <section class="mt-10">
+          <h3>{{ _("Ready to get going?") }}</h3>
+          <a href="{% url "planner" %}" class="btn-blue">{{ _("Start here!") }}</a>
+        </section>
+
+      {% else %}
+
+        <section class="mt-10">
+          <div>
+            <header class="mb-6">
+              <h1 class="text-2xl font-semibold text-gray-900">{{ _("Keen to team up?") }}</h1>
+              <p class="mt-1 text-gray-500">
+                {{ _("Fill out the form below or send us an e-mail at ") }}
+                {{ SITE.email }}.
+              </p>
+            </header>
+
+            <form class="space-y-6" method="POST">
+              {% csrf_token %}
+              <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <label class="block">
+                  <span class="text-sm font-medium text-gray-700">{{ _("Name") }}</span>
+                  <input
+                    name="name"
+                    type="text"
+                    required
+                    class="mt-1 block w-full rounded-lg border border-gray-200 bg-gray-50 px-3 py-2 text-gray-900 focus:outline-none focus:ring-2 focus:ring-sky-500 focus:border-transparent"
+                  />
+                </label>
+
+                <label class="block">
+                  <span class="text-sm font-medium text-gray-700">{{ _("Organisation (optional)") }}</span>
+                  <input
+                    name="organization"
+                    type="text"
+                    class="mt-1 block w-full rounded-lg border border-gray-200 bg-gray-50 px-3 py-2 text-gray-900 focus:outline-none focus:ring-2 focus:ring-sky-500 focus:border-transparent"
+                  />
+                </label>
+              </div>
+
               <label class="block">
-                <span class="text-sm font-medium text-gray-700">{{ _("Name") }}</span>
+                <span class="text-sm font-medium text-gray-700">E‑mail</span>
                 <input
-                  name="name"
-                  type="text"
+                  name="email"
+                  type="email"
                   required
                   class="mt-1 block w-full rounded-lg border border-gray-200 bg-gray-50 px-3 py-2 text-gray-900 focus:outline-none focus:ring-2 focus:ring-sky-500 focus:border-transparent"
                 />
               </label>
 
               <label class="block">
-                <span class="text-sm font-medium text-gray-700">{{ _("Organisation (optional)") }}</span>
-                <input
-                  name="organization"
-                  type="text"
-                  class="mt-1 block w-full rounded-lg border border-gray-200 bg-gray-50 px-3 py-2 text-gray-900 focus:outline-none focus:ring-2 focus:ring-sky-500 focus:border-transparent"
-                />
+                <span class="text-sm font-medium text-gray-700">{{ _("Message") }}</span>
+                <textarea
+                  name="message"
+                  rows="6"
+                  required
+                  class="mt-1 block w-full rounded-lg border border-gray-200 bg-gray-50 px-3 py-2 text-gray-900 resize-y focus:outline-none focus:ring-2 focus:ring-sky-500 focus:border-transparent"
+                ></textarea>
               </label>
-            </div>
 
-            <label class="block">
-              <span class="text-sm font-medium text-gray-700">E‑mail</span>
-              <input
-                name="email"
-                type="email"
-                required
-                class="mt-1 block w-full rounded-lg border border-gray-200 bg-gray-50 px-3 py-2 text-gray-900 focus:outline-none focus:ring-2 focus:ring-sky-500 focus:border-transparent"
-              />
-            </label>
+              <div class="flex items-center justify-between gap-4">
+                <button
+                  type="submit"
+                  class="btn-green"
+                >
+                  {{ _("Send") }}
+                </button>
 
-            <label class="block">
-              <span class="text-sm font-medium text-gray-700">{{ _("Message") }}</span>
-              <textarea
-                name="message"
-                rows="6"
-                required
-                class="mt-1 block w-full rounded-lg border border-gray-200 bg-gray-50 px-3 py-2 text-gray-900 resize-y focus:outline-none focus:ring-2 focus:ring-sky-500 focus:border-transparent"
-              ></textarea>
-            </label>
+              </div>
 
-            <div class="flex items-center justify-between gap-4">
-              <button
-                type="submit"
-                class="btn-green"
-              >
-                {{ _("Send") }}
-              </button>
-
-            </div>
-
-          </form>
-        </div>
-      </section>
+            </form>
+          </div>
+        </section>
+      {% endif %}
 
     </div>
     <div class="flex-2">
