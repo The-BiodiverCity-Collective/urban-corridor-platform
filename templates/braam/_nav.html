@@ -263,97 +263,6 @@
     </div>
   </div>
 
-  <div id="dropdown-gardens" class="dropdown absolute inset-x-0 top-0 -z-10 bg-white pt-16 shadow-lg ring-1 ring-gray-900/5">
-    <div class="mx-auto grid max-w-7xl grid-cols-1 gap-x-8 gap-y-10 px-6 py-10 lg:grid-cols-2 lg:px-8">
-      <div class="grid grid-cols-2 gap-x-6 sm:gap-x-8">
-        <div>
-          <h3 class="text-sm/6 font-medium text-gray-500">Fynbos corridors</h3>
-          <div class="mt-6 flow-root">
-            <div class="-my-2">
-              <a href="{% url "gardens_map" %}" class="flex gap-x-4 py-2 text-sm/6 font-semibold text-gray-900
-              {% if page == "gardens_introduction" %}text-sky-600{% else %}text-gray-900{% endif %} hover:text-sky-600">
-                <i class="fa fa-info-circle fa-fw text-lg text-gray-400 mr-1"></i>
-                Introduction
-              </a>
-              <a href="{% url "gardens_map" %}" class="flex gap-x-4 py-2 text-sm/6 font-semibold text-gray-900">
-                <i class="fa fa-map-marker-alt fa-fw text-lg text-gray-400 mr-1"></i>
-                Existing corridor projects
-              </a>
-              <a href="{% url "gardens_map" %}" class="flex gap-x-4 py-2 text-sm/6 font-semibold text-gray-900">
-                <i class="fa fa-map-marker-alt fa-fw text-lg text-gray-400 mr-1"></i>
-                High-impact strategic river corridors
-              </a>
-              <a href="{% url "gardens_map" %}" class="flex gap-x-4 py-2 text-sm/6 font-semibold
-              {% if page == "gardens_map" %}text-sky-600{% else %}text-gray-900{% endif %} hover:text-sky-600">
-                <i class="fa fa-map-marker-alt fa-fw text-lg text-gray-400 mr-1"></i>
-                {{ _("Garden map") }}
-              </a>
-              <a href="{% url "gardens" %}" class="flex gap-x-4 py-2 text-sm/6 font-semibold
-              {% if page == "gardens" %}text-sky-600{% else %}text-gray-900{% endif %} hover:text-sky-600">
-                <i class="fa fa-map fa-fw text-lg text-gray-400 mr-1"></i>
-                {{ _("Stepping-stone gardens") }} (41)
-              </a>
-            </div>
-          </div>
-        </div>
-        <div>
-          <h3 class="text-sm/6 font-medium text-gray-500">Recently updated</h3>
-          <div class="mt-6 flow-root">
-            <div class="-my-2">
-              <a href="/gardens/1003481/" class="flex gap-x-4 py-2 text-sm/6 font-semibold text-gray-900 hover:text-sky-600">
-                <i class="fa fa-feather fa-fw text-lg text-gray-400 mr-1"></i>
-                Alicedale Primary School  
-              </a>
-              <a href="/gardens/1003489/" class="flex gap-x-4 py-2 text-sm/6 font-semibold text-gray-900 hover:text-sky-600">
-                <i class="fa fa-feather fa-fw text-lg text-gray-400 mr-1"></i>
-                Goodwood wild food garden  
-              </a>
-              <a href="/gardens/1003487/" class="flex gap-x-4 py-2 text-sm/6 font-semibold text-gray-900 hover:text-sky-600">
-                <i class="fa fa-feather fa-fw text-lg text-gray-400 mr-1"></i>
-                Little Mowbray ZenDen 
-              </a>
-            </div>
-          </div>
-        </div>
-      </div>
-      <div class="grid grid-cols-1 gap-10 sm:gap-8 lg:grid-cols-2">
-        <h3 class="sr-only">Recent posts</h3>
-        <article class="relative isolate flex max-w-2xl flex-col gap-x-8 gap-y-6 sm:flex-row sm:items-start lg:flex-col lg:items-stretch">
-          <div class="relative flex-none">
-            <img class="w-full rounded-lg bg-gray-100 object-cover lg:h-auto" src="/media/photos/128_BdJlJAt.large.jpg" alt="">
-            <div class="absolute inset-0 rounded-lg ring-1 ring-inset ring-gray-900/10"></div>
-          </div>
-          <div>
-            <span class="float-right relative z-10 text-center rounded-full bg-gray-100 px-3 py-1.5 text-xs font-medium text-gray-600 hover:bg-gray-200">
-              Garden highlight
-            </span>
-            <h4 class="mt-2 text-sm/6 font-semibold text-gray-900 hover:text-sky-600">
-              <a href="/gardens/128/">
-                <span class="absolute inset-0"></span>
-                Newlands Triangle Gardens
-              </a>
-            </h4>
-          </div>
-        </article>
-        <article class="relative isolate flex max-w-2xl flex-col gap-x-8 gap-y-6 sm:flex-row sm:items-start lg:flex-col lg:items-stretch">
-          <div class="relative flex-none">
-            <img class="w-full rounded-lg bg-gray-100 object-cover lg:h-auto" src="/media/photos/b.large.jpg" alt="">
-            <div class="absolute inset-0 rounded-lg ring-1 ring-inset ring-gray-900/10"></div>
-          </div>
-          <div>
-            <span class="float-right relative z-10 rounded-full bg-gray-100 px-3 py-1.5 text-xs font-medium text-gray-600 hover:bg-gray-200">Monthly highlight</span>
-            <h4 class="mt-2 text-sm/6 font-semibold text-gray-900 hover:text-sky-600">
-              <a href="/gardens/1003511/">
-                <span class="absolute inset-0"></span>
-                Plumstead Community Gardens
-              </a>
-            </h4>
-          </div>
-        </article>
-      </div>
-    </div>
-  </div>
-
   <div id="dropdown-resources" class="dropdown absolute inset-x-0 top-0 -z-10 bg-white pt-16 shadow-lg ring-1 ring-gray-900/5 max-h-[85vh] overflow-y-auto lg:max-h-none lg:overflow-visible">
     <div class="mx-auto grid max-w-7xl grid-cols-1 gap-x-8 gap-y-10 px-6 py-10 lg:grid-cols-2 lg:px-8">
       <div class="grid grid-cols-1 gap-y-10 sm:grid-cols-2 sm:gap-x-6 sm:gap-y-0">
@@ -429,152 +338,25 @@
   </div>
 
   <div id="dropdown-join" class="dropdown absolute inset-x-0 top-0 -z-10 bg-white pt-16 shadow-lg ring-1 ring-gray-900/5 max-h-[85vh] overflow-y-auto lg:max-h-none lg:overflow-visible">
-    <div class="mx-auto grid max-w-7xl grid-cols-1 gap-x-8 gap-y-10 px-6 py-10 lg:grid-cols-2 lg:px-8">
-      <div class="grid grid-cols-1 gap-y-10 sm:grid-cols-2 sm:gap-x-6 sm:gap-y-0">
-        <div>
-          <h3 class="text-sm/6 font-medium text-gray-500">{{ _("Create or register your garden") }}</h3>
-          <div class="mt-6 flow-root">
-            <div class="-my-2">
-              <a href="/join/private-garden/" 
-              class="flex gap-x-4 py-2 text-sm/6 font-semibold hover:text-sky-600 
-                {% if menu == "join" and slug == "private-garden" %}text-sky-600{% else %}text-gray-900{% endif %}">
-                <i class="fa fa-map-marker-plus fa-fw text-lg text-gray-400 mr-1"></i>
-                {{ _("Private garden") }}
-              </a>
-              <a href="/join/public-garden/" 
-              class="flex gap-x-4 py-2 text-sm/6 font-semibold hover:text-sky-600 {% if slug == "public-garden" %}text-sky-600{% else %}text-gray-900{% endif %}">
-                <i class="fa fa-map-marker-plus fa-fw text-lg text-gray-400 mr-1"></i>
-                {{ _("Public garden") }}
-              </a>
-              <a href="/join/corporate-garden/" 
-              class="flex gap-x-4 py-2 text-sm/6 font-semibold hover:text-sky-600 {% if slug == "corporate-garden" %}text-sky-600{% else %}text-gray-900{% endif %}">
-                <i class="fa fa-map-marker-plus fa-fw text-lg text-gray-400 mr-1"></i>
-                {{ _("Corporate garden") }}
-              </a>
-              <a href="/join/recruit-others-to-register/" 
-              class="flex gap-x-4 py-2 text-sm/6 font-semibold hover:text-sky-600 {% if slug == "recruit-others-to-register" %}text-sky-600{% else %}text-gray-900{% endif %}">
-                <i class="fa fa-map-marker-plus fa-fw text-lg text-gray-400 mr-1"></i>
-                {{ _("Recruit others to register") }}
-              </a>
-            </div>
-          </div>
-        </div>
-        <div>
-          <h3 class="text-sm/6 font-medium text-gray-500">{{ _("Join our community") }}</h3>
-          <div class="mt-6 flow-root">
-            <div class="-my-2">
-              <a href="/join/sign-up-for-training/" 
-              class="flex gap-x-4 py-2 text-sm/6 font-semibold hover:text-sky-600 
-                {% if menu == "join" and slug == "sign-up-for-training" %}text-sky-600{% else %}text-gray-900{% endif %}">
-                <i class="fa fa-chalkboard-teacher fa-fw text-lg text-gray-400 mr-1"></i>
-                {{ _("Sign up for training") }}
-              </a>
-              <a href="/join/start-a-volunteer-group/" 
-              class="flex gap-x-4 py-2 text-sm/6 font-semibold hover:text-sky-600 
-                {% if menu == "join" and slug == "start-a-volunteer-group" %}text-sky-600{% else %}text-gray-900{% endif %}">
-                <i class="fa fa-users fa-fw text-lg text-gray-400 mr-1"></i>
-                {{ _("Start a volunteer group") }}
-              </a>
-              <a href="/join/adopt-a-park-street/" 
-              class="flex gap-x-4 py-2 text-sm/6 font-semibold hover:text-sky-600 
-                {% if menu == "join" and slug == "adopt-a-park-street" %}text-sky-600{% else %}text-gray-900{% endif %}">
-                <i class="fa fa-tree-alt fa-fw text-lg text-gray-400 mr-1"></i>
-                {{ _("Adopt a park / street") }}
-              </a>
-              <a href="/join/join-our-professional-network/" 
-              class="flex gap-x-4 py-2 text-sm/6 font-semibold hover:text-sky-600 
-                {% if menu == "join" and slug == "join-our-professional-network" %}text-sky-600{% else %}text-gray-900{% endif %}">
-                <i class="fa fa-user-tie fa-fw text-lg text-gray-400 mr-1"></i>
-                {{ _("Join our professional network") }}
-              </a>
-              <a href="/join/become-a-corridor-champion/" 
-              class="flex gap-x-4 py-2 text-sm/6 font-semibold hover:text-sky-600 
-                {% if menu == "join" and slug == "become-a-corridor-champion" %}text-sky-600{% else %}text-gray-900{% endif %}">
-                <i class="fa fa-user-crown fa-fw text-lg text-gray-400 mr-1"></i>
-                {{ _("Become a corridor champion") }}
-              </a>
-            </div>
+    <div class="mx-auto grid max-w-7xl grid-cols-1 sm:grid-cols-2 gap-x-8 gap-y-10 px-6 py-10 lg:grid-cols-4 lg:px-8">
+      {% for heading, items in JOIN_MENU.items %}
+      <div class="join-group">
+        <h3 class="text-sm/6 font-medium text-gray-500">{{ heading }}</h3>
+        <div class="mt-6 flow-root">
+          <div class="-my-2">
+            {% for item in items %}
+            <a href="/join/{{ item.slug }}/" class="flex gap-x-4 py-2 text-sm/6 font-semibold hover:text-sky-600 {% if slug == item.slug %}text-sky-600{% else %}text-gray-900{% endif %}">
+              <i class="fa {{ item.icon }} fa-fw text-lg text-gray-400 mr-1"></i>
+              {{ item.title }}
+            </a>
+            {% endfor %}
           </div>
         </div>
       </div>
-      <div class="grid grid-cols-1 gap-y-10 sm:grid-cols-2 sm:gap-x-6 sm:gap-y-0 lg:grid-cols-2 lg:gap-8">
-        <div>
-          <h3 class="text-sm/6 font-medium text-gray-500">{{ _("Partner with us") }}</h3>
-          <div class="mt-6 flow-root">
-            <div class="-my-2">
-              <a href="/join/champion-an-animal/" 
-              class="flex gap-x-4 py-2 text-sm/6 font-semibold hover:text-sky-600 
-                {% if menu == "join" and slug == "champion-an-animal" %}text-sky-600{% else %}text-gray-900{% endif %}">
-                <i class="fa fa-turtle fa-fw text-lg text-gray-400 mr-1"></i>
-                Champion an animal
-              </a>
-              <a href="/join/share-your-garden-designs/" 
-              class="flex gap-x-4 py-2 text-sm/6 font-semibold hover:text-sky-600 
-                {% if menu == "join" and slug == "share-your-garden-designs" %}text-sky-600{% else %}text-gray-900{% endif %}">
-                <i class="fa fa-ruler fa-fw text-lg text-gray-400 mr-1"></i>
-                Share your garden designs
-              </a>
-              <a href="/join/share-your-knowledge/" 
-              class="flex gap-x-4 py-2 text-sm/6 font-semibold hover:text-sky-600 
-                {% if menu == "join" and slug == "share-your-knowledge" %}text-sky-600{% else %}text-gray-900{% endif %}">
-                <i class="fa fa-chalkboard-teacher fa-fw text-lg text-gray-400 mr-1"></i>
-                Share your knowledge
-              </a>
-              <a href="/join/give-us-feedback-on-the-tool/" 
-              class="flex gap-x-4 py-2 text-sm/6 font-semibold hover:text-sky-600 
-                {% if menu == "join" and slug == "give-us-feedback-on-the-tool" %}text-sky-600{% else %}text-gray-900{% endif %}">
-                <i class="fa fa-comments fa-fw text-lg text-gray-400 mr-1"></i>
-                Give us feedback on the tool
-              </a>
-              <a href="/join/start-a-corridor-in-your-area/" 
-              class="flex gap-x-4 py-2 text-sm/6 font-semibold hover:text-sky-600 
-                {% if menu == "join" and slug == "start-a-corridor-in-your-area" %}text-sky-600{% else %}text-gray-900{% endif %}">
-                <i class="fa fa-map-marker-plus fa-fw text-lg text-gray-400 mr-1"></i>
-                Start a corridor in your area
-              </a>
-            </div>
-          </div>
-        </div>
-        <div>
-          <h3 class="text-sm/6 font-medium text-gray-500">{{ _("Sponsor our work") }}</h3>
-          <div class="mt-6 flow-root">
-            <div class="-my-2">
-              <a href="/join/sponsor-training/" 
-              class="flex gap-x-4 py-2 text-sm/6 font-semibold hover:text-sky-600 
-                {% if menu == "join" and slug == "sponsor-training" %}text-sky-600{% else %}text-gray-900{% endif %}">
-                <i class="fa fa-graduation-cap fa-fw text-lg text-gray-400 mr-1"></i>
-                Sponsor training
-              </a>
-              <a href="/join/sponsor-design/" 
-              class="flex gap-x-4 py-2 text-sm/6 font-semibold hover:text-sky-600 
-                {% if menu == "join" and slug == "sponsor-design" %}text-sky-600{% else %}text-gray-900{% endif %}">
-                <i class="fa fa-object-group fa-fw text-lg text-gray-400 mr-1"></i>
-                Sponsor design
-              </a>
-              <a href="/join/sponsor-the-online-tool/" 
-              class="flex gap-x-4 py-2 text-sm/6 font-semibold hover:text-sky-600 
-                {% if menu == "join" and slug == "sponsor-the-online-tool" %}text-sky-600{% else %}text-gray-900{% endif %}">
-                <i class="fa fa-desktop fa-fw text-lg text-gray-400 mr-1"></i>
-                Sponsor the online tool
-              </a>
-              <a href="/join/sponsor-a-public-space/" 
-              class="flex gap-x-4 py-2 text-sm/6 font-semibold hover:text-sky-600 
-                {% if menu == "join" and slug == "sponsor-a-public-space" %}text-sky-600{% else %}text-gray-900{% endif %}">
-                <i class="fa fa-users-class fa-fw text-lg text-gray-400 mr-1"></i>
-                Sponsor a public space
-              </a>
-              <a href="/join/sponsor-an-entire-corridor/" 
-              class="flex gap-x-4 py-2 text-sm/6 font-semibold hover:text-sky-600 
-                {% if menu == "join" and slug == "sponsor-an-entire-corridor" %}text-sky-600{% else %}text-gray-900{% endif %}">
-                <i class="fa fa-draw-polygon fa-fw text-lg text-gray-400 mr-1"></i>
-                Sponsor an entire corridor!
-              </a>
-            </div>
-          </div>
-        </div>
-      </div>
+      {% endfor %}
     </div>
   </div>
+
 
   {% include "_nav.planner.html" %}
 

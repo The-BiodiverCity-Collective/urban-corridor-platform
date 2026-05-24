@@ -1,0 +1,11 @@
+The following message was sent from the {{ site }} website.
+
+E-mail: {{ email }}
+Name: {{ name }}
+{% if organization %}Organisation: {{ organization }}{% endif %}
+Page: {{ page }}
+
+---- MESSAGE -----
+{{ message }}
+
+{{ site.meta_data.email_signature|linebreaksbr }}

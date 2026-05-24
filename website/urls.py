@@ -61,7 +61,7 @@ urlpatterns = [
     path("about/newsletter/", views.newsletter, name="newsletter"),
     path("about/", RedirectView.as_view(url="/about/introduction", permanent=True)),
     path("about/<slug:slug>/", views.page, {"menu": "about"}, name="about"),
-    path("join/<slug:slug>/", views.page, {"menu": "join"}, name="join"),
+    path("join/<slug:slug>/", views.page_join, {"menu": "join"}, name="join"),
     path("resources/calendar/", views.calendar, name="calendar"),
     path("resources/<slug:slug>/", views.resources, name="resources"),
     path("page/<slug:slug>/", views.page, name="page"),
