@@ -2435,6 +2435,30 @@ def planner_location(request, id):
         else:
             messages.warning(request, err)
 
+    if request.method == "POST" and "polygon_data" in request.POST:
+        polygon_data = request.POST.get("polygon_data")
+
+        if polygon_data:
+            geojson_list = json.loads(polygon_data)
+
+            polygons = []
+            for feature in geojson_list:
+                geom = geos.GEOSGeometry(json.dumps(feature["geometry"]))
+                polygons.append(geom)
+
+            # If multiple polygons, use MultiPolygon
+            if len(polygons) == 1:
+                garden.geometry = polygons[0]
+            else:
+                garden.geometry = geos.MultiPolygon(polygons)
+
+            garden.save()
+            if "new_garden" in request.GET:
+                return redirect(reverse("planner_site", args=[garden.id]) + "?new_garden")
+            else:
+                messages.success(request, _("Your garden location was saved."))
+                return redirect(reverse("planner", args=[garden.id]))
+
     if "lat" in request.GET and "lng" in request.GET:
         lat = float(request.GET.get("lat"))
         lng = float(request.GET.get("lng"))
@@ -2458,6 +2482,13 @@ def planner_location(request, id):
             messages.success(request, _("Your garden location was saved."))
             return redirect(reverse("planner", args=[garden.id]))
 
+    map_draw_polygon = False
+    geom_type = None
+    if garden.geometry:
+        geom_type = garden.geometry.geom_type
+    if request.GET.get("view") == "polygon" or geom_type == "Polygon" or geom_type == "MultiPolygon":
+        map_draw_polygon = True
+
     context = {
         "menu": "planner",
         "page": "location",
@@ -2469,7 +2500,7 @@ def planner_location(request, id):
         "step": 1,
         "swapped_corridor_coords": get_swapped_corridor_coords(site),
         "show_next_buttons": show_next_buttons,
-        "map_draw_polygon": True if request.GET.get("view") == "polygon" else False,
+        "map_draw_polygon": map_draw_polygon,
     }
     return render(request, "planner/location.html", context)
 
@@ -3107,27 +3138,6 @@ def planner_requirements(request, id):
 
     if not (garden := get_garden(request, id)):
         return redirect("planner")
-
-    if request.method == "POST":
-        polygon_data = request.POST.get("polygon_data")
-
-        if polygon_data:
-            geojson_list = json.loads(polygon_data)
-
-            polygons = []
-            for feature in geojson_list:
-                geom = geos.GEOSGeometry(json.dumps(feature["geometry"]))
-                polygons.append(geom)
-
-            # If multiple polygons, use MultiPolygon
-            if len(polygons) == 1:
-                garden.geometry = polygons[0]
-            else:
-                garden.geometry = geos.MultiPolygon(polygons)
-
-            garden.save()
-            messages.success(request, _("Your garden location was saved. Review it below."))
-            return redirect(request.get_full_path())
 
     context = {
         "menu": "planner",
