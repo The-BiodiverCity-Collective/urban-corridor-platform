@@ -1,7 +1,10 @@
 <div class="relative bg-gray-100 rounded-lg mb-20 mt-10">
   <div class="group overflow-hidden rounded-t-lg bg-gray-100">
-    <img src="{{ photo.medium }}" alt="" class="pointer-events-none w-full h-full object-cover group-hover:opacity-75" style="height:310px">
-    <a class="absolute inset-0 focus:outline-hidden" href="{{ photo.species.get_absolute_url }}" title="{{ _("Image credits") }}: {{ photo.author }}">
+    <div class="relative">
+      <img src="{{ photo.medium }}" alt="" class="pointer-events-none w-full h-full object-cover group-hover:opacity-75" style="height:310px">
+      <span class="absolute bottom-2 left-2 text-xs bg-black/50 text-white/90 px-2 py-1 rounded-l-md backdrop-blur-xs">{{ photo.credit }}</span>
+    </div>
+    <a class="absolute inset-0 focus:outline-hidden" href="{{ photo.species.get_absolute_url }}">
     </a>
   </div>
   <div class="m-3 pb-4">

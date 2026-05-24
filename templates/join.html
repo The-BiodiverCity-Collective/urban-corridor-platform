@@ -89,18 +89,18 @@
 
       <nav aria-label="Sidebar" class="flex flex-1 flex-col">
         <ul role="list" class="-mx-2 space-y-1">
-      {% for each in JOIN_MENU|get_item:info.meta_data.header %}
-          <li>
-            <a href="{% url "join" each.slug %}" 
-            class="group flex gap-x-3 rounded-md bg-gray-50 p-2 text-sm/6 font-semibold no-underline hover:bg-gray-100
-              {% if each.slug == slug %}bg-sky-600 text-white{% else %}text-sky-600{% endif %}
-            "
-            >
-              <i class="fa {{ each.icon }}"></i>
-              {{ each.title }}
-            </a>
-          </li>
-        {% endfor %}
+          {% for each in JOIN_MENU|get_item:info.meta_data.header %}
+            <li>
+              <a href="{% url "join" each.slug %}" 
+              class="block rounded-md bg-gray-50 p-2 text-sm/6 font-semibold no-underline
+                {% if each.slug == slug %}bg-sky-600 text-white{% else %}text-sky-600 hover:bg-gray-100{% endif %}
+              "
+              >
+                <i class="fa {{ each.icon }} mr-2"></i>
+                {{ each.title }}
+              </a>
+            </li>
+          {% endfor %}
         </ul>
       </nav>
 

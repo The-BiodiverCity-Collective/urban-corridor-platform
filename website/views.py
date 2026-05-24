@@ -1918,54 +1918,13 @@ def page_join(request, slug, menu=None):
         )
         messages.success(request, _("Thanks, we have received your message! We will try to get back to you as soon as possible."))
 
-    # temp code
-    join_menu = {
-        "Create or register your garden": [
-            {"title": "Private garden", "icon": "fa-map-marker-plus", "slug": "private-garden"},
-            {"title": "Public garden", "icon": "fa-map-marker-plus", "slug": "public-garden"},
-            {"title": "Corporate garden", "icon": "fa-map-marker-plus", "slug": "corporate-garden"},
-            {"title": "Recruit others to register", "icon": "fa-map-marker-plus", "slug": "recruit-others-to-register"},
-        ],
-        "Join our community": [
-            {"title": "Sign up for training", "icon": "fa-chalkboard-teacher", "slug": "sign-up-for-training"},
-            {"title": "Start a volunteer group", "icon": "fa-users", "slug": "start-a-volunteer-group"},
-            {"title": "Adopt a park / street", "icon": "fa-tree-alt", "slug": "adopt-a-park-street"},
-            {"title": "Join our professional network", "icon": "fa-user-tie", "slug": "join-our-professional-network"},
-            {"title": "Become a corridor champion", "icon": "fa-user-crown", "slug": "become-a-corridor-champion"},
-        ],
-        "Partner with us": [
-            {"title": "Champion an animal", "icon": "fa-turtle", "slug": "champion-an-animal"},
-            {"title": "Share your garden designs", "icon": "fa-ruler", "slug": "share-your-garden-designs"},
-            {"title": "Share your knowledge", "icon": "fa-chalkboard-teacher", "slug": "share-your-knowledge"},
-            {"title": "Give us feedback on the tool", "icon": "fa-comments", "slug": "give-us-feedback-on-the-tool"},
-            {"title": "Start a corridor in your area", "icon": "fa-map-marker-plus", "slug": "start-a-corridor-in-your-area"},
-        ],
-        "Sponsor our work": [
-            {"title": "Sponsor training", "icon": "fa-graduation-cap", "slug": "sponsor-training"},
-            {"title": "Sponsor design", "icon": "fa-object-group", "slug": "sponsor-design"},
-            {"title": "Sponsor the online tool", "icon": "fa-desktop", "slug": "sponsor-the-online-tool"},
-            {"title": "Sponsor a public space", "icon": "fa-users-class", "slug": "sponsor-a-public-space"},
-            {"title": "Sponsor an entire corridor!", "icon": "fa-draw-polygon", "slug": "sponsor-an-entire-corridor"},
-        ],
-    }
-
-    if "update" in request.GET:
-        for title,menu in join_menu.items():
-            for each in menu:
-                page = Page.objects.get(site=site, slug=each["slug"])
-                page.meta_data["header"] = title
-                page.save()
-
-
-    # end temp code
-
     context = {
         "info": info,
         "title": info.name,
         "menu": menu,
         "slug": slug,
         "design": "multicol" if "multicol" in request.GET else None,
-        "photo": Photo.objects.filter(species__site=site).order_by("?").first(),
+        "photo": Photo.objects.filter(species__site=site, position=1).order_by("?").first(),
     }
     return render(request, "join.html", context)
 
