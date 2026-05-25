@@ -111,43 +111,40 @@
 
   // Clean clipboard setup - prevents <p><br></p> insertion
   function setupCleanClipboard(quill) {
-    // Clear all default matchers to prevent visual spacing insertion
-    quill.clipboard.matchers = [];
-    
-    // Add ONLY custom matcher for videos and raw HTML
-    quill.clipboard.addMatcher(Node.ELEMENT_NODE, (node, delta) => {
-      // Handle video specifically first
-      if (node.tagName === 'VIDEO') {
-        const sources = [];
-        node.querySelectorAll('source').forEach(s => {
-          sources.push({ src: s.getAttribute('src'), type: s.getAttribute('type') });
+    // Only customize VIDEO handling
+    quill.clipboard.addMatcher('VIDEO', (node, delta) => {
+      const sources = [];
+
+      node.querySelectorAll('source').forEach(s => {
+        sources.push({
+          src: s.getAttribute('src'),
+          type: s.getAttribute('type')
         });
-        if (!sources.length && node.getAttribute('src')) {
-          sources.push({ src: node.getAttribute('src'), type: node.getAttribute('type') });
-        }
-        const value = {
-          sources: sources,
-          controls: node.hasAttribute('controls'),
-          muted: node.hasAttribute('muted'),
-          loop: node.hasAttribute('loop'),
-          preload: node.getAttribute('preload'),
-          poster: node.getAttribute('poster'),
-          width: node.getAttribute('width'),
-          height: node.getAttribute('height'),
-          crossorigin: node.getAttribute('crossorigin')
-        };
-        return new Delta().insert({ 'html-video': value }).insert('\n');
+      });
+
+      if (!sources.length && node.getAttribute('src')) {
+        sources.push({
+          src: node.getAttribute('src'),
+          type: node.getAttribute('type')
+        });
       }
 
-      // Preserve everything else as raw HTML - NO extra spacing
-      const temp = document.createElement('div');
-      temp.appendChild(node.cloneNode(true));
-      const outerHTML = temp.firstElementChild.outerHTML;
-      return new Delta().insert({ 'html-raw': outerHTML }).insert('\n');
+      const value = {
+        sources,
+        controls: node.hasAttribute('controls'),
+        muted: node.hasAttribute('muted'),
+        loop: node.hasAttribute('loop'),
+        preload: node.getAttribute('preload'),
+        poster: node.getAttribute('poster'),
+        width: node.getAttribute('width'),
+        height: node.getAttribute('height'),
+        crossorigin: node.getAttribute('crossorigin')
+      };
+
+      return new Delta()
+        .insert({ 'html-video': value })
+        .insert('\n');
     });
-    
-    // Ensure matchVisual is disabled
-    quill.clipboard.options.matchVisual = false;
   }
 
   $(function() {
