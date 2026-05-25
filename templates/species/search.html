@@ -73,7 +73,10 @@
         <label for="spatial_classification" class="block text-sm font-medium text-slate-700">{{ _("Spatial classification") }}</label>
         <select id="spatial_classification" name="spatial_classification" class="w-full rounded-lg border-slate-300 bg-white text-sm shadow-sm focus:border-blue-500 focus:ring-blue-500">
           {% for each in spatial_classification %}
-            <option {% if each.id|slugify == request.GET.spatial_classification %}selected{% endif %} value="{{ each.id }}">{{ each }}</option>
+            <option {% if each.id|slugify == request.GET.spatial_classification %}selected{% endif %} value="{{ each.id }}">
+              {% if each in SITE.features.all %}{{ _("Recommended species") }}{% else %}{{ _("Other regional plants") }}{% endif %}
+              ({{ each }})
+            </option>
           {% endfor %}
         </select>
       </div>

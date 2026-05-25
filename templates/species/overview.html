@@ -1,21 +1,40 @@
 {% extends "_base.html" %}
 
+{% block pre_main %}
+<div class="sm:block z-1000">
+  <nav class="tabs -mb-px flex space-x-2" aria-label="{{ _("Tabs") }}">
+    <a href="{% url "species" %}" class="tab {% if not request.GET.classification %}active{% else %}inactive{% endif %}">
+      <i class="fa fa-home mr-1"></i>
+      {{ _("Recommended plants") }}
+    </a>
+    <a href="{% url "species" %}?classification=170" class="tab {% if request.GET.classification == "170" %}active{% else %}inactive {% endif %}">
+      <i class="fa fa-chart-line mr-1"></i>
+      {{ _("Other regional plants") }}
+    </a>
+  </nav>
+</div>
+{% endblock %}
+
 {% block content %}
 
-<h1>{% block title %}Species{% endblock %}</h1>
-{% if vegetation_type %}
-  <h2>
-    {{ vegetation_type }}
-  </h2>
-  <div class="alert alert-warning">
-    There are <strong>{{ all }}</strong> species found in this vegetation type.
-    Use the filters below to locate the species of your interest.
-    <br>
-    <br>
-    <a href="{% url "species_full_list" %}{{ veg_link }}">View all {{ all }} species</a><br>
-    <a href="{% url "species" %}">Back to main species list</a>
+<h1 hidden>{% block title %}Species{% endblock %}</h1>
+
+<div class="flex items-start gap-3">
+  <i class="fas fa-info-circle text-sky-600 dark:text-sky-400 text-xl mt-0.5" aria-hidden="true"></i>
+  <div class="flex-1">
+    <h3 class="text-sm font-semibold tracking-tight mb-1">{{ _("Information") }}</h3>
+    <p class="text-sm text-slate-600 dark:text-slate-300 mb-3">
+      {% if request.GET.classification %}
+        These are other species that occur in <strong>Gauteng</strong>. While not classified as being part of Egoli Granite Grassland, we
+        suggest you consider these plants over other alternatives if you seek particular features or functions in your garden that cannot
+        be met by the recommended plants.
+      {% else %}
+        These plants are recommended for any garden inside the {{ SITE }}. These species are selected because they are part of the 
+        <strong>Egoli Granite Grassland</strong> vegetation type, which is the indigenous vegetation of the area.
+      {% endif %}
+    </p>
   </div>
-{% endif %}
+</div>
 
 <div class="mb-5">
 {% with species_list=samples %}
@@ -27,7 +46,7 @@
 <div class="container mx-auto mb-10">
   <div class="grid lg:grid-cols-6 gap-4 sm:grid-cols-4">
     {% for each in plant_types %}
-      <a href="{% url "species_list" %}?feature={{ each.id }}" class="p-4 bg-gray-100 rounded-2xl no-underline hover:opacity-70">
+      <a href="{% url "species_list" %}?feature={{ each.id }}&amp;spatial_classification={{ classification.id }}" class="p-4 bg-gray-100 rounded-2xl no-underline hover:opacity-70">
         <p class="flex-none text-3xl font-bold tracking-tight text-gray-900 ">{{ each.total }}</p>
         <div class="sm:w-80 sm:shrink lg:w-auto lg:flex-none">
           <p class="text-lg font-semibold tracking-tight text-gray-900 ">{{ each }}</p>
@@ -47,7 +66,7 @@
   <div class="grid lg:grid-cols-6 gap-4 sm:grid-cols-4">
     {% for each in features %}
       <a 
-        href="{% url "species_list" %}?feature={{ each.id }}{% if vegetation_type %}&amp;vegetation_type={{ vegetation_type.id }}{% endif %}" 
+        href="{% url "species_list" %}?feature={{ each.id }}&amp;spatial_classification={{ classification.id }}" 
         class="p-4 bg-{{ each.color }}-100 rounded-2xl no-underline hover:opacity-70">
         <p class="flex-none text-3xl font-bold tracking-tight text-gray-900 ">{{ each.total }}</p>
         <div class="sm:w-80 sm:shrink lg:w-auto lg:flex-none">

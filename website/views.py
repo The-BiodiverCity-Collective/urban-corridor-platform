@@ -728,39 +728,23 @@ def geojson(request, id):
 def species_overview(request, vegetation_type=None):
 
     site = get_site(request)
-    samples = Species.objects.values_list("id", flat=True).filter(site=site, photo__isnull=False)
-    genus = Genus.objects.filter(species__site=site)
-    families = Family.objects.filter(species__site=site)
-    species = Species.objects.filter(site=site)
 
-
-    # temp
-    species = species.filter(features__in=site.features.all())
-    # end temp
-
-
-    veg_types = VegetationType.objects.filter(site=site).annotate(
-        total=Count("species", filter=Q(species__site=site))
-    ).filter(total__gt=0)
-
-    if vegetation_type:
-        vegetation_type = VegetationType.objects.get(slug=vegetation_type)
-        species = species.filter(vegetation_types=vegetation_type)
-        samples = samples.filter(vegetation_types=vegetation_type)
-
-        genus = genus.annotate(total=Count("species", filter=Q(species__vegetation_types=vegetation_type))).filter(total__gt=0)
-        families = families.annotate(total=Count("species", filter=Q(species__vegetation_types=vegetation_type))).filter(total__gt=0)
-        features = SpeciesFeatures.objects.filter(site=site).order_by("species_type", "name").annotate(
-            total=Count("species", filter=Q(species__site=site, species__vegetation_types=vegetation_type))
-        )
-
+    if "classification" in request.GET:
+        classification = SpeciesFeatures.objects.get(pk=request.GET["classification"])
     else:
-        genus = genus.annotate(total=Count("species"))
-        families = families.annotate(total=Count("species"))
-        features = SpeciesFeatures.objects.all()
-        features = SpeciesFeatures.objects.filter(site=site).order_by("species_type", "name").annotate(
-            total=Count("species", filter=Q(species__site=site))
-        )
+        classification = site.features.get(species_type=SpeciesFeatures.SpeciesType.CLASSIFICATION)
+
+    samples = Species.objects.values_list("id", flat=True).filter(site=site, photo__isnull=False, features=classification)
+    genus = Genus.objects.filter(species__site=site, species__features=classification)
+    families = Family.objects.filter(species__site=site, species__features=classification)
+    species = Species.objects.filter(site=site, features=classification)
+
+    genus = genus.annotate(total=Count("species"))
+    families = families.annotate(total=Count("species"))
+    features = SpeciesFeatures.objects.all()
+    features = SpeciesFeatures.objects.filter(site=site).order_by("species_type", "name").annotate(
+        total=Count("species", filter=Q(species__site=site, species__features=classification))
+    )
 
     features = features.filter(total__gt=0)
     try:
@@ -776,12 +760,14 @@ def species_overview(request, vegetation_type=None):
         "all": species.count(),
         "features": features.exclude(species_type__in=[SpeciesFeatures.SpeciesType.TYPE, SpeciesFeatures.SpeciesType.CLASSIFICATION]),
         "plant_types": features.filter(species_type=SpeciesFeatures.SpeciesType.TYPE),
-        #"vegetation_types": veg_types, ### Taking this out for now - migrated to a Feature
         "vegetation_type": vegetation_type,
-        "veg_link": f"?vegetation_type={vegetation_type.id}" if vegetation_type else "",
         "menu": "species",
-        "show_total_box": Species.objects.filter(site=site, features__in=site.features.all()).count(),
+        "show_total_box": Species.objects.filter(site=site, features=classification).count(),
         "page": "all_species",
+
+        # Because we have tabs above the <main>, we need to unround the top-left corner if the first tab is active
+        "main_classes": "rounded-tl-none" if not "classification" in request.GET else None,
+        "classification": classification,
     }
     return render(request, "species/overview.html", context)
 
@@ -796,7 +782,7 @@ def species_search(request, vegetation_type=None):
         total=Count("species", filter=Q(species__site=site))
     ).filter(total__gt=0)
     features = SpeciesFeatures.objects.filter(site=site).exclude(species_type=SpeciesFeatures.SpeciesType.CLASSIFICATION)
-    spatial_classification = SpeciesFeatures.objects.filter(site=site, species_type=SpeciesFeatures.SpeciesType.CLASSIFICATION)
+    spatial_classification = SpeciesFeatures.objects.filter(site=site, species_type=SpeciesFeatures.SpeciesType.CLASSIFICATION).exclude(name="Invasive")
 
     if vegetation_type:
         vegetation_type = VegetationType.objects.get(slug=vegetation_type)
