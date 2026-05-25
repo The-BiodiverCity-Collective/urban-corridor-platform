@@ -2987,6 +2987,7 @@ def planner_profile(request, id, photos=False):
         return redirect(reverse("login") + "?next=" + request.get_full_path())
 
     if request.method == "POST":
+        error = False
         if photos:
 
             position = Photo.objects.filter(garden=garden).aggregate(Max("position"))["position__max"]
@@ -2996,35 +2997,41 @@ def planner_profile(request, id, photos=False):
             for each in request.FILES.getlist("photos"):
                 position += 1
                 # Try to get the date from the EXIF data
-                image_file = each.read()
-                image = Image.open(io.BytesIO(image_file))
-                exif_data = image._getexif()
-                if exif_data:
-                    for tag_id, value in exif_data.items():
-                        tag = TAGS.get(tag_id, tag_id)
-                        if tag == "DateTimeOriginal":
-                            # Convert the EXIF date string to a datetime object
-                            try:
-                                photo_date = timezone.datetime.strptime(value, "%Y:%m:%d %H:%M:%S")
-                            except ValueError:
-                                photo_date = timezone.now()  # Fallback to today's date if parsing fails
-                                messages.warning(request, f"Photo date was not found for {each.name} - using today's date. Please change if needed.")
-
-                else:
+                try:
+                    image_file = each.read()
+                    image = Image.open(io.BytesIO(image_file))
+                    exif_data = image._getexif()
                     photo_date = timezone.now()
-                    messages.warning(request, f"Photo date was not found for {each.name} - using today's date. Please change if needed.")
+                    if exif_data:
+                        for tag_id, value in exif_data.items():
+                            tag = TAGS.get(tag_id, tag_id)
+                            if tag == "DateTimeOriginal":
+                                # Convert the EXIF date string to a datetime object
+                                try:
+                                    photo_date = timezone.datetime.strptime(value, "%Y:%m:%d %H:%M:%S")
+                                except ValueError:
+                                    photo_date = timezone.now()  # Fallback to today's date if parsing fails
+                                    messages.warning(request, f"Photo date was not found for {each.name} - using today's date. Please change if needed.")
 
-                Photo.objects.create(
-                    author = request.POST["photographer"],
-                    image = each,
-                    date = photo_date,
-                    position = position,
-                    garden = garden,
-                    source = "upload",
-                    license_code = request.POST["license"],
-                )
+                    else:
+                        pass
+                        #messages.warning(request, f"Photo date was not found for {each.name} - using today's date. Please change if needed.")
 
-            messages.success(request, _("Photos have been added."))
+                    Photo.objects.create(
+                        author = request.POST["photographer"],
+                        image = each,
+                        date = photo_date,
+                        position = position,
+                        garden = garden,
+                        source = "upload",
+                        license_code = request.POST["license"],
+                    )
+                except Exception as e:
+                    error = True
+                    messages.warning(request, f"Please note that the image '{each.name}' was not uploaded successfully. Error: {e}")
+
+            if not error:
+                messages.success(request, _("Photos have been added."))
             return redirect(request.get_full_path())
 
         else:
