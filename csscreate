@@ -1,1 +1,3 @@
+mv ignore/org.html ./
 sudo docker exec -it corridors_web /src/tailwindcss-cli -i /src/static/css/ucp.css -o /src/static/css/output.css
+mv org.html ignore

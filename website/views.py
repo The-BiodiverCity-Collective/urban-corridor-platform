@@ -1102,8 +1102,8 @@ def species_sources(request):
     site = get_site(request)
     
     context = {
-        "menu": "species",
-        "documents": Document.objects.filter(site=site, doc_type="SPECIES_LIST"),
+        "menu": "resources",
+        "documents": Document.objects.filter(site=site, doc_type="SPECIES_LIST", is_active=True),
         "title": _("Species source document"),
         "page": "sources",
     }
@@ -1128,6 +1128,7 @@ def species_source(request, id):
         "info": info,
         "species_list": species,
         "title": info.name,
+        "body_padding": True,
     }
 
     return render(request, "species/source.html", context)
@@ -1868,6 +1869,7 @@ def page(request, slug, menu=None):
         "menu": menu,
         "slug": slug,
         "design": "multicol" if "multicol" in request.GET else None,
+        "body_padding": True,
     }
     return render(request, "page.html", context)
 
@@ -2309,7 +2311,7 @@ def nursery(request, slug, garden=None, planner=False):
 
     context = {
         "info": info,
-        "menu": "planner" if garden else "about",
+        "menu": "planner" if garden else "resources",
         "page": "resources",
         "page_info": info,
         "prices_present": NurseryInventory.objects.filter(nursery=info, price__isnull=False).exists(),
@@ -3571,7 +3573,11 @@ def controlpanel_page(request, id=None):
 def controlpanel_gardens(request):
 
     site = get_site(request)
-    gardens = Garden.objects.filter(site=site)
+
+    if "all" in request.GET:
+        gardens = Garden.objects_unfiltered.filter(site=site)
+    else:
+        gardens = Garden.objects.filter(site=site)
 
     context = {
         "controlpanel": True,

@@ -9,6 +9,9 @@
 
     {% for each in documents %}
       <li class="relative bg-white rounded-xl h-auto shadow-sm">
+        {% if each.cover_image %}
+          <img src="{{ each.cover_image.medium.url }}" alt="" class="h-75 w-full object-cover object-center" />
+        {% endif %}
         <div class="m-5">
           <h2 class="mt-2 block font-medium text-gray-900">
             {{ each }}
@@ -22,11 +25,11 @@
 
           <p class="text-gray-500 mt-4" id="description-{{ each.id }}">
             {% if each.description|length > 400 %}
-              <span class="truncated">{{ each.description|truncatewords:70 }}</span>
-              <span class="hidden full-text" aria-hidden="true">{{ each.description }}</span>
+              <span class="truncated">{{ each.description|linebreaksbr|truncatewords:70 }}</span>
+              <span class="hidden full-text" aria-hidden="true">{{ each.description|linebreaksbr }}</span>
               <a href="#" class="text-blue-500 read-more" aria-expanded="false" aria-controls="full-text-{{ each.id }}">{{ _("read more") }}</a>
             {% else %}
-              {{ each.description }}
+              {{ each.description|linebreaksbr }}
             {% endif %}
           </p>
 

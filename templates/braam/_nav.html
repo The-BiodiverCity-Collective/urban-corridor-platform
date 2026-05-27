@@ -30,7 +30,7 @@
           <i class="fa fa-angle-down mt-1"></i>
         </a>
 
-        <a hidden href="/resources/" class="mr-3 inline-flex items-center gap-x-1 text-sm/6 font-semibold {% if menu == "resources" %}text-sky-600 active{% else %}text-gray-900{% endif %} hovermenu" data-target="resources" aria-expanded="false">
+        <a href="/resources/" class="mr-3 inline-flex items-center gap-x-1 text-sm/6 font-semibold {% if menu == "resources" %}text-sky-600 active{% else %}text-gray-900{% endif %} hovermenu" data-target="resources" aria-expanded="false">
           {{ _("Resources") }}
             <i class="fa fa-angle-down mt-1 {% if menu == "resources" %}text-sky-600{% endif %}"></i>
         </a>
@@ -277,14 +277,9 @@
                 <i class="fa fa-books fa-fw text-lg text-gray-400 mr-1"></i>
                 Plant reference sources
               </a>
-              <a href="/resources/teaching/" class="flex gap-x-4 py-2 text-sm/6 font-semibold hover:text-sky-600
-                {% if page == "teaching" and menu == "resources" %}text-sky-600{% else %}text-gray-900{% endif %}">
-                <i class="fa fa-list fa-fw text-lg text-gray-400 mr-1"></i>
-                Teaching resources
-              </a>
               <a href="/resources/general/" class="flex gap-x-4 py-2 text-sm/6 font-semibold hover:text-sky-600
                 {% if page == "general" and menu == "resources" %}text-sky-600{% else %}text-gray-900{% endif %}">
-                <i class="fa fa-file_alt fa-fw text-lg text-gray-400 mr-1"></i>
+                <i class="fa fa-file-alt fa-fw text-lg text-gray-400 mr-1"></i>
                 Useful documents
               </a>
               <a href="/resources/link/" class="flex gap-x-4 py-2 text-sm/6 font-semibold hover:text-sky-600
@@ -292,15 +287,25 @@
                 <i class="fa fa-link fa-fw text-lg text-gray-400 mr-1"></i>
                 Links
               </a>
-              <a href="#" class="flex gap-x-4 py-2 text-sm/6 font-semibold text-gray-500">
+              <a hidden href="#" class="flex gap-x-4 py-2 text-sm/6 font-semibold text-gray-500">
                 <i class="fa fa-download fa-fw text-lg text-gray-400 mr-1"></i>
                 Download maps
+              </a>
+              <a href="/resources/introduction-video/" class="flex gap-x-4 py-2 text-sm/6 font-semibold hover:text-sky-600
+                {% if slug == "introduction-video" %}text-sky-600{% else %}text-gray-900{% endif %}">
+                <i class="fal fa-play fa-fw text-lg text-gray-400 mr-1"></i>
+                Introduction video
+              </a>
+              <a href="/resources/roadmap/" class="flex gap-x-4 py-2 text-sm/6 font-semibold hover:text-sky-600
+                {% if slug == "website-development-roadmap" %}text-sky-600{% else %}text-gray-900{% endif %}">
+                <i class="fa fa-code fa-fw text-lg text-gray-400 mr-1"></i>
+                Website roadmap
               </a>
             </div>
           </div>
         </div>
         <div>
-          <h3 class="text-sm/6 font-medium text-gray-500">Advanced tools</h3>
+          <h3 class="text-sm/6 font-medium text-gray-500">Annual calendar</h3>
           <div class="mt-6 flow-root">
             <div class="-my-2">
               <a hidden href="/blog/" class="flex gap-x-4 py-2 text-sm/6 font-semibold hover:text-sky-600
@@ -316,11 +321,7 @@
 
             </div>
           </div>
-        </div>
-      </div>
-      <div class="grid grid-cols-1 gap-y-10 sm:grid-cols-2 sm:gap-x-6 sm:gap-y-0 lg:grid-cols-2 lg:gap-8">
-        <div>
-          <h3 class="text-sm/6 font-medium text-gray-500">Indigenous nurseries</h3>
+          <h3 class="mt-10 text-sm/6 font-medium text-gray-500">Indigenous nurseries</h3>
           <div class="mt-6 mb-6 flow-root">
             <div class="-my-2">
               {% for each in NURSERIES %}
@@ -332,6 +333,10 @@
               {% endfor %}
             </div>
           </div>
+        </div>
+      </div>
+      <div class="grid grid-cols-1 gap-y-10 sm:grid-cols-2 sm:gap-x-6 sm:gap-y-0 lg:grid-cols-2 lg:gap-8">
+        <div>
         </div>
 
         {% include "_highlight.html" %}

@@ -1370,6 +1370,9 @@
   .h-50 {
     height: calc(var(--spacing) * 50);
   }
+  .h-75 {
+    height: calc(var(--spacing) * 75);
+  }
   .h-100 {
     height: calc(var(--spacing) * 100);
   }
@@ -2396,9 +2399,6 @@
   .bg-green-100 {
     background-color: var(--color-green-100);
   }
-  .bg-indigo-500 {
-    background-color: var(--color-indigo-500);
-  }
   .bg-lime-50 {
     background-color: var(--color-lime-50);
   }
@@ -2632,9 +2632,6 @@
   }
   .object-center {
     object-position: center;
-  }
-  .object-left {
-    object-position: left;
   }
   .p-0 {
     padding: calc(var(--spacing) * 0);
@@ -3664,13 +3661,6 @@
       }
     }
   }
-  .hover\:bg-indigo-400 {
-    &:hover {
-      @media (hover: hover) {
-        background-color: var(--color-indigo-400);
-      }
-    }
-  }
   .hover\:bg-lime-700 {
     &:hover {
       @media (hover: hover) {
@@ -3710,6 +3700,13 @@
     &:hover {
       @media (hover: hover) {
         background-color: var(--color-red-700);
+      }
+    }
+  }
+  .hover\:bg-sky-400 {
+    &:hover {
+      @media (hover: hover) {
+        background-color: var(--color-sky-400);
       }
     }
   }
@@ -3922,6 +3919,11 @@
       color: var(--color-gray-900);
     }
   }
+  .focus\:no-underline {
+    &:focus {
+      text-decoration-line: none;
+    }
+  }
   .focus\:ring {
     &:focus {
       --tw-ring-shadow: var(--tw-ring-inset,) 0 0 0 calc(1px + var(--tw-ring-offset-width)) var(--tw-ring-color, currentcolor);
@@ -3974,16 +3976,6 @@
   .focus\:ring-green-500 {
     &:focus {
       --tw-ring-color: var(--color-green-500);
-    }
-  }
-  .focus\:ring-indigo-400 {
-    &:focus {
-      --tw-ring-color: var(--color-indigo-400);
-    }
-  }
-  .focus\:ring-indigo-500 {
-    &:focus {
-      --tw-ring-color: var(--color-indigo-500);
     }
   }
   .focus\:ring-lime-300 {
@@ -4110,11 +4102,6 @@
       outline-offset: 2px;
     }
   }
-  .focus-visible\:outline-indigo-500 {
-    &:focus-visible {
-      outline-color: var(--color-indigo-500);
-    }
-  }
   .focus-visible\:outline-neutral-50 {
     &:focus-visible {
       outline-color: var(--color-neutral-50);
@@ -4123,6 +4110,11 @@
   .focus-visible\:outline-orange-600 {
     &:focus-visible {
       outline-color: var(--color-orange-600);
+    }
+  }
+  .focus-visible\:outline-sky-500 {
+    &:focus-visible {
+      outline-color: var(--color-sky-500);
     }
   }
   .focus-visible\:outline-sky-600 {
@@ -4704,6 +4696,11 @@
       padding: calc(var(--spacing) * 8);
     }
   }
+  .md\:p-10 {
+    @media (width >= 48rem) {
+      padding: calc(var(--spacing) * 10);
+    }
+  }
   .md\:py-32 {
     @media (width >= 48rem) {
       padding-block: calc(var(--spacing) * 32);
@@ -4779,11 +4776,6 @@
   .lg\:mt-6 {
     @media (width >= 64rem) {
       margin-top: calc(var(--spacing) * 6);
-    }
-  }
-  .lg\:mt-10 {
-    @media (width >= 64rem) {
-      margin-top: calc(var(--spacing) * 10);
     }
   }
   .lg\:ml-0 {
@@ -4964,6 +4956,11 @@
   .lg\:p-12 {
     @media (width >= 64rem) {
       padding: calc(var(--spacing) * 12);
+    }
+  }
+  .lg\:p-20 {
+    @media (width >= 64rem) {
+      padding: calc(var(--spacing) * 20);
     }
   }
   .lg\:px-4 {

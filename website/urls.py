@@ -64,6 +64,8 @@ urlpatterns = [
     path("about/<slug:slug>/", views.page, {"menu": "about"}, name="about"),
     path("join/<slug:slug>/", views.page_join, {"menu": "join"}, name="join"),
     path("resources/calendar/", views.calendar, name="calendar"),
+    path("resources/roadmap/", views.page, {"slug": "website-development-roadmap", "menu": "resources"}),
+    path("resources/introduction-video/", views.page, {"slug": "introduction-video", "menu": "resources"}),
     path("resources/<slug:slug>/", views.resources, name="resources"),
     path("page/<slug:slug>/", views.page, name="page"),
 

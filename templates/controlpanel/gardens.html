@@ -11,7 +11,7 @@
       <th>{{ _("Photos") }}</th>
       <th>{{ _("User") }}</th>
       <th>{{ _("Active") }}</th>
-      <th>Original</th>
+      <th>{{ _("Date created") }}</th>
     </tr>
   </thead>
   <tbody>
@@ -21,7 +21,7 @@
       <td>{{ each.photos.count }}</td>
       <td>{{ each.user|default_if_none:"" }}</td>
       <td>{{ each.is_active }}</td>
-      <td>{{ each.original.your_name }}<br>{{ each.original.email }}<br>{{each.original.phone }}</td>
+      <td data-sort="{{ each.created_at|date:"YmdHis" }}">{{ each.created_at }}</td>
     </tr>
   {% endfor %}
   </tbody>

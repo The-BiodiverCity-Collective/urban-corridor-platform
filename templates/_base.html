@@ -37,7 +37,7 @@
   {% if request.GET.online_tailwind %}
     <script src="https://unpkg.com/@tailwindcss/browser@4"></script>
   {% else %}
-    <link rel="stylesheet" href="{% static "css/output.css" %}?id=0738-2505">
+    <link rel="stylesheet" href="{% static "css/output.css" %}?id=1632-2705">
   {% endif %}
 
   {% if load_tooltip %}
@@ -119,7 +119,7 @@
         <div class="pre_main">
           {% block pre_main %}{% endblock %}
         </div>
-        <div class="{% if replace_main_classes %}{{ replace_main_classes }}{% else %}rounded-lg bg-white px-5 py-6 shadow-sm sm:px-6 {% if body_padding %}p-10{% endif %} {{ main_classes }}{% endif %}">
+        <div class="{% if replace_main_classes %}{{ replace_main_classes }}{% else %}rounded-lg bg-white shadow-sm {% if body_padding %}p-5 md:p-10 lg:p-20{% else %}px-5 py-6 sm:px-6 {% endif %} {{ main_classes }}{% endif %}">
     {% endif %}
 
         {% if messages %}
