@@ -49,15 +49,12 @@
     --color-green-600: oklch(62.7% 0.194 149.214);
     --color-green-700: oklch(52.7% 0.154 150.069);
     --color-emerald-50: oklch(97.9% 0.021 166.113);
-    --color-emerald-100: oklch(95% 0.052 163.051);
     --color-emerald-500: oklch(69.6% 0.17 162.48);
     --color-emerald-600: oklch(59.6% 0.145 163.225);
-    --color-emerald-700: oklch(50.8% 0.118 165.612);
     --color-emerald-800: oklch(43.2% 0.095 166.913);
     --color-emerald-900: oklch(37.8% 0.077 168.94);
     --color-emerald-950: oklch(26.2% 0.051 172.552);
     --color-teal-50: oklch(98.4% 0.014 180.72);
-    --color-teal-500: oklch(70.4% 0.14 182.503);
     --color-sky-100: oklch(95.1% 0.026 236.824);
     --color-sky-200: oklch(90.1% 0.058 230.902);
     --color-sky-300: oklch(82.8% 0.111 230.318);
@@ -1234,6 +1231,12 @@
     -webkit-box-orient: vertical;
     -webkit-line-clamp: 3;
   }
+  .line-clamp-4 {
+    overflow: hidden;
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 4;
+  }
   .block {
     display: block;
   }
@@ -1357,6 +1360,9 @@
   }
   .h-24 {
     height: calc(var(--spacing) * 24);
+  }
+  .h-28 {
+    height: calc(var(--spacing) * 28);
   }
   .h-40 {
     height: calc(var(--spacing) * 40);
@@ -3140,9 +3146,6 @@
   .text-sky-100 {
     color: var(--color-sky-100);
   }
-  .text-sky-500 {
-    color: var(--color-sky-500);
-  }
   .text-sky-600 {
     color: var(--color-sky-600);
   }
@@ -3172,9 +3175,6 @@
   }
   .text-stone-700 {
     color: var(--color-stone-700);
-  }
-  .text-teal-500 {
-    color: var(--color-teal-500);
   }
   .text-white {
     color: var(--color-white);
@@ -3974,6 +3974,11 @@
   .focus\:ring-green-500 {
     &:focus {
       --tw-ring-color: var(--color-green-500);
+    }
+  }
+  .focus\:ring-indigo-400 {
+    &:focus {
+      --tw-ring-color: var(--color-indigo-400);
     }
   }
   .focus\:ring-indigo-500 {

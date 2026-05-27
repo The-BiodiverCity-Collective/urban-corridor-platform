@@ -13,3 +13,4 @@ templates/index.html
 node_modules/*
 exportdb
 tailwindcss-*
+ignore/*
