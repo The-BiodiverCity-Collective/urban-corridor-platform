@@ -2149,18 +2149,6 @@ def account(request):
 
 # END ACCOUNT FUNCTIONS
 
-def newsletter(request):
-    if request.POST and "email" in request.POST:
-        Newsletter.objects.create(email=request.POST.get("email"))
-        messages.success(request, "Thank you! You have been registered for our newsletter.")
-    else:
-        messages.warning(request, "We could not register you for our newsletter - please ensure you enter a valid email address. Try again in the footer below.")
-
-    if "next" in request.POST:
-        return redirect(request.POST.get("next"))
-    else:
-        return redirect("index")
-
 def organizations(request):
     site = get_site(request)
     context = {
@@ -2173,6 +2161,9 @@ def organizations(request):
 
 def newsletter(request):
     site = get_site(request)
+    if request.POST and "email" in request.POST:
+        Newsletter.objects.create(email=request.POST.get("email"))
+        messages.success(request, "Thank you! You have been registered for our newsletter.")
     context = {
         "info": Page.objects.get(site=site, slug="newsletter"),
         "page": "newsletter",
@@ -3280,7 +3271,7 @@ def favicon(request):
 
 @staff_member_required
 def controlpanel(request):
-    
+
     context = {
         "controlpanel": True,
         "menu": "index",
