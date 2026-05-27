@@ -1,0 +1,5 @@
+A new garden was activated on {{ site }}! 
+
+The name of the garden is: {{ garden }}.
+
+Please review in the control panel and activate or liaise about anything that is missing.

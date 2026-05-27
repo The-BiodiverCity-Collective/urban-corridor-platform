@@ -3156,6 +3156,27 @@ def planner_activate(request, id):
         garden.published_at = timezone.now()
         garden.is_active = True
         garden.save()
+
+        mailcontext = {
+            "garden": garden,
+            "site": site,
+        }
+        msg_html = render_to_string("mailbody/newgarden.html", mailcontext)
+        msg_plain = render_to_string("mailbody/newgarden.txt", mailcontext)
+
+        sender = f'"{site.name}" <{site.email}>'
+        recipient = sender
+
+        send_mail(
+            "New garden activated: " + garden.name,
+            msg_plain,
+            sender,
+            [recipient],
+            html_message=msg_html,
+        )
+
+
+        messages.success(request, _("Great! Your garden was activated and will be published after review by our team. Give us 1-2 days to review and you will hear from us once it is online!"))
         response = redirect(request.path)
         response.set_cookie("garden_active", garden.is_active)
         return response
@@ -3216,13 +3237,6 @@ def favicon(request):
 @staff_member_required
 def controlpanel(request):
     
-    # temp code
-
-    if "update" in request.GET:
-        pass
-
-    # end temp code
-
     context = {
         "controlpanel": True,
         "menu": "index",
@@ -3445,6 +3459,16 @@ def controlpanel_page(request, id=None):
                 del info.meta_data["next"]
                 del info.meta_data["next_link"]
 
+            if request.POST.get("hide_title"):
+                info.meta_data["hide_title"] = request.POST["hide_title"]
+            elif "hide_title" in info.meta_data:
+                del info.meta_data["hide_title"]
+
+            if request.POST.get("hide_quill"):
+                info.meta_data["hide_quill"] = request.POST["hide_quill"]
+            elif "hide_quill" in info.meta_data:
+                del info.meta_data["hide_quill"]
+
             if "url" in request.POST:
                 info.meta_data["url"] = request.POST.get("url")
 
@@ -3485,7 +3509,11 @@ def controlpanel_page(request, id=None):
                     url = f"{url}&plain"
                 return redirect(url)
 
-    if "plain" in request.GET and info:
+    quill = True
+    if "plain" in request.GET:
+        quill = False
+    if info and info.meta_data and "hide_quill" in info.meta_data:
+        quill = False
         # When showing in plain text we want to remove any remnants of Quill text
         info.content_html = quill_cleanup(info.content_html)
 
@@ -3494,7 +3522,7 @@ def controlpanel_page(request, id=None):
         "menu": menu,
         "info": info,
         "title": Page.PageType(page_type).label if not info.id else title,
-        "quill": False if "plain" in request.GET else True,
+        "quill": quill,
         "page_type": page_type,
         "photos": photos,
         "species": species,

@@ -127,6 +127,23 @@
                 </div>
               </div>
             </div>
+            <div class="flex-1">
+              <div class="col-span-full">
+                <label class="block text-sm/6 font-medium text-gray-900">{{ _("Settings") }}</label>
+                <div class="mt-2">
+                  <label>
+                    <input type="checkbox" name="hide_title" value="1" {% if info.meta_data.hide_title %}checked{% endif %}/>
+                    {{ _("Hide title") }}
+                  </label>
+                </div>
+                <div class="mt-2">
+                  <label>
+                    <input type="checkbox" name="hide_quill" value="1" {% if info.meta_data.hide_quill %}checked{% endif %}/>
+                    {{ _("Hide Quill editor") }}
+                  </label>
+                </div>
+              </div>
+            </div>
           </div>
         {% elif page_type == 6 %}
             <div class="flex-1 mt-5">

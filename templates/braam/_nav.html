@@ -30,7 +30,7 @@
           <i class="fa fa-angle-down mt-1"></i>
         </a>
 
-        <a href="/resources/" class="mr-3 inline-flex items-center gap-x-1 text-sm/6 font-semibold {% if menu == "resources" %}text-sky-600 active{% else %}text-gray-900{% endif %} hovermenu" data-target="resources" aria-expanded="false">
+        <a hidden href="/resources/" class="mr-3 inline-flex items-center gap-x-1 text-sm/6 font-semibold {% if menu == "resources" %}text-sky-600 active{% else %}text-gray-900{% endif %} hovermenu" data-target="resources" aria-expanded="false">
           {{ _("Resources") }}
             <i class="fa fa-angle-down mt-1 {% if menu == "resources" %}text-sky-600{% endif %}"></i>
         </a>
@@ -183,22 +183,30 @@
           <h3 class="text-sm/6 font-medium text-gray-500">Our corridor</h3>
           <div class="mt-6 flow-root">
             <div class="-my-2">
-              <a href="/contact/" class="flex gap-x-4 py-2 text-sm/6 font-semibold text-gray-900 hover:text-sky-600">
-                <i class="fa fa-envelope fa-fw text-lg text-gray-400 mr-1"></i>
-                Introduction
+              <a href="/about/corridor/" class="flex gap-x-4 py-2 text-sm/6 font-semibold 
+              {% if menu == "about" and slug == "corridor" %}text-sky-600{% else %}text-gray-900{% endif %} hover:text-sky-600">
+                <i class="fa fa-info-square fa-fw text-lg text-gray-400 mr-1"></i>
+                About our corridor
               </a>
-              <a href="/about/newsletter/" class="flex gap-x-4 py-2 text-sm/6 font-semibold 
-              {% if page == "newsletter" %}text-sky-600{% else %}text-gray-900{% endif %} hover:text-sky-600">
-                <i class="fa fa-newspaper fa-fw text-lg text-gray-400 mr-1"></i>
+              <a href="/about/mission/" class="flex gap-x-4 py-2 text-sm/6 font-semibold 
+              {% if menu == "about" and slug == "mission" %}text-sky-600{% else %}text-gray-900{% endif %} hover:text-sky-600">
+                <i class="fa fa-info-square fa-fw text-lg text-gray-400 mr-1"></i>
+                Mission &amp; objectives
+              </a>
+              <a href="/about/strategy/" class="flex gap-x-4 py-2 text-sm/6 font-semibold 
+              {% if menu == "about" and slug == "strategy" %}text-sky-600{% else %}text-gray-900{% endif %} hover:text-sky-600">
+                <i class="fa fa-info-square fa-fw text-lg text-gray-400 mr-1"></i>
+                Strategy
+              </a>
+              <a href="/about/egoli-granite-grassland/" class="flex gap-x-4 py-2 text-sm/6 font-semibold 
+              {% if menu == "about" and slug == "egoli-granite-grassland" %}text-sky-600{% else %}text-gray-900{% endif %} hover:text-sky-600">
+                <i class="fa fa-image fa-fw text-lg text-gray-400 mr-1"></i>
                 Egoli Granite Grassland
               </a>
-              <a href="#" class="flex gap-x-4 py-2 text-sm/6 font-semibold text-gray-900">
-                <i class="fab fa-facebook fa-fw text-lg text-gray-400 mr-1"></i>
-                Map
-              </a>
-              <a href="#" class="flex gap-x-4 py-2 text-sm/6 font-semibold text-gray-900">
-                <i class="fab fa-youtube fa-fw text-lg text-gray-400 mr-1"></i>
-                Gardens
+              <a href="/about/gardens/" class="flex gap-x-4 py-2 text-sm/6 font-semibold 
+              {% if menu == "about" and slug == "gardens" %}text-sky-600{% else %}text-gray-900{% endif %} hover:text-sky-600">
+                <i class="fa fa-shovel fa-fw text-lg text-gray-400 mr-1"></i>
+                Our gardens
               </a>
             </div>
           </div>
@@ -208,36 +216,33 @@
           <h3 class="text-sm/6 font-medium text-gray-500">Who we are</h3>
           <div class="mt-6 flow-root">
             <div class="-my-2">
-              <a href="{% url "about" "introduction" %}" class="flex gap-x-4 py-2 text-sm/6 font-semibold 
-              {% if slug == "introduction" %}text-sky-600{% else %}text-gray-900{% endif %} hover:text-sky-600">
-                <i class="fa fa-info-circle fa-fw text-lg text-gray-400 mr-1"></i>
-                Introduction
+              <a href="/about/who-we-are/" class="flex gap-x-4 py-2 text-sm/6 font-semibold 
+              {% if menu == "about" and slug == "who-we-are" %}text-sky-600{% else %}text-gray-900{% endif %} hover:text-sky-600">
+                <i class="fa fa-users fa-fw text-lg text-gray-400 mr-1"></i>
+                Overview
               </a>
-              <a href="{% url "about" "history" %}" class="flex gap-x-4 py-2 text-sm/6 font-semibold 
-              {% if slug == "history" %}text-sky-600{% else %}text-gray-900{% endif %} hover:text-sky-600">
-                <i class="fa fa-file-alt fa-fw text-lg text-gray-400 mr-1"></i>
-                History
-              </a>
-              <a href="{% url "about" "our-organisations" %}" class="flex gap-x-4 py-2 text-sm/6 font-semibold 
-              {% if page == "organizations" %}text-sky-600{% else %}text-gray-900{% endif %} hover:text-sky-600">
-                <i class="fa fa-list fa-fw text-lg text-gray-400 mr-1"></i>
+              <a href="/about/organisations/" class="flex gap-x-4 py-2 text-sm/6 font-semibold 
+              {% if menu == "about" and slug == "organisations" %}text-sky-600{% else %}text-gray-900{% endif %} hover:text-sky-600">
+                <i class="fa fa-chart-network fa-fw text-lg text-gray-400 mr-1"></i>
                 Our organisations
               </a>
-              <a href="{% url "about" "community-engagement-team" %}" class="flex gap-x-4 py-2 text-sm/6 font-semibold 
-              {% if slug == "community-engagement-team" %}text-sky-600{% else %}text-gray-900{% endif %} hover:text-sky-600">
-                <i class="fa fa-users fa-fw text-lg text-gray-400 mr-1"></i>
-                Community engagement team
+              <a href="/about/news/" class="flex gap-x-4 py-2 text-sm/6 font-semibold 
+              {% if menu == "about" and slug == "news" %}text-sky-600{% else %}text-gray-900{% endif %} hover:text-sky-600">
+                <i class="fa fa-file-alt fa-fw text-lg text-gray-400 mr-1"></i>
+                News
               </a>
             </div>
           </div>
         </div>
+
       </div>
       <div class="grid grid-cols-1 gap-y-10 sm:grid-cols-2 sm:gap-x-6 sm:gap-y-0 lg:grid-cols-2 lg:gap-8">
         <div>
           <h3 class="text-sm/6 font-medium text-gray-500">Get in touch</h3>
           <div class="mt-6 flow-root">
             <div class="-my-2">
-              <a href="/contact/" class="flex gap-x-4 py-2 text-sm/6 font-semibold text-gray-900 hover:text-sky-600">
+              <a href="/about/newsletter/" class="flex gap-x-4 py-2 text-sm/6 font-semibold 
+              {% if page == "newsletter" %}text-sky-600{% else %}text-gray-900{% endif %} hover:text-sky-600">
                 <i class="fa fa-envelope fa-fw text-lg text-gray-400 mr-1"></i>
                 Contact us
               </a>
@@ -246,13 +251,10 @@
                 <i class="fa fa-newspaper fa-fw text-lg text-gray-400 mr-1"></i>
                 Newsletter
               </a>
-              <a href="#" class="flex gap-x-4 py-2 text-sm/6 font-semibold text-gray-900">
+              <a href="/about/newsletter/" class="flex gap-x-4 py-2 text-sm/6 font-semibold 
+              {% if page == "newsletter" %}text-sky-600{% else %}text-gray-900{% endif %} hover:text-sky-600">
                 <i class="fab fa-facebook fa-fw text-lg text-gray-400 mr-1"></i>
-                Facebook
-              </a>
-              <a href="#" class="flex gap-x-4 py-2 text-sm/6 font-semibold text-gray-900">
-                <i class="fab fa-youtube fa-fw text-lg text-gray-400 mr-1"></i>
-                Youtube
+                Social media
               </a>
             </div>
           </div>

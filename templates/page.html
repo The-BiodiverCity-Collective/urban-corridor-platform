@@ -12,7 +12,11 @@
 
   <div class="flex gap-15 mx-10 my-5">
     <div class="flex-4">
-      <h1>{{ info }}</h1>
+
+      {% if not info.meta_data.hide_title %}
+        <h1>{{ info }}</h1>
+      {% endif %}
+
       {{ info.get_content }}
 
       {% if info.meta_data.next %}
@@ -33,7 +37,10 @@
 
 {% else %}
 
-  <h1>{{ info }}</h1>
+  {% if not info.meta_data.hide_title %}
+    <h1>{{ info }}</h1>
+  {% endif %}
+
   {{ info.get_content }}
 
   {% if info.meta_data.next %}

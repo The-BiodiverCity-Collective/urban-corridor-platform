@@ -1,0 +1,14 @@
+{% extends "mailbody/_mailbase.html" %}
+
+{% block content %}
+A new garden was activated on {{ site }}! <br><br>
+
+The name of the garden is: <strong>{{ garden }}</strong>.<br><br>
+
+Please review in the control panel and activate or liaise about anything that is missing.<br><br>
+
+Created: {{ garden.created_at }}<br>
+Activated: {{ garden.published_at }}<br>
+User: {{ garden.user }}<br>
+E-mail: {{ garden.user.email }}
+{% endblock %}
