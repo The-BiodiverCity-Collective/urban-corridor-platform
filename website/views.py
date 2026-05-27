@@ -2954,6 +2954,50 @@ def planner_events(request, id):
     }
     return render(request, "planner/underconstruction.html", context)
 
+def contact(request):
+
+    site = get_site(request)
+    info = get_object_or_404(Page, slug="contact", is_active=True, site=site)
+
+    if request.method == "POST":
+        email = request.POST.get("email")
+        name = request.POST.get("name")
+        organization = request.POST.get("organization")
+        message = request.POST.get("message")
+
+        mailcontext = {
+            "email": email,
+            "name": name,
+            "organization": organization,
+            "message": message,
+            "page": info,
+        }
+        sender = f'"{site.name}" <{site.email}>'
+
+        msg_html = render_to_string("mailbody/message.html", mailcontext)
+        msg_plain = render_to_string("mailbody/message.txt", mailcontext)
+
+        send_mail(
+            f"Message from {name} - {site}",
+            msg_plain,
+            sender,
+            [sender],
+            fail_silently=False,
+            html_message=msg_html,
+        )
+        messages.success(request, _("Thanks, we have received your message! We will try to get back to you as soon as possible."))
+
+    context = {
+        "info": info,
+        "title": info.name,
+        "menu": "about",
+        "slug": "contact",
+        "design": "multicol" if "multicol" in request.GET else None,
+        "photo": Photo.objects.filter(species__site=site, position=1).order_by("?").first(),
+    }
+    return render(request, "contact.html", context)
+
+
 def planner_under_construction(request, id):
 
     site = get_site(request)

@@ -60,6 +60,7 @@ urlpatterns = [
     path("about/our-organisations/", views.organizations, name="organizations"),
     path("about/newsletter/", views.newsletter, name="newsletter"),
     path("about/", RedirectView.as_view(url="/about/introduction", permanent=True)),
+    path("about/contact/", views.contact, name="contact"),
     path("about/<slug:slug>/", views.page, {"menu": "about"}, name="about"),
     path("join/<slug:slug>/", views.page_join, {"menu": "join"}, name="join"),
     path("resources/calendar/", views.calendar, name="calendar"),
@@ -92,7 +93,7 @@ urlpatterns = [
     path("events/", views.events, name="events"),
     path("events/<slug:slug>/", views.event, name="event"),
 
-    path("contact/", views.page, {"slug": "contact-form"}, name="contact"),
+    path("contact/", views.contact, name="contact"),
     path("nurseries/<slug:slug>/", views.nursery, name="nursery"),
 
     path("shapefiles/<int:id>/zip/", views.shapefile_zip, name="shapefile_zip"),
