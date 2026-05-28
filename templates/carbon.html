@@ -12,7 +12,11 @@
 {% endblock %}
 
 {% block pre_main %}
-  {% include "planner/_scoretabs.html" %}
+  {% if menu == "planner" %}
+    {% include "planner/_scoretabs.html" %}
+  {% else %}
+    {% include "gardens/_gardentabs.html" %}
+  {% endif %}
 {% endblock %}
 
 {% block content %}

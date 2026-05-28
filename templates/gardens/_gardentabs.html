@@ -1,0 +1,14 @@
+<nav class="tabs -mb-px flex space-x-2" aria-label="{{ _("Tabs") }}">
+  <a href="{% url "garden" garden.id %}" class="tab {% if tab == "garden" %}active{% else %}inactive{% endif %}">
+    <i class="fa fa-file-alt mr-1"></i>
+    {{ _("Garden profile") }}
+  </a>
+  <a href="{% url "garden_score" garden.id %}" class="tab {% if tab == "score" %}active{% else %}inactive {% endif %}">
+    <i class="fa fa-file-alt mr-1"></i>
+    {{ _("Score") }}
+  </a>
+  <a href="{% url "garden_carbon_report" garden.id %}" class="tab {% if tab == "carbon" %}active{% else %}inactive{% endif %}">
+    <i class="fa fa-image mr-1"></i>
+    {{ _("Carbon report") }}
+  </a>
+</nav>

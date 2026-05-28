@@ -1,10 +1,26 @@
 {% load ucp_extras %}
   {% if status == "PRESENT" %}
-    <h2 class="mb-1"><a class="no-underline hover:underline text-gray-700 hover:text-sky-800" href="{% url "planner_score_present" GARDEN %}">{{ _("Current score") }}</a></h2>
-    <p class="mb-8">{{ _("Based on the species currently in your garden.") }}</p>
+    <h2 class="mb-1">
+      {% if hide_links %}
+        {{ _("Current score") }}
+      {% else %}
+        <a class="no-underline hover:underline text-gray-700 hover:text-sky-800" href="{% url "planner_score_present" GARDEN %}">
+          {{ _("Current score") }}
+        </a>
+      {% endif %}
+    </h2>
+    <p class="mb-8">{{ _("Based on the species currently in the garden.") }}</p>
   {% else %}
-    <h2 class="mb-1"><a class="no-underline hover:underline text-gray-700 hover:text-sky-800" href="{% url "planner_score_future" GARDEN %}">{{ _("Future score") }}</a></h2>
-    <p class="mb-8">{{ _("After you have planted all your future species.") }}</p>
+    <h2 class="mb-1">
+      {% if hide_links %}
+        {{ _("Future score") }}
+      {% else %}
+        <a class="no-underline hover:underline text-gray-700 hover:text-sky-800" href="{% url "planner_score_future" GARDEN %}">
+          {{ _("Future score") }}
+        </a>
+      {% endif %}
+    </h2>
+    <p class="mb-8">{{ _("After planting all the future species.") }}</p>
   {% endif %}
 
   {% if scoring_table %}
@@ -13,10 +29,14 @@
       {% if label != "total" %}
         <div class="mb-3">
           <p class="text-sm font-medium text-gray-900 flex justify-between mb-1">
-            <a href="{% if status == "PRESENT" %}{% url "planner_score_present" garden.id %}{% else %}{% url "planner_score_future" GARDEN %}{% endif %}#section-{{ label|slugify }}"
-               class="no-underline hover:underline text-gray-700 hover:text-sky-800">
-                {{ label}}
-            </a>
+            {% if hide_links %}
+              {{ label }}
+            {% else %}
+              <a href="{% if status == "PRESENT" %}{% url "planner_score_present" garden.id %}{% else %}{% url "planner_score_future" GARDEN %}{% endif %}#section-{{ label|slugify }}"
+                 class="no-underline hover:underline text-gray-700 hover:text-sky-800">
+                  {{ label }}
+              </a>
+            {% endif %}
             <span>{{ points }}</span>
           </p>
           <div aria-hidden="true">
@@ -28,12 +48,14 @@
       {% endif %}
     {% endfor %}
 
-    <div class="flex justify-end">
-      <a class="full_report btn-green btn-sm mt-4" href="{% if status == "PRESENT" %}{% url "planner_score_present" GARDEN %}{% else %}{% url "planner_score_future" GARDEN %}{% endif %}">
-        <i class="fas fa-chart-line mr-2"></i>
-        {{ _("Full scorecard") }}
-      </a>
-    </div>
+    {% if not hide_full_scorecard %}
+      <div class="flex justify-end">
+        <a class="full_report btn-green btn-sm mt-4" href="{% if status == "PRESENT" %}{% url "planner_score_present" GARDEN %}{% else %}{% url "planner_score_future" GARDEN %}{% endif %}">
+          <i class="fas fa-chart-line mr-2"></i>
+          {{ _("Full scorecard") }}
+        </a>
+      </div>
+    {% endif %}
 
   {% else %}
 

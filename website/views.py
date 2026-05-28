@@ -1162,6 +1162,7 @@ def gardens_map(request):
 
 def garden(request, id):
     info = Garden.objects_unfiltered.get(pk=id)
+    site = get_site(request)
     show_garden = True
 
     if not info.is_active:
@@ -1187,34 +1188,43 @@ def garden(request, id):
         raise Http404("This garden was not found.")
 
     try:
-        photos = Photo.objects.filter(garden=info).exclude(id=info.photo.id).order_by("-date")[:12]
         photos = Photo.objects.filter(garden=info).order_by("-date")[:12]
     except:
         photos = None
 
-    if info.geometry:
-        map = folium.Map(
-            zoom_start=14,
-            scrollWheelZoom=False,
-            location=[info.geometry.centroid[1],info.geometry.centroid[0]],
-            attr="Mapbox",
-        )
-
-        folium.GeoJson(
-            info.geometry.geojson,
-            name="geojson",
-        ).add_to(map)
-
-        Fullscreen().add_to(map)
-
     context = {
-        "map": map._repr_html_() if info.geometry else None,
         "info": info,
+        "garden": info,
         "photos": photos,
         "title": info.name,
         "menu": "gardens",
+        "body_padding": True,
+        "swapped_corridor_coords": get_swapped_corridor_coords(site),
+        "load_map": True,
+        "plants": Species.objects.filter(garden_plants__garden=info, garden_plants__status="PRESENT"),
+        "tab": "garden",
+
+        # Because we have tabs above the <main>, we need to unround the top-left corner if the first tab is active
+        "main_classes": "rounded-tl-none" if garden else None,
     }
     return render(request, "gardens/garden.html", context)
+
+def garden_score_overview(request, id):
+
+    site = get_site(request)
+    garden = Garden.objects.get(pk=id)
+
+    context = {
+        "menu": "about",
+        "page": "gardens",
+        "tab": "score",
+        "title": _("Score"),
+        "garden": garden,
+        "score_present": get_garden_score(garden, "PRESENT"),
+        "score_future": get_garden_score(garden, "FUTURE") if GardenSpecies.objects.filter(garden=garden, status="FUTURE").exists() else None,
+    }
+    return render(request, "gardens/score.overview.html", context)
+
 
 def garden_form(request, id=None, token=None, uuid=None):
 
@@ -2275,7 +2285,7 @@ def carbon_report(request, id, planner=False):
 
     context = {
         "info": info,
-        "menu": "planner" if garden else "score",
+        "menu": "planner" if planner else "about",
         "page": "score",
         "tab": "carbon",
         "page_info": info,
@@ -3592,7 +3602,7 @@ def controlpanel_garden(request, id=None):
 
     info = Garden()
     if id:
-        info = Garden.objects.get(pk=id)
+        info = Garden.objects_unfiltered.get(pk=id)
         action = Log.LogAction.UPDATE
 
     site = get_site(request)
@@ -3622,6 +3632,8 @@ def controlpanel_garden(request, id=None):
             if not success:
                 messages.warning(request, err)
 
+        if "redirect" in request.GET:
+            return redirect(request.GET["redirect"])
         return redirect(reverse("controlpanel_gardens"))
 
     context = {
