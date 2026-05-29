@@ -1194,7 +1194,6 @@ def garden(request, id):
 
     context = {
         "info": info,
-        "garden": info,
         "photos": photos,
         "title": info.name,
         "menu": "gardens",
@@ -1219,7 +1218,7 @@ def garden_score_overview(request, id):
         "page": "gardens",
         "tab": "score",
         "title": _("Score"),
-        "garden": garden,
+        "info": garden,
         "score_present": get_garden_score(garden, "PRESENT"),
         "score_future": get_garden_score(garden, "FUTURE") if GardenSpecies.objects.filter(garden=garden, status="FUTURE").exists() else None,
     }
@@ -2230,14 +2229,16 @@ def event(request, slug):
 def carbon_report(request, id, planner=False):
     site = get_site(request)
     info = Page.objects.get(slug="carbon-report", is_active=True, site=site)
-    garden = get_garden(request, id, silent_fail=True)
 
     # SRID 6933 (WGS 84 / Cylindrical Equal-Area). 
     # This projection is structurally designed to keep area measurements perfectly accurate globally. 
     # Transform to this and get the area.
-    if planner and garden:
-        # Must either be a private garden that belongs to the user...
-        garden = Garden.objects_unfiltered.annotate(size=Area(Transform("geometry", 6933))).get(pk=id)
+    if planner:
+        # Regular check for permissions etc
+        garden = get_garden(request, id, silent_fail=True)
+        if garden:
+            # Must either be a private garden that belongs to the user...
+            garden = Garden.objects_unfiltered.annotate(size=Area(Transform("geometry", 6933))).get(pk=id)
     else:
         # ... or a public garden
         garden = Garden.objects.annotate(size=Area(Transform("geometry", 6933))).filter(pk=id).first()
@@ -2289,7 +2290,7 @@ def carbon_report(request, id, planner=False):
         "page": "score",
         "tab": "carbon",
         "page_info": info,
-        "garden": garden,
+        "info": garden,
         "carbon_sequestered": int(carbon_sequestered),
         "trips": trips,
         "kms": kms,

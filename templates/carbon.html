@@ -2,7 +2,7 @@
 {% load humanize %}
 
 {% block title %}
-  {{ _("Carbon Report") }} | {{ garden }}
+  {{ _("Carbon Report") }} | {{ info }}
 {% endblock %}
 
 {% block css %}
@@ -27,14 +27,20 @@
     <div class="md:col-span-2 space-y-10">
       <div>
         <h1 class="text-4xl font-bold text-gray-800 mb-2">Carbon Report</h1>
-        <p class="text-gray-600">An estimate of the sequestration potential for <strong>{{ garden }}</strong>.</p>
+        <p class="text-gray-600">An estimate of the sequestration potential for <strong>{{ info }}</strong>.</p>
       </div>
 
       <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 items-stretch">
         <div class="bg-lime-600 p-6 rounded-xl shadow-md flex flex-col justify-between items-center text-center text-white h-full">
           <div class="flex flex-col items-center justify-center flex-grow">
             <span class="text-xs uppercase tracking-widest font-bold mb-2">Annual Sequestration</span>
-            <div class="text-5xl font-black mb-1">{{ carbon_sequestered|intcomma }}</div>
+            <div class="text-5xl font-black mb-1">
+              {% if garden_size or info.meta_data.trees %}
+                {{ carbon_sequestered|intcomma }}
+              {% else %}
+                ?
+              {% endif %}
+            </div>
             <p class="text-sm font-medium">kg of CO₂ per year</p>
           </div>
           <p class="text-[10px] mt-4 italic">Combined tree &amp; soil estimate</p>
@@ -52,14 +58,26 @@
 
           <div id="view-plane" class="tab-content hidden flex flex-col items-center justify-center flex-grow w-full">
             <span class="text-xs uppercase tracking-widest opacity-80 mb-2">Flight Equivalent</span>
-            <div class="text-5xl font-black mb-1">{{ trips|floatformat:1 }}</div>
+            <div class="text-5xl font-black mb-1">
+              {% if garden_size or info.meta_data.trees %}
+                {{ trips|floatformat:1 }}
+              {% else %}
+                ?
+              {% endif %}
+            </div>
             <p class="text-sm font-medium">Annual flights to Cape Town</p>
             <p class="text-[10px] mt-4 opacity-70 italic">Calculated at ~291 kg CO₂e per one-way flight</p>
           </div>
 
           <div id="view-car" class="tab-content flex flex-col items-center justify-center flex-grow w-full">
             <span class="text-xs uppercase tracking-widest opacity-80 mb-2">Car Distance Equivalent</span>
-            <div class="text-5xl font-black mb-1">{{ kms|floatformat:0|intcomma }}</div>
+            <div class="text-5xl font-black mb-1">
+              {% if garden_size or info.meta_data.trees %}
+                {{ kms|floatformat:0|intcomma }}
+              {% else %}
+                ?
+              {% endif %}
+            </div>
             <p class="text-sm font-medium">Kilometers driven every year</p>
             <p class="text-[10px] mt-4 opacity-70 italic">Average petrol car at {{ KM_CO2 }} kg CO₂e per km</p>
           </div>
@@ -404,77 +422,96 @@
 
     <div class="md:col-span-1">
       <div class="bg-white rounded-xl shadow-md border border-gray-200 overflow-hidden sticky top-10">
-        {% if garden.photo %}
-          <img src="{{ garden.photo.thumbnail }}" alt="" class="w-full h-50 object-cover">
+        {% if info.photo %}
+          <img src="{{ info.photo.thumbnail }}" alt="" class="w-full h-50 object-cover">
         {% endif %}
         <div class="p-6">
           <div class="space-y-4 pt-4">
             <div>
               <p class="text-[10px] text-gray-600 uppercase">{{ _("Garden") }}</p>
-              <p class="text-lg font-bold text-gray-700">{{ garden }}</p>
+              <p class="text-lg font-bold text-gray-700">{{ info }}</p>
             </div>
             <div id="size">
               <p class="text-[10px] text-gray-600 uppercase">{{ _("Garden size") }}</p>
                 {% if garden_size %}
                   <p class="text-lg font-bold text-gray-700 flex justify-between">
                     <span>{{ garden_size|floatformat:0|intcomma }} m²</span>
-                    <a href="#" class="text-sm" id="set_size">{{ _("Set size") }}</a>
+                    {% if menu == "planner" %}
+                      <a href="#" class="text-sm" id="set_size">{{ _("Set size") }}</a>
+                    {% endif %}
                   </p>
                 {% else %}
                   <div class="alert alert-warning">
-                    {{ _("Size unavailable. Please configure your garden's size first.") }}
-                    <br>
-                    <a href="#" id="set_size">{{ _("Set size") }}</a>
+                    {{ _("Size unavailable.") }}
+                    {% if menu == "planner" %}
+                    {{ _("Please configure your garden's size first.") }}
+                      <br>
+                      <a href="#" id="set_size">{{ _("Set size") }}</a>
+                    {% endif %}
                   </div>
                 {% endif %}
-              <form method="post" class="hidden">
-                <p class="text-sm">
-                  {{ _("What is the size of your garden? You can also upload a KMZ outline of your garden to your location page and the size will be calculated automatically.") }}
-                </p>
+              {% if menu == "planner" %}
+                <form method="post" class="hidden">
+                  <p class="text-sm">
+                    {{ _("What is the size of your garden? You can also upload a KMZ outline of your garden to your location page and the size will be calculated automatically.") }}
+                  </p>
 
-                <div class="relative w-full max-w-xs">
-                  <input
-                    type="number"
-                    name="size"
-                    class="w-full pr-14 px-4 py-2 border border-gray-300 rounded-lg bg-white focus:outline-none focus:ring-2 focus:ring-blue-500"
-                    placeholder="0.00"
-                    value="{{ garden.meta_data.size }}"
-                  />
-                  <span class="absolute inset-y-0 right-3 flex items-center text-sm text-gray-600 pointer-events-none">
-                    m²
-                  </span>
-                </div>
+                  <div class="relative w-full max-w-xs">
+                    <input
+                      type="number"
+                      name="size"
+                      class="w-full pr-14 px-4 py-2 border border-gray-300 rounded-lg bg-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      placeholder="0.00"
+                      value="{{ info.meta_data.size }}"
+                    />
+                    <span class="absolute inset-y-0 right-3 flex items-center text-sm text-gray-600 pointer-events-none">
+                      m²
+                    </span>
+                  </div>
 
-                <button class="btn-green mt-2">{{ _("Save") }}</button>
-                {% csrf_token %}
-              </form>
+                  <button class="btn-green mt-2">{{ _("Save") }}</button>
+                  {% csrf_token %}
+                </form>
+              {% endif %}
             </div>
             <div id="trees">
               <p class="text-[10px] text-gray-600 uppercase">{{ _("Tree count") }}</p>
-              {% if garden.meta_data.trees %}
+              {% if info.meta_data.trees %}
                   <p class="text-lg font-bold text-gray-700 flex justify-between">
-                    <span>{{ garden.meta_data.trees }}</span>
-                    <a class="text-sm" href="#" id="set_trees">{{ _("Set tree count") }}</a>
+                    <span>{{ info.meta_data.trees }}</span>
+                    {% if menu == "planner" %}
+                      <a class="text-sm" href="#" id="set_trees">{{ _("Set tree count") }}</a>
+                    {% endif %}
                   </p>
               {% else %}
                 <div class="alert alert-warning">
                   {{ _("Tree count unavailable") }}
-                  <br>
-                  <a href="#" id="set_trees">{{ _("Set tree count") }}</a>
+                  {% if menu == "planner" %}
+                    <br>
+                    <a href="#" id="set_trees">{{ _("Set tree count") }}</a>
+                  {% endif %}
                 </div>
               {% endif %}
-              <form method="post" class="hidden">
-                <p class="text-sm">
-                  {{ _("Please count how many individual trees you have in your garden. Enter the number below. You can also temporarily increase the number to see what impact adding trees to your garden would have.") }}
-                </p>
-                <input type="number" name="trees" value="{{ garden.meta_data.trees }}" />
-                <button class="btn-green mt-2">{{ _("Save") }}</button>
-                {% csrf_token %}
-              </form>
+              {% if menu == "planner" %}
+                <form method="post" class="hidden">
+                  <p class="text-sm">
+                    {{ _("Please count how many individual trees you have in your garden. Enter the number below. You can also temporarily increase the number to see what impact adding trees to your garden would have.") }}
+                  </p>
+                  <input type="number" name="trees" value="{{ info.meta_data.trees }}" />
+                  <button class="btn-green mt-2">{{ _("Save") }}</button>
+                  {% csrf_token %}
+                </form>
+              {% endif %}
             </div>
             <div>
               <p class="text-[10px] text-gray-600 uppercase">{{ _("Annual sequestration estimate") }}</p>
-              <p class="text-lg font-bold text-gray-700">{{ carbon_sequestered|intcomma }} kg CO₂</p>
+              <p class="text-lg font-bold text-gray-700">
+                {% if garden_size or info.meta_data.trees %}
+                  {{ carbon_sequestered|intcomma }} kg CO₂
+                {% else %}
+                  {{ _("Estimate will be available after garden size & tree count data becomes available.") }}
+                {% endif %}
+              </p>
             </div>
           </div>
           

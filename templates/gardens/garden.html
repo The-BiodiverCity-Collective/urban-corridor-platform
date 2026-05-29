@@ -58,6 +58,9 @@
 
     </div>
 
+    <h2 class="mt-10">{{ _("Score") }}</h2>
+
+    {% if False %}
     <h2 class="mt-10">{{ _("Support") }}</h2>
     <ul class="flex space-x-4">
       <a href="/contact/" class="flex-fill text-center bg-gray-100 action p-4 rounded-sm text-gray-800 no-underline">
@@ -73,6 +76,7 @@
         {{ _("I would like to register my own garden") }}
       </a>
     </ul>
+    {% endif %}
 
   </div>
 
@@ -95,7 +99,7 @@
       {{ info.description|linebreaksbr|urlize }}
     </p>
 
-    <h2 class="mt-4" >{{ _("Registered current species") }}</h2>
+    <h2 class="mt-10" >{{ _("Registered current species") }}</h2>
 
     <table class="table table-striped">
       <thead>
@@ -113,6 +117,8 @@
       {% endfor %}
       </tbody>
     </table>
+
+    {% if False %}
 
     <h2 class="mt-4" >{{ _("More information") }}</h2>
 
@@ -165,9 +171,11 @@
             <small>{{ _("provides an overview of this location, including nearby features and corridor building opportunities") }}</small>
           </div>
         </div>
+
       </div>
     </div>
 
+    {% endif %}
 
   </div>
 
