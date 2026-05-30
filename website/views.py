@@ -3097,7 +3097,6 @@ def planner_profile(request, id, photos=False):
             garden.contact_name = request.POST.get("contact_name")
             garden.contact_phone = request.POST.get("contact_phone")
             garden.contact_email = request.POST.get("contact_email")
-            garden.is_active = True if request.POST.get("is_active") == "1" else False
             garden.save()
 
     context = {
@@ -3593,17 +3592,27 @@ def controlpanel_page(request, id=None):
 def controlpanel_gardens(request):
 
     site = get_site(request)
+    view = request.GET.get("view")
+    gardens = Garden.objects_unfiltered.filter(site=site).annotate(plants_count=Count("plants"))
 
-    if "all" in request.GET:
-        gardens = Garden.objects_unfiltered.filter(site=site)
-    else:
-        gardens = Garden.objects.filter(site=site)
+    if not view:
+        gardens = gardens.filter(is_active=True)
+    elif view == "pending":
+        gardens = gardens.filter(is_active=False, published_at__isnull=False)
+    elif view ==  "development":
+        gardens = gardens.filter(is_active=False, published_at=None, plants_count__gt=0)
+    elif view == "created":
+        gardens = gardens.filter(is_active=False, published_at=None, plants_count=0)
 
     context = {
         "controlpanel": True,
         "menu": "gardens",
         "gardens": gardens,
         "load_datatables": True,
+        "datatable_order": 5,
+
+        # Remove padding on the right so the image sticks to the side
+        "main_classes": "rounded-tl-none" if not view else None,
     }
     return render(request, "controlpanel/gardens.html", context)
 

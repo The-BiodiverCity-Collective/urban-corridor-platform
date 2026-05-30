@@ -1,5 +1,3 @@
-{% load querystring_plus %}
-
 <div class="sm:block z-1000">
   <nav class="tabs -mb-px flex space-x-2" aria-label="{{ _("Tabs") }}">
     <a href="{% url "planner_score" GARDEN %}" class="tab {% if tab == "overview" %}active{% else %}inactive{% endif %}">

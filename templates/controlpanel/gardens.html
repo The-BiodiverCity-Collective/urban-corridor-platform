@@ -1,4 +1,27 @@
 {% extends "_base.html" %}
+{% load querystring_plus %}
+
+{% block pre_main %}
+  <div class="sm:block z-1000">
+    <nav class="tabs -mb-px flex space-x-2" aria-label="{{ _("Tabs") }}">
+      <a href="./" class="tab {% if not request.GET.view %}active{% else %}inactive{% endif %}">
+        {{ _("Active gardens") }}
+      </a>
+      <a href="./?view=pending" class="tab {% if request.GET.view == "pending" %}active{% else %}inactive{% endif %}">
+        {{ _("Pending review") }}
+      </a>
+      <a href="./?view=development" class="tab {% if request.GET.view == "development" %}active{% else %}inactive{% endif %}">
+        {{ _("Under development") }}
+      </a>
+      <a href="./?view=created" class="tab {% if request.GET.view == "created" %}active{% else %}inactive{% endif %}">
+        {{ _("Created") }}
+      </a>
+      <a href="./?view=all" class="tab {% if request.GET.view == "all" %}active{% else %}inactive{% endif %}">
+        {{ _("All") }}
+      </a>
+    </nav>
+  </div>
+{% endblock %}
 
 {% block content %}
 
@@ -9,6 +32,7 @@
     <tr>
       <th>{{ _("Name") }}</th>
       <th>{{ _("Photos") }}</th>
+      <th>{{ _("Plants") }}</th>
       <th>{{ _("User") }}</th>
       <th>{{ _("Active") }}</th>
       <th>{{ _("Date created") }}</th>
@@ -19,6 +43,7 @@
     <tr>
       <td><a href="{% url "controlpanel_garden" each.id %}">{{ each.name }}</td>
       <td>{{ each.photos.count }}</td>
+      <td>{{ each.plants_count }}</td>
       <td>{{ each.user|default_if_none:"" }}</td>
       <td>{{ each.is_active }}</td>
       <td data-sort="{{ each.created_at|date:"YmdHis" }}">{{ each.created_at }}</td>

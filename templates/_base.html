@@ -192,6 +192,7 @@
     <script>
       const table = $(".datatable").DataTable({
         "pageLength": 20,  // Set the default page length to 20
+        {% if datatable_order %}order: [[{{ datatable_order }}, "desc"]],{% endif %}
         "lengthMenu": [ [10, 20, 50, 100, -1], [10, 20, 50, 100, "{{ _("All") }}"] ]  // Show 20 or "Show All" option
       });
     </script>
