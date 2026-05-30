@@ -12,13 +12,6 @@
 
 {% block content %}
 
-{% if not info.is_active %}
-  <div class="alert alert-warning">
-    <i class="fa fa-info-circle"></i>
-    Please note: this garden is not yet publicly active. You can review and edit this garden before activating.
-  </div>
-{% endif %}
-
 <div class="lg:grid lg:grid-cols-2 lg:items-start lg:gap-x-8">
 
   <div>
@@ -58,7 +51,49 @@
 
     </div>
 
-    <h2 class="mt-10">{{ _("Score") }}</h2>
+    <h2 class="mt-10">{{ _("Corridor contribution") }}</h2>
+
+    <div class="flex justify-between">
+      <div class="flex items-center gap-3">
+        <div class="w-12 h-12 flex items-center justify-center rounded-full bg-slate-100">
+            <i class="fas fa-check text-lime-500 text-xl"></i>
+        </div>
+
+        <div>
+          <div class="text-xs text-gray-500">Garden</div>
+          <div class="font-semibold text-gray-900">{{ info }}</div>
+        </div>
+      </div>
+
+      <div class="text-center">
+        <a href="{% url "garden_score" info.id %}" class="no-underline group">
+          <span class="text-black font-bold block text-3xl group-hover:text-sky-800">{{ score_present.total|default:0 }}</span>
+          <span class="text-gray-700 text-sm group-hover:text-sky-800">{{ _("Garden score") }}</span>
+        </a>
+      </div>
+    </div>
+
+    <div class="mt-5 pt-5 border-t border-gray-300">
+      This garden is a registered restoration garden within the 
+      <strong>{{ SITE }}</strong>.
+      The garden caretaker has committed:
+
+      <ul class="list-disc pl-6 mb-4 mt-5">
+        <li>To support planting of primarily locally indigenous vegetation (note: we don't expect the garden to currently be there, but the caretaker is willing to work toward this goal). </li>
+        <li>To work on removing alien and invasive species.</li>
+        <li>To periodically provide updates on the status of the garden.</li>
+        <li>When possible, to share seeds or cuttings from the garden's indigenous plants with other members of our network.</li>
+      </ul>
+
+      <p>This is garden 
+        {% if info.garden_number %}
+          <strong class="font-mono alert alert-success p-1">#{{ info.get_garden_number }}</strong> 
+        {% else %}
+          <strong class="font-mono alert alert-warning p-1">{{ _("ID pending") }}</strong> 
+        {% endif %}
+      in our corridor.</p>
+
+    </div>
 
     {% if False %}
     <h2 class="mt-10">{{ _("Support") }}</h2>
@@ -182,7 +217,7 @@
 </div>
 
 <div class="mt-10">
-  <a href="{% url "gardens" %}">&laquo; Back to stepping-stone garden network</a>
+  <a href="{% url "gardens" %}" class="btn-blue"><i class="fa fa-arrow-left"></i> View all corridor gardens</a>
 
   {% if False %}
     <h4 class="mt-4">Update information</h4>

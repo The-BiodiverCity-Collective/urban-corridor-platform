@@ -32,7 +32,13 @@
                 {% if GARDEN_ACTIVE %}
                   <h3 class="text-lg font-bold text-gray-800">Your garden is part of our corridor</h3>
                   <p id="sub-3" class="text-sm text-gray-600 mt-2">
-                    You are garden #7 of the Braamfontein Spruit Ecological Corridor!
+                    You are 
+                    {% if GARDEN_ACTIVE > 0 %}
+                    garden #{{ GARDEN_ACTIVE }} 
+                    {% else %}
+                    part
+                    {% endif %}
+                    of the Braamfontein Spruit Ecological Corridor!
                   </p>
                 {% elif GARDEN %}
                   <h3 class="text-lg font-bold text-gray-800">Your garden is not yet part of our corridor</h3>

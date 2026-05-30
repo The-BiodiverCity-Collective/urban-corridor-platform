@@ -43,7 +43,7 @@
     <div class="container mx-auto pl-5 pr-10 sm:pr-10 pr-15">
       <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
 
-        <a href="{% url "planner_location" GARDEN %}" class="relative no-underline hover:opacity-75">
+        <a href="/about/corridor/" class="relative no-underline hover:opacity-75">
           <div class="relative flex h-full w-full flex-col overflow-hidden rounded-[calc(var(--radius-lg)+1px)] lg:rounded-bl-[calc(2rem+1px)]">
             <img src="/media/corridor-zoom.jpg" alt="" class="h-40 object-cover object-center" />
             <div class="p-10 pt-4">
@@ -65,7 +65,7 @@
           <div class="pointer-events-none absolute inset-0 rounded-lg shadow-sm outline outline-black/5"></div>
         </a>
 
-        <a href="{% url "planner_join" GARDEN %}" class="relative no-underline hover:opacity-75">
+        <a href="/join/private-garden/" class="relative no-underline hover:opacity-75">
           <div class="relative flex h-full flex-col overflow-hidden rounded-[calc(var(--radius-lg)+1px)]">
             <img src="/media/pexels-corin-1105018.jpg" alt="" class="h-40 object-cover object-center" title="Join us now! (Photo credits: @corin - Pexels photo 1105018)" />
             <div class="p-10 pt-4">
@@ -90,7 +90,9 @@
       </div>
     </div>
 
-    <div class="mx-auto mt-8 max-w-7xl px-6 sm:mt-16 lg:px-8 mb-10">
+    {% include "gardens/_progress.html" %}
+
+    <div class="max-w-7xl px-6 mt-8 lg:px-8 mb-10">
       <h2 class="text-center text-lg/8 font-semibold text-gray-900">
         We are a collaboration between non-profits and local citizens
       </h2>

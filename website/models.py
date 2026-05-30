@@ -613,8 +613,8 @@ class ReferenceSpace(models.Model):
     def get_popup(self):
         content = f"<h4>{self.name}</h4>"
         if self.photo:
-            content = content + f"<a class='d-block' href='{self.get_absolute_url}'><img alt='{self.name}' src='{self.photo.image.thumbnail.url}' /></a><hr>"
-        content = content + f"<a href='{self.get_absolute_url}'>View details</a>"
+            content = content + f"<a class='d-block' href='{self.get_absolute_url()}'><img alt='{self.name}' src='{self.photo.image.thumbnail.url}' /></a><hr>"
+        content = content + f"<a href='{self.get_absolute_url()}'>View details</a>"
         return mark_safe(content)
 
     class Meta:
@@ -662,6 +662,7 @@ class Garden(ReferenceSpace):
         OTHER = 99, _("Other")
 
     garden_type = models.IntegerField(choices=GardenType.choices, db_index=True, default=1)
+    garden_number = models.PositiveSmallIntegerField(null=True, blank=True, help_text="This is set upon activation, always +1 from the previous garden that was activated")
 
     objects = ActiveRecordManager()
     objects_unfiltered = models.Manager()
@@ -671,6 +672,14 @@ class Garden(ReferenceSpace):
 
     def get_absolute_url(self):
         return reverse("garden", args=[self.id])
+
+    @property
+    def get_garden_number(self):
+        if self.garden_number:
+            n = self.garden_number
+            return f"{n:03d}"
+        else:
+            return None
 
     @property
     def photo(self):

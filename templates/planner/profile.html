@@ -22,8 +22,6 @@
 
   <div class="space-y-12">
 
-    {% if not photos %}
-
       {% if request.method == "POST" %}
 
         <div role="status" aria-live="polite" class="mt-6  p-5 md:p-6 flex gap-4 items-start">
@@ -32,19 +30,27 @@
           </span>
 
           <div class="flex-1">
-            <h2>{{ _("Your profile was saved") }}</h2>
+            {% if photos %}
+              <h2>{{ _("Your photos were saved") }}</h2>
+            {% else %}
+              <h2>{{ _("Your profile was saved") }}</h2>
+            {% endif %}
             <p class="text-sm text-gray-600">{{ _("What do you want to do next?") }}</p>
           </div>
 
           <div class="mt-4 grid grid-cols-1 sm:grid-cols-3 gap-3">
-            <a hidden href="{{ garden.get_absolute_url }}?return={{ request.get_full_path }}" class="btn-white text-center">
+            <a href="{{ garden.get_absolute_url }}?return={{ request.get_full_path }}" class="btn-white text-center">
               <i class="fas fa-eye mr-1" aria-hidden="true"></i>
               <span>{{ _("Preview profile") }}</span>
             </a>
 
             <a href="{% url "planner_profile_photos" GARDEN %}" class="btn-white text-center">
               <i class="fas fa-image mr-1" aria-hidden="true"></i>
-              <span>{{ _("Upload photos") }}</span>
+              {% if photos %}
+                <span>{{ _("Upload more photos") }}</span>
+              {% else %}
+                <span>{{ _("Upload photos") }}</span>
+              {% endif %}
             </a>
 
             <a href="{% url "planner_activate" GARDEN %}" class="btn-blue text-center">
@@ -55,7 +61,7 @@
           </div>
         </div>
 
-      {% else %}
+      {% elif not photos %}
 
         <form method="post" enctype="multipart/form-data">
 
@@ -134,8 +140,6 @@
 
         </div>
       </form>
-
-    {% endif %}
 
   {% elif photos %}
 

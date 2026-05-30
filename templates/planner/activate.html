@@ -19,7 +19,7 @@
     <div class="md:col-span-2 p-4">
       <h1>{{ _("Activate your garden") }}</h1>
 
-      {% if garden.is_active %}
+      {% if garden.published_at %}
 
         <div class="w-64 h-[350px] p-4 rounded-lg bg-slate-50 border-l-4 border-transparent shadow-md flex flex-col justify-between" style="width:250px; height:350px;">
 
@@ -39,7 +39,7 @@
 
                   <h3 class="text-lg font-bold text-gray-800">Your garden is part of our corridor</h3>
                   <p id="sub-3" class="text-sm text-gray-600 mt-2">
-                    You are garden #7 of the Braamfontein Spruit Ecological Corridor!
+                    You are garden #{{ garden.get_garden_number }} of the Braamfontein Spruit Ecological Corridor!
                   </p>
 
               </div>

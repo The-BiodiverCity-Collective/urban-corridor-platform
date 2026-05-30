@@ -103,8 +103,8 @@ def get_garden(request, id, silent_fail=False):
                 request._garden_uuid = garden.uuid
                 request._garden_id = garden.id
                 request._garden_name = garden.name
-                if garden.is_active:
-                    request._garden_active = garden.is_active
+                if garden.published_at:
+                    request._garden_active = garden.get_garden_number
             return garden
     if "garden_id" in request.COOKIES and "garden_uuid" in request.COOKIES:
         garden = Garden.objects_unfiltered.filter(pk=request.COOKIES.get("garden_id"), is_user_created=True, user__isnull=True, uuid=request.COOKIES["garden_uuid"])
@@ -231,13 +231,14 @@ def quill_cleanup(content):
 # START OF REGULAR views
 def index(request):
 
+    site = get_site(request)
     context = {
         "hide_bottom_planner_menu": True,
+        "gardens": Garden.objects.filter(is_active=True, site=site),
 
         # Remove padding on the right so the image sticks to the side
         "replace_main_classes": "rounded-lg bg-white pl-5 pb-20 shadow-sm sm:pl-6",
     }
-    site = get_site(request)
 
     if site.id == 2:
         return render(request, "fcc/index.html", context)
@@ -1138,10 +1139,13 @@ def gardens(request):
     gardens = Garden.objects.prefetch_related("organizations").filter(is_active=True, site=site)
     context = {
         "gardens": gardens,
-        "info": Page.objects.get(pk=2),
+        "page_info": get_object_or_404(Page, slug="gardens", site=site),
         "load_datatables": True,
         "page": "gardens",
         "menu": "gardens",
+        "load_map": True,
+        "swapped_corridor_coords": get_swapped_corridor_coords(site),
+        "hide_progress_view_gardens": True,
     }
     return render(request, "gardens/index.html", context)
 
@@ -1163,29 +1167,18 @@ def gardens_map(request):
 def garden(request, id):
     info = Garden.objects_unfiltered.get(pk=id)
     site = get_site(request)
-    show_garden = True
+    show_garden = True if info.is_active else False
 
-    if not info.is_active:
-        # Needs review
-        show_garden = False
-        if request.user.is_authenticated:
+    if not info.is_active and request.user.is_authenticated:
+        if info.user and info.user == request.user:
             show_garden = True
-            if "activate" in request.POST:
-                info.is_active = True
-                info.save()
-                messages.success(request, "Garden has been activated.")
-                return redirect(reverse("garden", args=[info.id]))
-        elif "uuid" in request.GET and request.GET.get("uuid") == str(info.uuid):
+        elif request.user.is_staff:
             show_garden = True
-
-    if request.user.is_staff:
-        if "delete" in request.POST:
-            info.delete()
-            messages.success(request, "The garden was removed.")
-            return redirect("gardens")
 
     if not show_garden:
         raise Http404("This garden was not found.")
+    elif not info.is_active:
+        messages.warning(request, _("This garden is not yet publicly available - this is a preview."))
 
     try:
         photos = Photo.objects.filter(garden=info).order_by("-date")[:12]
@@ -1205,22 +1198,35 @@ def garden(request, id):
 
         # Because we have tabs above the <main>, we need to unround the top-left corner if the first tab is active
         "main_classes": "rounded-tl-none" if garden else None,
+        "score_present": get_garden_score(info, "PRESENT"),
     }
     return render(request, "gardens/garden.html", context)
 
 def garden_score_overview(request, id):
 
+    info = Garden.objects_unfiltered.get(pk=id)
     site = get_site(request)
-    garden = Garden.objects.get(pk=id)
+    show_garden = True if info.is_active else False
+
+    if not info.is_active and request.user.is_authenticated:
+        if info.user and info.user == request.user:
+            show_garden = True
+        elif request.user.is_staff:
+            show_garden = True
+
+    if not show_garden:
+        raise Http404("This garden was not found.")
+    elif not info.is_active:
+        messages.warning(request, _("This garden is not yet publicly available - this is a preview."))
 
     context = {
         "menu": "about",
         "page": "gardens",
         "tab": "score",
         "title": _("Score"),
-        "info": garden,
-        "score_present": get_garden_score(garden, "PRESENT"),
-        "score_future": get_garden_score(garden, "FUTURE") if GardenSpecies.objects.filter(garden=garden, status="FUTURE").exists() else None,
+        "info": info,
+        "score_present": get_garden_score(info, "PRESENT"),
+        "score_future": get_garden_score(info, "FUTURE") if GardenSpecies.objects.filter(garden=info, status="FUTURE").exists() else None,
     }
     return render(request, "gardens/score.overview.html", context)
 
@@ -2227,7 +2233,22 @@ def event(request, slug):
     return render(request, "event.html", context)
 
 def carbon_report(request, id, planner=False):
+
+    info = Garden.objects_unfiltered.get(pk=id)
     site = get_site(request)
+    show_garden = True if info.is_active else False
+
+    if not info.is_active and request.user.is_authenticated:
+        if info.user and info.user == request.user:
+            show_garden = True
+        elif request.user.is_staff:
+            show_garden = True
+
+    if not show_garden:
+        raise Http404("This garden was not found.")
+    elif not info.is_active:
+        messages.warning(request, _("This garden is not yet publicly available - this is a preview."))
+
     info = Page.objects.get(slug="carbon-report", is_active=True, site=site)
 
     # SRID 6933 (WGS 84 / Cylindrical Equal-Area). 
@@ -2236,20 +2257,8 @@ def carbon_report(request, id, planner=False):
     if planner:
         # Regular check for permissions etc
         garden = get_garden(request, id, silent_fail=True)
-        if garden:
-            # Must either be a private garden that belongs to the user...
-            garden = Garden.objects_unfiltered.annotate(size=Area(Transform("geometry", 6933))).get(pk=id)
-    else:
-        # ... or a public garden
-        garden = Garden.objects.annotate(size=Area(Transform("geometry", 6933))).filter(pk=id).first()
 
-    if not garden:
-        if request.user.is_authenticated:
-            messages.warning(request, _("Garden was not found or you do not have access to view this garden."))
-            return redirect("account_gardens")
-        else:
-            messages.warning(request, _("Please log in to view this page."))
-            return redirect(reverse("login") + "?next=" + request.get_full_path())
+    garden = Garden.objects_unfiltered.annotate(size=Area(Transform("geometry", 6933))).filter(pk=id).first()
 
     if request.method == "POST":
         if not garden.meta_data:
@@ -3078,9 +3087,8 @@ def planner_profile(request, id, photos=False):
                     error = True
                     messages.warning(request, f"Please note that the image '{each.name}' was not uploaded successfully. Error: {e}")
 
-            if not error:
-                messages.success(request, _("Photos have been added."))
-            return redirect(request.get_full_path())
+            if error:
+                return redirect(request.get_full_path())
 
         else:
             garden.name = request.POST["name"]
@@ -3202,7 +3210,9 @@ def planner_activate(request, id):
 
     if request.method == "POST":
         garden.published_at = timezone.now()
-        garden.is_active = True
+        if not garden.garden_number:
+            number = Garden.objects.filter(site=site, garden_number__isnull=False).aggregate(Max("garden_number"))["garden_number__max"]
+            garden.garden_number = number + 1
         garden.save()
 
         mailcontext = {
@@ -3223,10 +3233,9 @@ def planner_activate(request, id):
             html_message=msg_html,
         )
 
-
         messages.success(request, _("Great! Your garden was activated and will be published after review by our team. Give us 1-2 days to review and you will hear from us once it is online!"))
         response = redirect(request.path)
-        response.set_cookie("garden_active", garden.is_active)
+        response.set_cookie("garden_active", garden.get_garden_number)
         return response
 
     if "deactivate" in request.GET and garden.published_at:
@@ -3618,6 +3627,7 @@ def controlpanel_garden(request, id=None):
         info.user_id = request.POST.get("user")
         info.is_active = True if request.POST.get("is_active") == "1" else False
         info.site = site
+        info.garden_number = request.POST.get("garden_number") if request.POST.get("garden_number") else None
 
         uploaded_file = request.FILES.get("file")
         if uploaded_file:

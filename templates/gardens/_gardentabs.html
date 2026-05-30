@@ -4,11 +4,22 @@
     {{ _("Garden profile") }}
   </a>
   <a href="{% url "garden_score" info.id %}" class="tab {% if tab == "score" %}active{% else %}inactive {% endif %}">
-    <i class="fa fa-file-alt mr-1"></i>
+    <i class="fa fa-chart-line mr-1"></i>
     {{ _("Score") }}
   </a>
-  <a href="{% url "garden_carbon_report" info.id %}" class="tab {% if tab == "carbon" %}active{% else %}inactive{% endif %}">
+  <a hidden href="{% url "garden_photos" info.id %}" class="tab {% if tab == "photos" %}active{% else %}inactive{% endif %}">
     <i class="fa fa-image mr-1"></i>
+    {{ _("Photo gallery") }}
+  </a>
+  <a href="{% url "garden_carbon_report" info.id %}" class="tab {% if tab == "carbon" %}active{% else %}inactive{% endif %}">
+    <i class="fa fa-cloud mr-1"></i>
     {{ _("Carbon report") }}
   </a>
+
+  {% if info.id|slugify == GARDEN %}
+    <a href="{% url "planner_profile" info.id %}" class="tab inactive ml-auto">
+      <i class="fa fa-pencil mr-1"></i>
+      {{ _("Edit profile") }}
+    </a>
+  {% endif %}
 </nav>

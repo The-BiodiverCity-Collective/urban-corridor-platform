@@ -1,11 +1,13 @@
 {% extends "_base.html" %}
 
+{% block title %}
+  {{ page_info }}
+{% endblock %}
+
 {% block css %}
 <style>
   #map {
     height: 80vh;
-    position: sticky !important;
-    top: 1rem;
   }
 
   .single-garden img {
@@ -18,12 +20,9 @@
 
 {% block content %}
 
-  <h1>{{ info }}</h1>
-  {{ info.get_content }}
+  {% include "gardens/_progress.html" %}
 
-  <div class="alert alert-info">
-    <i class="fal fa-fw fa-info-circle me-1"></i> We currently have <strong>{{ gardens.count }}</strong> gardens in our network.
-  </div>
+  <div id="map" class="rounded-sm shadow-xs my-5"></div>
 
   <ul role="list" class="grid grid-cols-2 gap-x-4 gap-y-8 sm:grid-cols-3 sm:gap-x-6 lg:grid-cols-4 xl:gap-x-8">
   {% for each in gardens %}
@@ -34,9 +33,31 @@
         </a>
       </div>
       <p class="pointer-events-none mt-2 block truncate text-sm font-medium text-gray-900">{{ each.name }}</p>
-      <p class="pointer-events-none block text-sm font-medium text-gray-500"><em>{{ each.suburb }}</em></p>
+      {% if each.suburb %}
+        <p class="pointer-events-none block text-sm font-medium text-gray-500"><em>{{ each.suburb }}</em></p>
+      {% endif %}
     </li>
   {% endfor %}
   </ul>
 
+{% endblock %}
+
+{% block js %}
+<script type="text/javascript">
+
+  var geojsonlayer = L.geoJSON().addTo(map);
+  {% for each in gardens %}
+    {% if each.geometry %}
+      {% if request.GET.area %}
+        var garden_{{ each.id }} = {{ each.geometry.geojson|safe }};
+      {% else %}
+        var garden_{{ each.id }} = {{ each.geometry.centroid.geojson|safe }};
+      {% endif %}
+    var g_{{ each.id }} = L.geoJSON(garden_{{ each.id }}).addTo(map).bindPopup("{{ each.get_popup }}");
+    {% endif %}
+  {% endfor %}
+  var all_geojson = new L.featureGroup([{% for each in all %}{% if each.geometry %}g_{{ each.id }},{% endif %}{% endfor %}]);
+  map.fitBounds(all_geojson.getBounds());
+
+</script>
 {% endblock %}

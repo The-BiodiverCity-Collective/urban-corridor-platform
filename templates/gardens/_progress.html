@@ -1,0 +1,48 @@
+<section class="w-full {% if not hide_progress_view_gardens %}max-w-4xl py-12 px-4{% endif %} mx-auto space-y-16">
+
+  <div class="{% if not hide_progress_view_gardens %}bg-gray-100 border border-gray-200 rounded-2xl p-6 md:p-8 {% endif %}flex flex-col md:flex-row gap-8 items-center text-gray-800">
+    <div class="flex-1 space-y-4">
+      {% if not hide_progress_view_gardens %}
+      <span class="inline-block bg-lime-600 text-lime-50 text-xs font-semibold tracking-wider uppercase px-3 py-1 rounded-full">
+        2026 Progress Tracker
+      </span>
+      {% endif %}
+      <h2 class="text-2xl md:text-3xl font-bold text-gray-900 tracking-tight">
+        Our restoration garden network
+      </h2>
+      <p class="text-gray-600 leading-relaxed text-sm md:text-base">
+        Since our launch on May 27, we are on a mission to connect <strong class="text-gray-900">100 restoration gardens</strong> by the end of 2026. 
+        If you live or work in the corridor area, join our movement today!
+      </p>
+      <div class="pt-2">
+        <p class="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">Register your garden:</p>
+        <div class="flex flex-wrap gap-2">
+          <a href="/join/private-garden/" class="bg-gray-800 hover:bg-gray-900 text-white text-xs font-medium px-4 py-2 rounded-lg transition no-underline">Private Garden</a>
+          <a href="/join/public-garden/" class="bg-gray-800 hover:bg-gray-900 text-white text-xs font-medium px-4 py-2 rounded-lg transition no-underline">Public Space</a>
+          <a href="/join/corporate-garden/" class="bg-gray-50 hover:bg-gray-200 text-gray-800 text-xs font-medium px-4 py-2 rounded-lg transition border border-gray-300 no-underline">Corporate Garden</a>
+        </div>
+      </div>
+      <p class="text-xs text-gray-500 pt-1">
+        Not in the zone? You can still help! <a href="/join/recruit-others-to-register/" class="text-gray-800 underline font-semibold hover:text-gray-900">Spread the word to others</a>.
+      </p>
+    </div>
+
+    <div class="w-full md:w-72 bg-white border border-gray-200 rounded-xl p-6 flex flex-col items-center justify-center text-center shrink-0 shadow-sm">
+      <div class="text-5xl font-black text-lime-600 tracking-tight">{{ gardens.count }}</div>
+      <div class="text-xs font-bold uppercase text-gray-400 tracking-widest mt-1 mb-4">Registered {% if gardens.count == 1 %}garden{% else %}gardens{% endif %}</div>
+      <div class="w-full bg-gray-100 rounded-full h-3 mb-2 overflow-hidden border border-gray-200">
+        <div class="bg-lime-500 h-3 rounded-full transition-all duration-500" style="width: {{ gardens.count }}%;"></div>
+      </div>
+      <div class="flex justify-between w-full text-xs font-semibold text-gray-500">
+        <span>Goal: 100</span>
+        <span class="text-lime-600 font-bold">{{ gardens.count }}% Complete</span>
+      </div>
+      {% if not hide_progress_view_gardens %}
+        <div class="mt-5">
+          <a href="/gardens/" class="bg-gray-50 hover:bg-gray-200 text-gray-800 text-xs font-medium px-4 py-2 rounded-lg transition border border-gray-300 no-underline">View gardens <i class="ml-1 fa fa-arrow-right"></i></a>
+        </div>
+      {% endif %}
+    </div>
+  </div>
+
+</section>
