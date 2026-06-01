@@ -17,39 +17,43 @@
 
 {% block content %}
 
-  <div class="p-10">
+<div class="flex justify-between">
+  <h2>{{ _("Download species list") }}</h2>
+  <form method="post">
+    <button type="submit" class="btn-blue"><i class="fa fa-download mr-1"></i> {{ _("Download (xls)") }}</button>
+    {% csrf_token %}
+  </form>
+</div>
 
-    <div class="flex justify-between">
-      <h2>{{ _("Download species list") }}</h2>
-      <form method="post">
-        <button type="submit" class="btn-blue"><i class="fa fa-download mr-1"></i> {{ _("Download (xls)") }}</button>
-        {% csrf_token %}
-      </form>
-    </div>
+<p>
+  {{ _("You can download the species list here. It will provide a spreadsheet of the information below.") }}
+</p>
 
-    <p>
-      {{ _("You can download the species list here. It will provide a spreadsheet of the information below.") }}
-    </p>
+<table class="table table-striped">
+  <thead>
+    <tr>
+      <th>{{ _("Species") }}</th>
+      <th>{{ _("Common name") }}</th>
+      <th>{{ _("Link") }}</th>
+    </tr>
+  </thead>
+  <tbody>
+  {% for each in plants %}
+    <tr>
+      <td><em>{{ each.name }}</em></td>
+      <td>{{ each.name_en|default_if_none:"" }}</td>
+      <td class="text-sm"><a href="{{ each.get_absolute_url }}">https://{{ SITE.url }}{{ each.get_absolute_url }}</td>
+    </tr>
+  {% endfor %}
+  </tbody>
+</table>
 
-    <table class="table table-striped">
-      <thead>
-        <tr>
-          <th>{{ _("Species") }}</th>
-          <th>{{ _("Common name") }}</th>
-          <th>{{ _("Link") }}</th>
-        </tr>
-      </thead>
-      <tbody>
-      {% for each in plants %}
-        <tr>
-          <td><em>{{ each.name }}</em></td>
-          <td>{{ each.name_en|default_if_none:"" }}</td>
-          <td class="text-sm"><a href="{{ each.get_absolute_url }}">https://{{ SITE.url }}{{ each.get_absolute_url }}</td>
-        </tr>
-      {% endfor %}
-      </tbody>
-    </table>
+<div class="mt-10">
+  <h3>{{ _("Ready with your planning activities?") }}</h3>
+  <ul class="flex gap-4 list-none p-0">
+    <li><a class="btn btn-light" href="{% url "planner_requirements" GARDEN %}"><i class="fa fa-users mr-1"></i> {{ _("Sign up to become part of our corridor!") }}</a></li>
+  </ul>
+</div>
 
-  </div>
 
 {% endblock %}

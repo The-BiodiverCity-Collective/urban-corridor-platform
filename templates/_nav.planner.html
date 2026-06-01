@@ -33,8 +33,8 @@
                   <h3 class="text-lg font-bold text-gray-800">Your garden is part of our corridor</h3>
                   <p id="sub-3" class="text-sm text-gray-600 mt-2">
                     You are 
-                    {% if GARDEN_ACTIVE > 0 %}
-                    garden #{{ GARDEN_ACTIVE }} 
+                    {% if GARDEN_ACTIVE|length > 1 %}
+                    garden <span class="font-mono">#{{ GARDEN_ACTIVE }}</span>
                     {% else %}
                     part
                     {% endif %}

@@ -2243,10 +2243,12 @@ def carbon_report(request, id, planner=False):
             show_garden = True
         elif request.user.is_staff:
             show_garden = True
+    elif planner and get_garden(request, id, silent_fail=True):
+        show_garden = True
 
     if not show_garden:
         raise Http404("This garden was not found.")
-    elif not info.is_active:
+    elif not info.is_active and not planner:
         messages.warning(request, _("This garden is not yet publicly available - this is a preview."))
 
     info = Page.objects.get(slug="carbon-report", is_active=True, site=site)
@@ -2254,10 +2256,6 @@ def carbon_report(request, id, planner=False):
     # SRID 6933 (WGS 84 / Cylindrical Equal-Area). 
     # This projection is structurally designed to keep area measurements perfectly accurate globally. 
     # Transform to this and get the area.
-    if planner:
-        # Regular check for permissions etc
-        garden = get_garden(request, id, silent_fail=True)
-
     garden = Garden.objects_unfiltered.annotate(size=Area(Transform("geometry", 6933))).filter(pk=id).first()
 
     if request.method == "POST":
@@ -2782,6 +2780,7 @@ def planner_nurseries(request, id):
         "page_info": Page.objects.get(site=site, slug="nurseries"),
         "slug": "nurseries",
         "plants": plants,
+        "body_padding": True,
 
         # Because we have tabs above the <main>, we need to unround the top-left corner if the first tab is active
         "main_classes": "rounded-tl-none",
@@ -2805,6 +2804,7 @@ def planner_plants_availability(request, id):
         "garden": garden,
         "slug": "availability",
         "inventory": inventory,
+        "body_padding": True,
     }
     return render(request, "planner/plants.availability.html", context)
 
@@ -2853,6 +2853,7 @@ def planner_plants_download(request, id):
         "garden": garden,
         "slug": "download",
         "plants": plants,
+        "body_padding": True,
     }
     return render(request, "planner/plants.download.html", context)
 
