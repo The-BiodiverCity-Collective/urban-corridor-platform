@@ -9,7 +9,7 @@
 
 {% block content %}
 
-  <div class="flex gap-15 mx-10 my-5">
+  <div class="flex gap-15">
     <div class="flex-4">
       <h1>{{ info }}</h1>
       {{ info.get_content }}
@@ -162,6 +162,13 @@
   <a class="btn-warning btn-edit" href="{% url "controlpanel_page" info.id %}?redirect={{ request.get_full_path }}">
     <i class="fa fa-pencil"></i>
   </a>
+
+          <section>
+            <h2>Management tools</h2>
+            <a class="btn btn-warning"><i class="fa fa-pencil"></i></a>
+          </section>
+
+
 {% endif %}
 
 {% endblock %}

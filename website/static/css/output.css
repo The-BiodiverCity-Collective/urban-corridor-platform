@@ -553,9 +553,6 @@
   .mx-5 {
     margin-inline: calc(var(--spacing) * 5);
   }
-  .mx-10 {
-    margin-inline: calc(var(--spacing) * 10);
-  }
   .mx-auto {
     margin-inline: auto;
   }
@@ -2016,6 +2013,9 @@
   }
   .rounded-tr-md {
     border-top-right-radius: var(--radius-md);
+  }
+  .rounded-tr-none {
+    border-top-right-radius: 0;
   }
   .rounded-b-md {
     border-bottom-right-radius: var(--radius-md);

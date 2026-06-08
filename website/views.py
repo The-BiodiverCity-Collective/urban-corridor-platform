@@ -13,6 +13,7 @@ from django.contrib.gis.db.models.functions import Area, Transform
 from django.contrib.gis.measure import D
 from django.core import serializers
 from django.core.files import File
+from django.core.files.base import ContentFile
 from django.core.mail import send_mail
 from django.core.paginator import Paginator
 from django.db.models import OuterRef, Subquery, Value, CharField, Q, F, Count, Max, IntegerField, Sum
@@ -1928,6 +1929,7 @@ def page_join(request, slug, menu=None):
         "slug": slug,
         "design": "multicol" if "multicol" in request.GET else None,
         "photo": Photo.objects.filter(species__site=site, position=1).order_by("?").first(),
+        "body_padding": True,
     }
     return render(request, "join.html", context)
 
@@ -3604,6 +3606,38 @@ def controlpanel_gardens(request):
         gardens = gardens.filter(is_active=False, published_at=None, plants_count__gt=0)
     elif view == "created":
         gardens = gardens.filter(is_active=False, published_at=None, plants_count=0)
+    elif view == "email":
+        gardens = gardens.filter(pk__in=request.GET.getlist("garden"))
+
+    main_classes = None
+    if not view:
+        main_classes = "rounded-tl-none"
+    elif view == "email":
+        main_classes = "rounded-tr-none"
+
+    if request.method == "POST":
+        if "test" in request.POST:
+            gardens = gardens.first() # Send a test mail using only the first garden in the list 
+        for each in gardens:
+            subject = request.POST["subject"]
+            message = request.POST["message"]
+
+            mailcontext = {
+                "message": message,
+            }
+            sender = f'"{site.name}" <{site.email}>'
+
+            msg_html = render_to_string("mailbody/message.blank.html", mailcontext)
+
+            send_mail(
+                subject,
+                message,
+                sender,
+                [recipient],
+                fail_silently=False,
+                html_message=msg_html,
+            )
+            messages.success(request, _("Thanks, we have received your message! We will try to get back to you as soon as possible."))
 
     context = {
         "controlpanel": True,
@@ -3611,9 +3645,7 @@ def controlpanel_gardens(request):
         "gardens": gardens,
         "load_datatables": True,
         "datatable_order": 5,
-
-        # Remove padding on the right so the image sticks to the side
-        "main_classes": "rounded-tl-none" if not view else None,
+        "main_classes": main_classes,
     }
     return render(request, "controlpanel/gardens.html", context)
 
@@ -3669,53 +3701,13 @@ def controlpanel_garden(request, id=None):
 @staff_member_required
 def controlpanel_garden_photos(request, id):
 
-    info = Garden.objects.get(pk=id)
-    position = Photo.objects.filter(garden=info).aggregate(Max("position"))["position__max"]
-    if not position:
-        position = 0
-
-    if request.method == "POST":
-        for each in request.FILES.getlist("photos"):
-            position += 1
-            # Try to get the date from the EXIF data
-            image_file = each.read()
-            image = Image.open(io.BytesIO(image_file))
-            exif_data = image._getexif()
-            if exif_data:
-                for tag_id, value in exif_data.items():
-                    tag = TAGS.get(tag_id, tag_id)
-                    if tag == "DateTimeOriginal":
-                        # Convert the EXIF date string to a datetime object
-                        try:
-                            photo_date = timezone.datetime.strptime(value, "%Y:%m:%d %H:%M:%S")
-                        except ValueError:
-                            photo_date = timezone.now()  # Fallback to today's date if parsing fails
-                            messages.warning(request, f"Photo date was not found for {each.name} - using today's date. Please change if needed.")
-
-            else:
-                photo_date = timezone.now()
-                messages.warning(request, f"Photo date was not found for {each.name} - using today's date. Please change if needed.")
-
-            Photo.objects.create(
-                author = request.POST["author"],
-                description = request.POST.get("description"),
-                image = each,
-                date = photo_date,
-                position = position,
-                garden = info,
-                source = "upload",
-                license_code = request.POST["license"],
-            )
-
-        messages.success(request, _("Photos have been added."))
-        return redirect(request.get_full_path())
+    info = Garden.objects_unfiltered.get(pk=id)
 
     context = {
         "controlpanel": True,
         "menu": "gardens",
         "info": info,
         "title": _("Edit photos") + ": " + info.name,
-        "licenses": Photo.LICENSE_CHOICES,
     }
     return render(request, "controlpanel/garden.photos.html", context)
 
@@ -3730,6 +3722,22 @@ def controlpanel_garden_photo(request, garden, id):
         info.delete()
         messages.success(request, _("The photo was deleted"))
         return redirect(url)
+    elif "rotate" in request.POST:
+        storage = info.image.storage
+        orig_name = info.image.name
+        with storage.open(orig_name, "rb") as f:
+            img = Image.open(f)
+            img = img.rotate(-90, expand=True)
+
+            buf = io.BytesIO()
+            img.save(buf, format="JPEG", quality=85)
+            buf.seek(0)
+
+        new_filename = f"{uuid.uuid4().hex}.jpg"
+        info.image.save(new_filename, ContentFile(buf.read()))
+        messages.success(request, _("The photo was rotated"))
+        log_action(request, Log.LogAction.UPDATE, f"Photo #{info.id} was rotated")
+        return redirect(request.path)
     elif request.method == "POST":
         info.description = request.POST.get("description")
         info.author = request.POST.get("author")

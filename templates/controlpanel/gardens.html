@@ -19,6 +19,9 @@
       <a href="./?view=all" class="tab {% if request.GET.view == "all" %}active{% else %}inactive{% endif %}">
         {{ _("All") }}
       </a>
+      <a href="./?view=mail" id="email" class="ml-auto tab {% if request.GET.view == "email" %}active{% else %}inactive{% endif %}">
+        <i class="fa fa-envelope"></i>
+      </a>
     </nav>
   </div>
 {% endblock %}
@@ -27,31 +30,88 @@
 
 <h1 class="text-3xl">{{ _("Gardens") }}</h1>
 
-<table class="table mb-5 datatable">
-  <thead>
-    <tr>
-      <th>{{ _("Name") }}</th>
-      <th>{{ _("Photos") }}</th>
-      <th>{{ _("Plants") }}</th>
-      <th>{{ _("User") }}</th>
-      <th>{{ _("Active") }}</th>
-      <th>{{ _("Date created") }}</th>
-    </tr>
-  </thead>
-  <tbody>
-  {% for each in gardens %}
-    <tr>
-      <td><a href="{% url "controlpanel_garden" each.id %}">{{ each.name }}</td>
-      <td>{{ each.photos.count }}</td>
-      <td>{{ each.plants_count }}</td>
-      <td>{{ each.user|default_if_none:"" }}</td>
-      <td>{{ each.is_active }}</td>
-      <td data-sort="{{ each.created_at|date:"YmdHis" }}">{{ each.created_at }}</td>
-    </tr>
-  {% endfor %}
-  </tbody>
-</table>
+<form>
 
-<a class="btn-blue" href="{% url "controlpanel_garden" %}"><i class="fa fa-plus-square mr-1"></i> {{ _("Add garden") }}</a>
+  <table class="table mb-5 datatable gardens">
+    <thead>
+      <tr>
+        <th>{{ _("Name") }}</th>
+        <th>{{ _("Photos") }}</th>
+        <th>{{ _("Plants") }}</th>
+        <th>{{ _("User") }}</th>
+        <th>{{ _("Active") }}</th>
+        <th>{{ _("Date created") }}</th>
+      </tr>
+    </thead>
+    <tbody>
+    {% for each in gardens %}
+      <tr>
+        <td>
+          <label>
+            {% if each.user %}
+              <input type="checkbox" name="garden" value="{{ each.id }}" class="mr-1" hidden />
+            {% endif %}
+            <a href="{% url "controlpanel_garden" each.id %}">{{ each.name }}
+          </label>
+        </td>
+        <td>{{ each.photos.count }}</td>
+        <td>{{ each.plants_count }}</td>
+        <td>{{ each.user|default_if_none:"" }}</td>
+        <td>{{ each.is_active }}</td>
+        <td data-sort="{{ each.created_at|date:"YmdHis" }}">{{ each.created_at }}</td>
+      </tr>
+    {% endfor %}
+    </tbody>
+  </table>
 
+  {% if request.GET.view != "email" %}
+    <a class="add-garden btn-blue" href="{% url "controlpanel_garden" %}"><i class="fa fa-plus-square mr-1"></i> {{ _("Add garden") }}</a>
+  {% endif %}
+
+  <button hidden class="email ml-auto btn-green">{{ _("Compose e-mail") }} <i class="fa fa-arrow-right"></i></button>
+  <input type="hidden" name="view" value="email" />
+
+</form>
+
+{% if request.GET.view == "email" %}
+
+<form method="post" class="mt-10">
+  <h2>{{ _("Compose e-mail") }}</h2>
+  <input name="subject" required placeholder="{{ _("Subject") }}" value="{{ request.POST.subject }}" />
+  <textarea name="message" required placeholder="{{ _("Message") }}">{{ request.POST.message }}</textarea>
+  <div class="mt-5 flex justify-between">
+    <button class="btn-green">{{ _("Send to selected recipients") }}</button>
+    <button class="btn-green">{{ _("Send test mail to myself") }} ({{ request.user.email }})</button>
+  </div>
+  {% csrf_token %}
+
+  <section class="mt-5">
+    <h2>{{ _("Instructions") }}</h2>
+    <ul class="list-disc ml-4">
+      <li><code>NAME</code> will be replaced by the user's full name</li>
+      <li><code>GARDEN</code> will be replaced by the garden's name</li>
+      <li><code>GARDEN_LINK</code> will be replaced by a link to the garden planner (homepage)</li>
+      <li><code>GARDEN_ACTIVATE_LINK</code> will be replaced by a link to the garden planner (activation page)</li>
+    </ul>
+</form>
+
+{% endif %}
+
+{% endblock %}
+
+{% block js %}
+  <script type="text/javascript">
+  $(function(){
+    $("#email").click(function(e){
+      e.preventDefault();
+      $("table.gardens input[type=checkbox").removeAttr("hidden");
+      $("a.add-garden").hide();
+      $("button.email").removeAttr("hidden");
+      $("table.gardens a").each(function(){
+        $(this).replaceWith($(this).text());
+      });
+    });
+  });
+  </script>
+  
 {% endblock %}

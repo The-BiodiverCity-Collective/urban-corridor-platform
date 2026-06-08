@@ -8,6 +8,12 @@
   {% csrf_token %}
 </form>
 
+<form method="post" class="float-right mr-1">
+  <button type="submit" class="btn-blue"><i class="fa fa-redo fa-fw"></i> {{ _("Rotate photo") }}</button>
+  <input type="hidden" name="rotate" value="true" />
+  {% csrf_token %}
+</form>
+
 <div class="mx-auto max-w-4xl">
   <h1 class="text-3xl">{{ _("Photo") }} #{{ info.id }}</h1>
 
@@ -23,10 +29,12 @@
         <dt class="text-sm/6 font-bold text-gray-900">{{ _("Garden") }}</dt>
         <dd class="mt-1 text-sm/6 text-gray-700 sm:col-span-2 sm:mt-0">{{ info.garden }}</dd>
       </div>
-      <div class="px-4 py-3 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-0">
-        <dt class="text-sm/6 font-bold text-gray-900">{{ _("Species") }}</dt>
-        <dd class="mt-1 text-sm/6 text-gray-700 sm:col-span-2 sm:mt-0"><a href="{% url "controlpanel_species" info.species.id %}">{{ info.species }}</a></dd>
-      </div>
+      {% if info.species %}
+        <div class="px-4 py-3 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-0">
+          <dt class="text-sm/6 font-bold text-gray-900">{{ _("Species") }}</dt>
+          <dd class="mt-1 text-sm/6 text-gray-700 sm:col-span-2 sm:mt-0"><a href="{% url "controlpanel_species" info.species.id %}">{{ info.species }}</a></dd>
+        </div>
+      {% endif %}
       <div class="px-4 py-3 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-0">
         <dt class="text-sm/6 font-bold text-gray-900">{{ _("Upload date") }}</dt>
         <dd class="mt-1 text-sm/6 text-gray-700 sm:col-span-2 sm:mt-0">{{ info.upload_date|date:"M d, Y" }}</dd>
