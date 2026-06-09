@@ -118,8 +118,10 @@ def get_garden(request, id, silent_fail=False):
     if not silent_fail:
         if id == 0:
             messages.warning(request, _("Please create your own garden to get started."))
+        elif not request.user.is_authenticated:
+            messages.warning(request, f"Please <a href='/accounts/login/?next={request.path}'>log in</a> to access your saved gardens.")
         else:
-            messages.warning(request, _("Garden not found. Please log in to access your saved gardens."))
+            messages.warning(request, f"This garden is not found.")
 
     return None
 
@@ -3213,7 +3215,7 @@ def planner_activate(request, id):
     if request.method == "POST":
         garden.published_at = timezone.now()
         if not garden.garden_number:
-            number = Garden.objects.filter(site=site, garden_number__isnull=False).aggregate(Max("garden_number"))["garden_number__max"]
+            number = Garden.objects_unfiltered.filter(site=site, garden_number__isnull=False).aggregate(Max("garden_number"))["garden_number__max"]
             garden.garden_number = number + 1
         garden.save()
 
@@ -3616,16 +3618,30 @@ def controlpanel_gardens(request):
         main_classes = "rounded-tr-none"
 
     if request.method == "POST":
-        if "test" in request.POST:
-            gardens = gardens.first() # Send a test mail using only the first garden in the list 
-        for each in gardens:
+        for garden in gardens:
             subject = request.POST["subject"]
             message = request.POST["message"]
+            recipient = garden.user.email
+
+            replacements = {
+                "NAME": garden.user.first_name,
+                "GARDEN_LINK": "https://" + site.url + garden.get_absolute_url(),
+                "GARDEN_ACTIVATE_LINK": "https://" + site.url + reverse("planner_requirements", args=[garden.id]),
+                "GARDEN": garden.name,
+            }
+
+            for old, new in replacements.items():
+                message = message.replace(old, new)
+                subject = subject.replace(old, new)
+
+            if "test" in request.POST:
+                recipient = request.user.email
 
             mailcontext = {
                 "message": message,
             }
             sender = f'"{site.name}" <{site.email}>'
+            recipient = f'"{garden.user.first_name}" <{recipient}>'
 
             msg_html = render_to_string("mailbody/message.blank.html", mailcontext)
 
@@ -3637,7 +3653,10 @@ def controlpanel_gardens(request):
                 fail_silently=False,
                 html_message=msg_html,
             )
-            messages.success(request, _("Thanks, we have received your message! We will try to get back to you as soon as possible."))
+            messages.success(request, (f"Mail sent to: {garden.user.first_name}"))
+
+            if "test" in request.POST:
+                break
 
     context = {
         "controlpanel": True,

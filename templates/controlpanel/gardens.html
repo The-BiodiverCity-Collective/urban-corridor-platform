@@ -56,7 +56,10 @@
         </td>
         <td>{{ each.photos.count }}</td>
         <td>{{ each.plants_count }}</td>
-        <td>{{ each.user|default_if_none:"" }}</td>
+        <td>
+          {% if request.GET.view == "email" %}{{ each.user.first_name }}<br>{% endif %}
+          {{ each.user|default_if_none:"" }}
+        </td>
         <td>{{ each.is_active }}</td>
         <td data-sort="{{ each.created_at|date:"YmdHis" }}">{{ each.created_at }}</td>
       </tr>
@@ -81,7 +84,7 @@
   <textarea name="message" required placeholder="{{ _("Message") }}">{{ request.POST.message }}</textarea>
   <div class="mt-5 flex justify-between">
     <button class="btn-green">{{ _("Send to selected recipients") }}</button>
-    <button class="btn-green">{{ _("Send test mail to myself") }} ({{ request.user.email }})</button>
+    <button class="btn-green" name="test" value="true">{{ _("Send test mail to myself") }} ({{ request.user.email }})</button>
   </div>
   {% csrf_token %}
 

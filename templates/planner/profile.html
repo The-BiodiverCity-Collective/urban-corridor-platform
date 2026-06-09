@@ -110,26 +110,12 @@
             </div>
           </div>
 
-          <h2 class="mb-5 mt-10">{{ _("Who manages this space?") }}</h2>
+          <h2 hidden class="mb-5 mt-10">{{ _("Who manages this space?") }}</h2>
 
-          <div class="col-span-full mt-2">
+          <div hidden class="col-span-full mt-2">
             <label class="block text-sm/6 font-medium text-gray-900">{{ _("Contact name") }}</label>
             <div class="mt-2">
               <input type="text" name="contact_name" value="{{ garden.contact_name|default_if_none:"" }}">
-            </div>
-          </div>
-
-          <div class="col-span-full mt-2">
-            <label class="block text-sm/6 font-medium text-gray-900">{{ _("Contact phone (optional)") }}</label>
-            <div class="mt-2">
-              <input type="text" name="contact_phone" value="{{ garden.contact_phone|default_if_none:"" }}">
-            </div>
-          </div>
-
-          <div class="col-span-full mt-2">
-            <label class="block text-sm/6 font-medium text-gray-900">{{ _("Contact e-mail (optional)") }}</label>
-            <div class="mt-2">
-              <input type="text" name="contact_email" value="{{ garden.contact_email|default_if_none:"" }}">
             </div>
           </div>
 
