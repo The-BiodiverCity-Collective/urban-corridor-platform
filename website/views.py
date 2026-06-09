@@ -163,7 +163,7 @@ def get_garden_score(garden, status):
     scores[_("Species composition")] = int(score)
     total += score
 
-    # For species diversity we check how many of the criteria are met
+    # For structural diversity we check how many of the criteria are met
     all_criteria = DiversityCriteria.objects.filter(vegetation_type=garden.vegetation_type).count()
     criteria_met = DiversityCriteria.objects.filter(vegetation_type=garden.vegetation_type).annotate(
         species_count=Count(
@@ -174,7 +174,7 @@ def get_garden_score(garden, status):
     ).filter(species_count__gte=F("quantity")).count()
 
     score = int((criteria_met/all_criteria)*100)
-    scores[_("Species diversity")] = score
+    scores[_("Structural diversity")] = score
     total += score
 
     for each in garden.targets.all():
@@ -4168,6 +4168,17 @@ def controlpanel_cleanup(request):
         "load_datatables": True,
     }
     return render(request, "controlpanel/cleanup.html", context)
+
+@csrf_exempt
+@staff_member_required
+def controlpanel_ajax_page(request, id):
+    site = get_site(request)
+    info = Page.objects.get(pk=id, site=site)
+    info.content = request.POST["content"]
+    info.content_html = request.POST["content"]
+    info.save()
+
+    return JsonResponse({"success": True, "content": info.content_html})
 
 @staff_member_required
 def controlpanel_ajax_get_inat_data(request, id):

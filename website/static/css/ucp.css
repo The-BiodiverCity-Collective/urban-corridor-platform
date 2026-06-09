@@ -423,6 +423,10 @@
     @apply w-full px-4 py-2 mt-1 border border-gray-300 rounded-lg focus:outline-hidden focus:ring-2 focus:ring-blue-500 bg-white;
   }
 
+  #content ul {
+    @apply list-disc ml-4;
+  }
+
 }
 
 .select2-container--default .select2-selection--single .select2-selection__arrow b {

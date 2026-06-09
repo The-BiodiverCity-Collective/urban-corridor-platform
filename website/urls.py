@@ -156,6 +156,7 @@ urlpatterns = [
     path("controlpanel/shapefiles/<int:id>/dataviz/", views.controlpanel_shapefile_dataviz, name="controlpanel_shapefile_dataviz"),
     path("controlpanel/ajax/get_inat_data/<int:id>/", views.controlpanel_ajax_get_inat_data, name="controlpanel_ajax_get_inat_data"),
     path("controlpanel/ajax/get_wikipedia/<int:id>/", views.controlpanel_ajax_get_wikipedia, name="controlpanel_ajax_get_wikipedia"),
+    path("controlpanel/ajax/page/<int:id>/", views.controlpanel_ajax_page, name="controlpanel_ajax_page"),
 
     path("controlpanel/species/overview/", views.controlpanel_species_overview, name="controlpanel_species_overview"),
     path("controlpanel/species/", views.controlpanel_species_list, name="controlpanel_species_list"),

@@ -12,7 +12,48 @@
   <div class="flex gap-15">
     <div class="flex-4">
       <h1>{{ info }}</h1>
-      {{ info.get_content }}
+
+      {% if request.user.is_staff %}
+        <div id="content-buttons" hidden>
+          <div class="flex justify-center mb-4">
+            <button id="bold-btn" class="px-2 py-1 bg-gray-200 hover:bg-gray-300 rounded">
+              <i class="fas fa-bold"></i>
+            </button>
+            <button id="italic-btn" class="px-2 py-1 bg-gray-200 hover:bg-gray-300 rounded ml-2">
+              <i class="fas fa-italic"></i>
+            </button>
+            <button id="underline-btn" class="px-2 py-1 bg-gray-200 hover:bg-gray-300 rounded ml-2">
+              <i class="fas fa-underline"></i>
+            </button>
+            <button id="h1-btn" class="px-2 py-1 bg-gray-200 hover:bg-gray-300 rounded ml-2">
+              <i class="fas fa-heading"></i> H1
+            </button>
+            <button id="h2-btn" class="px-2 py-1 bg-gray-200 hover:bg-gray-300 rounded ml-2">
+              <i class="fas fa-heading"></i> H2
+            </button>
+            <button id="ul-btn" class="px-2 py-1 bg-gray-200 hover:bg-gray-300 rounded ml-2">
+              <i class="fas fa-list-ul"></i>
+            </button>
+            <button id="ol-btn" class="px-2 py-1 bg-gray-200 hover:bg-gray-300 rounded ml-2">
+              <i class="fas fa-list-ol"></i>
+            </button>
+            <button id="link-btn" class="px-2 py-1 bg-gray-200 hover:bg-gray-300 rounded ml-2">
+              <i class="fas fa-link"></i>
+            </button>
+          </div>
+        </div>
+      {% endif %}
+
+      <div id="content">
+        {{ info.get_content }}
+      </div>
+
+      {% if request.user.is_staff %}
+        <div hidden class="flex justify-between mt-2" id="save-buttons">
+          <a class="btn btn-light" href="{{ request.path }}">{{ _("Cancel") }}</a>
+          <button class="btn btn-green"><i class="fa fa-save mr-1"></i> {{ _("Save") }}</button>
+        </div>
+      {% endif %}
 
       {% if info.meta_data.header == "Create or register your garden" and slug != "recruit-others-to-register" %}
 
@@ -159,15 +200,94 @@
 
 
 {% if request.user.is_staff %}
-  <a class="btn-warning btn-edit" href="{% url "controlpanel_page" info.id %}?redirect={{ request.get_full_path }}">
+  <a class="btn-warning btn-edit" href="">
     <i class="fa fa-pencil"></i>
   </a>
 
-          <section>
-            <h2>Management tools</h2>
-            <a class="btn btn-warning"><i class="fa fa-pencil"></i></a>
-          </section>
+  <section class="fixed top-20 right-0 p-4 bg-gray-100 border-t border-gray-300 rounded-sm">
+    <h2 class="text-sm font-bold">Management tools</h2>
+    <ul>
+      <li><span class="live-edit badge cursor-pointer"><i class="fa fa-pencil mr-1"></i> Edit text</span></li>
+      <li><a href="{% url "controlpanel_page" info.id %}?redirect={{ request.get_full_path }}" class="badge badge-warning no-underline">
+        <i class="fa fa-lock mr-1"></i> Edit in control panel</a></li>
+    </ul>
+  </section>
 
+  <script type="text/javascript">
+  $(function(){
+    $(".live-edit").on("click", function() {
+      $(this).toggleClass("badge-info");
+      $("#content").toggleClass("bg-blue-50 p-2 ext-blue-700");
+      $("#content").prop("contentEditable", $(this).hasClass("badge-info"));
+      $("#save-buttons").prop("hidden", !$(this).hasClass("badge-info"));
+      $("#content-buttons").prop("hidden", !$(this).hasClass("badge-info"));
+    });
+
+    $("#save-buttons button").on("click", function() {
+      var content = $("#content").html();
+      $.ajax({
+        type: "POST",
+        url: "{% url "controlpanel_ajax_page" info.id %}",
+        data: { content: content },
+        dataType: "json",
+        success: function(response) {
+          if (response.success == true) {
+            $("#content").html(response.content);
+            $("#content").prop("contentEditable", false);
+            $(".live-edit").removeClass("badge-info");
+            $("#content").removeClass("bg-blue-50 p-2 ext-blue-700");
+            $("#save-buttons").prop("hidden", true);
+            $("#content-buttons").prop("hidden", true);
+          } else {
+            alert("We could not save this, please try again");
+          }
+        },
+        error: function() {
+          alert("We could not save this, please try again");
+        }
+      });
+    });
+
+    $("#bold-btn").on("click", function() {
+      document.execCommand("bold");
+    });
+
+    $("#italic-btn").on("click", function() {
+      document.execCommand("italic");
+    });
+
+    $("#underline-btn").on("click", function() {
+      document.execCommand("underline");
+    });
+
+    $("#ul-btn").on("click", function() {
+      document.execCommand("insertUnorderedList");
+    });
+
+    $("#ol-btn").on("click", function() {
+      document.execCommand("insertOrderedList");
+    });
+
+    $("#link-btn").on("click", function() {
+      var url = prompt("Enter link URL:");
+      if (url) {
+        var sel = window.getSelection();
+        var text = sel.toString();
+        var html = '<a href="' + url + '">' + text + '</a>';
+        document.execCommand("insertHTML", false, html);
+      }
+    });
+
+    $("#h1-btn").on("click", function() {
+      document.execCommand("formatBlock", false, "h1");
+    });
+
+    $("#h2-btn").on("click", function() {
+      document.execCommand("formatBlock", false, "h2");
+    });
+
+  });
+  </script>
 
 {% endif %}
 
