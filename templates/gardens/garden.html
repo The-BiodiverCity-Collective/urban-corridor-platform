@@ -119,17 +119,19 @@
 
     {% if info.geometry %}
 
-      <h2>{{ _("Location") }}</h2>
-      <div class="mb-4 rounded shadow-sm" id="map"></div>
+      <div class="mb-4 mt-14 rounded shadow-sm" id="map"></div>
 
+      {% if False %}
       <div class="mt-2">
         <small>
           {{ _("Coordinates") }}: <code>{{ info.geometry.centroid.1 }}, {{ info.geometry.centroid.0 }}</code>
         </small>
       </div>
+      {% endif %}
+
     {% endif %}
 
-    <h2 class="mt-4">{{ _("Description") }}</h2>
+    <h2 class="mt-6">{{ _("Description") }}</h2>
     <p class="mt-6 text-base/7 text-gray-600">
       {{ info.description|linebreaksbr|urlize }}
     </p>
@@ -263,7 +265,7 @@
         map.fitBounds(L.geoJSON(coords).getBounds());
       {% else %}
         L.marker([{{ info.geometry.y }}, {{ info.geometry.x }}]).addTo(map);
-        map.setView([{{ info.geometry.y }}, {{ info.geometry.x }}], 15);
+        map.setView([{{ info.geometry.y }}, {{ info.geometry.x }}], 14);
       {% endif %}
     {% endif %}
     

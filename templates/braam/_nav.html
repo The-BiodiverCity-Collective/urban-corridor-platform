@@ -20,7 +20,7 @@
             <i class="fa fa-angle-down mt-1 {% if menu == "join" %}text-sky-600{% endif %}"></i>
         </a>
 
-        <a href="/gardens/" class="mr-3 inline-flex items-center gap-x-1 text-sm/6 font-semibold {% if menu == "about" %}text-sky-600{% else %}text-gray-900{% endif %} hovermenu" data-target="about" aria-expanded="false">
+        <a href="/gardens/" class="mr-3 inline-flex items-center gap-x-1 text-sm/6 font-semibold {% if menu == "about" or menu == "gardens" %}text-sky-600{% else %}text-gray-900{% endif %} hovermenu" data-target="about" aria-expanded="false">
           {{ _("About Us") }}
           <i class="fa fa-angle-down mt-1"></i>
         </a>
@@ -259,8 +259,23 @@
             </div>
           </div>
         </div>
-
-        {% include "_highlight.html" %}
+        <article class="relative isolate flex max-w-2xl flex-col gap-x-8 gap-y-6 sm:flex-row sm:items-start lg:flex-col lg:items-stretch">
+          <div class="relative flex-none">
+            <img class="aspect-2/1 w-full rounded-lg bg-gray-100 object-cover sm:aspect-video sm:h-32 lg:h-auto" src="/media/video.jpg" alt="">
+            <div class="absolute inset-0 rounded-lg ring-1 ring-inset ring-gray-900/10"></div>
+          </div>
+          <div>
+            <h4 class="mt-2 text-sm/6 font-semibold text-gray-900">
+              <a href="/resources/introduction-video/" class="hover:text-sky-600">
+                <span class="absolute inset-0"></span>
+                Introduction video
+              </a>
+            </h4>
+            <p class="mt-2 text-sm/6 text-gray-600">
+              Check out this 8-minute video about the {{ SITE }}!
+            </p>
+          </div>
+        </article>
       </div>
     </div>
   </div>

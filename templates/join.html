@@ -175,7 +175,6 @@
 
       <h2>{{ info.meta_data.header }}</h2>
 
-
       <nav aria-label="Sidebar" class="flex flex-1 flex-col">
         <ul role="list" class="-mx-2 space-y-1">
           {% for each in JOIN_MENU|get_item:info.meta_data.header %}
@@ -200,9 +199,6 @@
 
 
 {% if request.user.is_staff %}
-  <a class="btn-warning btn-edit" href="">
-    <i class="fa fa-pencil"></i>
-  </a>
 
   <section class="fixed top-20 right-0 p-4 bg-gray-100 border-t border-gray-300 rounded-sm">
     <h2 class="text-sm font-bold">Management tools</h2>

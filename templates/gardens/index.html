@@ -27,7 +27,7 @@
   <ul role="list" class="grid grid-cols-2 gap-x-4 gap-y-8 sm:grid-cols-3 sm:gap-x-6 lg:grid-cols-4 xl:gap-x-8">
   {% for each in gardens %}
     <li class="relative">
-      <div class="group overflow-hidden rounded-lg bg-gray-100 focus-within:ring-2 focus-within:ring-indigo-500 focus-within:ring-offset-2 focus-within:ring-offset-gray-100">
+      <div class="group overflow-hidden rounded-lg bg-gray-100 focus-within:ring-2 focus-within:ring-sky-500 focus-within:ring-offset-2 focus-within:ring-offset-gray-100">
         <img src="{{ each.thumbnail }}" alt="" class="pointer-events-none w-full h-full object-cover group-hover:opacity-75" style="height:210px">
         <a class="absolute inset-0 focus:outline-hidden" href="{{ each.get_absolute_url }}" title="{{ _("Image credits") }}: {{ each.photo.author }}">
         </a>
@@ -36,6 +36,9 @@
       {% if each.suburb %}
         <p class="pointer-events-none block text-sm font-medium text-gray-500"><em>{{ each.suburb }}</em></p>
       {% endif %}
+      <p class="pointer-events-none block text-sm font-medium text-gray-500">
+        {{ _("Garden") }} <span class="font-mono">#{{ each.get_garden_number }}</span>
+      </p>
     </li>
   {% endfor %}
   </ul>

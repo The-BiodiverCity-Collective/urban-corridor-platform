@@ -14,6 +14,7 @@ from django.contrib.gis.measure import D
 from django.core import serializers
 from django.core.files import File
 from django.core.files.base import ContentFile
+from django.core.files.uploadedfile import SimpleUploadedFile
 from django.core.mail import send_mail
 from django.core.paginator import Paginator
 from django.db.models import OuterRef, Subquery, Value, CharField, Q, F, Count, Max, IntegerField, Sum
@@ -47,7 +48,7 @@ import zipfile
 import time
 import math
 
-from PIL import Image
+from PIL import Image, ImageOps
 from PIL.ExifTags import TAGS, GPSTAGS
 from folium.plugins import Fullscreen
 from openpyxl import Workbook
@@ -3064,7 +3065,33 @@ def planner_profile(request, id, photos=False):
                     image = Image.open(io.BytesIO(image_file))
                     exif_data = image._getexif()
                     photo_date = timezone.now()
+
+                    # Auto-rotate based on EXIF Orientation
+                    orientation = None
                     if exif_data:
+                        orientation = exif_data.get(274)  # 274 is the Orientation tag
+                        if orientation:
+                            if orientation == 2:
+                                image = ImageOps.mirror(image)
+                            elif orientation == 3:
+                                image = image.rotate(180, expand=True)
+                            elif orientation == 4:
+                                image = ImageOps.mirror(image.rotate(180, expand=True))
+                            elif orientation == 5:
+                                image = ImageOps.mirror(image.rotate(-90, expand=True))
+                            elif orientation == 6:
+                                image = image.rotate(-90, expand=True)
+                            elif orientation == 7:
+                                image = ImageOps.mirror(image.rotate(90, expand=True))
+                            elif orientation == 8:
+                                image = image.rotate(90, expand=True)
+                        # After rotation, save back to bytes so the saved file uses corrected orientation
+                        buf = io.BytesIO()
+                        image_format = image.format or "JPEG"
+                        image.save(buf, format=image_format)
+                        buf.seek(0)
+                        each = SimpleUploadedFile(each.name, buf.read(), content_type=each.content_type)
+
                         for tag_id, value in exif_data.items():
                             tag = TAGS.get(tag_id, tag_id)
                             if tag == "DateTimeOriginal":
