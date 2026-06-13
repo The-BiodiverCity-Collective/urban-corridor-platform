@@ -9,6 +9,6 @@ Please review in the control panel and activate or liaise about anything that is
 
 Created: {{ garden.created_at }}<br>
 Activated: {{ garden.published_at }}<br>
-User: {{ garden.user }}<br>
+User: {{ garden.user.first_name }}<br>
 E-mail: {{ garden.user.email }}
 {% endblock %}

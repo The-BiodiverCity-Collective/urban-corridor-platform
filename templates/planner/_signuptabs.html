@@ -15,4 +15,12 @@
     <i class="fa fa-check-circle mr-1"></i>
     {{ _("Activate") }}
   </a>
+  <a href="{% url "garden" GARDEN %}" class="tab inactive ml-auto">
+    <i class="fa fa-eye mr-1"></i>
+    {% if GARDEN_ACTIVE %}
+      {{ _("View online profile") }}
+    {% else %}
+      {{ _("Preview online profile") }}
+    {% endif %}
+  </a>
 </nav>

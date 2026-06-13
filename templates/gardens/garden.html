@@ -221,12 +221,34 @@
 <div class="mt-10">
   <a href="{% url "gardens" %}" class="btn-blue"><i class="fa fa-arrow-left"></i> View all corridor gardens</a>
 
-  {% if False %}
-    <h4 class="mt-4">Update information</h4>
-    <p>
-      Do you want to update information on this page? 
-      <a href="{% url "garden_manager" info.id %}">Click here</a>.
+  {% if info.user == request.user %}
+    <section class="mt-10 bg-gray-100 p-5 rounded">
+    <h4>Update information</h4>
+    <p class="mb-4">
+      {{ _("You can edit your garden profile in the Garden Planner. Use these links to quickly edit key details:") }}
     </p>
+
+      <a class="btn btn-light" href="{% url "planner_profile" info.id %}">
+        <i class="fa fa-pencil mr-1"></i>
+        {{ _("Edit profile") }}
+      </a>
+
+      <a class="btn btn-light" href="{% url "planner_profile_photos" info.id %}">
+        <i class="fa fa-image mr-1"></i>
+        {{ _("Manage photos") }}
+      </a>
+
+      <a class="btn btn-light" href="{% url "planner_plants" info.id %}">
+        <i class="fa fa-leaf mr-1"></i>
+        {{ _("Manage plants") }}
+      </a>
+
+      <a class="btn btn-light" href="{% url "planner" info.id %}">
+        <i class="fa fa-shovel mr-1"></i>
+        {{ _("Garden planner") }}
+      </a>
+
+    </section>
   {% endif %}
 </div>
 
