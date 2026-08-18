@@ -153,37 +153,18 @@
 
   {% endif %}
 
-  {% if swapped_corridor_coords %}
+  {% if corridor_mask %}
     /* START OF CUTOUT SCRIPT */
+      const maskGeoJSON = {{ corridor_mask.geojson|safe }};
 
-    // Whole globe bounds
-    const globeBounds = [
-      [-90, -180],
-      [-90, 180],
-      [90, 180],
-      [90, -180],
-      [-90, -180]
-    ];
-
-    const polygonCoords = {{ swapped_corridor_coords }};
-    const corridorCoords = {{ swapped_corridor_coords }};
-
-    // Create mask layer
-    const mask = L.polygon([
-      ...globeBounds,
-      ...polygonCoords.reverse()
-    ], {
-      color: "black",
-      fillColor: "black",
-      fillOpacity: 0.25,
-      stroke: false
-    }).addTo(map);
-
-    const polygon = L.polygon(polygonCoords, {
-      stroke: false,
-      fillOpacity: 0
-    }).addTo(map);
-
+      L.geoJSON(maskGeoJSON, {
+          style: {
+              color: "black",
+              fillColor: "black",
+              fillOpacity: 0.25,
+              stroke: false
+          }
+      }).addTo(map);
     /* END OF CUTOUT SCRIPT */
   {% endif %}
 

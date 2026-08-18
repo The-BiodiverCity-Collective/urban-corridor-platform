@@ -10,6 +10,7 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth.tokens import default_token_generator
 from django.contrib.gis import geos
 from django.contrib.gis.db.models.functions import Area, Transform
+from django.contrib.gis.geos import Polygon
 from django.contrib.gis.measure import D
 from django.core import serializers
 from django.core.files import File
@@ -127,17 +128,16 @@ def get_garden(request, id, silent_fail=False):
     return None
 
 # To show the corridor by blacking out everything that is NOT the corridor, we need to 
-# get the 'swapped around' coordinates and blacken those out. This function returns exactly that.
-def get_swapped_corridor_coords(site):
-    swapped_corridor_coords = None
+# get the 'inversed' coordinates and blacken those out. This function returns exactly that.
+def get_corridor_mask(site):
+    mask = None
     if site.corridor:
         corridor = ReferenceSpace.objects.filter(source=site.corridor)
         if corridor:
             corridor = corridor[0]
-            corridor = json.loads(corridor.geometry.geojson)
-            corridor = corridor["coordinates"][0]
-            swapped_corridor_coords = [[y, x] for x, y in corridor] # This is needed for the hole punching to work
-    return swapped_corridor_coords
+            world = Polygon.from_bbox((-180, -90, 180, 90))
+            mask = world.difference(corridor.geometry)
+    return mask
 
 # We calculate the various scores for a garden here
 def get_garden_score(garden, status):
@@ -369,7 +369,7 @@ def map(request, id):
         "colors": colors,
         "features": features,
         "mapstyle": properties.mapstyle if properties else None,
-        "swapped_corridor_coords": get_swapped_corridor_coords(site),
+        "corridor_mask": get_corridor_mask(site),
     }
 
     return render(request, "map.html", context)
@@ -481,7 +481,7 @@ def maps(request):
             4: "map-marker",
             5: "info-circle",
         },
-        "swapped_corridor_coords": get_swapped_corridor_coords(site),
+        "corridor_mask": get_corridor_mask(site),
     }
     return render(request, "maps.html", context)
 
@@ -1148,7 +1148,7 @@ def gardens(request):
         "page": "gardens",
         "menu": "gardens",
         "load_map": True,
-        "swapped_corridor_coords": get_swapped_corridor_coords(site),
+        "corridor_mask": get_corridor_mask(site),
         "hide_progress_view_gardens": True,
     }
     return render(request, "gardens/index.html", context)
@@ -1162,7 +1162,7 @@ def gardens_map(request):
         "page": "gardens_map",
         "load_map": True,
         "mapstyle": MapStyle.objects.get(pk=3),
-        "swapped_corridor_coords": get_swapped_corridor_coords(site),
+        "corridor_mask": get_corridor_mask(site),
         "load_datatables": True,
         "menu": "gardens",
     }
@@ -1195,8 +1195,8 @@ def garden(request, id):
         "title": info.name,
         "menu": "gardens",
         "body_padding": True,
-        "swapped_corridor_coords": get_swapped_corridor_coords(site),
         "load_map": True,
+        "corridor_mask": get_corridor_mask(site),
         "plants": Species.objects.filter(garden_plants__garden=info, garden_plants__status="PRESENT"),
         "tab": "garden",
 
@@ -2500,7 +2500,7 @@ def planner_location(request, id):
         "garden": garden,
         "map_hide_save": True,
         "step": 1,
-        "swapped_corridor_coords": get_swapped_corridor_coords(site),
+        "corridor_mask": get_corridor_mask(site),
         "show_next_buttons": show_next_buttons,
         "map_draw_polygon": map_draw_polygon,
     }
@@ -5248,7 +5248,8 @@ def controlpanel_corridor(request):
 
     context = {
         "controlpanel": True,
-        "menu": "configuration",
+        "menu": "config",
+        "page": "corridor",
         "site": site,
         "garden": corridor,
         "map_draw_polygon": True,
