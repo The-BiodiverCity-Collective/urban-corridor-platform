@@ -87,7 +87,7 @@
 
 <div class="relative">
   {% if map_draw_polygon and not show_next_buttons %}
-    <form method="post" class="absolute top-2 right-2 z-1000">
+    <form method="post" class="absolute bottom-5 right-2 z-1000">
       <input type="hidden" id="polygon-data" name="polygon_data" />
       <button id="save-polygon" type="submit" class="btn-green">
         {{ _("Save") }}
@@ -162,7 +162,7 @@
     map.on("click", onMapClick);
   {% endif %}
 
-  {% if garden.geometry %}
+  {% if garden.geometry and not map_draw_polygon %}
     {% if garden.geometry.geom_type == "Polygon" or garden.geometry.geom_type == "MultiPolygon" %}
       var coords = {{ garden.geometry.geojson|safe }};
       L.geoJSON(coords).addTo(map);

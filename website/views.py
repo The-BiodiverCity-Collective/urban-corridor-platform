@@ -4319,6 +4319,7 @@ def controlpanel_shapefile(request, id):
             # There is a way to limit processing items with 1000 records. However, for now if people
             # see the alert and accept it, we automatically override this limit. Later we can restrict
             # who can automatically do that and who can't
+            messages.danger(request, "Too many items to process. Limit to 1000 items please.")
             info.meta_data["skip_size_check"] = True
             info.save()
         return redirect(reverse("controlpanel_shapefile_classify", args=[info.id]))
@@ -5214,6 +5215,46 @@ def controlpanel_user(request, id=None):
         "info": info,
     }
     return render(request, "controlpanel/user.html", context)
+
+@staff_member_required
+def controlpanel_corridor(request):
+
+    site = get_site(request)
+    corridor = ReferenceSpace.objects.filter(source=site.corridor)
+    if corridor:
+        corridor = corridor[0]
+
+    if request.method == "POST":
+        polygon_data = request.POST.get("polygon_data")
+
+        if polygon_data:
+            geojson_list = json.loads(polygon_data)
+
+            polygons = []
+            for feature in geojson_list:
+                geom = geos.GEOSGeometry(json.dumps(feature["geometry"]))
+                polygons.append(geom)
+
+            # If multiple polygons, use MultiPolygon
+            if len(polygons) == 1:
+                corridor.geometry = polygons[0]
+            else:
+                corridor.geometry = geos.MultiPolygon(polygons)
+            corridor.save()
+            messages.success(request, _("Information was saved."))
+
+    # Simplify because there are often too many edges
+    corridor.geometry = corridor.geometry.simplify(tolerance=0.00002, preserve_topology=True)
+
+    context = {
+        "controlpanel": True,
+        "menu": "configuration",
+        "site": site,
+        "garden": corridor,
+        "map_draw_polygon": True,
+        "load_map": True,
+    }
+    return render(request, "controlpanel/corridor.html", context)
 
 # AJAX
 def ajax_species(request):

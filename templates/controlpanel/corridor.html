@@ -1,0 +1,39 @@
+{% extends "_base.html" %}
+
+{% block css %}
+<style>
+  #map {
+    height: 800px;
+  }
+</style>
+{% endblock %}
+
+
+{% block content %}
+
+  <h1>{{ _("Corridor") }}</h1>
+
+  <p>Site: {{ site }}</p>
+  <p>Corridor: {{ site.corridor }}</p>
+  <p>Corridor: {{ site.corridor.id }}</p>
+
+  <p>Spaces:</p>
+  <ul class="list-disc ml-4">
+    {% for each in site.corridor.spaces.all %}
+      <li>{{ each }}</li>
+    {% endfor %}
+  </ul>
+
+  <div class="relative">
+    <form method="post" class="absolute bottom-5 right-2 z-1000">
+      <input type="hidden" id="polygon-data" name="polygon_data" />
+      <button id="save-polygon" type="submit" class="btn-green">
+        {{ _("Save") }}
+      </button>
+      {% csrf_token %}
+    </form>
+    <div class="mb-4 rounded shadow-sm" id="map"></div>
+  </div>
+
+{% endblock %}
+

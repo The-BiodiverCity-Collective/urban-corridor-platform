@@ -180,6 +180,12 @@
                         <i class="fa fa-file-check mr-2"></i>
                         {{ _("Configure features") }}
                       </a>
+                      <a href="{% url "controlpanel_corridor" %}"
+                         class="{% if page == "corridor" %}bg-gray-100{% endif %} group/item flex items-center px-4 py-2 text-sm text-gray-700 focus:bg-gray-100 focus:text-gray-900 focus:outline-hidden" 
+                         aria-current="page">
+                        <i class="fa fa-map-marked mr-2"></i>
+                        {{ _("Edit corridor") }}
+                      </a>
                       <a href="{% url "controlpanel_cleanup" %}"
                          class="{% if page == "cleanup" %}bg-gray-100{% endif %} group/item flex items-center px-4 py-2 text-sm text-gray-700 focus:bg-gray-100 focus:text-gray-900 focus:outline-hidden" 
                          aria-current="page">

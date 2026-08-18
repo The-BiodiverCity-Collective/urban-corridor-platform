@@ -37,19 +37,56 @@
     });
 
   {% else %}
-    var tileLayer = L.tileLayer(
-      "https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png",
-      {
-        attribution:
-          '&copy; OpenStreetMap contributors &copy; CARTO',
-        subdomains: 'abcd',
-        maxZoom: 20,
-        layer: "tiles",
-      }
-    );
-  {% endif %}
+  const carto = L.tileLayer(
+    "https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png",
+    {
+      attribution:
+        '&copy; OpenStreetMap contributors &copy; CARTO',
+      subdomains: 'abcd',
+      maxZoom: 20,
+      layer: "tiles",
+    }
+  );
 
-  tileLayer.addTo(map);
+  const osm = L.tileLayer(
+    "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
+    {
+      attribution: "&copy; OpenStreetMap contributors",
+      referrerPolicy: "strict-origin-when-cross-origin"
+    }
+  );
+
+  const positron = L.tileLayer(
+    "https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png",
+    {
+      attribution: "&copy; OpenStreetMap contributors &copy; CARTO",
+      referrerPolicy: "strict-origin-when-cross-origin"
+    }
+  );
+
+  const satellite = L.tileLayer(
+    "https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}",
+    {
+      attribution: "Tiles © Esri",
+      referrerPolicy: "strict-origin-when-cross-origin"
+    }
+  );
+
+  carto.addTo(map);
+
+  L.control.layers(
+    {
+      "Carto": carto,
+      "OpenStreetMap": osm,
+      "Light": positron,
+      "Satellite": satellite
+    },
+    null,
+    {
+      collapsed: false
+    }
+  ).addTo(map);
+  {% endif %}
 
   {% if map_draw_polygon %}
     var drawnItems = new L.FeatureGroup();
@@ -77,44 +114,42 @@
       drawnItems.addLayer(layer);
     });
 
+
   {% if garden.geometry %}
     {% if garden.geometry.geom_type == "Polygon" or garden.geometry.geom_type == "MultiPolygon" %}
       var geom = {{ garden.geometry.geojson|safe }};
 
-      // Wrap raw geometry into a Feature
-      var feature = {
-        type: "Feature",
-        geometry: geom,
-        properties: {}
-      };
+      // Clear any remnant layers out first to guarantee a clean slate
+      drawnItems.clearLayers();
 
-      // Now handle MultiPolygon
-      if (geom.type === "Polygon") {
-        var layer = L.geoJSON(feature).getLayers()[0];
-        drawnItems.addLayer(layer);
-      }
-
-      if (geom.type === "MultiPolygon") {
-        geom.coordinates.forEach(function(polygonCoords) {
-          var polyFeature = {
-            type: "Feature",
-            geometry: {
-              type: "Polygon",
-              coordinates: polygonCoords
-            },
-            properties: {}
+      // Directly pass the geometry object into L.geoJSON without custom feature wrappers
+      var existingGeoJsonGroup = L.geoJSON(geom, {
+        // This style object ensures it matches the editable appearance of Leaflet Draw
+        style: function() {
+          return {
+            color: "#3388ff",
+            weight: 4,
+            opacity: 0.7,
+            fillColor: "#3388ff",
+            fillOpacity: 0.4
           };
-          var layer = L.geoJSON(polyFeature).getLayers()[0];
-          drawnItems.addLayer(layer);
-        });
-      }
+        }
+      });
 
-      // Only fit bounds if drawnItems has layers
+      // Extract every single individual sub-layer cleanly and move them into the Draw group
+      existingGeoJsonGroup.eachLayer(function(layer) {
+        if (layer instanceof L.Polygon) {
+          drawnItems.addLayer(layer);
+        }
+      });
+
+      // Zoom and center tightly around the newly injected geometries
       if (drawnItems.getLayers().length > 0) {
         map.fitBounds(drawnItems.getBounds());
       }
-      {% endif %}
     {% endif %}
+  {% endif %}
+
 
   {% endif %}
 
