@@ -65,12 +65,14 @@
         </div>
       </div>
 
-      <div class="text-center">
-        <a href="{% url "garden_score" info.id %}" class="no-underline group">
-          <span class="text-black font-bold block text-3xl group-hover:text-sky-800">{{ score_present.total|default:0 }}</span>
-          <span class="text-gray-700 text-sm group-hover:text-sky-800">{{ _("Garden score") }}</span>
-        </a>
-      </div>
+      {% if score_present.total > 0 %}
+        <div class="text-center">
+          <a href="{% url "garden_score" info.id %}" class="no-underline group">
+            <span class="text-black font-bold block text-3xl group-hover:text-sky-800">{{ score_present.total|default:0 }}</span>
+            <span class="text-gray-700 text-sm group-hover:text-sky-800">{{ _("Garden score") }}</span>
+          </a>
+        </div>
+      {% endif %}
     </div>
 
     <div class="mt-5 pt-5 border-t border-gray-300">

@@ -19,36 +19,88 @@
       <div aria-hidden="true" class="absolute top-10 left-[calc(50%-4rem)] -z-10 transform-gpu blur-3xl sm:left-[calc(50%-18rem)] lg:top-[calc(50%-30rem)] lg:left-48 xl:left-[calc(50%-24rem)]">
         <div style="clip-path: polygon(73.6% 51.7%, 91.7% 11.8%, 100% 46.4%, 97.4% 82.2%, 92.5% 84.9%, 75.7% 64%, 55.3% 47.5%, 46.5% 49.4%, 45% 62.9%, 50.3% 87.2%, 21.3% 64.1%, 0.1% 100%, 5.4% 51.1%, 21.4% 63.9%, 58.9% 0.2%, 73.6% 51.7%)" class="aspect-1108/632 w-277 bg-linear-to-r from-[#80caff] to-[#4f46e5] opacity-20"></div>
       </div>
+
       <div class="mx-auto max-w-7xl px-6 pt-10 pb-10 sm:pb-15 lg:flex lg:px-8 lg:py-20">
-        <div class="mx-auto max-w-2xl shrink-0 lg:mx-0 lg:pt-8">
-          <h1 class="mt-10 text-5xl font-semibold tracking-tight text-pretty text-gray-900 sm:text-7xl">
-            Help us build ecological corridors in Cape Town
+        <div class="mx-auto max-w-2xl shrink-0 lg:mx-0">
+
+        <section>
+          <h1 class="text-6xl font-semibold tracking-tight text-pretty text-gray-900 mb-2 mt-5">
+            Help us restore fynbos in Cape Town
           </h1>
-          <p class="mt-8 text-lg font-medium text-pretty text-gray-500 sm:text-xl/8">
-            We are building a network of fynbox restoration gardens throughout Cape Town and we want YOU to be part of this.
+          <p class="text-lg text-gray-600 font-medium text-pretty sm:text-xl/8">
+            We are building a network of restoration gardens in Cape Town and we want YOU to be part of this.
           </p>
           <div class="mt-10 flex items-center gap-x-6">
-            <a href="{% url "planner" GARDEN %}" class="btn-blue">Start your restoration garden</a>
-            <a href="/about/introduction/" class="text-sm/6 font-semibold text-gray-900">Learn more <span aria-hidden="true">→</span></a>
+            <a href="/planner/0/" class="btn-blue">Start your restoration garden</a>
+            <a href="/about/corridor/" class="text-sm/6 font-semibold text-gray-900">Learn more <span aria-hidden="true">→</span></a>
           </div>
+        </section>
+
+
+<section class="w-full mx-auto space-y-16">
+
+  <div class="flex flex-col md:flex-row gap-8 items-center text-gray-800">
+    <div class="flex-1 space-y-4 bg-white pt-7 mt-7 pb-5 pr-5 rounded">
+
+    <div class="w-full flex flex-col items-center justify-center text-center shrink-0">
+      <div class="w-full bg-gray-100 rounded-full h-3 mb-2 overflow-hidden border border-gray-200">
+        <div class="bg-lime-500 h-3 rounded-full transition-all duration-500" style="width: {{ gardens.count }}%;"></div>
+      </div>
+      <div class="flex justify-between w-full text-xs font-semibold text-gray-500">
+        <span>Goal: 100 gardens &middot; <a href="/gardens/" class="no-underline hover:underline">registered: {{ gardens.count }} {% if gardens.count == 1 %}garden{% else %}gardens{% endif %}</a></span>
+        <span class="text-lime-600 font-bold">{{ gardens.count }}% Complete</span>
+      </div>
+    </div>
+
+
+      <p class="text-gray-600 leading-relaxed text-sm md:text-base">
+        We are on a mission to connect <strong class="text-gray-900">100 restoration gardens</strong> 
+        in Cape Town by the end of 2026.
+        Are you keen to start or improve a restoration garden? Join our movement today!
+      </p>
+      <div class="pt-10">
+        <p class="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">Register your garden:</p>
+        <div class="flex flex-wrap gap-2">
+          <a href="/join/private-garden/" class="bg-gray-800 hover:bg-gray-900 text-white text-xs font-medium px-4 py-2 rounded-lg transition no-underline">Private Garden</a>
+          <a href="/join/public-garden/" class="bg-gray-800 hover:bg-gray-900 text-white text-xs font-medium px-4 py-2 rounded-lg transition no-underline">Public Space</a>
+          <a href="/join/corporate-garden/" class="bg-gray-50 hover:bg-gray-200 text-gray-800 text-xs font-medium px-4 py-2 rounded-lg transition border border-gray-300 no-underline">Corporate Garden</a>
+        </div>
+      </div>
+      <p class="text-xs text-gray-500 pt-1">
+        Not able to commit right now? You can still help! <a href="/join/recruit-others-to-register/" class="text-gray-800 underline font-semibold hover:text-gray-900">Spread the word to others</a>.
+      </p>
+
+
+
+    </div>
+
+
+
+  </div>
+
+</section>
         </div>
         <div class="mx-auto mt-16 flex max-w-3xl sm:mt-24 lg:mt-0 lg:ml-10 lg:max-w-3xl lg:flex-none">
           <div class="max-w-3xl flex-none sm:max-w-5xl lg:max-w-none">
-            <img src="/media/corridor.jpg" alt="" class="w-100 rounded-md bg-white/5 shadow-2xl ring-1 ring-white/10" />
+            <a href="/gardens/">
+              <img src="/media/corridor.jpg" alt="Map showing the corridor outline" class="w-100 rounded-md bg-white/5 shadow-2xl ring-1 ring-white/10" />
+            </a>
           </div>
         </div>
       </div>
+
+
     </div>
 
     <div class="container mx-auto pl-5 pr-10 sm:pr-10 pr-15">
       <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
 
-        <a href="{% url "planner_location" GARDEN %}" class="relative no-underline hover:opacity-75">
+        <a href="/about/corridor/" class="relative no-underline hover:opacity-75">
           <div class="relative flex h-full w-full flex-col overflow-hidden rounded-[calc(var(--radius-lg)+1px)] lg:rounded-bl-[calc(2rem+1px)]">
             <img src="/media/corridor-zoom.jpg" alt="" class="h-40 object-cover object-center" />
             <div class="p-10 pt-4">
-              <p class="mt-2 text-lg font-medium tracking-tight text-gray-950">{{ _("Our corridors") }}</p>
-              <p class="mt-2 mb-5 max-w-lg text-sm/6 text-gray-600 font-normal">{{ _("Learn more about the urban ecological corridors we are working on.") }}</p>
+              <p class="mt-2 text-lg font-medium tracking-tight text-gray-950">{{ _("Our corridor") }}</p>
+              <p class="mt-2 mb-5 max-w-lg text-sm/6 text-gray-600 font-normal">{{ _("Learn more about the urban ecological corridor we are working on.") }}</p>
             </div>
           </div>
           <div class="pointer-events-none absolute inset-0 rounded-lg shadow-sm outline outline-black/5 lg:rounded-bl-4xl"></div>
@@ -56,7 +108,7 @@
 
         <a href="{% url "species" %}" class="relative no-underline hover:opacity-75">
           <div class="relative flex h-full flex-col overflow-hidden rounded-[calc(var(--radius-lg)+1px)]">
-            <img src="https://inaturalist-open-data.s3.amazonaws.com/photos/106933678/large.jpeg" alt="" class="h-40 object-cover object-center" title="Photo credits: (c) Gigi Laidler, some rights reserved (CC BY-NC)"/>
+            <img src="https://inaturalist-open-data.s3.amazonaws.com/photos/173853095/large.jpg" alt="" class="h-40 object-cover object-center" title="Photo credits: (c) Karol Cameron, some rights reserved (CC BY-NC)"/>
             <div class="p-10 pt-4">
               <p class="mt-2 text-lg font-medium tracking-tight text-gray-950">{{ _("Plant explorer") }}</p>
               <p class="mt-2 mb-5 max-w-lg text-sm/6 text-gray-600 font-normal">{{ _("Browse, search, and find plants that are suitable for Egoli Granite Grassland.") }}</p>
@@ -65,24 +117,23 @@
           <div class="pointer-events-none absolute inset-0 rounded-lg shadow-sm outline outline-black/5"></div>
         </a>
 
-        <a href="{% url "planner_join" GARDEN %}" class="relative no-underline hover:opacity-75">
+        <a href="/join/private-garden/" class="relative no-underline hover:opacity-75">
           <div class="relative flex h-full flex-col overflow-hidden rounded-[calc(var(--radius-lg)+1px)]">
             <img src="/media/pexels-corin-1105018.jpg" alt="" class="h-40 object-cover object-center" title="Join us now! (Photo credits: @corin - Pexels photo 1105018)" />
             <div class="p-10 pt-4">
               <p class="mt-2 text-lg font-medium tracking-tight text-gray-950">{{ _("Join us") }}</p>
-              <p class="mt-2 mb-5 max-w-lg text-sm/6 text-gray-600 font-normal">{{ _("Learn more about how you can join our corridors and our restoration efforts.") }}</p>
+              <p class="mt-2 mb-5 max-w-lg text-sm/6 text-gray-600 font-normal">{{ _("Learn more about how you can join our corridor and our restoration efforts.") }}</p>
             </div>
           </div>
           <div class="pointer-events-none absolute inset-0 rounded-lg shadow-sm outline outline-black/5"></div>
         </a>
 
-        <a href="#" class="relative no-underline hover:opacity-75">
+        <a href="/resources/introduction-video/" class="relative no-underline hover:opacity-75">
           <div class="relative flex h-full flex-col overflow-hidden rounded-[calc(var(--radius-lg)+1px)]">
-            <img src="/media/temp.introvideo.jpg" alt="" class="h-40 object-cover object-center" />
+            <img src="/media/video.jpg" alt="" class="h-40 object-cover object-center" />
             <div class="p-10 pt-4">
               <p class="mt-2 text-lg font-medium tracking-tight text-gray-950">{{ _("Introduction video") }}</p>
-              <p class="mt-2 mb-5 max-w-lg text-sm/6 text-gray-600 font-normal">{{ _("Watch a 5-minute introduction video to learn more about our work") }}</p>
-                <h3 class="text-sm/4 font-semibold text-orange-600"><i class="fa fa-dot-circle"></i> {{ _("Pending") }}</h3>
+              <p class="mt-2 mb-5 max-w-lg text-sm/6 text-gray-600 font-normal">{{ _("Watch an 8-minute introduction video to learn more about our Garden Planner tool.") }}</p>
             </div>
           </div>
           <div class="pointer-events-none absolute inset-0 rounded-lg shadow-sm outline outline-black/5 lg:rounded-br-4xl"></div>
@@ -97,13 +148,13 @@
       </h2>
       <div class="flex justify-center space-x-10">
         <a href="https://ingcungcu.org/">
-          <img src="/media/pages/Igcungcu_Logo_2020_final.jpg" alt="Ingcungcu Sunbird Restoration" class="max-h-18" />
+          <img src="/media/pages/Igcungcu_Logo_2020_final.jpg" alt="Ingcungcu Sunbird Restoration" class="max-h-18">
         </a>
         <a href="https://biodivercitycollective.org/">
-          <img src="/media/logos/biodivercity.jpg" alt="The BiodiverCity Collective" class="max-h-18" />
+          <img src="/media/logos/biodivercity.png" alt="The BiodiverCity Collective" class="max-h-18 object-contain">
         </a>
         <a href="https://greenpop.org/">
-          <img src="/media/pages/Greenpop-Logo-Vertical-2.png" alt="The Greenpop Foundation" class="max-h-18" />
+          <img src="/media/pages/Greenpop-Logo-Vertical-2.png" alt="The Greenpop Foundation" class="max-h-18">
         </a>
       </div>
     </div>

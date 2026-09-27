@@ -244,10 +244,7 @@ def index(request):
         "replace_main_classes": "rounded-lg bg-white pl-5 pb-20 shadow-sm sm:pl-6",
     }
 
-    if site.id == 2:
-        return render(request, "fcc/index.html", context)
-    else:
-        return render(request, "braam/index.html", context)
+    return render(request, f"{site.meta_data["nav"]}/index.html", context)
 
 def design(request):
     return render(request, "design.html")
@@ -2352,7 +2349,8 @@ def nursery(request, slug, garden=None, planner=False):
 
 # Restoration Garden Manager
 def planner(request, id=None):
-    info = Page.objects.get(slug="planner", is_active=True, site=get_site(request))
+    site = get_site(request)
+    info = Page.objects.get(slug="planner", is_active=True, site=site)
     garden = None
 
     if "my_garden" in request.POST:
@@ -2371,7 +2369,7 @@ def planner(request, id=None):
             name = request.POST["garden"],
             is_user_created = True,
             is_active = False,
-            site = get_site(request),
+            site = site,
         )
         if request.user.is_authenticated:
             garden.user = request.user
@@ -2394,7 +2392,7 @@ def planner(request, id=None):
         "score_present": get_garden_score(garden, "PRESENT") if garden else None,
         "score_future": get_garden_score(garden, "FUTURE") if garden else None,
         "planner_tab": "my_garden",
-        "my_gardens": Garden.objects_unfiltered.filter(user=request.user) if request.user.is_authenticated else None,
+        "my_gardens": Garden.objects_unfiltered.filter(user=request.user, site=site) if request.user.is_authenticated else None,
         "hide_bottom_planner_menu": True if not garden else False,
     }
 
@@ -5183,7 +5181,7 @@ def controlpanel_users(request):
     context = {
         "controlpanel": True,
         "menu": "users",
-        "users": User.objects.all(),
+        "users": User.objects.filter(gardens__site=site),
     }
     return render(request, "controlpanel/users.html", context)
 
