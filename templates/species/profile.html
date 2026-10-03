@@ -72,7 +72,8 @@
           <div class="flex flex-wrap gap-1.5">
             {% for label,url in info.get_links.items %}
               <a href="{{ url }}" class="btn-light btn-sm">
-                <i class="fa fa-link text-[10px]"></i> {{ label }}
+                <i class="fa fa-link text-[10px]"></i>
+                {{ label|cut:"https://www."|cut:"http://www."|cut:"https://"|cut:"http://"|truncatechars:20 }}
               </a>
             {% endfor %}
           </div>
