@@ -244,7 +244,9 @@ def index(request):
         "replace_main_classes": "rounded-lg bg-white pl-5 pb-20 shadow-sm sm:pl-6",
     }
 
-    return render(request, f"{site.meta_data["nav"]}/index.html", context)
+    if "nav" in site.meta_data:
+        nav = site.meta_data["nav"]
+        return render(request, f"{nav}/index.html", context)
 
 def design(request):
     return render(request, "design.html")

@@ -74,7 +74,7 @@ urlpatterns = [
     path("page/<slug:slug>/", views.page, name="page"),
 
     # Temp link for workshop
-    path("workshop/", views.page, {"slug": "workshop"}, name="page"),
+    path("workshop/", views.page, {"slug": "workshop"}),
 
     path("fynbos-rehabilitation/", views.page, {"slug": "fynbos-rehabilitation"}),
     path("fynbos-rehabilitation/site-selection/", views.report, {"site_selection": True}, name="rehabilitation_site_selection"),
