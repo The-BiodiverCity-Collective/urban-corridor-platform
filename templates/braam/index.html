@@ -36,52 +36,50 @@
           </div>
         </section>
 
+          <section class="w-full mx-auto space-y-16">
 
-<section class="w-full mx-auto space-y-16">
+            <div class="flex flex-col md:flex-row gap-8 items-center text-gray-800">
+              <div class="flex-1 space-y-4 bg-white pt-7 mt-7 pb-5 pr-5 rounded">
 
-  <div class="flex flex-col md:flex-row gap-8 items-center text-gray-800">
-    <div class="flex-1 space-y-4 bg-white pt-7 mt-7 pb-5 pr-5 rounded">
-
-    <div class="w-full flex flex-col items-center justify-center text-center shrink-0" hidden>
-      <div class="w-full bg-gray-100 rounded-full h-3 mb-2 overflow-hidden border border-gray-200">
-        <div class="bg-lime-500 h-3 rounded-full transition-all duration-500" style="width: {{ gardens.count }}%;"></div>
-      </div>
-      <div class="flex justify-between w-full text-xs font-semibold text-gray-500">
-        <span>Goal: 100 gardens &middot; <a href="/gardens/" class="no-underline hover:underline">registered: {{ gardens.count }} {% if gardens.count == 1 %}garden{% else %}gardens{% endif %}</a></span>
-        <span class="text-lime-600 font-bold">{{ gardens.count }}% Complete</span>
-      </div>
-    </div>
+              <div class="w-full flex flex-col items-center justify-center text-center shrink-0" hidden>
+                <div class="w-full bg-gray-100 rounded-full h-3 mb-2 overflow-hidden border border-gray-200">
+                  <div class="bg-lime-500 h-3 rounded-full transition-all duration-500" style="width: {{ gardens.count }}%;"></div>
+                </div>
+                <div class="flex justify-between w-full text-xs font-semibold text-gray-500">
+                  <span>Goal: 100 gardens &middot; <a href="/gardens/" class="no-underline hover:underline">registered: {{ gardens.count }} {% if gardens.count == 1 %}garden{% else %}gardens{% endif %}</a></span>
+                  <span class="text-lime-600 font-bold">{{ gardens.count }}% Complete</span>
+                </div>
+              </div>
 
 
-      <p class="text-gray-600 leading-relaxed text-sm md:text-base">
-        We are on a mission to connect <strong class="text-gray-900">100 restoration gardens</strong> within
-        the Braamfontein Spruit corridor by the end of 2026. 
-        If you live or work in the corridor area, join our movement today! <br><br>We are holding a 
-        <a href="/workshop/">workshop on October 18</a> at Delta Park Environmental Centre. Join us!
-      </p>
-      <div class="pt-10">
-        <p class="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">Register your garden:</p>
-        <div class="flex flex-wrap gap-2">
-          <a href="/join/private-garden/" class="bg-gray-800 hover:bg-gray-900 text-white text-xs font-medium px-4 py-2 rounded-lg transition no-underline">Private Garden</a>
-          <a href="/join/public-garden/" class="bg-gray-800 hover:bg-gray-900 text-white text-xs font-medium px-4 py-2 rounded-lg transition no-underline">Public Space</a>
-          <a href="/join/corporate-garden/" class="bg-gray-50 hover:bg-gray-200 text-gray-800 text-xs font-medium px-4 py-2 rounded-lg transition border border-gray-300 no-underline">Corporate Garden</a>
-
-          <a href="/workshop/" class="bg-gray-50 hover:bg-gray-200 text-gray-800 text-xs font-medium px-4 py-2 rounded-lg transition border border-gray-300 no-underline">Join our workshop</a>
-        </div>
-      </div>
-      <p class="text-xs text-gray-500 pt-1">
-        Not in the zone? You can still help! <a href="/join/recruit-others-to-register/" class="text-gray-800 underline font-semibold hover:text-gray-900">Spread the word to others</a>.
-      </p>
+                <p class="text-gray-600 leading-relaxed text-sm md:text-base">
+                  We are on a mission to connect <strong class="text-gray-900">100 restoration gardens</strong> within
+                  the Braamfontein Spruit corridor by the end of 2026. 
+                  If you live or work in the corridor area, join our movement today! <br><br>We are holding a 
+                  <a href="/workshop/">workshop on October 18</a> at Delta Park Environmental Centre. Join us!
+                </p>
+                <div class="pt-10">
+                  <p class="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">Register your garden and join our corridor:</p>
+                  <div class="flex flex-wrap gap-2">
+                    <a href="/join/private-garden/" class="btn-green">Private Garden</a>
+                    <a href="/join/public-garden/" class="btn-green">Public Space</a>
+                    <a href="/join/corporate-garden/" class="btn-green-outline">Corporate Garden</a>
+                    <a href="/workshop/" class="btn-green-outline">Join our workshop</a>
+                  </div>
+                </div>
+                <p class="text-xs text-gray-500 pt-1">
+                  Not in the zone? You can still help! <a href="/join/recruit-others-to-register/" class="text-gray-800 underline font-semibold hover:text-gray-900">Spread the word to others</a>.
+                </p>
 
 
 
-    </div>
+              </div>
 
 
 
-  </div>
+            </div>
 
-</section>
+          </section>
         </div>
         <div class="mx-auto mt-16 flex max-w-3xl sm:mt-24 lg:mt-0 lg:ml-10 lg:max-w-3xl lg:flex-none">
           <div class="max-w-3xl flex-none sm:max-w-5xl lg:max-w-none">
@@ -92,58 +90,62 @@
         </div>
       </div>
 
-
     </div>
 
-    <div class="container mx-auto pl-5 pr-10 sm:pr-10 pr-15">
-      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
 
-        <a href="/about/corridor/" class="relative no-underline hover:opacity-75">
-          <div class="relative flex h-full w-full flex-col overflow-hidden rounded-[calc(var(--radius-lg)+1px)] lg:rounded-bl-[calc(2rem+1px)]">
-            <img src="/media/corridor-zoom.jpg" alt="" class="h-40 object-cover object-center" />
-            <div class="p-10 pt-4">
-              <p class="mt-2 text-lg font-medium tracking-tight text-gray-950">{{ _("Our corridor") }}</p>
-              <p class="mt-2 mb-5 max-w-lg text-sm/6 text-gray-600 font-normal">{{ _("Learn more about the urban ecological corridor we are working on.") }}</p>
-            </div>
-          </div>
-          <div class="pointer-events-none absolute inset-0 rounded-lg shadow-sm outline outline-black/5 lg:rounded-bl-4xl"></div>
-        </a>
+<div class="container mx-auto pl-5 pr-10 sm:pr-10 pr-15">
+  <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
 
-        <a href="{% url "species" %}" class="relative no-underline hover:opacity-75">
-          <div class="relative flex h-full flex-col overflow-hidden rounded-[calc(var(--radius-lg)+1px)]">
-            <img src="https://inaturalist-open-data.s3.amazonaws.com/photos/173853095/large.jpg" alt="" class="h-40 object-cover object-center" title="Photo credits: (c) Karol Cameron, some rights reserved (CC BY-NC)"/>
-            <div class="p-10 pt-4">
-              <p class="mt-2 text-lg font-medium tracking-tight text-gray-950">{{ _("Plant explorer") }}</p>
-              <p class="mt-2 mb-5 max-w-lg text-sm/6 text-gray-600 font-normal">{{ _("Browse, search, and find plants that are suitable for Egoli Granite Grassland.") }}</p>
-            </div>
-          </div>
-          <div class="pointer-events-none absolute inset-0 rounded-lg shadow-sm outline outline-black/5"></div>
-        </a>
-
-        <a href="/join/private-garden/" class="relative no-underline hover:opacity-75">
-          <div class="relative flex h-full flex-col overflow-hidden rounded-[calc(var(--radius-lg)+1px)]">
-            <img src="/media/pexels-corin-1105018.jpg" alt="" class="h-40 object-cover object-center" title="Join us now! (Photo credits: @corin - Pexels photo 1105018)" />
-            <div class="p-10 pt-4">
-              <p class="mt-2 text-lg font-medium tracking-tight text-gray-950">{{ _("Join us") }}</p>
-              <p class="mt-2 mb-5 max-w-lg text-sm/6 text-gray-600 font-normal">{{ _("Learn more about how you can join our corridor and our restoration efforts.") }}</p>
-            </div>
-          </div>
-          <div class="pointer-events-none absolute inset-0 rounded-lg shadow-sm outline outline-black/5"></div>
-        </a>
-
-        <a href="/resources/introduction-video/" class="relative no-underline hover:opacity-75">
-          <div class="relative flex h-full flex-col overflow-hidden rounded-[calc(var(--radius-lg)+1px)]">
-            <img src="/media/video.jpg" alt="" class="h-40 object-cover object-center" />
-            <div class="p-10 pt-4">
-              <p class="mt-2 text-lg font-medium tracking-tight text-gray-950">{{ _("Introduction video") }}</p>
-              <p class="mt-2 mb-5 max-w-lg text-sm/6 text-gray-600 font-normal">{{ _("Watch an 8-minute introduction video to learn more about our Garden Planner tool.") }}</p>
-            </div>
-          </div>
-          <div class="pointer-events-none absolute inset-0 rounded-lg shadow-sm outline outline-black/5 lg:rounded-br-4xl"></div>
-        </a>
-
+    <a href="/about/corridor/" class="relative no-underline hover:opacity-75">
+      <div class="relative flex h-full w-full flex-col overflow-hidden rounded-[calc(var(--radius-lg)+1px)] lg:rounded-bl-[calc(2rem+1px)]">
+        <img src="/media/corridor-zoom.jpg" alt="" class="h-40 object-cover object-center" />
+        <div class="flex flex-1 flex-col p-5 pt-4">
+          <p class="mt-2 text-lg font-medium tracking-tight text-gray-950">{{ _("Our corridor") }}</p>
+          <p class="mt-2 mb-5 max-w-lg text-sm/6 text-gray-600 font-normal">{{ _("Learn more about the urban ecological corridor we are working on.") }}</p>
+          <span class="mt-auto pt-12 text-sm font-medium text-lime-700">Read more →</span>
+        </div>
       </div>
-    </div>
+      <div class="pointer-events-none absolute inset-0 rounded-lg shadow-sm outline outline-black/5 lg:rounded-bl-4xl"></div>
+    </a>
+
+    <a href="{% url "species" %}" class="relative no-underline hover:opacity-75">
+      <div class="relative flex h-full flex-col overflow-hidden rounded-[calc(var(--radius-lg)+1px)]">
+        <img src="https://inaturalist-open-data.s3.amazonaws.com/photos/173853095/large.jpg" alt="" class="h-40 object-cover object-center" title="Photo credits: (c) Karol Cameron, some rights reserved (CC BY-NC)"/>
+        <div class="flex flex-1 flex-col p-5 pt-4">
+          <p class="mt-2 text-lg font-medium tracking-tight text-gray-950">{{ _("Plant explorer") }}</p>
+          <p class="mt-2 mb-5 max-w-lg text-sm/6 text-gray-600 font-normal">{{ _("Browse, search, and find plants that are suitable for Egoli Granite Grassland.") }}</p>
+          <span class="mt-auto pt-12 text-sm font-medium text-lime-700">Explore plants →</span>
+        </div>
+      </div>
+      <div class="pointer-events-none absolute inset-0 rounded-lg shadow-sm outline outline-black/5"></div>
+    </a>
+
+    <a href="/join/private-garden/" class="relative no-underline hover:opacity-75">
+      <div class="relative flex h-full flex-col overflow-hidden rounded-[calc(var(--radius-lg)+1px)]">
+        <img src="/media/pexels-corin-1105018.jpg" alt="" class="h-40 object-cover object-center" title="Join us now! (Photo credits: @corin - Pexels photo 1105018)" />
+        <div class="flex flex-1 flex-col p-5 pt-4">
+          <p class="mt-2 text-lg font-medium tracking-tight text-gray-950">{{ _("Join us") }}</p>
+          <p class="mt-2 mb-5 max-w-lg text-sm/6 text-gray-600 font-normal">{{ _("Learn more about how you can join our corridor and our restoration efforts.") }}</p>
+          <span class="mt-auto pt-12 text-sm font-medium text-lime-700">Ways to join →</span>
+        </div>
+      </div>
+      <div class="pointer-events-none absolute inset-0 rounded-lg shadow-sm outline outline-black/5"></div>
+    </a>
+
+    <a href="/resources/introduction-video/" class="relative no-underline hover:opacity-75">
+      <div class="relative flex h-full flex-col overflow-hidden rounded-[calc(var(--radius-lg)+1px)]">
+        <img src="/media/video.jpg" alt="" class="h-40 object-cover object-center" />
+        <div class="flex flex-1 flex-col p-5 pt-4">
+          <p class="mt-2 text-lg font-medium tracking-tight text-gray-950">{{ _("Introduction video") }}</p>
+          <p class="mt-2 mb-5 max-w-lg text-sm/6 text-gray-600 font-normal">{{ _("Watch an 8-minute introduction video to learn more about our Garden Planner tool.") }}</p>
+          <span class="mt-auto pt-12 text-sm font-medium text-lime-700">Watch video →</span>
+        </div>
+      </div>
+      <div class="pointer-events-none absolute inset-0 rounded-lg shadow-sm outline outline-black/5 lg:rounded-br-4xl"></div>
+    </a>
+
+  </div>
+</div>
 
 
     <div class="max-w-7xl px-6 mt-8 lg:px-8 mb-10">

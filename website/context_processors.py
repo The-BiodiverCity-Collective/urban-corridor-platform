@@ -60,6 +60,11 @@ def site(request):
         ],
     }
 
+    bg = None
+    if site.id == 1:
+        bg = random.randint(1, 9)
+        bg = f"/media/bg/braam/{bg}.jpg"
+
     return {
         "DEBUG": settings.DEBUG,
         "WORK_OFFLINE": True if work_offline else False,
@@ -70,4 +75,5 @@ def site(request):
         "GARDEN_ACTIVE": garden_active,
         "NURSERIES": Page.objects.filter(site=site, page_type=Page.PageType.NURSERY),
         "JOIN_MENU": join_menu,
+        "BG": bg,
     }
