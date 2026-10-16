@@ -4,7 +4,7 @@
     <div class="mx-auto max-w-7xl px-6 lg:px-8 z-10001 relative flex justify-between">
       <div>
         <a href="/" class="mr-4">
-          <img src="/static/img/logo.jpg" alt="Braamfontein Spruit Ecological Corridor" />
+          <img src="/media/logos/logo.braam.jpg" alt="Braamfontein Spruit Ecological Corridor" />
         </a>
 
         <a href="/planner/" class="mr-3 inline-flex items-center gap-x-1 text-sm/6 font-semibold {% if menu == "planner" %}text-sky-600 active{% else %}text-gray-900{% endif %} hovermenu" data-target="planner" aria-expanded="false">
@@ -39,9 +39,17 @@
 
       </div>
 
-      <a href="/account/" class="mr-3 inline-flex items-center gap-x-1 text-sm/6 font-semibold {% if menu == "account" %}text-sky-600 active{% else %}text-gray-900{% endif %} hovermenu" data-target="account" aria-expanded="false">
-          <i class="fa fa-user"></i>
-      </a>
+      <div class="inline-flex items-center gap-x-1">
+      {% if request.user.is_authenticated %}
+        <a href="{% url "account" %}" class="btn-green mr-2 text-xs {% if menu == "account" and page == "account" %}text-black{% endif %}">
+          My account
+        </a>
+        <a href="{% url "logout" %}" class="btn-green-outline text-xs">Sign out</a>
+      {% else %}
+        <a href="{% url "create_account" %}" class="btn-green text-xs">Register</a>
+        <a href="{% url "login" %}" class="btn-green-outline mr-2 text-xs">Log in</a>
+      {% endif %}
+      </div>
 
     </div>
   </div>
@@ -386,16 +394,10 @@
 
 </nav>
 
-  <div class="{{ SITE.meta_data.header }} pb-64" {% if BG %}style="background: linear-gradient(180deg, #00000088 30%, #ffffff44 100%), url({{ BG }}) center center / 100% auto no-repeat;"{% endif %}>
+<div class="{{ SITE.meta_data.header }} pb-64" {% if BG %}style="background: linear-gradient(180deg, #00000088 30%, #ffffff44 100%), url({{ BG }}) center center / 100% auto no-repeat;"{% endif %}>
 
-    <header class="py-10">
-      <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+  <header class="py-10">
+  </header>
 
-        <h1 class="text-3xl font-bold tracking-tight text-white">
-          {{ SITE }}
-        </h1>
-      </div>
-    </header>
-
-  </div>
+</div>
 

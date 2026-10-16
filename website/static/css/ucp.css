@@ -1,238 +1,407 @@
-@import 'tailwindcss';
+@import "tailwindcss";
 
-@layer utility {
+/* =========================================================
+   1. Theme / design tokens
+   ========================================================= */
+
+@theme {
+  --color-lightshade: #faf7f0;
+  --color-highlight: #e6f0d6;
+  --color-dark-highlight: #1f3a2c;
+  --color-light-highlight: #3f6f00;
+}
+
+
+/* =========================================================
+   2. Base styles
+   Global defaults for HTML elements and page content
+   ========================================================= */
+
+@layer base {
+  /* Tables */
+
   table {
     @apply w-full border-collapse bg-white;
+  }
 
-    & th {
-      @apply bg-gray-100 text-left font-semibold p-3 border-b;
-      border-color: #dedede;
-    }
+  table th {
+    @apply border-b bg-gray-100 p-3 text-left font-semibold;
+    border-color: #dedede;
+  }
 
-    & td {
-      @apply p-3 border-b;
-      border-color: #dedede;
-    }
+  table td {
+    @apply border-b p-3;
+    border-color: #dedede;
+  }
 
-    & tbody tr:nth-child(even) {
-      @apply bg-gray-50;
-    }
+  table tbody tr:nth-child(even) {
+    @apply bg-gray-50;
+  }
+
+  /* Main content typography */
+
+  main a {
+    @apply font-bold text-sky-800 underline
+      hover:text-sky-700 hover:no-underline;
+  }
+
+  main h1 {
+    @apply mb-6 text-3xl font-bold text-dark-highlight;
+  }
+
+  main h2 {
+    @apply mb-4 text-2xl font-bold text-dark-highlight;
+  }
+
+  main h3 {
+    @apply mb-2 text-xl font-bold;
+  }
+
+  main h4 {
+    @apply mb-2 font-bold;
+  }
+
+  main p {
+    @apply mb-2;
+  }
+
+  /* Main content form controls */
+
+  main input:not([type="radio"]):not([type="checkbox"]) {
+    @apply w-full rounded-lg border border-gray-300
+      bg-white px-4 py-2
+      focus:outline-hidden focus:ring-2 focus:ring-blue-500;
+  }
+
+  main select {
+    @apply w-full rounded-lg border border-gray-300
+      bg-gray-50 px-4 py-2
+      focus:outline-hidden focus:ring-2 focus:ring-blue-500;
+  }
+
+  main textarea {
+    @apply mt-1 w-full rounded-lg border border-gray-300
+      bg-white px-4 py-2
+      focus:outline-hidden focus:ring-2 focus:ring-blue-500;
+  }
+
+  /* Content lists */
+
+  #content ul {
+    @apply ml-4 list-disc;
   }
 }
+
+
+/* =========================================================
+   3. Components
+   Reusable visual components and contextual styling
+   ========================================================= */
 
 @layer components {
+
+  .btn-blue {
+    @apply inline-block cursor-pointer rounded-sm
+      bg-sky-600 px-3.5 py-2.5 text-sm font-semibold
+      text-white no-underline
+      hover:bg-sky-700 hover:text-white
+      focus:outline-hidden focus:ring-sky-300;
+  }
+
+  .btn-green {
+    @apply inline-block cursor-pointer rounded-sm
+      bg-lime-600 px-3.5 py-2.5 text-sm font-semibold
+      text-white no-underline
+      hover:bg-lime-700 hover:text-white
+      focus:outline-hidden focus:ring-lime-300;
+  }
+
+  .btn-green-outline {
+    @apply inline-block cursor-pointer rounded-sm
+      border border-lime-600 px-3.5 py-2.5
+      text-sm font-semibold text-lime-600 no-underline
+      hover:border-lime-700 hover:text-lime-700
+      focus:outline-hidden focus:ring-lime-300;
+  }
+
+  .btn-gray {
+    @apply inline-block cursor-pointer rounded-sm
+      bg-gray-300 px-3.5 py-2.5 text-sm font-semibold
+      text-gray-700 no-underline
+      hover:bg-gray-400
+      focus:outline-hidden focus:ring-gray-300;
+  }
+
+  .btn-danger {
+    @apply inline-block cursor-pointer rounded-sm
+      bg-red-600 px-3.5 py-2.5 text-sm font-semibold
+      text-white no-underline
+      hover:bg-red-700 hover:text-white
+      focus:outline-hidden focus:ring-red-300;
+  }
+
+  .btn-orange {
+    @apply inline-block cursor-pointer rounded-sm
+      bg-orange-600 px-3.5 py-2.5 text-sm font-semibold
+      text-white no-underline
+      hover:bg-orange-500 hover:text-white
+      focus:outline-hidden focus:ring-orange-300;
+  }
+
+  .btn-dark {
+    @apply inline-block cursor-pointer rounded-sm
+      bg-gray-600 px-3.5 py-2.5 text-sm font-semibold
+      text-white no-underline
+      hover:bg-gray-700 hover:text-white
+      focus:outline-hidden focus:ring-gray-300;
+  }
+
+  .btn-yellow {
+    @apply inline-block cursor-pointer rounded-sm
+      bg-yellow-500 px-3.5 py-2.5 text-sm font-semibold
+      text-white no-underline
+      hover:bg-yellow-600 hover:text-white
+      focus:outline-hidden focus:ring-yellow-300;
+  }
+
+  .btn-edit {
+    @apply inline-block cursor-pointer rounded-sm
+      bg-amber-300 px-3.5 py-2.5 text-sm font-semibold
+      text-white no-underline
+      hover:bg-amber-400 hover:text-white
+      focus:outline-hidden focus:ring-orange-300;
+
+    position: fixed;
+    bottom: 10px;
+    left: 10px;
+    z-index: 20000;
+  }
+
+  .btn-white {
+    @apply inline-block cursor-pointer rounded-sm
+      border border-gray-200 bg-white px-3.5 py-2.5
+      text-sm font-semibold text-gray-500 no-underline
+      hover:bg-gray-200
+      focus:outline-hidden focus:ring-sky-300;
+  }
+
+  .btn-light {
+    @apply inline-block cursor-pointer rounded-sm
+      border border-gray-200 bg-gray-200 px-3.5 py-2.5
+      text-sm font-semibold text-gray-500 no-underline
+      hover:bg-white
+      focus:outline-hidden focus:ring-sky-300;
+  }
+
+
+  /* -----------------------------------------
+     Badges and small labels
+     ----------------------------------------- */
+
+  .flw {
+    @apply rounded bg-gray-300 px-2 py-0.5
+      text-xs font-medium text-gray-700;
+  }
+
+  .badge {
+    @apply inline-flex items-center rounded-md
+      bg-gray-50 px-2 py-1 text-xs font-medium
+      text-gray-600 ring-1 ring-inset ring-gray-500/10;
+  }
+
+  .badge-highlight {
+    @apply inline-flex items-center rounded-md
+      bg-highlight px-2 py-1 text-xs font-medium
+      text-light-highlight ring-1 ring-inset ring-highlight/10;
+  }
+
+  .badge-success {
+    @apply inline-flex items-center rounded-md
+      bg-green-50 px-2 py-1 text-xs font-medium
+      text-green-700 ring-1 ring-inset ring-green-600/20;
+  }
+
+  .badge-danger {
+    @apply inline-flex items-center rounded-md
+      bg-red-50 px-2 py-1 text-xs font-medium
+      text-red-700 ring-1 ring-inset ring-red-600/10;
+  }
+
+  .badge-warning {
+    @apply inline-flex items-center rounded-md
+      bg-yellow-50 px-2 py-1 text-xs font-medium
+      text-yellow-800 ring-1 ring-inset ring-yellow-600/20;
+  }
+
+  .badge-info {
+    @apply inline-flex items-center rounded-md
+      bg-blue-50 px-2 py-1 text-xs font-medium
+      text-blue-700 ring-1 ring-inset ring-blue-700/10;
+  }
+
+
+  /* -----------------------------------------
+     Alerts
+     ----------------------------------------- */
+
+  .alert {
+    @apply mb-2 rounded-sm border p-4;
+  }
+
+  .alert-icon {
+    @apply flex items-center border p-4;
+  }
+
+  .alert-success {
+    @apply border-lime-500 bg-lime-50 text-lime-700;
+  }
+
+  .alert-info {
+    @apply border-sky-500 bg-sky-100 text-sky-700;
+  }
+
+  .alert-warning {
+    @apply border-amber-500 bg-amber-50 text-amber-700;
+  }
+
+  .alert-danger {
+    @apply border-red-500 bg-red-100 text-red-700;
+  }
+
+
+  /* -----------------------------------------
+     Other reusable components
+     ----------------------------------------- */
+
   em.species-sci {
-    @apply text-gray-700 font-normal;
+    @apply font-normal text-gray-700;
   }
-}
 
-.dt-container table.dataTable > tbody > tr:nth-child(even) {
-  @apply bg-gray-50;
-}
-
-.mainnav a.active {
-  @apply text-sky-600;
-}
-
-@utility btn-blue {
-  @apply text-sm bg-sky-600 text-white px-3.5 py-2.5  rounded-sm hover:bg-sky-700 focus:outline-hidden font-semibold focus:ring-sky-300 no-underline hover:text-white inline-block cursor-pointer;
-}
-
-@utility btn-green {
-  @apply text-sm bg-lime-600 text-white px-3.5 py-2.5 rounded-sm hover:bg-lime-700 focus:outline-hidden font-semibold focus:ring-lime-300 no-underline hover:text-white inline-block cursor-pointer;
-}
-
-@utility btn-green-outline {
-  @apply text-sm text-lime-600 px-3.5 py-2.5 rounded-sm hover:border-lime-700 hover:text-lime-700 focus:outline-hidden font-semibold border border-lime-600 no-underline inline-block cursor-pointer;
-}
-
-@utility btn-gray {
-  @apply text-sm bg-gray-300 text-gray-700 px-3.5 py-2.5 rounded-sm hover:bg-gray-400 focus:outline-hidden font-semibold focus:ring-gray-300 no-underline inline-block cursor-pointer;
-}
-
-@utility btn-danger {
-  @apply text-sm bg-red-600 text-white px-3.5 py-2.5 rounded-sm hover:bg-red-700 focus:outline-hidden font-semibold focus:ring-red-300 no-underline hover:text-white inline-block cursor-pointer;
-}
-
-@utility btn-orange {
-  @apply text-sm bg-orange-600 text-white px-3.5 py-2.5 rounded-sm hover:bg-orange-500 focus:outline-hidden font-semibold focus:ring-orange-300 no-underline hover:text-white inline-block cursor-pointer;
-}
-
-@utility btn-dark {
-  @apply text-sm bg-gray-600 text-white px-3.5 py-2.5 rounded-sm hover:bg-gray-700 focus:outline-hidden font-semibold focus:ring-gray-300 no-underline hover:text-white inline-block cursor-pointer;
-}
-
-@utility btn-yellow {
-  @apply text-sm bg-yellow-500 text-white px-3.5 py-2.5 rounded-sm hover:bg-yellow-600 focus:outline-hidden font-semibold focus:ring-yellow-300 no-underline hover:text-white inline-block cursor-pointer;
-}
-
-@utility btn-edit {
-  @apply text-sm bg-amber-300 text-white px-3.5 py-2.5 rounded-sm hover:bg-amber-400 focus:outline-hidden font-semibold focus:ring-orange-300 no-underline hover:text-white inline-block cursor-pointer;
-}
-
-@utility btn-white {
-  @apply text-sm bg-white border border-gray-200 text-gray-500 px-3.5 py-2.5 rounded-sm hover:bg-gray-200 focus:outline-hidden font-semibold focus:ring-sky-300 no-underline inline-block cursor-pointer;
-}
-
-@utility btn-light {
-  @apply text-sm bg-gray-200 border border-gray-200 text-gray-500 px-3.5 py-2.5 rounded-sm hover:bg-white focus:outline-hidden font-semibold focus:ring-sky-300 no-underline inline-block cursor-pointer;
-}
-
-@utility btn-sm {
-  @apply px-2 py-1 text-xs;
-}
-
-@utility flw {
-  @apply bg-gray-300 text-gray-700 text-xs px-2 py-0.5 rounded font-medium;
-}
-
-@utility colorbox {
-  @apply p-2.5 border inline-block border-gray-500 w-3.5 h-3.5 rounded-full;
-}
-
-@utility badge {
-  @apply inline-flex items-center rounded-md bg-gray-50 px-2 py-1 text-xs font-medium text-gray-600 ring-1 ring-inset ring-gray-500/10;
-}
-
-@utility badge-success {
-  @apply inline-flex items-center rounded-md bg-green-50 px-2 py-1 text-xs font-medium text-green-700 ring-1 ring-inset ring-green-600/20;
-}
-
-@utility badge-danger {
-  @apply inline-flex items-center rounded-md bg-red-50 px-2 py-1 text-xs font-medium text-red-700 ring-1 ring-inset ring-red-600/10;
-}
-
-@utility badge-warning {
-  @apply inline-flex items-center rounded-md bg-yellow-50 px-2 py-1 text-xs font-medium text-yellow-800 ring-1 ring-inset ring-yellow-600/20;
-}
-
-@utility badge-info {
-  @apply inline-flex items-center rounded-md bg-blue-50 px-2 py-1 text-xs font-medium text-blue-700 ring-1 ring-inset ring-blue-700/10;
-}
-
-@utility stdimg {
-  @apply p-2 border border-gray-500 rounded-sm;
-}
-
-@utility alert {
-  @apply p-4 border mb-2 rounded-sm;
-}
-
-@utility alert-icon {
-  @apply flex items-center p-4 border;
-}
-
-@utility alert-success {
-  @apply bg-lime-50 border-lime-500 text-lime-700;
-}
-
-@utility alert-info {
-  @apply bg-sky-100 border-sky-500 text-sky-700;
-}
-
-@utility alert-warning {
-  @apply bg-amber-50 border-amber-500 text-amber-700;
-}
-
-@utility alert-danger {
-  @apply bg-red-100 border-red-500 text-red-700;
-}
-
-@utility bottomnav {
-  a {
-    @apply flex-1 flex items-center justify-center px-2 py-1 text-gray-700 hover:text-gray-900 rounded-md hover:bg-gray-300 transition-all duration-200;
+  .done {
+    @apply mr-2 inline-flex h-5 w-5 items-center
+      justify-center rounded-full bg-lime-600
+      text-sm font-bold text-white;
   }
-  a.active {
-    @apply text-white bg-lime-600;
-  }
-  i {
-    @apply group-hover:scale-110 transition-transform flex-shrink-0;
-  }
-}
 
-@utility tab {
-  main & {
-    @apply no-underline whitespace-nowrap border-b-2 py-4 px-1 text-sm font-medium;
+  .colorbox {
+    @apply inline-block h-3.5 w-3.5 rounded-full
+      border border-gray-500 p-2.5;
   }
-  main &.active {
+
+  .stdimg {
+    @apply rounded-sm border border-gray-500 p-2;
+  }
+
+
+  /* -----------------------------------------
+     Bottom navigation
+     ----------------------------------------- */
+
+  .bottomnav a {
+    @apply flex flex-1 items-center justify-center
+      rounded-md px-2 py-1 text-gray-700
+      transition-all duration-200
+      hover:bg-gray-300 hover:text-gray-900;
+  }
+
+  .bottomnav a.active {
+    @apply bg-lime-600 text-white;
+  }
+
+  .bottomnav i {
+    @apply flex-shrink-0 transition-transform
+      group-hover:scale-110;
+  }
+
+
+  /* -----------------------------------------
+     Tabs in main content
+     ----------------------------------------- */
+
+  main .tab {
+    @apply whitespace-nowrap border-b-2 px-1 py-4
+      text-sm font-medium no-underline;
+  }
+
+  main .tab.active {
     @apply border-sky-500 text-sky-600;
   }
-  main &.inactive {
-    @apply border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700;
-  }
-}
 
-@utility active {
-  main &.tab {
-    @apply border-sky-500 text-sky-600;
+  main .tab.inactive {
+    @apply border-transparent text-gray-500
+      hover:border-gray-300 hover:text-gray-700;
   }
-}
 
-@utility inactive {
-  main &.tab {
-    @apply border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700;
-  }
-}
 
-@utility tab {
-  .pre_main & {
-    @apply no-underline whitespace-nowrap py-3 px-3 text-sm font-medium border-0;
+  /* -----------------------------------------
+     Tabs above main content
+     ----------------------------------------- */
+
+  .pre_main .tab {
+    @apply whitespace-nowrap border-0 px-3 py-3
+      text-sm font-medium no-underline;
   }
-  .pre_main &.active {
-    @apply text-sky-600 bg-white;
+
+  .pre_main .tab.active {
+    @apply rounded-t-md bg-white text-sky-600;
   }
-  .pre_main &.inactive {
+
+  .pre_main .tab.inactive {
     @apply text-white opacity-70 hover:opacity-100;
   }
-}
-
-@utility active {
-  .pre_main &.tab {
-    @apply text-sky-600 rounded-t-md;
-  }
-}
-
-@utility inactive {
-  .pre_main &.tab {
-    @apply text-white hover:text-gray-700;
-  }
-}
 
 
-@utility tab {
-  .sm_tabs & {
-    @apply no-underline whitespace-nowrap py-3 px-3 text-sm font-medium border-0;
+  /* -----------------------------------------
+     Compact tabs
+     ----------------------------------------- */
+
+  .sm_tabs .tab {
+    @apply whitespace-nowrap border-0 px-3 py-3
+      text-sm font-medium no-underline;
   }
-  .sm_tabs &.active {
-    @apply text-sky-600 bg-gray-100 border-t border-l border-r border-gray-300;
+
+  .sm_tabs .tab.active {
+    @apply rounded-t-md border-t border-r border-l
+      border-gray-300 bg-gray-100 text-sky-600;
   }
-  .sm_tabs &.inactive {
+
+  .sm_tabs .tab.inactive {
     @apply text-gray-800 opacity-70 hover:opacity-100;
   }
-}
 
-@utility active {
-  .sm_tabs &.tab {
-    @apply text-sky-600 rounded-t-md;
-  }
-}
 
-@layer utilities {
-  .show_only_first > *:not(:first-child) {
-    @apply hidden;
+  /* -----------------------------------------
+     DataTables
+     ----------------------------------------- */
+
+  .dt-container table.dataTable > tbody > tr:nth-child(even) {
+    @apply bg-gray-50;
   }
-  section.features svg, table.species svg{width:20px;height:20px;display:inline-block}
+
+  /* DataTables select should NOT be 100% */
+
+  .dt-length select {
+    width: auto;
+  }
+
+
+  /* -----------------------------------------
+     Leaflet map and controls
+     ----------------------------------------- */
+
   .leaflet-map {
     box-shadow: 1px 1px 2px 0px rgba(0, 0, 0, 0.2);
     border-radius: 0.25rem;
     height: 100%;
     min-height: 300px;
     width: 100%;
-    font-family: Lato, 'Helvetica Neue', Arial, Helvetica, sans-serif;
+    font-family: Lato, "Helvetica Neue", Arial, Helvetica, sans-serif;
   }
+
   .leaflet-map a.btn-primary {
     color: #fff;
   }
+
   .leaflet-map .period-toggles,
   .leaflet-map .download-map-wrapper,
   .leaflet-map .clear-map-wrapper {
@@ -240,6 +409,7 @@
     background-clip: padding-box;
     border-radius: 0.25rem;
   }
+
   .leaflet-map .switch-period,
   .leaflet-map .download-map,
   .leaflet-map .clear-map {
@@ -253,24 +423,29 @@
     color: #404040;
     border-radius: 0.25rem;
   }
+
   .leaflet-map .switch-period:hover,
   .leaflet-map .download-map:hover,
   .leaflet-map .clear-map:hover {
     background-color: #f4f4f4;
   }
+
   .leaflet-map .switch-period.prev {
     display: inline-block;
     border-radius: 0.25rem 0 0 0.25rem;
   }
+
   .leaflet-map .switch-period.next {
     display: inline-block;
     border-radius: 0 0.25rem 0.25rem 0;
   }
+
   .leaflet-map .switch-period.disabled {
     color: #efefef;
     cursor: not-allowed;
     background-color: #fff;
   }
+
   .leaflet-map .current-period {
     background-color: #f4f4f4;
     display: inline-block;
@@ -287,6 +462,7 @@
     overflow: hidden;
     text-overflow: ellipsis;
   }
+
   .leaflet-map .show-world.button {
     width: 30px;
     height: 30px;
@@ -296,16 +472,19 @@
     box-shadow: 0px 0px 0px 2px rgba(0, 0, 0, 0.2);
     background-color: #fff;
     cursor: pointer;
-    font-family: 'Font Awesome 5 Pro';
+    font-family: "Font Awesome 5 Pro";
     text-align: center;
     font-size: 14px;
   }
+
   .leaflet-map .show-world.button:hover {
     background-color: #f4f4f4;
   }
+
   .leaflet-map .show-world.button::before {
-    content: '\f7a2';
+    content: "\f7a2";
   }
+
   .leaflet-map .legend {
     line-height: 18px;
     color: #212529;
@@ -315,6 +494,7 @@
     border-radius: 0.25rem;
     max-width: 250px;
   }
+
   .leaflet-map .legend i {
     width: 16px;
     height: 16px;
@@ -326,30 +506,66 @@
   .leaflet-popup-content-wrapper {
     border-radius: 0.25rem !important;
   }
+
   .leaflet-popup-content-wrapper .leaflet-popup-content {
     line-height: 1 !important;
   }
+
   .leaflet-popup-content-wrapper .title {
     font-size: 1.25rem;
   }
+
   .leaflet-popup-content-wrapper hr {
     margin: 13px 0 13px -19px;
     width: calc(100% + 38px);
   }
+
   .leaflet-popup-content-wrapper img {
     border-radius: 0.25rem;
     min-width: 200px;
     width: 100%;
   }
 
-  /* Data-tables select should NOT be 100% */
-  .dt-length select {
-    width: auto;
-  } 
+
+  /* -----------------------------------------
+     Navigation dropdown
+     ----------------------------------------- */
+
+  .mainnav .dropdown {
+    visibility: hidden;
+    opacity: 0;
+    transition:
+      opacity 0.2s ease-out,
+      transform 0.2s ease-out;
+    position: absolute;
+    z-index: 10000;
+  }
+}
+
+
+/* =========================================================
+   4. Utilities
+   Small, single-purpose helper classes
+   ========================================================= */
+
+@layer utilities {
+
+  .show_only_first > *:not(:first-child) {
+    @apply hidden;
+  }
+
   .fixed-thumb {
     object-fit: cover;
     height: 200px;
   }
+
+  section.features svg,
+  table.species svg {
+    width: 20px;
+    height: 20px;
+    display: inline-block;
+  }
+
   dl.dl-horizontal {
     display: flex;
     flex-direction: column;
@@ -364,7 +580,7 @@
 
   dl.dl-horizontal dt {
     font-weight: bold;
-    width: 200px; /* Adjust this width as necessary */
+    width: 200px;
     margin-bottom: 5px;
   }
 
@@ -374,93 +590,56 @@
     width: auto;
     flex: 1;
   }
-  .btn-edit {
-    position: fixed;
-    bottom: 10px;
-    left: 10px;
-    z-index:20000;
-  }
-  .mainnav .dropdown {
-    visibility: hidden;
-    opacity: 0;
-    transition:
-      opacity 0.2s ease-out,
-      transform 0.2s ease-out;
-    position: absolute;
-    z-index:10000;
-  }
 }
 
-@layer base {
 
-  main a {
-    @apply text-sky-800 underline font-bold hover:text-sky-700 hover:no-underline;
-  }
+/* =========================================================
+   5. Third-party overrides and intentional unlayered CSS
+   ========================================================= */
 
-  main h1 {
-    @apply text-3xl font-bold mb-6;
-  }
+/* Main navigation active link */
 
-  main h2 {
-    @apply text-2xl font-bold mb-4;
-  }
-
-  main h3 {
-    @apply text-xl font-bold mb-2;
-  }
-
-  main h4 {
-    @apply font-bold mb-2;
-  }
-
-  main p {
-    @apply mb-2;
-  }
-
-  main input:not([type="radio"]):not([type="checkbox"]) {
-    @apply w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-hidden focus:ring-2 focus:ring-blue-500 bg-white;
-  }
-  main select {
-    @apply w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-hidden focus:ring-2 focus:ring-blue-500 bg-gray-50;
-  }
-  main textarea {
-    @apply w-full px-4 py-2 mt-1 border border-gray-300 rounded-lg focus:outline-hidden focus:ring-2 focus:ring-blue-500 bg-white;
-  }
-
-  #content ul {
-    @apply list-disc ml-4;
-  }
-
+.mainnav a.active {
+  @apply text-sky-600;
 }
+
+
+/* Select2 */
 
 .select2-container--default .select2-selection--single .select2-selection__arrow b {
-  display:none;
+  display: none;
 }
+
 .select2-container--default .select2-selection--single {
-  height:40px;
-  padding-top:5px;
-  padding-left:10px;
-  border: 1px solid #d1d5db; /* Gray border */
-  border-radius: 0.5rem; /* Rounded corners */
+  height: 40px;
+  padding-top: 5px;
+  padding-left: 10px;
+  border: 1px solid #d1d5db;
+  border-radius: 0.5rem;
 }
+
 .select2-container--default .select2-selection--single.select2-selection--focus {
-  border-color: #3b82f6; /* Sky-700 border on focus */
-  box-shadow: 0 0 0 0.2rem rgba(59, 130, 247, 0.25); /* Sky-700 shadow ring */
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 0.2rem rgba(59, 130, 247, 0.25);
 }
+
 .select2-container--default .select2-selection__placeholder {
-  color: #6b7280; /* Gray color for placeholder */
+  color: #6b7280;
 }
+
 .select2-container--default .select2-selection__rendered {
-  color: #374151; /* Text color */
+  color: #374151;
 }
+
 .select2-container--default .select2-search--dropdown .select2-search__field {
   border-radius: 0.25rem;
 }
-.mainnav .svgicon svg {
-  width: 20px; 
-}
+
+
+/* Top navigation logo/image */
+
 nav#topnav img {
-  max-width:330px;
+  max-width: 330px;
   display: inline-block;
-  margin-right:20px;
+  margin-right: 20px;
 }
