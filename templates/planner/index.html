@@ -5,63 +5,8 @@
 
 {% block content %}
 
-<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-  <div class="bg-lightshade rounded-lg p-4">
-    <div><span class="badge-highlight">{{ _("Not yet on the corridor map") }}</span></div>
-    <h2 class="mt-4">{{ garden }}</h2>
-    <p class="opacity-70 mb-4">{{ _("Your garden is not yet part of our corridor. Complete the steps and join our corridor when you are ready!") }}</p>
-    <p class="opacity-70">{{ _("2 out of 8 steps completed") }}</p>
-    <div
-      class="h-2 w-full overflow-hidden rounded bg-gray-200 mb-4"
-      role="progressbar"
-      aria-label="Progress"
-      aria-valuenow="20"
-      aria-valuemin="0"
-      aria-valuemax="100"
-    >
-      <div class="h-full rounded bg-lime-600" style="width:20%"></div>
-    </div>
-    <a href="" class="btn-green">Continue planning →</a>
-  </div>
-
-  <div class="text-dark-highlight text-semibold">
-    <h3 class="border-b border-highlight pb-2 font-mono text-sm text-gray-700 mb-4 uppercase">
-      <span class="inline-flex h-6 w-6 items-center justify-center rounded-full bg-light-highlight text-sm text-white">1</span>
-      Plan your garden
-    </h3>
-    <ul class="space-y-3">
-      <li><span class="done" style="background:#9bbf5e">✓</span> Create your garden</li>
-      <li><span class="done" style="background:#9bbf5e">✓</span> Set location</li>
-      <li><span class="done bg-gray-200 border-2 border-gray-600 border-dotted" style="position:relative;top:4px"></span> Features and targets</li>
-      <li><span class="done bg-gray-200 border-2 border-gray-600 border-dotted" style="position:relative;top:4px"></span> Select plants</li>
-  </div>
-
-  <div>
-    <h3 class="border-b border-highlight pb-2 font-mono text-sm text-gray-700 mb-4 uppercase">
-      <span class="inline-flex h-6 w-6 items-center justify-center rounded-full bg-light-highlight text-sm text-white">2</span>
-      Sign up
-    </h3>
-    <ul class="space-y-3">
-      <li><span class="done bg-gray-200 border-2 border-gray-600 border-dotted" style="position:relative;top:4px"></span> Review requirements</li>
-      <li><span class="done bg-gray-200 border-2 border-gray-600 border-dotted" style="position:relative;top:4px"></span> Garden profile</li>
-      <li><span class="done bg-gray-200 border-2 border-gray-600 border-dotted" style="position:relative;top:4px"></span> Upload photos</li>
-      <li><span class="done bg-gray-200 border-2 border-gray-600 border-dotted" style="position:relative;top:4px"></span> Join the corridor</li>
-    </ul>
-  </div>
-
-  <div>
-    <h3 class="border-b border-highlight pb-2 font-mono text-sm text-gray-700 mb-4 uppercase">
-      Use our tools
-    </h3>
-    <ul class="space-y-3">
-      <li><a class="no-underline text-black font-normal" href=""><i class="fa fa-fw fa-star mr-1 text-gray-400"></i> Biodiversity score</a></li>
-      <li><a class="no-underline text-black font-normal" href=""><i class="fa fa-fw fa-seedling mr-1 text-gray-400"></i> Suggested plants</a></li>
-      <li><a class="no-underline text-black font-normal" href=""><i class="fa fa-fw fa-clipboard-list-check mr-1 text-gray-400"></i> My plants</a></li>
-      <li><a class="no-underline text-black font-normal" href=""><i class="fa fa-fw fa-hand-holding-seedling mr-1 text-gray-400"></i> Get plants</a></li>
-      <li><a class="no-underline text-black font-normal" href=""><i class="fa fa-fw fa-smoke mr-1 text-gray-400"></i> Carbon report</a></li>
-    </ul>
-  </div>
-
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 garden-progress">
+  {% include "_nav.planner.html" %}
 </div>
 
 <div class="container mx-auto px-4 mt-10 mb-20" hidden>

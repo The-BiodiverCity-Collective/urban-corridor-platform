@@ -625,6 +625,7 @@ class Garden(ReferenceSpace):
     is_user_created = models.BooleanField(default=False, db_index=True)
     original = models.JSONField(null=True, blank=True)
     site = models.ForeignKey(Site, on_delete=models.CASCADE)
+    progress = models.JSONField(default=dict, blank=True) #location, features, plants, requirements, profile, photos, joined
 
     contact_name = models.CharField(max_length=255, null=True)
     contact_phone = models.CharField(max_length=255, null=True)
@@ -684,6 +685,10 @@ class Garden(ReferenceSpace):
     @property
     def photo(self):
         return Photo.objects.filter(garden=self).order_by("position", "date").first()
+
+    @property
+    def completed_steps(self):
+        return sum(value is True for value in (self.progress or {}).values()) + 1 # Always add 1 for the "garden created" step
 
     def save(self, *args, **kwargs):
         vegetation = Document.objects.get(pk=983172)

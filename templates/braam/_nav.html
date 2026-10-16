@@ -389,8 +389,11 @@
     </div>
   </div>
 
-
-  {% include "_nav.planner.html" %}
+  <div id="dropdown-planner" class="dropdown absolute inset-x-0 top-0 -z-10 bg-white pt-16 shadow-lg ring-1 ring-gray-900/5 max-h-[85vh] overflow-y-auto lg:max-h-none lg:overflow-visible garden-progress">
+    <div class="mx-auto grid max-w-7xl grid-cols-1 sm:grid-cols-2 gap-x-8 gap-y-10 px-6 py-10 lg:grid-cols-4 lg:px-8">
+      {% include "_nav.planner.html" %}
+    </div>
+  </div>
 
 </nav>
 
