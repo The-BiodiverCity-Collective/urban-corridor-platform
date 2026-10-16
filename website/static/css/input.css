@@ -202,6 +202,11 @@
   }
 
 
+  .btn-sm {
+      @apply px-2 py-1 text-xs;
+  }
+
+
   /* -----------------------------------------
      Badges and small labels
      ----------------------------------------- */
@@ -343,7 +348,7 @@
 
   main .tab.inactive {
     @apply border-transparent text-gray-500
-      hover:border-gray-300 hover:text-gray-700;
+      hover:border-gray-300 hover:text-white;
   }
 
 

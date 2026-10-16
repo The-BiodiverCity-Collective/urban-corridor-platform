@@ -1,4 +1,6 @@
 {% extends "_base.html" %}
+{% load ucp_extras %}
+
 {% block title %}
   {{ page_info }}
 {% endblock %}
@@ -11,14 +13,80 @@
 
 <form method="post">
 
+  <div class="flex w-full items-center gap-3 bg-white px-4 py-8 font-mono text-[11px] font-semibold uppercase tracking-[0.5px] text-[#294438]">
+    <!-- Brand / Section title -->
+    <span class="shrink-0 font-normal text-[#d33b24]">
+      Plan your garden
+    </span>
+
+    <!-- Progress track -->
+    <div class="mx-1 h-[4px] min-w-8 flex-1 rounded-full bg-gray-100"></div>
+
+    <!-- Current step -->
+    <div class="flex shrink-0 items-center gap-2.5">
+      <span class="flex h-[22px] w-[22px] items-center justify-center rounded-full bg-[#4d9f00] text-[11px] text-white">
+        1
+      </span>
+      <span class="flex h-[22px] w-[22px] items-center justify-center rounded-full bg-[#4d9f00] text-[11px] text-white">
+        2
+      </span>
+      <span class="whitespace-nowrap">
+        Features &amp; targets
+      </span>
+    </div>
+
+    <!-- Upcoming steps -->
+    <div class="flex shrink-0 items-center gap-2.5">
+      <span class="flex h-[22px] w-[22px] items-center justify-center rounded-full border border-[#4d9f00] text-[11px] text-[#4d9f00]">3</span>
+      <span class="flex h-[22px] w-[22px] items-center justify-center rounded-full border border-[#4d9f00] text-[11px] text-[#4d9f00]">4</span>
+    </div>
+  </div>
+
+  <h1>{{ page_info }}</h1>
   <div>
     {{ page_info.get_content }}
   </div>
 
+  {% for feature_group in feature_groups %}
+    <fieldset class="my-5 py-5 border-t-3 border-gray-100">
+      <h2>{{ feature_group }}</h2>
+      {% if feature_group.content %}
+        <div class="bg-gray-100 rounded-lg p-4 mb-4"><div class="opacity-70">{{ feature_group.get_content|striptags }}</div></div>
+      {% endif %}
+
+        <div class="flex flex-wrap items-center gap-3">
+
+          {% for each in feature_group.linked.all %}
+            <label class="cursor-pointer rounded-full border border-[#E5E5DF] bg-white px-4 py-2 text-sm font-medium text-[#243B30] transition-colors has-checked:border-[#65A30D] has-checked:bg-[#F8FAF3]">
+              <input
+                type="checkbox"
+                name="feature"
+                value="mostly-shaded"
+                class="sr-only"
+                value="{{ each.id }}"
+                {% if each in garden.site_features.all %}checked{% endif %} 
+              />
+              {{ each }}
+            </label>
+          {% endfor %}
+
+          <label class="cursor-pointer rounded-full border border-dashed border-[#E5E5DF] bg-white px-4 py-2 text-sm font-medium text-[#243B30] transition-colors has-checked:border-[#65A30D] has-checked:border-solid has-checked:bg-[#F8FAF3]">
+            <input
+              type="checkbox"
+              name="feature"
+              value="not-sure"
+              class="sr-only unsure"
+            />
+            {{ _("Not sure") }}
+          </label>
+        </div>
+
+    </fieldset>
+  {% endfor %}
+
   <fieldset>
 
-      <div class="mt-6 grid lg:grid-cols-4 gap-y-6 gap-x-4 sm:grid-cols-2">
-
+    <div class="mt-6 grid lg:grid-cols-4 gap-y-6 gap-x-4 sm:grid-cols-2">
       {% for each in features %}
         <label aria-label="{{ each }}" class="group relative rounded-lg border border-gray-300 bg-white has-checked:outline-2 has-checked:-outline-offset-2 has-checked:outline-lime-600 has-focus-visible:outline-3 has-focus-visible:-outline-offset-1 has-checked:bg-lime-50 hover:bg-gray-100">
           {% if each.content %}
@@ -47,4 +115,24 @@
   {% csrf_token %}
 </form>
 
+{% endblock %}
+
+{% block js %}
+  <script type="text/javascript">
+  $(function(){
+    $(document).on("change", 'fieldset input[type="checkbox"]', function () {
+        const $fieldset = $(this).closest("fieldset");
+        const $unsure = $fieldset.find('input[type="checkbox"].unsure');
+        const $otherCheckboxes = $fieldset.find('input[type="checkbox"]').not($unsure);
+
+      if ($(this).is($unsure) && this.checked) {
+        // UNSURE checked: uncheck all other options in this fieldset
+        $otherCheckboxes.prop("checked", false);
+      } else if (!$(this).is($unsure) && this.checked) {
+        // Any other option checked: uncheck UNSURE
+        $unsure.prop("checked", false);
+      }
+    });
+  });
+  </script>
 {% endblock %}

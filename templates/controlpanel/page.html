@@ -3,6 +3,7 @@
 
 {% block content %}
 
+
 <h1 class="text-3xl">{{ title }}</h1>
 
 <div class="sm:block">
@@ -11,7 +12,7 @@
       <a href="./" class="tab {% if photos or species %}in{% endif %}active"><i class="fa fa-pencil mr-1"></i> {{ _("Edit content") }}</a>
       {% if page_type == 6 %}
         <a {% if info.id %}href="./?species"{% endif %} class="tab {% if not info.id %}opacity-60{% endif %} {% if not species %}in{% endif %}active"><i class="fa fa-leaf mr-1"></i>{{ _("Species") }}</a>
-      {% else %}
+      {% elif page_type != 8 %}
         <a {% if info.id %}href="./?photos"{% endif %} class="tab {% if not info.id %}opacity-60{% endif %} {% if not photos %}in{% endif %}active"><i class="fa fa-image mr-1"></i>{{ _("Photos") }}</a>
       {% endif %}
       {% if info.id and page_type == 6 %}
@@ -39,13 +40,13 @@
         <div class="col-span-full mt-4">
           <label for="description" class="block text-sm/6 font-medium text-gray-900">{{ _("Content") }}</label>
           <div class="mt-2">
-            <textarea name="description" id="description" class="quill block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-xs ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-sky-600 sm:text-sm/6">{{ info.content_html|safe|default_if_none:"" }}</textarea>
+            <textarea name="description" id="description" class="quill block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-xs ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-sky-600 sm:text-sm/6">{% if info.content_html %}{{ info.content_html|safe|default_if_none:"" }}{% endif %}</textarea>
             <i class="fa fa-code show-code cursor-pointer float-right" title="{{ _("Show HTML code") }}"></i>
             <div class="quill" id="description-container"></div>
           </div>
         </div>
 
-        {% if page_type != 4 and page_type != 5 %}
+        {% if page_type != 4 and page_type != 5 and page_type != 8 %}
           <div class="col-span-full mt-2">
             <label for="slug" class="block text-sm/6 font-medium text-gray-900">{{ _("Slug") }}</label>
             <div class="mt-2">
@@ -63,7 +64,7 @@
           </div>
         {% endif %}
 
-        {% if page_type != 4 and page_type != 5 %}
+        {% if page_type != 4 and page_type != 5 and page_type != 8 %}
           <div class="col-span-full mt-4">
             <label for="file" class="block text-sm/6 font-medium text-gray-900">{{ _("Image") }}</label>
               <span class="mt-2 bg-orange-100 text-orange-700 text-xs font-bold rounded-full px-2 py-1 inline-block">
@@ -195,7 +196,19 @@
               </select>
             </div>
           </div>
+        {% endif %}
 
+        {% if page_type == 8 %}
+          <div class="mt-10">
+            <legend class="text-sm/6 font-semibold text-gray-900">{{ _("Linked features") }}</legend>
+            <div class="mt-2 space-y-2">
+              <select multiple name="linked" class="select2">
+                {% for each in feature_pages %}
+                  <option {% if each in info.linked.all %}selected{% endif %} value="{{ each.id }}">{{ each }}</option>
+                {% endfor %}
+              </select>
+            </div>
+          </div>
         {% endif %}
 
         {% if page_type == 4 %}

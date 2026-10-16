@@ -126,6 +126,7 @@ class Page(models.Model):
         FEATURES = 5, "Garden features"
         NURSERY = 6, "Nursery"
         BLURB = 7, "Blurb"
+        FEATURE_GROUP = 8, "Feature group"
     page_type = models.IntegerField(choices=PageType.choices, db_index=True, default=1)
 
     photos = models.ManyToManyField("Photo", blank=True)
@@ -137,6 +138,10 @@ class Page(models.Model):
 
     # This is used for pages for nurseries, to mark which species they stock
     species = models.ManyToManyField("Species")
+
+    # This is used to link feature pages to a descriptive page so that we know which features
+    # to show on the page where the user configures the garden
+    linked = models.ManyToManyField("self")
 
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
@@ -834,9 +839,16 @@ class VegetationType(models.Model):
     class Meta:
         ordering = ["is_negative", "name"]
 
+class FeatureGroup(models.Model):
+    name = models.CharField(max_length=255, db_index=True)
+
+    def __str__(self):
+        return self.name
+
 class SpeciesFeatures(models.Model):
     name = models.CharField(max_length=255, db_index=True)
 
+    # Remove after online migration is done
     class SpeciesType(models.IntegerChoices):
         WILDLIFE = 1, _("Wildlife supported")
         SITE = 2, _("Tolerances & suitability")
@@ -849,7 +861,8 @@ class SpeciesFeatures(models.Model):
         SOIL = 9, _("Soils")
         CLASSIFICATION = 10, _("Spatial classification")
 
-    species_type = models.IntegerField(choices=SpeciesType.choices, db_index=True, default=0)
+    species_type = models.IntegerField(choices=SpeciesType.choices, db_index=True, default=0) # Drop after online migration is done
+    feature_group = models.ForeignKey(FeatureGroup, on_delete=models.PROTECT, null=True)
     site = models.ManyToManyField(Site, blank=True, through="FeatureSiteScore")
     icon = models.CharField(max_length=50, null=True, blank=True, help_text="Enter all the classes we need to add to the <i> tag")
     icon_svg = models.TextField(null=True, blank=True)

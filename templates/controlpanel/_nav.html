@@ -141,6 +141,12 @@
                         <i class="fa fa-hand-holding-seedling mr-2"></i>
                         {{ _("Nurseries") }}
                       </a>
+                      <a href="{% url "controlpanel_pages" %}?type=8" 
+                         class="{% if menu == "content" and page_type == 8 %}bg-gray-100{% endif %} group/item flex items-center px-4 py-2 text-sm text-gray-700 focus:bg-gray-100 focus:text-gray-900 focus:outline-hidden" 
+                         aria-current="page">
+                        <i class="fa fa-align-left mr-2"></i>
+                        {{ _("Features and targets segments") }}
+                      </a>
                       <a href="{% url "controlpanel_scoring" %}"
                          class="{% if menu == "planner" and page == "scoring" %}bg-gray-100{% endif %} group/item flex items-center px-4 py-2 text-sm text-gray-700 focus:bg-gray-100 focus:text-gray-900 focus:outline-hidden" 
                          aria-current="page">

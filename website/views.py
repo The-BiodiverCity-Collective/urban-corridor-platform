@@ -2540,7 +2540,6 @@ def planner_target_species(request, id):
 def planner_site(request, id):
 
     site = get_site(request)
-    features = Page.objects.filter(site=site, page_type=Page.PageType.FEATURES)
 
     if not (garden := get_garden(request, id)):
         return redirect("planner")
@@ -2566,10 +2565,10 @@ def planner_site(request, id):
         "page": "site",
         "page_info": Page.objects.get(site=site, slug="planner-site"),
         "garden": garden,
-        "features": features,
         "step": 2,
         "planner_tab": "my_garden",
         "load_tooltip": True,
+        "feature_groups": Page.objects.filter(site=site, page_type=Page.PageType.FEATURE_GROUP),
     }
     return render(request, "planner/site.html", context)
 
@@ -3325,6 +3324,15 @@ def favicon(request):
 @staff_member_required
 def controlpanel(request):
 
+    if "load" in request.GET:
+        
+        for feature in SpeciesFeatures.SpeciesType:
+            FeatureGroup.objects.create(name=feature.label)
+
+        for each in SpeciesFeatures.objects.all():
+            each.feature_group_id = each.species_type
+            each.save()
+
     context = {
         "controlpanel": True,
         "menu": "index",
@@ -3588,6 +3596,11 @@ def controlpanel_page(request, id=None):
                 for each in request.POST.getlist("features"):
                     info.features.add(SpeciesFeatures.objects.get(pk=each))
 
+            if page_type in [8]:
+                info.linked.clear()
+                for each in request.POST.getlist("linked"):
+                    info.linked.add(Page.objects.get(pk=each))
+
             messages.success(request, _("Information was saved."))
             if request.GET.get("redirect"):
                 return redirect(request.GET.get("redirect"))
@@ -3615,7 +3628,8 @@ def controlpanel_page(request, id=None):
         "photos": photos,
         "species": species,
         "features": features,
-        "load_select2": True if page_type in [4,5] or species else False,
+        "feature_pages": Page.objects.filter(site=site, page_type=Page.PageType.FEATURES),
+        "load_select2": True if page_type in [4,5,8] or species else False,
     }
     return render(request, "controlpanel/page.html", context)
 
