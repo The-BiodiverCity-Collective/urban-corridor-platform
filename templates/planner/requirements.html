@@ -24,8 +24,8 @@ input[type="checkbox"]:checked + span::after {
 
   {% include "planner/_nav.progress.html" %}
 
-  <div class="grid grid-cols-1 md:grid-cols-3 gap-4 m-5">
-    <div class="md:col-span-2 p-4">
+  <div class="grid grid-cols-1 md:grid-cols-2">
+    <div class="p-4">
 
       <h1>Four things we ask of every garden</h1>
       <p>Your garden doesn't need to be ready to go yet. These are goals to work toward.</p>
@@ -78,9 +78,13 @@ input[type="checkbox"]:checked + span::after {
 
         {% csrf_token %}
 
-      </div>
+      </form>
 
-    </form>
+    </div>
+
+    <div class="p-4">
+      {% include "_photo.html" %}
+    </div>
 
   </div>
 

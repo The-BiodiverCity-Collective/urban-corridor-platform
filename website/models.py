@@ -693,7 +693,7 @@ class Garden(ReferenceSpace):
 
     @property
     def completed_steps(self):
-        return sum(value is True for value in (self.progress or {}).values()) + 1 # Always add 1 for the "garden created" step
+        return sum(value is True for value in (self.progress or {}).values())
 
     def save(self, *args, **kwargs):
         vegetation = Document.objects.get(pk=983172)

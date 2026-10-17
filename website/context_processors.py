@@ -29,6 +29,7 @@ def site(request):
     # If this user is managing a garden, we can get that ID and use it to create planner-related
     # URLs. However, we want the URL to use 0 as a variable so it doesn't fail to work if no 
     # garden is being actively managed.
+    garden = None
     garden_id = request.COOKIES.get("garden_id", 0)
     if garden_id:
         garden = get_garden(request, garden_id)

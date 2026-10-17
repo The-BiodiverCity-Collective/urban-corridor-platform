@@ -13,15 +13,6 @@
   {{ title }}
 </h1>
 
-<div class="sm:block">
-  <div class="border-b border-gray-200">
-    <nav class="tabs -mb-px flex space-x-8" aria-label="Tabs">
-    </nav>
-  </div>
-</div>
-
-<div>
-
   <div class="space-y-12">
 
       {% if request.method == "POST" %}
@@ -59,134 +50,94 @@
               {% endif %}
             </a>
 
-            <a href="{% url "planner_activate" GARDEN %}" class="btn-blue text-center">
-              <i class="fas fa-check-circle mr-1" aria-hidden="true"></i>
-              <span>{{ _("Activate") }}</span>
-            </a>
+            {% if PROGRESS.photos %}
+              <a href="{% url "planner_activate" GARDEN %}" class="btn-blue text-center">
+                <i class="fas fa-check-circle mr-1" aria-hidden="true"></i>
+                <span>{{ _("Activate") }}</span>
+              </a>
+            {% endif %}
 
           </div>
         </div>
 
       {% elif not photos %}
 
-        <form method="post" enctype="multipart/form-data">
+        <form method="post" class="form" enctype="multipart/form-data">
 
-          <div class="col-span-full mt-2">
-            <label class="block text-sm/6 font-medium text-gray-900">{{ _("Garden name") }}</label>
-            <div class="mt-2">
-              <input type="text" name="name" value="{{ garden.name|default_if_none:"" }}" required>
-            </div>
+          <div class="alert-info alert mb-5">
+            {{ _("Enter a description for your garden below. This will be shown on our website. You will be able to preview this before activating it.") }}
           </div>
 
-          <div class="col-span-full mt-4">
-            <label for="description" class="block text-sm/6 font-medium text-gray-900">{{ _("Description") }}</label>
-            <div class="mt-2">
-              <textarea name="description" id="description">{{ garden.description|default_if_none:"" }}</textarea>
-            </div>
+          <div>
+            <label>{{ _("Garden name") }}</label>
+            <input type="text" name="name" value="{{ garden.name|default_if_none:"" }}" required>
           </div>
 
-          {% if garden.location_file and False %}
-            <div class="col-span-full">
-              <label for="cover-photo" class="block text-sm/6 font-medium text-gray-900">{{ _("File") }}</label>
-              <div class="mt-2 flex rounded-lg border border-dashed border-gray-900/25 px-6 py-10">
-                <ul>
-                    <li class="mb-5">
-                      <i class="fa-fw fa fa-{{ garden.location_file.get_icon }}"></i>
-                      <a href="{{ garden.location_file.file.url }}">
-                      {{ garden.location_file }}
-                      </a>
-                      <span class="text-xs/5 text-gray-600">
-                        ({{ garden.location_file.file.size|filesizeformat }})
-                      </span>
-                  </li>
-                </ul>
-              </div>
-            </div>
-          {% endif %}
-
-          <div class="mt-10">
-            <legend class="text-sm/6 font-semibold text-gray-900">{{ _("Type") }}</legend>
-            <div class="mt-2 space-y-2">
-              <select name="type" required>
-                <option value=""></option>
-                {% for each in garden_types %}
-                  <option {% if each == garden.garden_type %}selected{% endif %} value="{{ each }}">{{ each.label }}</option>
-                {% endfor %}
-              </select>
-            </div>
+          <div>
+            <label for="description">{{ _("Description") }}</label>
+            <textarea name="description" id="description">{{ garden.description|default_if_none:"" }}</textarea>
           </div>
 
-          <h2 hidden class="mb-5 mt-10">{{ _("Who manages this space?") }}</h2>
-
-          <div hidden class="col-span-full mt-2">
-            <label class="block text-sm/6 font-medium text-gray-900">{{ _("Contact name") }}</label>
-            <div class="mt-2">
-              <input type="text" name="contact_name" value="{{ garden.contact_name|default_if_none:"" }}">
-            </div>
+          <div>
+            <label>{{ _("Type") }}</label>
+            <select name="type" required>
+              <option value=""></option>
+              {% for each in garden_types %}
+                <option {% if each == garden.garden_type %}selected{% endif %} value="{{ each }}">{{ each.label }}</option>
+              {% endfor %}
+            </select>
           </div>
 
-          <div class="mt-6 flex items-center justify-end gap-x-6">
+          <div class="flex items-center justify-end">
             <button type="submit" class="btn-green">{{ _("Save") }}</button>
           </div>
+
           {% csrf_token %}
 
-        </div>
       </form>
 
   {% elif photos %}
 
-    <form method="post" enctype="multipart/form-data">
+    <form method="post" enctype="multipart/form-data" class="form">
+
+      <div class="alert alert-info mb-5">
+        {{ _("Please upload a few photos of your garden to showcase what it looks like. We ask you to send some updates every year to document your progress.") }}
+      </div>
       {% csrf_token %}
-      <div class="space-y-12">
-        <div class="border-b border-gray-900/10 pb-12">
 
-          {% if garden.id and garden.photos.count %}
-            <div class="grid grid-cols-6 gap-2 mb-6">
-              {% for each in garden.photos.all %}
-                <div class="relative overflow-hidden rounded-lg shadow-lg aspect-w-16 aspect-h-9">
-                  <a href="{{ each.id }}/"><img src="{{ each.thumbnail }}" alt="" class="object-cover w-full h-full"></a>
-                </div>
-              {% endfor %}
+      {% if garden.id and garden.photos.count %}
+        <div class="grid grid-cols-6 gap-2 mb-6">
+          {% for each in garden.photos.all %}
+            <div class="relative overflow-hidden rounded-lg shadow-lg aspect-w-16 aspect-h-9">
+              <a href="{{ each.id }}/"><img src="{{ each.thumbnail }}" alt="" class="object-cover w-full h-full"></a>
             </div>
-          {% endif %}
+          {% endfor %}
+        </div>
+      {% endif %}
 
-          <div class="mt-10 grid grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6">
-            <div class="sm:col-span-4">
-              <label for="photo" class="block text-sm/6 font-medium text-gray-900">{{ _("Add photos") }}</label>
-              <div class="mt-2">
-                <input id="photo" type="file" multiple required name="photos" accept=".jpg,.jpeg,image/jpeg" />
-              </div>
-            </div>
-          </div>
+        <div>
+          <label for="photo">{{ _("Add photos") }}</label>
+          <input id="photo" type="file" multiple required name="photos" accept=".jpg,.jpeg,image/jpeg" />
+        </div>
 
-          <div class="mt-10 grid grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6">
-            <div class="sm:col-span-4">
-              <label class="block text-sm/6 font-medium text-gray-900">{{ _("Photographer") }}</label>
-              <div class="mt-2">
-                <input type="text" required name="photographer" />
-              </div>
-            </div>
-          </div>
+        <div>
+          <label>{{ _("Photographer") }}</label>
+          <input type="text" required name="photographer" placeholder="{{ _("Full name, nickname, or other name to credit the photographer") }}" />
+        </div>
 
-          <div class="mt-10 grid grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6">
-            <div class="sm:col-span-4">
-              <label class="block text-sm/6 font-medium text-gray-900">{{ _("License") }}</label>
-              <div class="mt-2">
-              <select id="license" name="license" required>
-                <option value=""></option>
-                {% for key,value in licenses %}
-                  <option {% if key == "cc-by" %}selected{% endif %} value="{{ key }}">{{ value }}</option>
-                {% endfor %}
-              </select>
-            </div>
-            
-            <div class="alert mt-5 text-gray-700 text-sm border-gray-300">
-              {{ _("If you select a Creative Commons license, people can reuse your photos elsewhere. We would love for your photos to have a permissive license, but if you prefer to not allow photo reuse, please select 'All Rights Reserved'. For more information about the various licenses, please see the Creative Commons website:") }}
-              <a href="https://creativecommons.org/cc-licenses/">https://creativecommons.org/cc-licenses/</a>
-            </div>
-
-          </div>
-
+        <div>
+          <label>{{ _("License") }}</label>
+          <select id="license" name="license" required>
+            <option value=""></option>
+            {% for key,value in licenses %}
+              <option {% if key == "cc-by" %}selected{% endif %} value="{{ key }}">{{ value }}</option>
+            {% endfor %}
+          </select>
+        </div>
+        
+        <div class="mt-5 text-gray-700 text-sm border-gray-300">
+          {{ _("If you select a Creative Commons license, people can reuse your photos elsewhere. We would love for your photos to have a permissive license, but if you prefer to not allow photo reuse, please select 'All Rights Reserved'. For more information about the various licenses, please see the Creative Commons website:") }}
+          <a href="https://creativecommons.org/cc-licenses/">https://creativecommons.org/cc-licenses/</a>
         </div>
 
       </div>
@@ -196,6 +147,7 @@
           {{ _("Save photos") }}
         </button>
       </div>
+
     </form>
 
     {% endif %}

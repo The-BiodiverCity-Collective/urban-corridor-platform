@@ -258,7 +258,7 @@
      ----------------------------------------- */
 
   .alert {
-    @apply mb-2 rounded-sm border p-4;
+    @apply mb-2 rounded-lg p-4 text-sm;
   }
 
   .alert-icon {
@@ -270,7 +270,7 @@
   }
 
   .alert-info {
-    @apply border-sky-500 bg-sky-100 text-sky-700;
+    @apply bg-olive-100 text-olive-700;
   }
 
   .alert-warning {
@@ -318,7 +318,7 @@
 
   #progress_crumbs {
     @apply flex w-full items-center gap-3 bg-white
-           px-4 py-8 font-mono text-[11px]
+           pb-10 font-mono text-[11px]
            font-semibold uppercase tracking-[0.5px]
            text-[#294438];
 
@@ -361,14 +361,35 @@
       &[data-active="true"] > span:first-child {
         @apply flex size-5 shrink-0 items-center
                justify-center rounded-full
-               bg-[#4d9f00] text-white;
       }
-
       &[data-active="true"] > span:last-child {
         @apply pr-1;
       }
     }
   }
+
+  /* -----------------------------------------
+     Form default styling
+     ----------------------------------------- */
+
+  .form {
+    @apply space-y-7 w-full sm:w-2/3;
+  }
+
+  .form > div:not(:last-child) {
+    @apply space-y-2;
+  }
+
+  .form label {
+    @apply block text-sm font-medium;
+  }
+
+  .form input[type="text"],
+  .form textarea,
+  .form select {
+    @apply w-full rounded-md px-3 py-2 text-sm;
+  }
+
 
   /* -----------------------------------------
      Commitments checklist

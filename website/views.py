@@ -2372,6 +2372,7 @@ def planner(request, id=None):
             is_user_created = True,
             is_active = False,
             site = site,
+            progress = {"created": True},
         )
         if request.user.is_authenticated:
             garden.user = request.user
@@ -3121,16 +3122,21 @@ def planner_profile(request, id, photos=False):
                     error = True
                     messages.warning(request, f"Please note that the image '{each.name}' was not uploaded successfully. Error: {e}")
 
+            if not garden.progress.get("photos") and garden.photos.all():
+                garden.progress["photos"] = True
+                garden.save()
+
             if error:
                 return redirect(request.get_full_path())
 
         else:
             garden.name = request.POST["name"]
             garden.description = request.POST.get("description")
-            garden.type = request.POST["type"]
-            garden.contact_name = request.POST.get("contact_name")
-            garden.contact_phone = request.POST.get("contact_phone")
-            garden.contact_email = request.POST.get("contact_email")
+            garden.garden_type = request.POST["type"]
+            if garden.description:
+                garden.progress["profile"] = True
+            else:
+                garden.progress.pop("profile", None)
             garden.save()
 
     context = {
@@ -3142,7 +3148,6 @@ def planner_profile(request, id, photos=False):
         "garden_types": Garden.GardenType,
         "photos": photos,
         "licenses": Photo.LICENSE_CHOICES,
-        "body_padding": True,
         "active_step": 7 if photos else 6,
     }
     return render(request, "planner/profile.html", context)
@@ -3163,6 +3168,11 @@ def planner_profile_photo(request, id, photo):
         if "delete" in request.POST:
             photo.delete()
             messages.success(request, "Photo was removed")
+
+            if not garden.photos.all():
+                garden.progress.pop("photos", None)
+                garden.save()
+
         else:
             photo.author = request.POST["photographer"]
             photo.license_code = request.POST["license"]
@@ -3228,16 +3238,16 @@ def planner_requirements(request, id):
         messages.success(request, _("Thanks for committing to support our restoration work through your garden."))
         return redirect(reverse("planner_profile", args=[garden.id]))
 
+    page = get_object_or_404(Page, slug="requirements", is_active=True, site=site)
+
     context = {
         "menu": "planner",
         "slug": "requirements",
         "page": "join",
         "title": _("Requirements"),
         "garden": garden,
-        "info": get_object_or_404(Page, slug="requirements", is_active=True, site=site),
-
-        # Because we have tabs above the <main>, we need to unround the top-left corner if the first tab is active
-        "main_classes": "rounded-tl-none",
+        "info": page,
+        "photo": page.photo,
         "active_step": 5,
     }
     return render(request, "planner/requirements.html", context)

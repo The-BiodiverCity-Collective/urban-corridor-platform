@@ -17,7 +17,7 @@
           href="{{ step.url }}"
           title="{{ step.label }}"
           data-active="true"
-          data-state="active"
+          data-state="{% if PROGRESS|get_item:step.progress_key %}completed{% else %}upcoming{% endif %}"
           aria-current="step"
         >
           <span>{{ step.id }}</span>
