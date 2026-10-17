@@ -92,12 +92,13 @@
   }
 
   #topnav h3, .garden-progress h3 {
-    @apply border-b border-highlight pb-2 font-mono text-sm text-gray-700 mb-4 uppercase;
+    @apply border-b border-highlight pb-2 font-mono text-sm text-gray-700 mb-4 uppercase font-bold;
   }
 
-  .garden-progress li a {
-    @apply no-underline text-black hover:text-sky-600 text-sm/6 font-normal;
+  #topnav .dropdown a, .garden-progress li a {
+    @apply flex gap-x-4 py-2 text-sm/6 text-gray-700 hover:text-sky-600 no-underline font-normal;
   }
+
 }
 
 
@@ -114,14 +115,6 @@
       text-white no-underline
       hover:bg-sky-700 hover:text-white
       focus:outline-hidden focus:ring-sky-300;
-  }
-
-  .btn-green {
-    @apply inline-block cursor-pointer rounded-sm
-      bg-lime-600 px-3.5 py-2.5 text-sm font-semibold
-      text-white no-underline
-      hover:bg-lime-700 hover:text-white
-      focus:outline-hidden focus:ring-lime-300;
   }
 
   .btn-green-outline {
@@ -206,6 +199,14 @@
       text-sm font-semibold text-gray-500 no-underline
       hover:bg-white
       focus:outline-hidden focus:ring-sky-300;
+  }
+
+  .btn-green {
+    @apply inline-block cursor-pointer rounded-sm
+      bg-lime-600 px-3.5 py-2.5 text-sm font-semibold
+      text-white no-underline
+      hover:bg-lime-700 hover:text-white
+      focus:outline-hidden focus:ring-lime-300;
   }
 
 

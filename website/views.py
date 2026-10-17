@@ -2578,7 +2578,7 @@ def planner_site(request, id):
 
     context = {
         "menu": "planner",
-        "page": "site",
+        "page": "features",
         "page_info": Page.objects.get(site=site, slug="planner-site"),
         "garden": garden,
         "step": 2,
@@ -3162,7 +3162,7 @@ def planner_profile(request, id, photos=False):
 
     context = {
         "menu": "planner",
-        "page": "join",
+        "page": "photos" if photos else "profile",
         "slug": "profile",
         "title": _("Manage your garden profile") if not photos else _("Garden photos"),
         "garden": garden,
@@ -3264,7 +3264,7 @@ def planner_requirements(request, id):
     context = {
         "menu": "planner",
         "slug": "requirements",
-        "page": "join",
+        "page": "requirements",
         "title": _("Requirements"),
         "garden": garden,
         "info": page,
@@ -3285,6 +3285,7 @@ def planner_activate(request, id):
         if not garden.garden_number:
             number = Garden.objects_unfiltered.filter(site=site, garden_number__isnull=False).aggregate(Max("garden_number"))["garden_number__max"]
             garden.garden_number = number + 1
+        garden.progress["joined"] = True
         garden.save()
 
         mailcontext = {
@@ -3306,13 +3307,14 @@ def planner_activate(request, id):
         )
 
         messages.success(request, _("Great! Your garden was activated and will be published after review by our team. Give us 1-2 days to review and you will hear from us once it is online!"))
-        response = redirect(request.path)
+        response = redirect(reverse("planner", args=[garden.id]))
         response.set_cookie("garden_active", garden.get_garden_number)
         return response
 
     if "deactivate" in request.GET and garden.published_at:
         garden.published_at = None
         garden.is_active = False
+        garden.progress.pop("joined", None)
         garden.save()
         response = redirect(request.path)
         response.delete_cookie("garden_active")

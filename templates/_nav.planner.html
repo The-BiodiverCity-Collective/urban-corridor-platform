@@ -4,6 +4,8 @@
   {% if GARDEN %}
     {% if GARDEN_ACTIVE %}
       <div><span class="badge-highlight">{{ _("Part of our corridor!") }}</span></div>
+    {% elif PROGRESS.joined %}
+      <div><span class="badge-highlight">{{ _("Garden submitted") }}</span></div>
     {% else %}
       <div><span class="badge-highlight">{{ _("Not yet on the corridor map") }}</span></div>
     {% endif %}
@@ -12,12 +14,13 @@
     {% if GARDEN_ACTIVE %}
       <p class="opacity-70 mb-4">
         You are 
-        {% if GARDEN_ACTIVE|length > 1 %}
-        garden <span class="font-mono">#{{ GARDEN_ACTIVE }}</span>
-        {% else %}
-        part
-        {% endif %}
+        {% if GARDEN_ACTIVE|length > 1 %} garden <span class="font-mono">#{{ GARDEN_ACTIVE }}</span>
+        {% else %} part {% endif %}
         of the Braamfontein Spruit Ecological Corridor!
+      </p>
+    {% elif PROGRESS.joined %}
+      <p class="opacity-70 mb-4">
+        {{ _("Your garden is scheduled to go live in a few days after internal review. Thanks for joining our corridor!") }}
       </p>
     {% elif GARDEN %}
       <p class="opacity-70 mb-4">
@@ -36,7 +39,13 @@
     >
       <div class="h-full rounded bg-lime-600" style="width:{% widthratio garden.completed_steps 8 100 %}%"></div>
     </div>
-      <a href="" class="btn-green">Continue planning →</a>
+      {% if not hide_planner_button %}
+        {% if garden.completed_steps < 8 %}
+          <a href="{% url "planner" GARDEN %}" class="btn-green">Continue planning →</a>
+        {% else %}
+          <a href="{% url "planner" GARDEN %}" class="btn-green">Go to planner →</a>
+        {% endif %}
+      {% endif %}
 
         {% else %}
 
@@ -73,11 +82,11 @@
   <div>
     <h3>{{ group.grouper }}</h3>
 
-    <ul class="space-y-3">
+    <ul>
       {% for step in group.list %}
         <li>
           <a href="{{ step.url }}"
-             class="{% if step.active and menu == "planner" %}text-sky-600{% endif %}">
+             class="{% if menu == "planner" and page == step.progress_key %}text-sky-600{% endif %}">
             <span class="progress" data-state="{% if PROGRESS|get_item:step.progress_key %}completed{% else %}upcoming{% endif %}">
               {{ step.id }}
             </span>
@@ -93,7 +102,7 @@
   <h3>
     {{ _("Use our tools") }}
   </h3>
-  <ul class="space-y-3">
+  <ul>
     <li>
       <a class="{% if page == "suggestions" and menu == "planner" %}text-sky-600{% endif %}" 
         href="{% url "planner_suggestions" GARDEN %}"><i class="fa fa-fw fa-seedling mr-1 text-gray-400"></i> {{ _("Suggested plants") }}</a>

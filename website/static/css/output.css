@@ -113,9 +113,7 @@
     --color-neutral-50: oklch(98.5% 0 0);
     --color-stone-100: oklch(97% 0.001 106.424);
     --color-stone-700: oklch(37.4% 0.01 67.558);
-    --color-olive-50: oklch(98.8% 0.003 106.5);
     --color-olive-100: oklch(96.6% 0.005 106.5);
-    --color-olive-200: oklch(93% 0.007 106.5);
     --color-olive-300: oklch(88% 0.011 106.6);
     --color-olive-400: oklch(73.7% 0.021 106.9);
     --color-olive-600: oklch(46.6% 0.025 107.3);
@@ -1024,6 +1022,9 @@
   }
   .max-w-7xl {
     max-width: var(--container-7xl);
+  }
+  .max-w-\[300px\] {
+    max-width: 300px;
   }
   .max-w-\[700px\] {
     max-width: 700px;
@@ -4801,15 +4802,20 @@
     font-family: var(--font-mono);
     font-size: var(--text-sm);
     line-height: var(--tw-leading, var(--text-sm--line-height));
+    --tw-font-weight: var(--font-weight-bold);
+    font-weight: var(--font-weight-bold);
     color: var(--color-gray-700);
     text-transform: uppercase;
   }
-  .garden-progress li a {
+  #topnav .dropdown a, .garden-progress li a {
+    display: flex;
+    column-gap: calc(var(--spacing) * 4);
+    padding-block: calc(var(--spacing) * 2);
     font-size: var(--text-sm);
     line-height: calc(var(--spacing) * 6);
     --tw-font-weight: var(--font-weight-normal);
     font-weight: var(--font-weight-normal);
-    color: var(--color-black);
+    color: var(--color-gray-700);
     text-decoration-line: none;
     &:hover {
       @media (hover: hover) {
@@ -4844,41 +4850,6 @@
     }
     &:focus {
       --tw-ring-color: var(--color-sky-300);
-    }
-    &:focus {
-      --tw-outline-style: none;
-      outline-style: none;
-      @media (forced-colors: active) {
-        outline: 2px solid transparent;
-        outline-offset: 2px;
-      }
-    }
-  }
-  .btn-green {
-    display: inline-block;
-    cursor: pointer;
-    border-radius: var(--radius-sm);
-    background-color: var(--color-lime-600);
-    padding-inline: calc(var(--spacing) * 3.5);
-    padding-block: calc(var(--spacing) * 2.5);
-    font-size: var(--text-sm);
-    line-height: var(--tw-leading, var(--text-sm--line-height));
-    --tw-font-weight: var(--font-weight-semibold);
-    font-weight: var(--font-weight-semibold);
-    color: var(--color-white);
-    text-decoration-line: none;
-    &:hover {
-      @media (hover: hover) {
-        background-color: var(--color-lime-700);
-      }
-    }
-    &:hover {
-      @media (hover: hover) {
-        color: var(--color-white);
-      }
-    }
-    &:focus {
-      --tw-ring-color: var(--color-lime-300);
     }
     &:focus {
       --tw-outline-style: none;
@@ -5221,6 +5192,41 @@
     }
     &:focus {
       --tw-ring-color: var(--color-sky-300);
+    }
+    &:focus {
+      --tw-outline-style: none;
+      outline-style: none;
+      @media (forced-colors: active) {
+        outline: 2px solid transparent;
+        outline-offset: 2px;
+      }
+    }
+  }
+  .btn-green {
+    display: inline-block;
+    cursor: pointer;
+    border-radius: var(--radius-sm);
+    background-color: var(--color-lime-600);
+    padding-inline: calc(var(--spacing) * 3.5);
+    padding-block: calc(var(--spacing) * 2.5);
+    font-size: var(--text-sm);
+    line-height: var(--tw-leading, var(--text-sm--line-height));
+    --tw-font-weight: var(--font-weight-semibold);
+    font-weight: var(--font-weight-semibold);
+    color: var(--color-white);
+    text-decoration-line: none;
+    &:hover {
+      @media (hover: hover) {
+        background-color: var(--color-lime-700);
+      }
+    }
+    &:hover {
+      @media (hover: hover) {
+        color: var(--color-white);
+      }
+    }
+    &:focus {
+      --tw-ring-color: var(--color-lime-300);
     }
     &:focus {
       --tw-outline-style: none;

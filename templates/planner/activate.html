@@ -17,10 +17,6 @@
 
   {% include "planner/_nav.progress.html" %}
 
-  <div class="grid grid-cols-1 md:grid-cols-3 gap-4 m-5">
-    <div class="md:col-span-2 p-4">
-      <h1>{{ _("Activate your garden") }}</h1>
-
       {% if garden.published_at %}
 
         <div class="w-64 h-[350px] p-4 rounded-lg bg-slate-50 border-l-4 border-transparent shadow-md flex flex-col justify-between" style="width:250px; height:350px;">
@@ -60,26 +56,43 @@
 
         </div>
 
-      {% elif garden.geometry and garden.targets.all and garden.plants.all and garden.description and garden.photos.count %} 
-          <div class="w-64 h-[350px] p-4 rounded-lg bg-slate-50 border-l-4 border-transparent shadow-md flex flex-col justify-between" style="width:250px; height:350px;">
-            <div>
-              <div class="flex items-center gap-3">
-                <div class="w-12 h-12 flex items-center justify-center rounded-full bg-slate-100">
-                    <i class="fas fa-dot-circle text-gray-400 text-xl"></i>
-                </div>
-                <div>
-                  <div class="text-xs text-gray-500">Garden</div>
-                    <div class="font-semibold text-gray-900">{{ GARDEN_NAME }}</div>
-                </div>
-              </div>
-              <div class="mt-5">
-                  <h3 class="text-lg font-bold text-gray-800">Your garden is not yet part of our corridor</h3>
-                  <p id="sub-3" class="text-sm text-gray-600 mt-2">
-                    Ready to go live? Click the button below to become part of our corridor!
-                  </p>
-              </div>
-            </div>
-          </div>
+      {% elif garden.completed_steps == 7 %} 
+
+<div class="bg-lightshade rounded-lg p-4 w-full max-w-[300px] mx-auto">
+    {% if GARDEN_ACTIVE %}
+      <div><span class="badge-highlight">{{ _("Part of our corridor!") }}</span></div>
+    {% else %}
+      <div><span class="badge-highlight">{{ _("Not yet on the corridor map") }}</span></div>
+    {% endif %}
+    <h2 class="mt-4">{{ garden }}</h2>
+
+    {% if GARDEN_ACTIVE %}
+      <p class="opacity-70 mb-4">
+        You are 
+        {% if GARDEN_ACTIVE|length > 1 %}
+        garden <span class="font-mono">#{{ GARDEN_ACTIVE }}</span>
+        {% else %}
+        part
+        {% endif %}
+        of the Braamfontein Spruit Ecological Corridor!
+      </p>
+    {% elif GARDEN %}
+      <p class="opacity-70 mb-4">
+        {{ _("Great work! Your garden is ready to join our corridor. Click the button below to publish your profile and to officially become part of our corridor.") }}
+      </p>
+    {% endif %}
+
+    <p class="opacity-70">{{ garden.completed_steps }} {{ _(" out of 8 steps completed") }}</p>
+    <div
+      class="h-2 w-full overflow-hidden rounded bg-gray-200 mb-4"
+      role="progressbar"
+      aria-label="Progress"
+      aria-valuenow="{{ garden.completed_steps }}"
+      aria-valuemin="0"
+      aria-valuemax="8"
+    >
+      <div class="h-full rounded bg-lime-600" style="width:{% widthratio garden.completed_steps 8 100 %}%"></div>
+    </div>
       <div class="border-t border-gray-300 mt-5 pt-5">
         <form method="post">
           <button class="btn-green" type="submit"><i class="fa fa-check-circle"></i> {{ _("Activate your garden") }}</button>
@@ -87,19 +100,20 @@
         </form>
       </div>
 
+</div>
+
+
+
       {% else %}
       <p>
         {{ _("Almost there. Have a look at the parts that are missing and once they are done, you can activate your garden here.") }}
       </p>
 
-      {% endif %}
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 garden-progress">
+        {% include "_nav.planner.html" %}
+      </div>
 
-    </div>
-    <div class="md:col-span-1 p-4">
-      <h2>{{ _("Checklist") }}</h2>
-      {% include "planner/_checklist.html" %}
-    </div>
-  </div>
+      {% endif %}
 
 {% if request.user.is_staff %}
   <a class="btn-warning btn-edit" href="{% url "controlpanel_page" info.id %}?redirect={{ request.get_full_path }}">
