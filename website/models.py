@@ -630,7 +630,7 @@ class Garden(ReferenceSpace):
     is_user_created = models.BooleanField(default=False, db_index=True)
     original = models.JSONField(null=True, blank=True)
     site = models.ForeignKey(Site, on_delete=models.CASCADE)
-    progress = models.JSONField(default=dict, blank=True) #location, features, plants, requirements, profile, photos, joined
+    progress = models.JSONField(default=dict, blank=True) #created, location, features, plants, requirements, profile, photos, joined
 
     contact_name = models.CharField(max_length=255, null=True)
     contact_phone = models.CharField(max_length=255, null=True)

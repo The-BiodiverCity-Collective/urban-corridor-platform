@@ -2,10 +2,17 @@
 
 {% block head %}
   <style type="text/css">
-  main p{margin-bottom:1em}
-  main #checklist p{margin-bottom:0.5em}
-  main #checklist li{margin-bottom:2em}
-  main #checklist a{color:#333;font-weight:normal}
+input[type="checkbox"]:checked + span::after {
+  content: "";
+  width: 5px;
+  height: 10px;
+  border: solid white;
+  border-width: 0 2px 2px 0;
+  transform: rotate(45deg);
+  margin-top: -2px;
+}
+
+
   </style>
 {% endblock %}
 
@@ -15,20 +22,66 @@
 
 {% block content %}
 
+  {% include "planner/_nav.progress.html" %}
+
   <div class="grid grid-cols-1 md:grid-cols-3 gap-4 m-5">
     <div class="md:col-span-2 p-4">
-      <h1>{{ info }}</h1>
-      {{ info.get_content }}
 
-      <div class="border-t border-gray-300 mt-5 pt-5">
-        <a class="btn-blue" href="{% url "planner_profile" GARDEN %}">{{ _("Configure garden profile") }} &raquo;</a>
+      <h1>Four things we ask of every garden</h1>
+      <p>Your garden doesn't need to be ready to go yet. These are goals to work toward.</p>
+
+      <form method="post" class="flex flex-col gap-3.5">
+
+        <label class="commitment">
+          <input type="checkbox" name="commitments" value="invasive_removal" required class="peer" />
+          <span aria-hidden="true"></span>
+
+          <span>
+          <strong>Work on removing invasive plants</strong>
+          <small>We can help you identify them.</small>
+          </span>
+        </label>
+
+        <label class="commitment">
+          <input type="checkbox" name="commitments" value="indigenous" required class="peer" />
+          <span aria-hidden="true"></span>
+
+          <span>
+            <strong>Plant mostly local indigenous plants over time</strong>
+            <small>You don’t need to be there yet, just willing to work toward it.</small>
+          </span>
+        </label>
+
+        <label class="commitment">
+          <input type="checkbox" name="commitments" value="update" required class="peer" />
+          <span aria-hidden="true"></span>
+
+          <span>
+            <strong>Send us a short update about once a year</strong>
+            <small>A photo or a few lines is enough.</small>
+          </span>
+        </label>
+
+        <label class="commitment">
+          <input type="checkbox" name="commitments" value="sharing" required class="peer" />
+          <span aria-hidden="true"></span>
+
+          <span>
+            <strong>Share seeds or cuttings when you can</strong>
+            <small>With other gardens in the network.</small>
+          </span>
+        </label>
+
+        <button type="submit" class="btn-green mt-5">
+          Confirm your commitment 
+        </button>
+
+        {% csrf_token %}
+
       </div>
 
-    </div>
-    <div class="md:col-span-1 p-4">
-      <h2>{{ _("Checklist") }}</h2>
-      {% include "planner/_checklist.html" %}
-    </div>
+    </form>
+
   </div>
 
 {% if request.user.is_staff %}

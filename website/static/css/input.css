@@ -313,6 +313,86 @@
 
 
   /* -----------------------------------------
+     Progress crumbs with 1 2 3 4 etc in the garden section
+     ----------------------------------------- */
+
+  #progress_crumbs {
+    @apply flex w-full items-center gap-3 bg-white
+           px-4 py-8 font-mono text-[11px]
+           font-semibold uppercase tracking-[0.5px]
+           text-[#294438];
+
+    > span:first-child {
+      @apply shrink-0 font-normal text-[#d33b24];
+    }
+
+    > div:first-of-type {
+      @apply mx-1 h-[4px] min-w-8 flex-1
+             rounded-full bg-gray-100;
+    }
+
+    > div:not(:first-of-type) {
+      @apply flex shrink-0 items-center gap-2.5;
+    }
+
+    a {
+      @apply flex size-[22px] shrink-0 items-center
+             justify-center rounded-full text-[11px]
+             no-underline transition-colors
+             focus-visible:outline-none
+             focus-visible:ring-2
+             focus-visible:ring-[#65b900]
+             focus-visible:ring-offset-2;
+
+      &[data-state="completed"] {
+        @apply bg-[#4d9f00] text-white;
+      }
+
+      &[data-state="upcoming"] {
+        @apply border border-[#4d9f00] text-[#4d9f00];
+      }
+
+      &[data-active="true"] {
+        @apply border border-gray-300 bg-gray-300
+               text-[#294438];
+      }
+    }
+  }
+
+  /* -----------------------------------------
+     Commitments checklist
+     ----------------------------------------- */
+    .commitment {
+      @apply flex cursor-pointer items-start gap-3.5
+             rounded-xl border border-[#e1e3da] bg-white
+             px-4 py-3.5 transition-colors
+             has-checked:border-[#65b900]
+             has-checked:bg-[#f7faef];
+
+      input[type="checkbox"] + span {
+        @apply mt-[1px] flex size-[22px] shrink-0
+               items-center justify-center rounded-[5px]
+               border border-[#d9ddd2] bg-white
+               transition-colors
+               peer-checked:border-[#9abe5b]
+               peer-checked:bg-[#9abe5b];
+      }
+
+      strong {
+        @apply block text-[15px] font-semibold leading-5 text-[#294438];
+      }
+
+      small {
+        @apply mt-1 block text-[13px] leading-[18px] text-[#59616b];
+      }
+
+      input[type="checkbox"] {
+        @apply sr-only;
+      }
+    }
+
+
+  /* -----------------------------------------
      Bottom navigation
      ----------------------------------------- */
 

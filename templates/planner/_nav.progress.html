@@ -1,0 +1,42 @@
+{% load ucp_extras %}
+
+<nav id="progress_crumbs" aria-label="Garden planning progress">
+
+  {% if active_step <= 4 %}
+    <span>{{ _("Plan your garden") }}</span>
+  {% else %}
+    <span>{{ _("Sign up") }}</span>
+  {% endif %}
+
+  <div aria-hidden="true"></div>
+
+  <div>
+    {% for step in STEPS %}
+      {% if step.id == active_step %}
+        <a
+          href="{{ step.url }}"
+          title="{{ step.label }}"
+          data-active="true"
+          data-state="active"
+          aria-current="step"
+        >{{ step.id }}</a>
+        <span>{{ step.label }}</span>
+      {% else %}
+        {% if PROGRESS|get_item:step.progress_key %}
+          <a
+            href="{{ step.url }}"
+            title="{{ step.label }}"
+            data-state="completed"
+          >{{ step.id }}</a>
+        {% else %}
+          <a
+            href="{{ step.url }}"
+            title="{{ step.label }}"
+            data-state="upcoming"
+          >{{ step.id }}</a>
+        {% endif %}
+      {% endif %}
+    {% endfor %}
+  </div>
+
+</nav>

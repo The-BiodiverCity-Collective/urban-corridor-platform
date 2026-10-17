@@ -2569,6 +2569,7 @@ def planner_site(request, id):
         "planner_tab": "my_garden",
         "load_tooltip": True,
         "feature_groups": Page.objects.filter(site=site, page_type=Page.PageType.FEATURE_GROUP),
+        "active_step": 3,
     }
     return render(request, "planner/site.html", context)
 
@@ -3218,6 +3219,12 @@ def planner_requirements(request, id):
     if not (garden := get_garden(request, id)):
         return redirect("planner")
 
+    if request.method == "POST":
+        garden.progress["requirements"] = True
+        garden.save()
+        messages.success(request, _("Thanks for committing to support our restoration work through your garden."))
+        return redirect(reverse("planner_profile", args=[garden.id]))
+
     context = {
         "menu": "planner",
         "slug": "requirements",
@@ -3228,6 +3235,7 @@ def planner_requirements(request, id):
 
         # Because we have tabs above the <main>, we need to unround the top-left corner if the first tab is active
         "main_classes": "rounded-tl-none",
+        "active_step": 5,
     }
     return render(request, "planner/requirements.html", context)
 
@@ -3283,6 +3291,7 @@ def planner_activate(request, id):
         "title": _("Activate your garden"),
         "garden": garden,
         "info": get_object_or_404(Page, slug="requirements", is_active=True, site=site),
+        "active_step": 8,
     }
     return render(request, "planner/activate.html", context)
 

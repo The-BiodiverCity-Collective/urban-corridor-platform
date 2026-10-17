@@ -1,6 +1,9 @@
 from django.conf import settings
 import random
 from website.models import Site, Page
+from website.views import get_garden
+from django.utils.translation import gettext_lazy as _
+from django.urls import reverse
 
 def site(request):
 
@@ -26,9 +29,9 @@ def site(request):
     # If this user is managing a garden, we can get that ID and use it to create planner-related
     # URLs. However, we want the URL to use 0 as a variable so it doesn't fail to work if no 
     # garden is being actively managed.
-    garden = request.COOKIES.get("garden_id", 0)
-    garden_name = request.COOKIES.get("garden_name", None)
-    garden_active = request.COOKIES.get("garden_active", None)
+    garden_id = request.COOKIES.get("garden_id", 0)
+    if garden_id:
+        garden = get_garden(request, garden_id)
 
     join_menu = {
         "Create or register your garden": [
@@ -65,15 +68,80 @@ def site(request):
         bg = random.randint(1, 9)
         bg = f"/media/bg/braam/{bg}.jpg"
 
+
+    steps = {}
+    if garden:
+        steps = [
+            {
+                "id": 1,
+                "label": _("Create your garden"),
+                "url": reverse("planner", args=[garden_id]),
+                "progress_key": "created",
+                "group": _("Plan your garden"),
+            },
+            {
+                "id": 2,
+                "label": _("Set location"),
+                "url": reverse("planner_location", args=[garden_id]),
+                "progress_key": "location",
+                "group": _("Plan your garden"),
+            },
+            {
+                "id": 3,
+                "label": _("Features and targets"),
+                "url": reverse("planner_site", args=[garden_id]),
+                "progress_key": "features",
+                "group": _("Plan your garden"),
+            },
+            {
+                "id": 4,
+                "label": _("Select plants"),
+                "url": reverse("planner_plants", args=[garden_id]),
+                "progress_key": "plants",
+                "group": _("Plan your garden"),
+            },
+            {
+                "id": 5,
+                "label": _("Review commitments"),
+                "url": reverse("planner_requirements", args=[garden_id]),
+                "progress_key": "requirements",
+                "group": _("Sign up"),
+            },
+            {
+                "id": 6,
+                "label": _("Garden profile"),
+                "url": reverse("planner_profile", args=[garden_id]),
+                "progress_key": "profile",
+                "group": _("Sign up"),
+            },
+            {
+                "id": 7,
+                "label": _("Upload photos"),
+                "url": reverse("planner_profile_photos", args=[garden_id]),
+                "progress_key": "photos",
+                "group": _("Sign up"),
+            },
+            {
+                "id": 8,
+                "label": _("Join the corridor"),
+                "url": reverse("planner_activate", args=[garden_id]),
+                "progress_key": "joined",
+                "group": _("Sign up"),
+            },
+        ]
+
     return {
         "DEBUG": settings.DEBUG,
         "WORK_OFFLINE": True if work_offline else False,
         "SITE": site,
         "SITES": sites,
-        "GARDEN": garden,
-        "GARDEN_NAME": garden_name,
-        "GARDEN_ACTIVE": garden_active,
+
+        "GARDEN": garden_id,
+        "GARDEN_NAME": garden.name if garden else None,
+        "PROGRESS": garden.progress if garden else None,
+
         "NURSERIES": Page.objects.filter(site=site, page_type=Page.PageType.NURSERY),
         "JOIN_MENU": join_menu,
         "BG": bg,
+        "STEPS": steps,
     }

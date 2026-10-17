@@ -13,34 +13,7 @@
 
 <form method="post">
 
-  <div class="flex w-full items-center gap-3 bg-white px-4 py-8 font-mono text-[11px] font-semibold uppercase tracking-[0.5px] text-[#294438]">
-    <!-- Brand / Section title -->
-    <span class="shrink-0 font-normal text-[#d33b24]">
-      Plan your garden
-    </span>
-
-    <!-- Progress track -->
-    <div class="mx-1 h-[4px] min-w-8 flex-1 rounded-full bg-gray-100"></div>
-
-    <!-- Current step -->
-    <div class="flex shrink-0 items-center gap-2.5">
-      <span class="flex h-[22px] w-[22px] items-center justify-center rounded-full bg-[#4d9f00] text-[11px] text-white">
-        1
-      </span>
-      <span class="flex h-[22px] w-[22px] items-center justify-center rounded-full bg-[#4d9f00] text-[11px] text-white">
-        2
-      </span>
-      <span class="whitespace-nowrap">
-        Features &amp; targets
-      </span>
-    </div>
-
-    <!-- Upcoming steps -->
-    <div class="flex shrink-0 items-center gap-2.5">
-      <span class="flex h-[22px] w-[22px] items-center justify-center rounded-full border border-[#4d9f00] text-[11px] text-[#4d9f00]">3</span>
-      <span class="flex h-[22px] w-[22px] items-center justify-center rounded-full border border-[#4d9f00] text-[11px] text-[#4d9f00]">4</span>
-    </div>
-  </div>
+  {% include "planner/_nav.progress.html" %}
 
   <h1>{{ page_info }}</h1>
   <div>
