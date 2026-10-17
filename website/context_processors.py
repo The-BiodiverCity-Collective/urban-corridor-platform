@@ -101,7 +101,7 @@ def site(request):
         },
         {
             "id": 5,
-            "label": _("Review commitments"),
+            "label": _("Commitments"),
             "url": reverse("planner_requirements", args=[garden_id]),
             "progress_key": "requirements",
             "group": _("Sign up"),

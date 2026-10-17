@@ -78,11 +78,9 @@
         <li>
           <a href="{{ step.url }}"
              class="{% if step.active and menu == "planner" %}text-sky-600{% endif %}">
-            {% if PROGRESS|get_item:step.progress_key %}
-              <span class="circle-done">✓</span>
-            {% else %}
-              <span class="circle-pending">{{ step.id }}</span>
-            {% endif %}
+            <span class="progress" data-state="{% if PROGRESS|get_item:step.progress_key %}completed{% else %}upcoming{% endif %}">
+              {{ step.id }}
+            </span>
             {{ step.label }}
           </a>
         </li>

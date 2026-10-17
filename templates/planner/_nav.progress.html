@@ -14,6 +14,7 @@
     {% for step in STEPS %}
       {% if step.id == active_step %}
         <a
+          class="progress"
           href="{{ step.url }}"
           title="{{ step.label }}"
           data-active="true"
@@ -26,12 +27,14 @@
       {% else %}
         {% if PROGRESS|get_item:step.progress_key %}
           <a
+            class="progress"
             href="{{ step.url }}"
             title="{{ step.label }}"
             data-state="completed"
           >{{ step.id }}</a>
         {% else %}
           <a
+            class="progress"
             href="{{ step.url }}"
             title="{{ step.label }}"
             data-state="upcoming"

@@ -91,7 +91,7 @@
     @apply ml-4 list-disc;
   }
 
-  #topnav h3 {
+  #topnav h3, .garden-progress h3 {
     @apply border-b border-highlight pb-2 font-mono text-sm text-gray-700 mb-4 uppercase;
   }
 
@@ -290,18 +290,6 @@
     @apply font-normal text-gray-700;
   }
 
-  .circle-pending {
-    @apply mr-2 inline-flex h-5 w-5 items-center justify-center
-      rounded-full border-2 border-gray-600 border-dotted
-      bg-gray-200 text-[10px] leading-none;
-  }
-
-  .circle-done {
-    @apply mr-2 inline-flex h-5 w-5 items-center
-      justify-center rounded-full bg-[#9bbf5e]
-      text-sm font-bold text-white;
-  }
-
   .colorbox {
     @apply inline-block h-3.5 w-3.5 rounded-full
       border border-gray-500 p-2.5;
@@ -315,6 +303,24 @@
   /* -----------------------------------------
      Progress crumbs with 1 2 3 4 etc in the garden section
      ----------------------------------------- */
+
+  .progress {
+      @apply inline-flex size-[22px] shrink-0 items-center
+             justify-center rounded-full text-[11px]
+             no-underline transition-colors
+             focus-visible:outline-none
+             focus-visible:ring-2
+             focus-visible:ring-[#65b900]
+             focus-visible:ring-offset-2 mr-1 font-bold;
+
+      &[data-state="completed"] {
+        @apply bg-lime-600 text-white;
+      }
+
+      &[data-state="upcoming"] {
+        @apply border border-lime-600 text-lime-600;
+      }
+    }
 
   #progress_crumbs {
     @apply flex w-full items-center gap-3 bg-white
@@ -336,26 +342,8 @@
     }
 
     a {
-      @apply flex size-[22px] shrink-0 items-center
-             justify-center rounded-full text-[11px]
-             no-underline transition-colors
-             focus-visible:outline-none
-             focus-visible:ring-2
-             focus-visible:ring-[#65b900]
-             focus-visible:ring-offset-2;
-
-      &[data-state="completed"] {
-        @apply bg-[#9bbf5e] text-white;
-      }
-
-      &[data-state="upcoming"] {
-        @apply border border-[#4d9f00] text-[#4d9f00];
-      }
-
       &[data-active="true"] {
-        @apply h-8 w-auto gap-2 rounded-full
-               border border-[#cfe3b3]
-               bg-[#f0f7e7] px-2 text-[#294438];
+        @apply h-8 w-auto gap-2 rounded-full px-2;
       }
 
       &[data-active="true"] > span:first-child {
