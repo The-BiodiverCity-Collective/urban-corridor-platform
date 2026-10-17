@@ -102,7 +102,7 @@
       <a class="{% if slug == "nurseries" and menu == "planner" %}text-sky-600{% endif %}" 
         href="{% url "planner_nurseries" GARDEN %}"><i class="fa fa-fw fa-hand-holding-seedling mr-1 text-gray-400"></i> {{ _("Get plants") }}</a>
     </li>
-    <li><a class="{% if page == "score" %}text-sky-600{% endif %}"
+    <li><a class="{% if page == "score" and tab != "carbon" %}text-sky-600{% endif %}"
       href="{% url "planner_score" GARDEN %}"><i class="fa fa-fw fa-chart-bar mr-1 text-gray-400"></i> {{ _("Biodiversity score") }}</a>
     </li>
     <li>

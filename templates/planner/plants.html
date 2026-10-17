@@ -6,14 +6,19 @@
 
 <h1>{{ title }}</h1>
 
-<div class="flex flex-col md:flex-row {% if plants_present and plants_future %}{% else %}gap-4{% endif %}">
-  <div class="flex-1 {% if plants_present and plants_future %}border-r border-gray-300{% endif %} mb-10">
-    <h2 class="p-5 {% if plants_present %}border-b-4 border-gray-300 bg-gray-100{% endif %} text-center">
+<div class="alert alert-info mb-5">
+  {{ _("Please tell us what plants you have in your garden right now. This helps us calculate your existing biodiversity score.") }}
+  {{ _("Next, use our tools to identify suitable restoration plants to add in the future.") }}
+</div>
+
+<div class="flex items-start justify-between gap-4">
+  <div class="border border-olive-600 rounded-lg overflow-hidden container">
+    <h2 class="p-5 {% if plants_present %}{% endif %} text-center">
       <a class="text-gray-700" href="{% url "planner_plants_present_list" GARDEN %}?view=photos-data">{{ _("Current plants") }}</a>
     </h2>
 
     {% if plants_present %}
-      <div class="container mx-auto">
+      <div class="container mx-auto p-5">
         <div class="grid grid-cols-1 lg:grid-cols-2 gap-2 mr-2">
           {% for species in plants_present %}
             <a class="no-underline rounded-lg p-1 hover:bg-gray-200 mb-2" href="{{ species.get_absolute_url }}">
@@ -24,12 +29,12 @@
                   class="size-16 rounded-full outline-1 -outline-offset-1 outline-black/5"
                   title="{{ species.photo.author }}"
                   >
-                <div>
-                  <p class="font-semibold tracking-tight text-gray-900 mb-0">
+                <div class="overflow-hidden">
+                  <p class="font-semibold tracking-tight text-gray-900 mb-0 truncate">
                     {% if species.name_en %}{{ species.name_en }}{% else %}<em>{{ species.name }}</em>{% endif %}
                   </p>
                   {% if species.name_en %}
-                    <p class="text-sm font-normal text-gray-600"><em>{{ species.name }}</em></p>
+                    <p class="text-sm font-normal text-gray-600 truncate"><em>{{ species.name }}</em></p>
                   {% endif %}
                 </div>
               </div>
@@ -38,8 +43,8 @@
         </div>
       </div>
 
-      <div class="flex justify-between p-5 border-t-2 border-gray-300 bg-gray-100">
-        <a class="btn-gray btn-sm" href="{% url "planner_plants_present_list" GARDEN %}?view=photos-data">
+      <div class="flex justify-between p-5 border-t-2 border-olive-300 bg-olive-100">
+        <a class="btn-olive btn-sm" href="{% url "planner_plants_present_list" GARDEN %}?view=photos-data">
           <i class="fas fa-seedling mr-2"></i>
           {{ _("View in Plant Explorer") }}
         </a>
@@ -50,22 +55,22 @@
       </div>
 
     {% else %}
-      <div class="relative block w-full rounded-lg bg-gray-100 py-20 px-12 text-center hover:border-gray-400">
+      <div class="relative block w-full border-t-2 border-olive-300 bg-olive-100 {% if plants_present %}py-10{% else %}py-20{% endif %} px-12 text-center hover:border-gray-400">
         <div class="mt-2 block text-sm font-semibold text-gray-600">
           <div>{{ _("No species added yet.") }}</div>
-          <a class="btn btn-blue btn-sm mt-5" href="{% url "species" %}">{{ _("View our plants database") }}</a>
+          <a class="btn-blue btn-sm mt-5" href="{% url "species_search" %}"><i class="fa fa-fw fa-search"></i> {{ _("Search plants") }}</a>
         </div>
       </div>
     {% endif %}
 
   </div>
-  <div class="flex-1">
-    <h2 class="p-5 {% if plants_future %}border-b-4 border-gray-300 bg-gray-100{% endif %} text-center">
+  <div class="border border-olive-600 rounded-lg overflow-hidden container">
+    <h2 class="p-5 {% if plants_future %}{% endif %} text-center">
       <a class="text-gray-700" href="{% url "planner_plants_future_list" GARDEN %}?view=photos-data">{{ _("Future plants") }}</a>
     </h2>
 
     {% if plants_future %}
-      <div class="container mx-auto">
+      <div class="container mx-auto p-5">
         <div class="grid grid-cols-1 lg:grid-cols-2 gap-2 ml-2">
           {% for species in plants_future %}
             <a class="no-underline rounded-lg p-1 hover:bg-gray-200 mb-2" href="{{ species.get_absolute_url }}">
@@ -76,12 +81,12 @@
                   class="size-16 rounded-full outline-1 -outline-offset-1 outline-black/5"
                   title="{{ species.photo.author }}"
                   >
-                <div>
-                  <p class="font-semibold tracking-tight text-gray-900 mb-0">
+                <div class="overflow-hidden">
+                  <p class="font-semibold tracking-tight text-gray-900 mb-0 truncate">
                     {% if species.name_en %}{{ species.name_en }}{% else %}<em>{{ species.name }}</em>{% endif %}
                   </p>
                   {% if species.name_en %}
-                    <p class="text-sm font-normal text-gray-600"><em>{{ species.name }}</em></p>
+                    <p class="text-sm font-normal text-gray-600 truncate"><em>{{ species.name }}</em></p>
                   {% endif %}
                 </div>
               </div>
@@ -90,8 +95,8 @@
         </div>
       </div>
 
-      <div class="flex justify-between p-5 border-t-2 border-gray-300 bg-gray-100">
-        <a class="btn-gray btn-sm" href="{% url "planner_plants_future_list" GARDEN %}?view=photos-data">
+      <div class="flex justify-between p-5 border-t-2 border-olive-300 bg-olive-100">
+        <a class="btn-olive btn-sm" href="{% url "planner_plants_future_list" GARDEN %}?view=photos-data">
           <i class="fas fa-seedling mr-2"></i>
           {{ _("View in Plant Explorer") }}
         </a>
@@ -102,10 +107,10 @@
       </div>
 
     {% else %}
-      <div class="relative block w-full rounded-lg bg-gray-100 py-20 px-12 text-center hover:border-gray-400">
+      <div class="relative block w-full rounded-lg bg-olive-100 py-20 px-12 text-center hover:border-gray-400">
         <div class="mt-2 block text-sm font-semibold text-gray-600">
           <div>{{ _("No species added yet.") }}</div>
-          <a class="btn btn-blue btn-sm mt-5" href="{% url "planner_suggestions" garden.id %}">{{ _("View suggested plants") }}</a>
+          <a class="mt-5 btn btn-sm btn-green" href="{% url "planner_suggestions" GARDEN %}"><i class="fa fa-seedling mr-1"></i> {{ _("Suggested plants") }}</a>
         </div>
       </div>
     {% endif %}
@@ -113,15 +118,49 @@
   </div>
 </div>
 
-{% if plants_future or plants_present %}
-  <div class="mt-10">
-    <h3>{{ _("Did you finish plant selection?") }}</h3>
+  <div class="my-10 alert alert-info">
+    <h3>{{ _("Plant explorer") }}</h3>
+    <p class="mb-5">{{ _("Explore our plants database to add plants to your current and future garden") }}</p>
     <ul class="flex gap-4 list-none p-0">
-      <li><a class="btn btn-light" href="{% url "planner_score" GARDEN %}"><i class="fa fa-chart-line mr-1"></i> {{ _("View my score") }}</a></li>
-      <li><a class="btn btn-light" href="{% url "planner_nurseries" GARDEN %}"><i class="fa fa-seedling mr-1"></i> {{ _("Get plants") }}</a></li>
-      <li><a class="btn btn-light" href="{% url "planner_plants_download" GARDEN %}"><i class="fa fa-download mr-1"></i> {{ _("Download plant list") }}</a></li>
+      <li><a class="btn-blue btn-sm " href="{% url "species" %}"><i class="fa fa-fw fa-leaf"></i> {{ _("Browse plants") }}</a></li>
+      <li><a class="btn-blue btn-sm " href="{% url "species_search" %}"><i class="fa fa-fw fa-search"></i> {{ _("Search plants") }}</a></li>
+      <li><a class="btn-blue btn-sm " href="{% url "planner_plants_bulk_add" GARDEN %}"><i class="fa fa-fw fa-plus"></i> {{ _("Bulk add") }}</a></li>
     </ul>
   </div>
+
+
+  <div class="my-10 alert alert-info">
+    <h3>{{ _("Use our tools") }}</h3>
+    <p class="mb-5">{{ _("Get personalised advice for your garden.") }}</p>
+    <ul class="flex gap-4 list-none p-0">
+      <li><a class="btn btn-sm btn-green" href="{% url "planner_suggestions" GARDEN %}"><i class="fa fa-seedling mr-1"></i> {{ _("Suggested plants") }}</a></li>
+      <li><a class="btn btn-sm btn-green" href="{% url "planner_score" GARDEN %}"><i class="fa fa-chart-line mr-1"></i> {{ _("View my score") }}</a></li>
+      <li><a class="btn btn-sm btn-green" href="{% url "planner_nurseries" GARDEN %}"><i class="fa fa-seedling mr-1"></i> {{ _("Get plants") }}</a></li>
+      <li><a class="btn btn-sm btn-green" href="{% url "planner_plants_download" GARDEN %}"><i class="fa fa-download mr-1"></i> {{ _("Download plant list") }}</a></li>
+    </ul>
+  </div>
+
+{% if plants_future and not PROGRESS.plants or plants_present and not PROGRESS.plants %}
+  <h3>{{ _("Did you finish plant selection?") }}</h3>
+  <p>{{ _("You can always keep editing the list. Click here if you are ready for now.") }}</p>
+
+  <form method="post">
+    <label class="commitment">
+      <input type="checkbox" name="done" value="yes" required class="peer" {% if PROGRESS.plants %}checked{% endif %} />
+      <span aria-hidden="true"></span>
+
+      <span>
+      <strong>I am done with plant selection</strong>
+      <small>You can always keep editing the list.</small>
+      </span>
+    </label>
+      <button type="submit" class="btn-green mt-5">
+        {{ _("Save") }}
+      </button>
+
+    {% csrf_token %}
+  </form>
+
 {% endif %}
 
 {% endblock %}

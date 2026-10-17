@@ -132,12 +132,12 @@
       focus:outline-hidden focus:ring-lime-300;
   }
 
-  .btn-gray {
+  .btn-olive {
     @apply inline-block cursor-pointer rounded-sm
-      bg-gray-300 px-3.5 py-2.5 text-sm font-semibold
-      text-gray-700 no-underline
-      hover:bg-gray-400
-      focus:outline-hidden focus:ring-gray-300;
+      bg-olive-300 px-3.5 py-2.5 text-sm font-semibold
+      text-olive-700 no-underline
+      hover:bg-olive-400
+      focus:outline-hidden focus:ring-olive-300;
   }
 
   .btn-danger {
@@ -178,11 +178,10 @@
       text-white no-underline
       hover:bg-amber-400 hover:text-white
       focus:outline-hidden focus:ring-orange-300;
-
-    position: fixed;
-    bottom: 10px;
-    left: 10px;
-    z-index: 20000;
+      position: fixed;
+      bottom: 10px;
+      left: 10px;
+      z-index: 20000;
   }
 
   .btn-white {
@@ -191,6 +190,14 @@
       text-sm font-semibold text-gray-500 no-underline
       hover:bg-gray-200
       focus:outline-hidden focus:ring-sky-300;
+  }
+
+  .btn-gray {
+    @apply inline-block cursor-pointer rounded-sm
+      bg-gray-300 px-3.5 py-2.5 text-sm font-semibold
+      text-gray-700 no-underline
+      hover:bg-gray-400
+      focus:outline-hidden focus:ring-gray-300;
   }
 
   .btn-light {
@@ -409,7 +416,17 @@
       input[type="checkbox"] {
         @apply sr-only;
       }
+      input[type="checkbox"]:checked + span::after {
+        content: "";
+        width: 5px;
+        height: 10px;
+        border: solid white;
+        border-width: 0 2px 2px 0;
+        transform: rotate(45deg);
+        margin-top: -2px;
+      }
     }
+
 
 
   /* -----------------------------------------
@@ -753,7 +770,6 @@
 .select2-container--default .select2-search--dropdown .select2-search__field {
   border-radius: 0.25rem;
 }
-
 
 /* Top navigation logo/image */
 

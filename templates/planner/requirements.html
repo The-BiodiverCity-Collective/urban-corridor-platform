@@ -1,21 +1,5 @@
 {% extends "_base.html" %}
 
-{% block head %}
-  <style type="text/css">
-input[type="checkbox"]:checked + span::after {
-  content: "";
-  width: 5px;
-  height: 10px;
-  border: solid white;
-  border-width: 0 2px 2px 0;
-  transform: rotate(45deg);
-  margin-top: -2px;
-}
-
-
-  </style>
-{% endblock %}
-
 {% block pre_main %}
   {% include "planner/_signuptabs.html" %}
 {% endblock %}

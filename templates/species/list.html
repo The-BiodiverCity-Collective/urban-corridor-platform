@@ -2,7 +2,9 @@
 {% load querystring_plus %}
 
 {% block pre_main %}
-  {% include "species/_tabs.html" %}
+  {% if view != "table-bulk-add" %}
+    {% include "species/_tabs.html" %}
+  {% endif %}
 {% endblock %}
 
 {% block content %}
@@ -21,12 +23,12 @@
     <div class="grid grid-cols-5 gap-4 mb-4">
       <div class="{% if photo %}col-span-3{% else %}col-span-5{% endif %}">
         <h1>Species List - {{ info }}</h1>
-        {% if not request.GET.view or request.GET.view == "table" %}
+        {% if not view or view == "table" %}
           {{ info.get_content }}
         {% endif %}
       </div>
       {% if photo %}
-        {% if not request.GET.view or request.GET.view == "table" %}
+        {% if not view or view == "table" %}
           <div class="col-span-2">
             <img src="{{ photo.medium }}" alt="" class="w-full h-auto object-cover border border-gray-300 rounded-sm" />
           </div>

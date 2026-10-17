@@ -5,7 +5,7 @@
   <nav class="tabs -mb-px flex space-x-2" aria-label="{{ _("Tabs") }}">
     <a href="{% url "species" %}" class="tab {% if not request.GET.classification %}active{% else %}inactive{% endif %}">
       <i class="fa fa-home mr-1"></i>
-      {{ _("Recommended plants") }}
+      {{ _("Native species") }}
     </a>
     <a href="{% url "species" %}?classification=170" class="tab {% if request.GET.classification == "170" %}active{% else %}inactive {% endif %}">
       <i class="fa fa-chart-line mr-1"></i>

@@ -851,6 +851,8 @@ def species_list(request, genus=None, family=None, vegetation_type=None, garden=
     if view == "table-extended":
         species = species.prefetch_related("vegetation_types").all()
         species = species.prefetch_related("colors").all()
+    if garden_status == "BULK_ADD":
+        view = "table-bulk-add"
 
     if genus:
         genus = get_object_or_404(Genus, pk=genus)
@@ -876,8 +878,11 @@ def species_list(request, genus=None, family=None, vegetation_type=None, garden=
         if not (garden := get_garden(request, garden)):
             return redirect("planner")
         species = species.filter(garden_plants__garden=garden, garden_plants__status=garden_status)
-        title = _("My plants: ")
-        title += _("current plants") if garden_status == "PRESENT" else _("future plants")
+        if garden_status == "BULK_ADD":
+            title = _("Plant list - bulk add")
+        else:
+            title = _("My plants: ")
+            title += _("current plants") if garden_status == "PRESENT" else _("future plants")
         menu = "planner"
         page = garden_status
     elif "garden_id" in request.COOKIES:
@@ -955,6 +960,7 @@ def species_list(request, genus=None, family=None, vegetation_type=None, garden=
         "nurseries": nurseries,
         "source": source,
         "colors": colors,
+        "view": view,
 
         # Because we have tabs above the <main>, we need to unround the top-left corner if the first tab is active
         "main_classes": "rounded-tl-none" if view == "photos-data" or not view else None,
@@ -2455,6 +2461,7 @@ def planner_location(request, id):
             else:
                 garden.geometry = geos.MultiPolygon(polygons)
 
+            garden.progress["location"] = True
             garden.save()
             if "new_garden" in request.GET:
                 return redirect(reverse("planner_site", args=[garden.id]) + "?new_garden")
@@ -2465,6 +2472,7 @@ def planner_location(request, id):
     if "lat" in request.GET and "lng" in request.GET:
         lat = float(request.GET.get("lat"))
         lng = float(request.GET.get("lng"))
+        garden.progress["location"] = True
         garden.geometry = geos.Point(lng, lat)
 
         try:
@@ -2565,11 +2573,7 @@ def planner_site(request, id):
         if "new_garden" in request.GET:
             return redirect(reverse("planner_target_species", args=[garden.id]) + "?new_garden")
         else:
-            messages.success(
-                request, 
-                "<i class='fa fa-check mr-2'></i>" + \
-                _("Your site features have been saved.")
-            )
+            messages.success(request, "<i class='fa fa-check mr-2'></i>" + _("Your site features have been saved."))
             return redirect(reverse("planner", args=[garden.id]))
 
     context = {
@@ -2716,6 +2720,12 @@ def planner_plants(request, id, status):
 
     plants_present = Species.objects.filter(garden_plants__garden=garden, garden_plants__status="PRESENT")
     plants_future = Species.objects.filter(garden_plants__garden=garden, garden_plants__status="FUTURE")
+
+    if "done" in request.POST:
+        garden.progress["plants"] = True
+        garden.save()
+        messages.success(request, "<i class='fa fa-check mr-2'></i>" + _("Your plant selection was saved! You can now add your garden to our corridor."))
+        return redirect(reverse("planner", args=[garden.id]))
 
     if "delete" in request.POST:
         plant = Species.objects.get(pk=request.POST["delete"])
