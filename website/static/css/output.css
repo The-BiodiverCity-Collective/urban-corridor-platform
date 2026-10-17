@@ -2416,9 +2416,6 @@
   .text-blue-600 {
     color: var(--color-blue-600);
   }
-  .text-dark-highlight {
-    color: var(--color-dark-highlight);
-  }
   .text-emerald-500 {
     color: var(--color-emerald-500);
   }
@@ -4782,7 +4779,7 @@
     margin-left: calc(var(--spacing) * 4);
     list-style-type: disc;
   }
-  .garden-progress h3 {
+  #topnav h3 {
     margin-bottom: calc(var(--spacing) * 4);
     border-bottom-style: var(--tw-border-style);
     border-bottom-width: 1px;
@@ -4797,6 +4794,8 @@
   .garden-progress li a {
     font-size: var(--text-sm);
     line-height: calc(var(--spacing) * 6);
+    --tw-font-weight: var(--font-weight-normal);
+    font-weight: var(--font-weight-normal);
     color: var(--color-black);
     text-decoration-line: none;
     &:hover {
@@ -5365,12 +5364,12 @@
     color: var(--color-gray-700);
   }
   .circle-pending {
-    position: relative;
-    top: calc(var(--spacing) * 1);
     margin-right: calc(var(--spacing) * 2);
     display: inline-flex;
     height: calc(var(--spacing) * 5);
     width: calc(var(--spacing) * 5);
+    align-items: center;
+    justify-content: center;
     border-radius: calc(infinity * 1px);
     border-style: var(--tw-border-style);
     border-width: 2px;
@@ -5378,6 +5377,9 @@
     border-style: dotted;
     border-color: var(--color-gray-600);
     background-color: var(--color-gray-200);
+    font-size: 10px;
+    --tw-leading: 1;
+    line-height: 1;
   }
   .circle-done {
     margin-right: calc(var(--spacing) * 2);
@@ -5475,7 +5477,7 @@
         outline-style: none;
       }
       &[data-state="completed"] {
-        background-color: #4d9f00;
+        background-color: #9bbf5e;
         color: var(--color-white);
       }
       &[data-state="upcoming"] {

@@ -1,3 +1,5 @@
+{% load ucp_extras %}
+
 <div class="bg-lightshade rounded-lg p-4">
   {% if GARDEN %}
     {% if GARDEN_ACTIVE %}
@@ -65,76 +67,29 @@
         {% endif %}
 </div>
 
-<div class="text-dark-highlight text-semibold">
-  <h3>
-    {{ _("Plan your garden") }}
-  </h3>
-  <ul class="space-y-3">
-    <li>
-      <a href="{% url "planner" GARDEN %}" 
-        class="{% if page == "dashboard" and menu == "planner" %}text-sky-600{% endif %}">
-          {% if GARDEN %}<span class="circle-done">✓</span>{% else %}<span class="circle-pending"></span>{% endif %} 
-          {{ _("Create your garden") }}
-      </a>
-    </li>
-    <li>
-      <a href="{% url "planner_location" GARDEN %}" 
-        class="{% if page == "location" and menu == "planner" %}text-sky-600{% endif %}">
-          {% if PROGRESS.location %}<span class="circle-done">✓</span>{% else %}<span class="circle-pending"></span>{% endif %} 
-          {{ _("Set location") }}
-      </a>
-    </li>
-    <li>
-      <a href="{% url "planner_site" GARDEN %}" 
-        class="{% if page == "site" and menu == "planner" %}text-sky-600{% endif %}">
-          {% if PROGRESS.features %}<span class="circle-done">✓</span>{% else %}<span class="circle-pending"></span>{% endif %} 
-          {{ _("Features and targets") }}
-      </a>
-    </li>
-    <li>
-      <a href="{% url "planner_plants" GARDEN %}" 
-        class="{% if page == "plants" and menu == "planner" %}text-sky-600{% endif %}">
-          {% if PROGRESS.plants %}<span class="circle-done">✓</span>{% else %}<span class="circle-pending"></span>{% endif %} 
-          {{ _("Select plants") }}
-      </a>
-    </li>
-</div>
+{% regroup STEPS by group as step_groups %}
 
-<div>
-  <h3>
-    {{ _("Sign up") }}
-  </h3>
-  <ul class="space-y-3">
-    <li>
-      <a href="{% url "planner_requirements" GARDEN %}" 
-        class="{% if slug == "requirements" and menu == "planner" %}text-sky-600{% endif %}">
-          {% if PROGRESS.requirements %}<span class="circle-done">✓</span>{% else %}<span class="circle-pending"></span>{% endif %} 
-          {{ _("Review commitments") }}
-      </a>
-    </li>
-    <li>
-      <a href="{% url "planner_profile" GARDEN %}" 
-        class="{% if slug == "profile" and menu == "planner" %}text-sky-600{% endif %}">
-          {% if PROGRESS.profile %}<span class="circle-done">✓</span>{% else %}<span class="circle-pending"></span>{% endif %} 
-          {{ _("Garden profile") }}
-      </a>
-    </li>
-    <li>
-      <a href="{% url "planner_profile_photos" GARDEN %}" 
-        class="{% if slug == "profile" and menu == "planner" and photos %}text-sky-600{% endif %}">
-          {% if PROGRESS.photos %}<span class="circle-done">✓</span>{% else %}<span class="circle-pending"></span>{% endif %} 
-          {{ _("Upload photos") }}
-      </a>
-    </li>
-    <li>
-      <a href="{% url "planner_activate" GARDEN %}" 
-        class="{% if slug == "activate" and menu == "planner" %}text-sky-600{% endif %}">
-          {% if PROGRESS.joined %}<span class="circle-done">✓</span>{% else %}<span class="circle-pending"></span>{% endif %} 
-          {{ _("Join the corridor") }}
-      </a>
-    </li>
-  </ul>
-</div>
+{% for group in step_groups %}
+  <div>
+    <h3>{{ group.grouper }}</h3>
+
+    <ul class="space-y-3">
+      {% for step in group.list %}
+        <li>
+          <a href="{{ step.url }}"
+             class="{% if step.active and menu == "planner" %}text-sky-600{% endif %}">
+            {% if PROGRESS|get_item:step.progress_key %}
+              <span class="circle-done">✓</span>
+            {% else %}
+              <span class="circle-pending">{{ step.id }}</span>
+            {% endif %}
+            {{ step.label }}
+          </a>
+        </li>
+      {% endfor %}
+    </ul>
+  </div>
+{% endfor %}
 
 <div>
   <h3>

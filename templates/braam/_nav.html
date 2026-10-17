@@ -57,14 +57,11 @@
   <div id="dropdown-species" class="dropdown absolute inset-x-0 top-0 -z-10 bg-white pt-16 shadow-lg ring-1 ring-gray-900/5 max-h-[85vh] overflow-y-auto lg:max-h-none lg:overflow-visible">
     <div class="mx-auto grid max-w-7xl grid-cols-1 gap-x-8 gap-y-10 px-6 py-10 lg:grid-cols-2 lg:px-8">
       <div class="grid grid-cols-1 gap-y-10 sm:grid-cols-2 sm:gap-x-6 sm:gap-y-0">
-        <article class="relative isolate flex max-w-2xl flex-col gap-y-3 lg:gap-y-6">
-          <h3 class="text-sm/6 font-medium text-gray-500">Our plants</h3>
-          <div class="relative flex-none">
-            <a href="/species/">
-              <img class="aspect-2/1 w-full rounded-lg bg-gray-100 object-cover sm:aspect-video sm:h-32 lg:h-auto" src="/media/explore.jpg?i" alt="">
-              <div class="absolute inset-0 rounded-lg ring-1 ring-inset ring-gray-900/10"></div>
-            </a>
-          </div>
+        <article class="relative isolate flex max-w-2xl flex-col">
+          <h3>Our plants</h3>
+          <a href="/species/" class="mb-5">
+            <img class="aspect-2/1 w-full rounded-lg bg-gray-100" src="/media/explore.jpg?i" alt="">
+          </a>
           <div>
             <a href="/species/" class="flex gap-x-4 py-2 text-sm/6 font-semibold hover:text-sky-600 {% if page == "all_species" and not "indigenous" in request.GET %}text-sky-600{% else %}text-gray-900{% endif %}">
               <i class="fa fa-seedling fa-fw text-lg text-gray-400 mr-1"></i>
@@ -79,7 +76,7 @@
           </div>
         </article>
         <div class="lg:pl-5">
-          <h3 class="text-sm/6 font-medium text-gray-500">View plant collections</h3>
+          <h3>View plant collections</h3>
           <div class="mt-6 flow-root">
             <div class="-my-2">
               <a href="/species/list/?feature=129&amp;page=butterflies&amp;spatial_classification=169" 
@@ -167,7 +164,7 @@
           </div>
         </div>
         <div>
-          <h3 class="text-sm/6 font-medium text-gray-500">{{ _("Indigenous nursery stock") }}</h3>
+          <h3>{{ _("Indigenous nursery stock") }}</h3>
           <div class="mt-6 mb-6 flow-root">
             <div class="-my-2">
               {% for each in NURSERIES %}
@@ -190,7 +187,7 @@
       <div class="grid grid-cols-1 gap-y-10 sm:grid-cols-2 sm:gap-x-6 sm:gap-y-0">
 
         <div>
-          <h3 class="text-sm/6 font-medium text-gray-500">Our corridor</h3>
+          <h3>Our corridor</h3>
           <div class="mt-6 flow-root">
             <div class="-my-2">
               <a href="/about/corridor/" class="flex gap-x-4 py-2 text-sm/6 font-semibold 
@@ -248,7 +245,7 @@
       </div>
       <div class="grid grid-cols-1 gap-y-10 sm:grid-cols-2 sm:gap-x-6 sm:gap-y-0 lg:grid-cols-2 lg:gap-8">
         <div>
-          <h3 class="text-sm/6 font-medium text-gray-500">Get in touch</h3>
+          <h3>Get in touch</h3>
           <div class="mt-6 flow-root">
             <div class="-my-2">
               <a href="/about/contact/" class="flex gap-x-4 py-2 text-sm/6 font-semibold 
@@ -294,7 +291,7 @@
     <div class="mx-auto grid max-w-7xl grid-cols-1 gap-x-8 gap-y-10 px-6 py-10 lg:grid-cols-2 lg:px-8">
       <div class="grid grid-cols-1 gap-y-10 sm:grid-cols-2 sm:gap-x-6 sm:gap-y-0">
         <div>
-          <h3 class="text-sm/6 font-medium text-gray-500">Documents</h3>
+          <h3>Documents</h3>
           <div class="mt-6 flow-root">
             <div class="-my-2">
               <a href="{% url "species_sources" %}" 
@@ -330,7 +327,7 @@
           </div>
         </div>
         <div>
-          <h3 class="text-sm/6 font-medium text-gray-500">Annual calendar</h3>
+          <h3>Annual calendar</h3>
           <div class="mt-6 flow-root">
             <div class="-my-2">
               <a hidden href="/blog/" class="flex gap-x-4 py-2 text-sm/6 font-semibold hover:text-sky-600
@@ -346,7 +343,7 @@
 
             </div>
           </div>
-          <h3 class="mt-10 text-sm/6 font-medium text-gray-500">Indigenous nurseries</h3>
+          <h3 class="mt-10">Indigenous nurseries</h3>
           <div class="mt-6 mb-6 flow-root">
             <div class="-my-2">
               {% for each in NURSERIES %}
@@ -373,7 +370,7 @@
     <div class="mx-auto grid max-w-7xl grid-cols-1 sm:grid-cols-2 gap-x-8 gap-y-10 px-6 py-10 lg:grid-cols-4 lg:px-8">
       {% for heading, items in JOIN_MENU.items %}
       <div class="join-group">
-        <h3 class="text-sm/6 font-medium text-gray-500">{{ heading }}</h3>
+        <h3>{{ heading }}</h3>
         <div class="mt-6 flow-root">
           <div class="-my-2">
             {% for item in items %}

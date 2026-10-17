@@ -70,66 +70,64 @@ def site(request):
         bg = f"/media/bg/braam/{bg}.jpg"
 
 
-    steps = {}
-    if garden:
-        steps = [
-            {
-                "id": 1,
-                "label": _("Create your garden"),
-                "url": reverse("planner", args=[garden_id]),
-                "progress_key": "created",
-                "group": _("Plan your garden"),
-            },
-            {
-                "id": 2,
-                "label": _("Set location"),
-                "url": reverse("planner_location", args=[garden_id]),
-                "progress_key": "location",
-                "group": _("Plan your garden"),
-            },
-            {
-                "id": 3,
-                "label": _("Features and targets"),
-                "url": reverse("planner_site", args=[garden_id]),
-                "progress_key": "features",
-                "group": _("Plan your garden"),
-            },
-            {
-                "id": 4,
-                "label": _("Select plants"),
-                "url": reverse("planner_plants", args=[garden_id]),
-                "progress_key": "plants",
-                "group": _("Plan your garden"),
-            },
-            {
-                "id": 5,
-                "label": _("Review commitments"),
-                "url": reverse("planner_requirements", args=[garden_id]),
-                "progress_key": "requirements",
-                "group": _("Sign up"),
-            },
-            {
-                "id": 6,
-                "label": _("Garden profile"),
-                "url": reverse("planner_profile", args=[garden_id]),
-                "progress_key": "profile",
-                "group": _("Sign up"),
-            },
-            {
-                "id": 7,
-                "label": _("Upload photos"),
-                "url": reverse("planner_profile_photos", args=[garden_id]),
-                "progress_key": "photos",
-                "group": _("Sign up"),
-            },
-            {
-                "id": 8,
-                "label": _("Join the corridor"),
-                "url": reverse("planner_activate", args=[garden_id]),
-                "progress_key": "joined",
-                "group": _("Sign up"),
-            },
-        ]
+    steps = [
+        {
+            "id": 1,
+            "label": _("Create your garden"),
+            "url": reverse("planner", args=[garden_id]),
+            "progress_key": "created",
+            "group": _("Plan your garden"),
+        },
+        {
+            "id": 2,
+            "label": _("Set location"),
+            "url": reverse("planner_location", args=[garden_id]),
+            "progress_key": "location",
+            "group": _("Plan your garden"),
+        },
+        {
+            "id": 3,
+            "label": _("Features and targets"),
+            "url": reverse("planner_site", args=[garden_id]),
+            "progress_key": "features",
+            "group": _("Plan your garden"),
+        },
+        {
+            "id": 4,
+            "label": _("Select plants"),
+            "url": reverse("planner_plants", args=[garden_id]),
+            "progress_key": "plants",
+            "group": _("Plan your garden"),
+        },
+        {
+            "id": 5,
+            "label": _("Review commitments"),
+            "url": reverse("planner_requirements", args=[garden_id]),
+            "progress_key": "requirements",
+            "group": _("Sign up"),
+        },
+        {
+            "id": 6,
+            "label": _("Garden profile"),
+            "url": reverse("planner_profile", args=[garden_id]),
+            "progress_key": "profile",
+            "group": _("Sign up"),
+        },
+        {
+            "id": 7,
+            "label": _("Upload photos"),
+            "url": reverse("planner_profile_photos", args=[garden_id]),
+            "progress_key": "photos",
+            "group": _("Sign up"),
+        },
+        {
+            "id": 8,
+            "label": _("Join the corridor"),
+            "url": reverse("planner_activate", args=[garden_id]),
+            "progress_key": "joined",
+            "group": _("Sign up"),
+        },
+    ]
 
     return {
         "DEBUG": settings.DEBUG,
