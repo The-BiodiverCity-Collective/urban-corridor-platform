@@ -2546,10 +2546,20 @@ def planner_site(request, id):
     if not (garden := get_garden(request, id)):
         return redirect("planner")
 
+    features = Page.objects.filter(site=site, page_type__in=[Page.PageType.TARGET, Page.PageType.FEATURES])
+    targets = Page.objects.filter(site=site, page_type=Page.PageType.TARGET)
+
     if request.method == "POST" and "feature" in request.POST:
+
         garden.site_features.clear()
         for each in features.filter(pk__in=request.POST.getlist("feature")):
             garden.site_features.add(each)
+
+        garden.targets.clear()
+        for each in targets.filter(pk__in=request.POST.getlist("target")):
+            garden.targets.add(each)
+
+        garden.progress["features"] = True
         garden.save()
 
         if "new_garden" in request.GET:
@@ -2572,6 +2582,7 @@ def planner_site(request, id):
         "load_tooltip": True,
         "feature_groups": Page.objects.filter(site=site, page_type=Page.PageType.FEATURE_GROUP),
         "active_step": 3,
+        "targets": targets,
     }
     return render(request, "planner/site.html", context)
 

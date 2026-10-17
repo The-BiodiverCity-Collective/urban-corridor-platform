@@ -4674,7 +4674,7 @@
     line-height: var(--tw-leading, var(--text-3xl--line-height));
     --tw-font-weight: var(--font-weight-bold);
     font-weight: var(--font-weight-bold);
-    color: var(--color-dark-highlight);
+    color: var(--color-light-highlight);
   }
   main h2 {
     margin-bottom: calc(var(--spacing) * 4);
@@ -5340,9 +5340,8 @@
     padding: calc(var(--spacing) * 4);
   }
   .alert-success {
-    border-color: var(--color-lime-500);
-    background-color: var(--color-lime-50);
-    color: var(--color-lime-700);
+    background-color: var(--color-highlight);
+    color: var(--color-light-highlight);
   }
   .alert-info {
     background-color: var(--color-olive-100);

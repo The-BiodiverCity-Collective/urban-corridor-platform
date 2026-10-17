@@ -134,7 +134,7 @@
 
         {% if messages %}
           {% for message in messages %}
-            <div class="p-4 mb-5 border {{ message.tags }}">
+            <div class="mb-5 {{ message.tags }}">
               {{ message|safe }}
             </div>
           {% endfor %}

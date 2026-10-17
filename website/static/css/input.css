@@ -46,7 +46,7 @@
   }
 
   main h1 {
-    @apply mb-6 text-3xl font-bold text-dark-highlight;
+    @apply mb-6 text-3xl font-bold text-light-highlight;
   }
 
   main h2 {
@@ -266,7 +266,7 @@
   }
 
   .alert-success {
-    @apply border-lime-500 bg-lime-50 text-lime-700;
+    @apply bg-highlight text-light-highlight;
   }
 
   .alert-info {
