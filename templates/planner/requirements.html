@@ -33,7 +33,7 @@ input[type="checkbox"]:checked + span::after {
       <form method="post" class="flex flex-col gap-3.5">
 
         <label class="commitment">
-          <input type="checkbox" name="commitments" value="invasive_removal" required class="peer" />
+          <input type="checkbox" name="commitments" value="invasive_removal" required class="peer" {% if PROGRESS.requirements %}checked{% endif %} />
           <span aria-hidden="true"></span>
 
           <span>
@@ -43,7 +43,7 @@ input[type="checkbox"]:checked + span::after {
         </label>
 
         <label class="commitment">
-          <input type="checkbox" name="commitments" value="indigenous" required class="peer" />
+          <input type="checkbox" name="commitments" value="indigenous" required class="peer" {% if PROGRESS.requirements %}checked{% endif %} />
           <span aria-hidden="true"></span>
 
           <span>
@@ -53,7 +53,7 @@ input[type="checkbox"]:checked + span::after {
         </label>
 
         <label class="commitment">
-          <input type="checkbox" name="commitments" value="update" required class="peer" />
+          <input type="checkbox" name="commitments" value="update" required class="peer" {% if PROGRESS.requirements %}checked{% endif %} />
           <span aria-hidden="true"></span>
 
           <span>
@@ -63,7 +63,7 @@ input[type="checkbox"]:checked + span::after {
         </label>
 
         <label class="commitment">
-          <input type="checkbox" name="commitments" value="sharing" required class="peer" />
+          <input type="checkbox" name="commitments" value="sharing" required class="peer" {% if PROGRESS.requirements %}checked{% endif %} />
           <span aria-hidden="true"></span>
 
           <span>

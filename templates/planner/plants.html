@@ -2,6 +2,8 @@
 
 {% block content %}
 
+{% include "planner/_nav.progress.html" %}
+
 <h1>{{ title }}</h1>
 
 <div class="flex flex-col md:flex-row {% if plants_present and plants_future %}{% else %}gap-4{% endif %}">

@@ -2503,6 +2503,7 @@ def planner_location(request, id):
         "corridor_mask": get_corridor_mask(site),
         "show_next_buttons": show_next_buttons,
         "map_draw_polygon": map_draw_polygon,
+        "active_step": 2,
     }
     return render(request, "planner/location.html", context)
 
@@ -2727,6 +2728,7 @@ def planner_plants(request, id, status):
         "plants_present": plants_present,
         "plants_future": plants_future,
         "planner_tab": "my_plants",
+        "active_step": 4,
     }
     return render(request, "planner/plants.html", context)
 
@@ -3141,6 +3143,7 @@ def planner_profile(request, id, photos=False):
         "photos": photos,
         "licenses": Photo.LICENSE_CHOICES,
         "body_padding": True,
+        "active_step": 7 if photos else 6,
     }
     return render(request, "planner/profile.html", context)
 
@@ -3645,6 +3648,19 @@ def controlpanel_page(request, id=None):
 
 @staff_member_required
 def controlpanel_gardens(request):
+
+    if "update_gardens":
+        for each in Garden.objects_unfiltered.all():
+            each.progress["created"] = True
+            if each.geometry:
+                each.progress["location"] = True
+            if each.photos.all():
+                each.progress["photos"] = True
+            if each.description:
+                each.progress["profile"] = True
+            if each.is_active:
+                each.progress["joined"] = True
+            each.save()
 
     site = get_site(request)
     view = request.GET.get("view")

@@ -353,8 +353,19 @@
       }
 
       &[data-active="true"] {
-        @apply border border-gray-300 bg-gray-300
-               text-[#294438];
+        @apply h-8 w-auto gap-2 rounded-full
+               border border-[#cfe3b3]
+               bg-[#f0f7e7] px-2 text-[#294438];
+      }
+
+      &[data-active="true"] > span:first-child {
+        @apply flex size-5 shrink-0 items-center
+               justify-center rounded-full
+               bg-[#4d9f00] text-white;
+      }
+
+      &[data-active="true"] > span:last-child {
+        @apply pr-1;
       }
     }
   }

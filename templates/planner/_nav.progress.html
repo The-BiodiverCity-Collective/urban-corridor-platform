@@ -19,8 +19,10 @@
           data-active="true"
           data-state="active"
           aria-current="step"
-        >{{ step.id }}</a>
-        <span>{{ step.label }}</span>
+        >
+          <span>{{ step.id }}</span>
+          <span>{{ step.label }}</span>
+        </a>
       {% else %}
         {% if PROGRESS|get_item:step.progress_key %}
           <a
