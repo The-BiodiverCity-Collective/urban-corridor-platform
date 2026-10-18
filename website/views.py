@@ -3388,15 +3388,6 @@ def favicon(request):
 @staff_member_required
 def controlpanel(request):
 
-    if "load" in request.GET:
-        
-        for feature in SpeciesFeatures.SpeciesType:
-            FeatureGroup.objects.create(name=feature.label)
-
-        for each in SpeciesFeatures.objects.all():
-            each.feature_group_id = each.species_type
-            each.save()
-
     context = {
         "controlpanel": True,
         "menu": "index",
@@ -3706,12 +3697,16 @@ def controlpanel_gardens(request):
             each.progress["created"] = True
             if each.geometry:
                 each.progress["location"] = True
+            if each.plants.all():
+                each.progress["plants"] = True
             if each.photos.all():
                 each.progress["photos"] = True
             if each.description:
                 each.progress["profile"] = True
             if each.is_active:
                 each.progress["joined"] = True
+                each.progress["requirements"] = True
+                each.progress["features"] = True
             each.save()
 
     site = get_site(request)
