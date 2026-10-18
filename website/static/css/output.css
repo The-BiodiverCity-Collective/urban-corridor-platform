@@ -973,6 +973,9 @@
   .w-8 {
     width: calc(var(--spacing) * 8);
   }
+  .w-10 {
+    width: calc(var(--spacing) * 10);
+  }
   .w-11 {
     width: calc(var(--spacing) * 11);
   }
@@ -1113,6 +1116,10 @@
   }
   .-translate-x-1\/2 {
     --tw-translate-x: calc(calc(1 / 2 * 100%) * -1);
+    translate: var(--tw-translate-x) var(--tw-translate-y);
+  }
+  .translate-x-5 {
+    --tw-translate-x: calc(var(--spacing) * 5);
     translate: var(--tw-translate-x) var(--tw-translate-y);
   }
   .translate-y-0 {
@@ -1723,11 +1730,20 @@
   .border-transparent {
     border-color: transparent;
   }
+  .bg-\[\#243D32\] {
+    background-color: #243D32;
+  }
+  .bg-\[\#D5DCCF\] {
+    background-color: #D5DCCF;
+  }
   .bg-\[\#E1EACF\] {
     background-color: #E1EACF;
   }
   .bg-\[\#F1F3E9\] {
     background-color: #F1F3E9;
+  }
+  .bg-\[\#F5F5F4\] {
+    background-color: #F5F5F4;
   }
   .bg-\[\#FAF7F0\] {
     background-color: #FAF7F0;
@@ -2065,6 +2081,9 @@
   .p-0 {
     padding: calc(var(--spacing) * 0);
   }
+  .p-0\.5 {
+    padding: calc(var(--spacing) * 0.5);
+  }
   .p-1 {
     padding: calc(var(--spacing) * 1);
   }
@@ -2380,6 +2399,10 @@
   .text-\[11px\] {
     font-size: 11px;
   }
+  .leading-5 {
+    --tw-leading: calc(var(--spacing) * 5);
+    line-height: calc(var(--spacing) * 5);
+  }
   .leading-6 {
     --tw-leading: calc(var(--spacing) * 6);
     line-height: calc(var(--spacing) * 6);
@@ -2460,8 +2483,14 @@
   .text-\[\#243B30\] {
     color: #243B30;
   }
+  .text-\[\#243D32\] {
+    color: #243D32;
+  }
   .text-\[\#56574F\] {
     color: #56574F;
+  }
+  .text-\[\#58616D\] {
+    color: #58616D;
   }
   .text-\[\#467900\] {
     color: #467900;
@@ -4052,6 +4081,11 @@
       padding-inline: calc(var(--spacing) * 2);
     }
   }
+  .sm\:px-4 {
+    @media (width >= 40rem) {
+      padding-inline: calc(var(--spacing) * 4);
+    }
+  }
   .sm\:px-6 {
     @media (width >= 40rem) {
       padding-inline: calc(var(--spacing) * 6);
@@ -4325,6 +4359,16 @@
   .lg\:max-h-none {
     @media (width >= 64rem) {
       max-height: none;
+    }
+  }
+  .lg\:w-1\/3 {
+    @media (width >= 64rem) {
+      width: calc(1 / 3 * 100%);
+    }
+  }
+  .lg\:w-2\/3 {
+    @media (width >= 64rem) {
+      width: calc(2 / 3 * 100%);
     }
   }
   .lg\:w-auto {

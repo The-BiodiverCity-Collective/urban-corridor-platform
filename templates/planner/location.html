@@ -50,51 +50,103 @@
 
 {% include "planner/_nav.progress.html" %}
 
-<div class="">
-  <div class="flex items-start gap-3">
-    <i class="fas fa-info-circle text-sky-600 dark:text-sky-400 text-xl mt-0.5" aria-hidden="true"></i>
-    <div class="flex-1">
-      <h3 class="text-sm font-semibold tracking-tight mb-1">{{ _("Instructions") }}</h3>
-      <p class="text-sm text-slate-600 dark:text-slate-300 mb-3">
-        {% if request.GET.view == "polygon" %}
-          {{ _("Navigate to your location. Then, click the 'polygon' icon to draw the exact outline of your garden. Once you are done, click SAVE.") }}
-        {% else %}
-          {{ _("Navigate to your location. Click on the map to mark the location of your garden.") }}
-        {% endif %}
-      </p>
+<section class="flex flex-col-reverse lg:flex-row">
+  <div class="w-full lg:w-2/3">
+    <nav class="mt-4 sm_tabs -mb-px flex space-x-5" aria-label="{{ _("Tabs") }} color-tabs">
+      {% if not garden.geometry or garden.geometry.geom_type == "Point" %}
+        <a href="{% querystring_plus view="point" %}" class="tab {% if not map_draw_polygon %}active{% else %}inactive{% endif %}">
+          <i class="fa fa-map-marker-alt mr-1"></i>
+          {{ _("Select location") }}
+        </a>
+      {% endif %}
+      <a href="{% querystring_plus view="polygon" %}" class="tab {% if map_draw_polygon and not show_next_buttons %}active{% else %}inactive {% endif %}">
+        <i class="fa fa-hexagon mr-1"></i>
+        {{ _("Draw exact garden outline") }}
+      </a>
+      <a id="kmz" class="tab {% if show_next_buttons %}active{% else %}inactive{% endif %} cursor-pointer">
+        <i class="fa fa-upload"></i>
+        {{ _("Upload KMZ file") }}
+      </a>
+    </nav>
+
+    <div class="relative">
+      {% if map_draw_polygon and not show_next_buttons %}
+        <form method="post" class="absolute bottom-5 right-2 z-1000">
+          <input type="hidden" id="polygon-data" name="polygon_data" />
+          <button id="save-polygon" type="submit" class="btn-green">
+            {{ _("Save") }}
+          </button>
+          {% csrf_token %}
+        </form>
+      {% endif %}
+      <div class="mb-4 rounded shadow-sm" id="map"></div>
+    </div>
+
+  </div>
+  <div class="w-full lg:w-1/3 p-5">
+    <h1 class="text-lg">Where is your garden located?</h1>
+
+    {% if request.GET.view == "polygon" %}
+      <div class="flex items-start gap-3 rounded-2xl bg-[#F5F5F4] px-4 py-4 sm:px-4">
+        <div class="mt-0.5 max-w-md text-sm leading-5 text-[#58616D]">
+          Note: a polygon will always be an exact location. 
+        </div>
+      </div>
+    {% else %}
+      <div class="flex items-start gap-3 rounded-2xl bg-[#F5F5F4] px-4 py-4 sm:px-4">
+        <!-- Toggle switch -->
+        <button
+          type="button"
+          role="switch"
+          aria-checked="false"
+          class="relative mt-0.5 flex h-5 w-10 shrink-0 cursor-pointer items-center rounded-full bg-[#D5DCCF] p-0.5 transition-colors"
+        >
+          <span class="h-4 w-4 rounded-full bg-white shadow-sm transition-transform"></span>
+        </button>
+
+        <!-- Hidden checkbox used for form submission -->
+        <input
+          type="checkbox"
+          name="private_location"
+          value="true"
+          class="hidden"
+          id="private_location"
+          {% if garden.meta_data.exact_location %}checked{% endif %}
+        />
+
+        <!-- Text content -->
+        <div class="min-w-0">
+          <h3 class="text-sm font-semibold leading-5 text-[#243D32]">
+            Show exact location
+          </h3>
+
+          <p class="location-description mt-0.5 max-w-md text-sm leading-5 text-[#58616D]">
+            Off: we will show a zoomed-out map with an estimated location.
+          </p>
+        </div>
+      </div>
+    {% endif %}
+
+
+    <div class="flex items-start gap-3 mt-5">
+      <i class="fas fa-info-circle text-sky-600 dark:text-sky-400 text-xl mt-0.5" aria-hidden="true"></i>
+      <div class="flex-1">
+        <h3 class="text-sm font-semibold tracking-tight mb-1">{{ _("Instructions") }}</h3>
+        <p class="text-sm text-slate-600 dark:text-slate-300 mb-3">
+          <span id="instructions">
+          {% if request.GET.view == "polygon" %}
+            {{ _("Navigate to your location. Then, click the 'polygon' icon to draw the exact outline of your garden. Once you are done, click SAVE.") }}
+          {% elif info.meta_data.exact_location %}
+            {{ _("Navigate to your location. Click on the map to mark the location of your garden.") }}
+          {% else %}
+            {{ _("Navigate to your location. Find a nearby PUBLIC road or space and select that location.") }}
+          {% endif %}
+          </span>
+        </p>
+      </div>
     </div>
   </div>
-</div>
-
-<nav class="mt-4 sm_tabs -mb-px flex space-x-5" aria-label="{{ _("Tabs") }} color-tabs">
-  {% if not garden.geometry or garden.geometry.geom_type == "Point" %}
-    <a href="{% querystring_plus view="point" %}" class="tab {% if not map_draw_polygon %}active{% else %}inactive{% endif %}">
-      <i class="fa fa-map-marker-alt mr-1"></i>
-      {{ _("Select location") }}
-    </a>
-  {% endif %}
-  <a href="{% querystring_plus view="polygon" %}" class="tab {% if map_draw_polygon and not show_next_buttons %}active{% else %}inactive {% endif %}">
-    <i class="fa fa-hexagon mr-1"></i>
-    {{ _("Draw exact garden outline") }}
-  </a>
-  <a id="kmz" class="tab {% if show_next_buttons %}active{% else %}inactive{% endif %} cursor-pointer">
-    <i class="fa fa-upload"></i>
-    {{ _("Upload KMZ file") }}
-  </a>
-</nav>
-
-<div class="relative">
-  {% if map_draw_polygon and not show_next_buttons %}
-    <form method="post" class="absolute bottom-5 right-2 z-1000">
-      <input type="hidden" id="polygon-data" name="polygon_data" />
-      <button id="save-polygon" type="submit" class="btn-green">
-        {{ _("Save") }}
-      </button>
-      {% csrf_token %}
-    </form>
-  {% endif %}
-  <div class="mb-4 rounded shadow-sm" id="map"></div>
-</div>
+</section>
 
 <div class="flex justify-between">
   {% if show_next_buttons %}
@@ -150,9 +202,10 @@
 	var popup = L.popup();
 
 	function onMapClick(e) {
+    const isExact = document.getElementById("private_location").checked;
 		popup
 			.setLatLng(e.latlng)
-			.setContent("{% if garden.geometry %}{{ _("Change your existing location to this location?") }}{% else %}{{ _("Confirm location?") }}{% endif %}<br><br><a href='./?lat=" + e.latlng.lat + "&amp;lng=" + e.latlng.lng + "{% if "new_garden" in request.GET %}&amp;new_garden{% endif %}' class='btn btn-green'>Confirm</a>")
+			.setContent("{% if garden.geometry %}{{ _("Change your existing location to this location?") }}{% else %}{{ _("Confirm location?") }}{% endif %}<br><br><a href='./?exact_location=" + isExact + "&lat=" + e.latlng.lat + "&amp;lng=" + e.latlng.lng + "{% if "new_garden" in request.GET %}&amp;new_garden{% endif %}' class='btn btn-green'>Confirm</a>")
 			.openOn(map);
 	}
 
@@ -178,6 +231,53 @@
     $("#close_modal").click(function(){
       $("#dialog").hide();
     });
+
+  $('.flex.items-start').has('input[name="private_location"]').each(function () {
+    const $container = $(this);
+    const $toggle = $container.find('[role="switch"]');
+    const $checkbox = $container.find('input[name="private_location"]');
+    const $knob = $toggle.find('span');
+    const $description = $container.find('.location-description');
+
+    function updateToggle() {
+      const isChecked = $checkbox.is(':checked');
+
+      // Update the toggle's appearance and accessibility state
+      $toggle.attr('aria-checked', isChecked);
+
+      $toggle.toggleClass('bg-[#D5DCCF] bg-[#243D32]', false);
+      $toggle.css('background-color', isChecked ? '#243D32' : '#D5DCCF');
+
+      $knob.toggleClass('translate-x-5', isChecked);
+
+      // Update the description
+      $description.text(
+        isChecked
+          ? 'On: the exact location of your garden will be shown'
+          : 'Off: we will show a zoomed-out map with an estimated location.'
+      );
+
+      $("#instructions").text(
+        isChecked
+          ? '{{ _("Navigate to your location. Click on the map to mark the location of your garden.") }}'
+          : '{{ _("Navigate to your location. Find a nearby PUBLIC road or space and select that location.") }}'
+      );
+
+    }
+
+    // Toggle the checkbox when the button is clicked
+    $toggle.on('click', function () {
+      $checkbox.prop('checked', !$checkbox.is(':checked')).trigger('change');
+    });
+
+    // Sync the UI whenever the checkbox changes
+    $checkbox.on('change', updateToggle);
+
+    // Set the initial state on page load
+    updateToggle();
+  });
+
+
   });
 
 </script>

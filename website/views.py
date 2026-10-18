@@ -2491,6 +2491,9 @@ def planner_location(request, id):
         lng = float(request.GET.get("lng"))
         garden.progress["location"] = True
         garden.geometry = geos.Point(lng, lat)
+        if not garden.meta_data:
+            garden.meta_data = {}
+        garden.meta_data["exact_location"] = True if request.GET.get("exact_location", "") == "true" else False
 
         try:
             vegetation = site.vegetation_types_map
