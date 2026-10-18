@@ -4,7 +4,7 @@
       {% if hide_links %}
         {{ _("Current score") }}
       {% else %}
-        <a class="no-underline hover:underline text-gray-700 hover:text-sky-800" href="{% url "planner_score_present" GARDEN %}">
+        <a class="no-underline hover:underline text-gray-700 hover:text-sky-800" href="{% url "planner_score_present" GARDEN_ID %}">
           {{ _("Current score") }}
         </a>
       {% endif %}
@@ -15,7 +15,7 @@
       {% if hide_links %}
         {{ _("Future score") }}
       {% else %}
-        <a class="no-underline hover:underline text-gray-700 hover:text-sky-800" href="{% url "planner_score_future" GARDEN %}">
+        <a class="no-underline hover:underline text-gray-700 hover:text-sky-800" href="{% url "planner_score_future" GARDEN_ID %}">
           {{ _("Future score") }}
         </a>
       {% endif %}
@@ -32,7 +32,7 @@
             {% if hide_links %}
               {{ label }}
             {% else %}
-              <a href="{% if status == "PRESENT" %}{% url "planner_score_present" garden.id %}{% else %}{% url "planner_score_future" GARDEN %}{% endif %}#section-{{ label|slugify }}"
+              <a href="{% if status == "PRESENT" %}{% url "planner_score_present" garden.id %}{% else %}{% url "planner_score_future" GARDEN_ID %}{% endif %}#section-{{ label|slugify }}"
                  class="no-underline hover:underline text-gray-700 hover:text-sky-800">
                   {{ label }}
               </a>
@@ -50,7 +50,7 @@
 
     {% if not hide_full_scorecard %}
       <div class="flex justify-end">
-        <a class="full_report btn-green btn-sm mt-4" href="{% if status == "PRESENT" %}{% url "planner_score_present" GARDEN %}{% else %}{% url "planner_score_future" GARDEN %}{% endif %}">
+        <a class="full_report btn-green btn-sm mt-4" href="{% if status == "PRESENT" %}{% url "planner_score_present" GARDEN_ID %}{% else %}{% url "planner_score_future" GARDEN_ID %}{% endif %}">
           <i class="fas fa-chart-line mr-2"></i>
           {{ _("Full scorecard") }}
         </a>

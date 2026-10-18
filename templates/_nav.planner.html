@@ -1,20 +1,20 @@
 {% load ucp_extras %}
 
 <div class="bg-lightshade rounded-lg p-4">
-  {% if GARDEN %}
-    {% if GARDEN_ACTIVE %}
+  {% if GARDEN_ID %}
+    {% if GARDEN.is_active %}
       <div><span class="badge-highlight">{{ _("Part of our corridor!") }}</span></div>
     {% elif PROGRESS.joined %}
       <div><span class="badge-highlight">{{ _("Garden submitted") }}</span></div>
     {% else %}
       <div><span class="badge-darkshade">{{ _("Not yet on the corridor map") }}</span></div>
     {% endif %}
-    <h2 class="mt-4">{{ MY_GARDEN }}</h2>
+    <h2 class="mt-4">{{ GARDEN }}</h2>
 
-    {% if GARDEN_ACTIVE %}
+    {% if GARDEN.is_active %}
       <p class="opacity-70 mb-4">
         You are 
-        {% if GARDEN_ACTIVE|length > 1 %} garden <span class="font-mono">#{{ GARDEN_ACTIVE }}</span>
+        {% if GARDEN.get_garden_number|length > 1 %} garden <span class="font-mono">#{{ GARDEN.get_garden_number }}</span>
         {% else %} part {% endif %}
         of the Braamfontein Spruit Ecological Corridor!
       </p>
@@ -22,32 +22,32 @@
       <p class="opacity-70 mb-4">
         {{ _("Your garden is scheduled to go live in a few days after internal review. Thanks for joining our corridor!") }}
       </p>
-    {% elif GARDEN %}
+    {% elif GARDEN_ID %}
       <p class="opacity-70 mb-4">
         {{ _("Your garden is not yet part of our corridor. Complete the steps and join our corridor when you are ready!") }}
       </p>
     {% endif %}
 
-    <p class="opacity-70">{{ MY_GARDEN.completed_steps }} {{ _(" out of 8 steps completed") }}</p>
+    <p class="opacity-70">{{ GARDEN.completed_steps }} {{ _(" out of 8 steps completed") }}</p>
     <div
       class="h-2 w-full overflow-hidden rounded bg-gray-200 mb-4"
       role="progressbar"
       aria-label="Progress"
-      aria-valuenow="{{ MY_GARDEN.completed_steps }}"
+      aria-valuenow="{{ GARDEN.completed_steps }}"
       aria-valuemin="0"
       aria-valuemax="8"
     >
-      <div class="h-full rounded bg-lime-600" style="width:{% widthratio MY_GARDEN.completed_steps 8 100 %}%"></div>
+      <div class="h-full rounded bg-lime-600" style="width:{% widthratio GARDEN.completed_steps 8 100 %}%"></div>
     </div>
 
       {% if not hide_planner_button %}
-        {% if MY_GARDEN.completed_steps < 8 %}
-          <a href="{% url "planner" GARDEN %}" class="btn-green my-5">Continue planning →</a>
+        {% if GARDEN.completed_steps < 8 %}
+          <a href="{% url "planner" GARDEN_ID %}" class="btn-green my-5">Continue planning →</a>
         {% else %}
-          <a href="{% url "planner" GARDEN %}" class="btn-green my-5">Go to planner →</a>
+          <a href="{% url "planner" GARDEN_ID %}" class="btn-green my-5">Go to planner →</a>
         {% endif %}
       {% elif PROGRESS.profile %}
-        <a href="{{ MY_GARDEN.get_absolute_url }}" class="btn-blue bg-darkshade text-gray-800 hover:opacity-80 my-5">View garden profile →</a>
+        <a href="{{ GARDEN.get_absolute_url }}" class="btn-blue bg-darkshade text-gray-800 hover:opacity-80 my-5">View garden profile →</a>
       {% endif %}
 
         {% else %}
@@ -74,7 +74,7 @@
                 {{ _("Start a new restoration project or register your existing garden to become part of our corridor!") }}
               </p>
               {% if not hide_planner_button %}
-                <a href="{% url "planner" GARDEN %}" class="btn-green my-5">Go to planner →</a>
+                <a href="{% url "planner" GARDEN_ID %}" class="btn-green my-5">Go to planner →</a>
               {% endif %}
             </div>
           </div>
@@ -111,18 +111,18 @@
   <ul>
     <li>
       <a class="{% if page == "suggestions" and menu == "planner" %}text-sky-600{% endif %}" 
-        href="{% url "planner_suggestions" GARDEN %}"><i class="fa fa-fw fa-seedling mr-1 text-gray-400"></i> {{ _("Suggested plants") }}</a>
+        href="{% url "planner_suggestions" GARDEN_ID %}"><i class="fa fa-fw fa-seedling mr-1 text-gray-400"></i> {{ _("Suggested plants") }}</a>
     </li>
     <li>
       <a class="{% if slug == "nurseries" and menu == "planner" %}text-sky-600{% endif %}" 
-        href="{% url "planner_nurseries" GARDEN %}"><i class="fa fa-fw fa-hand-holding-seedling mr-1 text-gray-400"></i> {{ _("Get plants") }}</a>
+        href="{% url "planner_nurseries" GARDEN_ID %}"><i class="fa fa-fw fa-hand-holding-seedling mr-1 text-gray-400"></i> {{ _("Get plants") }}</a>
     </li>
     <li><a class="{% if page == "score" and tab != "carbon" %}text-sky-600{% endif %}"
-      href="{% url "planner_score" GARDEN %}"><i class="fa fa-fw fa-chart-bar mr-1 text-gray-400"></i> {{ _("Biodiversity score") }}</a>
+      href="{% url "planner_score" GARDEN_ID %}"><i class="fa fa-fw fa-chart-bar mr-1 text-gray-400"></i> {{ _("Biodiversity score") }}</a>
     </li>
     <li>
       <a class="{% if tab == "carbon" %}text-sky-600{% endif %}" 
-        href="{% url "carbon_report" GARDEN %}"><i class="fa fa-fw fa-cloud mr-1 text-gray-400"></i> {{ _("Carbon report") }}</a>
+        href="{% url "carbon_report" GARDEN_ID %}"><i class="fa fa-fw fa-cloud mr-1 text-gray-400"></i> {{ _("Carbon report") }}</a>
     </li>
   </ul>
 </div>

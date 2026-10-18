@@ -36,7 +36,7 @@
                 </div>
                 <div>
                   <div class="text-xs text-gray-500">Garden</div>
-                    <div class="font-semibold text-gray-900">{{ GARDEN.name }}</div>
+                    <div class="font-semibold text-gray-900">{{ GARDEN }}</div>
                 </div>
               </div>
 
@@ -66,24 +66,24 @@
       {% elif garden.completed_steps == 7 %} 
 
 <div class="bg-lightshade rounded-lg p-4 w-full max-w-[300px] mx-auto">
-    {% if GARDEN_ACTIVE %}
+    {% if GARDEN.is_active %}
       <div><span class="badge-highlight">{{ _("Part of our corridor!") }}</span></div>
     {% else %}
       <div><span class="badge-highlight">{{ _("Not yet on the corridor map") }}</span></div>
     {% endif %}
     <h2 class="mt-4">{{ garden }}</h2>
 
-    {% if GARDEN_ACTIVE %}
+    {% if GARDEN.is_active %}
       <p class="opacity-70 mb-4">
         You are 
-        {% if GARDEN_ACTIVE|length > 1 %}
-        garden <span class="font-mono">#{{ GARDEN_ACTIVE }}</span>
+        {% if GARDEN.get_garden_number|length > 1 %}
+        garden <span class="font-mono">#{{ GARDEN.get_garden_number }}</span>
         {% else %}
         part
         {% endif %}
         of the Braamfontein Spruit Ecological Corridor!
       </p>
-    {% elif GARDEN %}
+    {% elif GARDEN_ID %}
       <p class="opacity-70 mb-4">
         {{ _("Great work! Your garden is ready to join our corridor. Click the button below to publish your profile and to officially become part of our corridor.") }}
       </p>

@@ -33,6 +33,7 @@ def site(request):
     garden_id = request.COOKIES.get("garden_id", 0)
     if garden_id:
         garden = get_garden(request, garden_id)
+
     join_menu = {
         "Create or register your garden": [
             {"title": "Private garden", "icon": "fa-map-marker-plus", "slug": "private-garden"},
@@ -134,9 +135,8 @@ def site(request):
         "SITE": site,
         "SITES": sites,
 
-        # Let's fix this please, such as mess
-        "MY_GARDEN": garden,
-        "GARDEN": garden_id,
+        "GARDEN": garden,
+        "GARDEN_ID": garden_id,
         "PROGRESS": garden.progress if garden else None,
 
         "NURSERIES": Page.objects.filter(site=site, page_type=Page.PageType.NURSERY),

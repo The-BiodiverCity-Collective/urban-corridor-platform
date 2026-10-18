@@ -46,7 +46,7 @@
       </div>
     </div>
     <div class="shrink-0 self-end sm:self-center">
-      <a class="btn-dark btn-sm" href="{% url "carbon_report" GARDEN %}">
+      <a class="btn-dark btn-sm" href="{% url "carbon_report" GARDEN_ID %}">
         <i class="fas fa-cloud mr-2"></i>
         {{ _("View carbon report") }}
       </a>
@@ -56,9 +56,9 @@
   <div class="mt-10">
     <h3>{{ _("Did you finish improving your score?") }}</h3>
     <ul class="flex gap-4 list-none p-0">
-      <li><a class="btn btn-light" href="{% url "planner_nurseries" GARDEN %}"><i class="fa fa-seedling mr-1"></i> {{ _("Get plants") }}</a></li>
-      <li><a class="btn btn-light" href="{% url "planner_plants_download" GARDEN %}"><i class="fa fa-download mr-1"></i> {{ _("Download plant list") }}</a></li>
-      <li><a class="btn btn-light" href="{% url "planner_requirements" GARDEN %}"><i class="fa fa-users mr-1"></i> {{ _("Sign up to become part of our corridor!") }}</a></li>
+      <li><a class="btn btn-light" href="{% url "planner_nurseries" GARDEN_ID %}"><i class="fa fa-seedling mr-1"></i> {{ _("Get plants") }}</a></li>
+      <li><a class="btn btn-light" href="{% url "planner_plants_download" GARDEN_ID %}"><i class="fa fa-download mr-1"></i> {{ _("Download plant list") }}</a></li>
+      <li><a class="btn btn-light" href="{% url "planner_requirements" GARDEN_ID %}"><i class="fa fa-users mr-1"></i> {{ _("Sign up to become part of our corridor!") }}</a></li>
     </ul>
   </div>
 

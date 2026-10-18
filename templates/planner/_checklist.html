@@ -27,7 +27,7 @@
         {% if garden.geometry %}
           {{ _("Completed") }}
         {% else %}
-          You can <a href="{% url "planner_location" GARDEN %}">configure your location</a> here.
+          You can <a href="{% url "planner_location" GARDEN_ID %}">configure your location</a> here.
         {% endif %}
       </p>
     </div>
@@ -49,7 +49,7 @@
         {% if garden.targets.all %}
           {{ _("Completed") }}
         {% else %}
-          You can <a href="{% url "planner_target_species" GARDEN %}">configure your garden targets</a> here.
+          You can <a href="{% url "planner_target_species" GARDEN_ID %}">configure your garden targets</a> here.
         {% endif %}
       </p>
     </div>
@@ -71,7 +71,7 @@
         {% if garden.plants.all %}
           {{ _("Completed") }}
         {% else %}
-          Start by reviewing <a href="{% url "planner_suggestions" GARDEN %}">suggested plants</a> for your garden once you have set targets and features.
+          Start by reviewing <a href="{% url "planner_suggestions" GARDEN_ID %}">suggested plants</a> for your garden once you have set targets and features.
         {% endif %}
       </p>
     </div>
@@ -93,7 +93,7 @@
         {% if garden.description %}
           {{ _("Profile created") }}
         {% else %}
-          You can <a href="{% url "planner_profile" GARDEN %}">edit your profile</a> in this section.
+          You can <a href="{% url "planner_profile" GARDEN_ID %}">edit your profile</a> in this section.
         {% endif %}
       </p>
     </div>
@@ -119,7 +119,7 @@
               Your garden has {{ count }} photos.
             {% endblocktranslate %}
         {% else %}
-          You can <a href="{% url "planner_profile_photos" GARDEN %}">upload photos</a> in this section.
+          You can <a href="{% url "planner_profile_photos" GARDEN_ID %}">upload photos</a> in this section.
         {% endif %}
       </p>
     </div>
@@ -141,7 +141,7 @@
         {% if garden.published_at %}
           {{ _("You published this garden on:") }} {{ garden.published_at|date:"M d, Y" }}
         {% else %}
-          Once you complete this checklist you can <a href="{% url "planner_activate" GARDEN %}">activate</a> your garden.
+          Once you complete this checklist you can <a href="{% url "planner_activate" GARDEN_ID %}">activate</a> your garden.
         {% endif %}
       </p>
     </div>

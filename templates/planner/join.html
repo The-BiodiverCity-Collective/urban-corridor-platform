@@ -40,7 +40,7 @@
           <p class="mt-2 text-sm text-gray-500">
             {{ _("Write your online garden profile, upload photos, and more.") }}
           </p>
-          <a href="{% url "planner_profile" GARDEN %}" class="no-underline hover:underline">{{ _("Manage garden profile") }} &raquo;</a>
+          <a href="{% url "planner_profile" GARDEN_ID %}" class="no-underline hover:underline">{{ _("Manage garden profile") }} &raquo;</a>
         </div>
       </div>
       <div class="sm:flex lg:block">
@@ -54,7 +54,7 @@
           <p class="mt-2 text-sm text-gray-500">
             Weeding days? Maintenance activities? Announce your events to the public!
           </p>
-          <a href="{% url "planner_events" GARDEN %}" class="no-underline hover:underline">Manage events &raquo;</a>
+          <a href="{% url "planner_events" GARDEN_ID %}" class="no-underline hover:underline">Manage events &raquo;</a>
         </div>
       </div>
       <div class="sm:flex lg:block">
@@ -68,7 +68,7 @@
           <p class="mt-2 text-sm text-gray-500">
             Do you need specific plant species? Soil? Equipment? Ask our community for help.
           </p>
-          <a href="{% url "planner_support" GARDEN %}" class="no-underline hover:underline">Request now &raquo;</a>
+          <a href="{% url "planner_support" GARDEN_ID %}" class="no-underline hover:underline">Request now &raquo;</a>
         </div>
       </div>
     </div>

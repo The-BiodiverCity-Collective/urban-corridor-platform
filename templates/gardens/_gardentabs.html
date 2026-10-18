@@ -16,7 +16,7 @@
     {{ _("Carbon report") }}
   </a>
 
-  {% if info.id|slugify == GARDEN %}
+  {% if info.id|slugify == GARDEN_ID %}
     <a href="{% url "planner_profile" info.id %}" class="tab inactive ml-auto">
       <i class="fa fa-pencil mr-1"></i>
       {{ _("Edit profile") }}

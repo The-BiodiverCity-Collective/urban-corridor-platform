@@ -61,7 +61,7 @@
       </td>
         <td>{{ each.unit|default_if_none:"" }}</td>
         <td>{% if each.price %}R{{ each.price|intcomma }}{% endif %}</td>
-        <td class="text-sm"><a href="{% url "planner_nursery" GARDEN each.nursery.slug %}">{{ each.nursery }}</a></td>
+        <td class="text-sm"><a href="{% url "planner_nursery" GARDEN_ID each.nursery.slug %}">{{ each.nursery }}</a></td>
         <td>
           {% if each.in_stock %}
             <span class="shrink-0 text-[11px] uppercase tracking-wide font-bold text-lime-700 bg-lime-100 px-2 py-1 rounded">
@@ -85,7 +85,7 @@
 <div class="mt-10">
   <h3>{{ _("Ready with your planning activities?") }}</h3>
   <ul class="flex gap-4 list-none p-0">
-    <li><a class="btn btn-light" href="{% url "planner_requirements" GARDEN %}"><i class="fa fa-users mr-1"></i> {{ _("Sign up to become part of our corridor!") }}</a></li>
+    <li><a class="btn btn-light" href="{% url "planner_requirements" GARDEN_ID %}"><i class="fa fa-users mr-1"></i> {{ _("Sign up to become part of our corridor!") }}</a></li>
   </ul>
 </div>
 

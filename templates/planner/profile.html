@@ -41,7 +41,7 @@
               {% endif %}
             </a>
 
-            <a href="{% url "planner_profile_photos" GARDEN %}" class="btn-white text-center">
+            <a href="{% url "planner_profile_photos" GARDEN_ID %}" class="btn-white text-center">
               <i class="fas fa-image mr-1" aria-hidden="true"></i>
               {% if photos %}
                 <span>{{ _("Upload more photos") }}</span>
@@ -51,7 +51,7 @@
             </a>
 
             {% if PROGRESS.photos %}
-              <a href="{% url "planner_activate" GARDEN %}" class="btn-blue text-center">
+              <a href="{% url "planner_activate" GARDEN_ID %}" class="btn-blue text-center">
                 <i class="fas fa-check-circle mr-1" aria-hidden="true"></i>
                 <span>{{ _("Activate") }}</span>
               </a>

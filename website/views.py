@@ -2419,7 +2419,8 @@ def planner(request, id=None):
     # Cookie is not yet set but the garden is opened so let's update the context variable here manually
     if garden and garden.id != request.COOKIES.get("garden_id"):
         context.update({
-            "GARDEN": garden.id,
+            "GARDEN": garden,
+            "GARDEN_ID": garden.id,
         })
 
     return render(request, "planner/index.html", context)

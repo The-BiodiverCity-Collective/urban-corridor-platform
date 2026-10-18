@@ -230,22 +230,22 @@
 {% if False %}
   <div class="fixed bottom-0 left-0 right-0 z-10000 border-t border-gray-300">
     <div class="absolute left-1/2 transform -translate-x-1/2 bottom-[calc(100%)] bg-gray-100 px-6 py-2 z-10 border-t border-l border-r rounded-t-lg border-gray-300
-    {% if not GARDEN %}hover:bg-gray-200{% endif %}
+    {% if not GARDEN_ID %}hover:bg-gray-200{% endif %}
     ">
-      <h3 class="font-semibold {% if GARDEN %}uppercase{% endif %} text-gray-700 text-center whitespace-nowrap">
-        <a href="{% url "planner" GARDEN %}"><i class="fa fa-shovel mr-2"></i> 
+      <h3 class="font-semibold {% if GARDEN_ID %}uppercase{% endif %} text-gray-700 text-center whitespace-nowrap">
+        <a href="{% url "planner" GARDEN_ID %}"><i class="fa fa-shovel mr-2"></i> 
           {% if garden %}
             {{ garden }}
           {% elif GARDEN %}
-            {{ GARDEN.name }}
+            {{ GARDEN }}
           {% else %}
             {{ _("Start planning your restoration garden") }}
           {% endif %}
         </a>
       </h3>
     </div>
-    {% if GARDEN %}
-      {% with garden_id=garden.id|default:GARDEN %}
+    {% if GARDEN_ID %}
+      {% with garden_id=garden.id|default:GARDEN_ID %}
       <div class="bg-gray-100 px-6 relative z-0">
         <div class="max-w-7xl mx-auto">
           <div class="flex space-x-1 text-sm font-medium py-1 bottomnav [&_i]:max-lg:!hidden">

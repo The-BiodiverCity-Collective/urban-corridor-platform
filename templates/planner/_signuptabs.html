@@ -1,23 +1,23 @@
 <nav class="tabs -mb-px flex space-x-2" aria-label="{{ _("Tabs") }}" hidden>
-  <a href="{% url "planner_requirements" GARDEN %}" class="tab {% if slug == "requirements" %}active{% else %}inactive{% endif %}">
+  <a href="{% url "planner_requirements" GARDEN_ID %}" class="tab {% if slug == "requirements" %}active{% else %}inactive{% endif %}">
     <i class="fa fa-clipboard-check mr-1"></i>
     {{ _("Commitments") }}
   </a>
-  <a href="{% url "planner_profile" GARDEN %}" class="tab {% if slug == "profile" and not photos %}active{% else %}inactive {% endif %}">
+  <a href="{% url "planner_profile" GARDEN_ID %}" class="tab {% if slug == "profile" and not photos %}active{% else %}inactive {% endif %}">
     <i class="fa fa-file-alt mr-1"></i>
     {{ _("Garden profile") }}
   </a>
-  <a href="{% url "planner_profile_photos" GARDEN %}" class="tab {% if slug == "profile" and photos %}active{% else %}inactive{% endif %}">
+  <a href="{% url "planner_profile_photos" GARDEN_ID %}" class="tab {% if slug == "profile" and photos %}active{% else %}inactive{% endif %}">
     <i class="fa fa-image mr-1"></i>
     {{ _("Photos") }}
   </a>
-  <a href="{% url "planner_activate" GARDEN %}" class="tab {% if slug == "activate" %}active{% else %}inactive{% endif %}">
+  <a href="{% url "planner_activate" GARDEN_ID %}" class="tab {% if slug == "activate" %}active{% else %}inactive{% endif %}">
     <i class="fa fa-check-circle mr-1"></i>
     {{ _("Activate") }}
   </a>
-  <a href="{% url "garden" GARDEN %}" class="tab inactive ml-auto">
+  <a href="{% url "garden" GARDEN_ID %}" class="tab inactive ml-auto">
     <i class="fa fa-eye mr-1"></i>
-    {% if GARDEN_ACTIVE %}
+    {% if GARDEN.is_active %}
       {{ _("View online profile") }}
     {% else %}
       {{ _("Preview online profile") }}

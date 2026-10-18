@@ -44,11 +44,11 @@
       </div>
 
       <div class="flex justify-between p-5 border-t-2 border-olive-300 bg-olive-100">
-        <a class="btn-olive btn-sm" href="{% url "planner_plants_present_list" GARDEN %}?view=photos-data">
+        <a class="btn-olive btn-sm" href="{% url "planner_plants_present_list" GARDEN_ID %}?view=photos-data">
           <i class="fas fa-seedling mr-2"></i>
           {{ _("View in Plant Explorer") }}
         </a>
-        <a class="full_report btn-green btn-sm" href="{% url "planner_score_present" GARDEN %}">
+        <a class="full_report btn-green btn-sm" href="{% url "planner_score_present" GARDEN_ID %}">
           <i class="fas fa-chart-line mr-2"></i>
           {{ _("Full scorecard") }}
         </a>
@@ -96,11 +96,11 @@
       </div>
 
       <div class="flex justify-between p-5 border-t-2 border-olive-300 bg-olive-100">
-        <a class="btn-olive btn-sm" href="{% url "planner_plants_future_list" GARDEN %}?view=photos-data">
+        <a class="btn-olive btn-sm" href="{% url "planner_plants_future_list" GARDEN_ID %}?view=photos-data">
           <i class="fas fa-seedling mr-2"></i>
           {{ _("View in Plant Explorer") }}
         </a>
-        <a class="full_report btn-green btn-sm" href="{% url "planner_score_future" GARDEN %}">
+        <a class="full_report btn-green btn-sm" href="{% url "planner_score_future" GARDEN_ID %}">
           <i class="fas fa-chart-line mr-2"></i>
           {{ _("Full scorecard") }}
         </a>
@@ -110,7 +110,7 @@
       <div class="relative block w-full rounded-lg bg-olive-100 py-20 px-12 text-center hover:border-gray-400">
         <div class="mt-2 block text-sm font-semibold text-gray-600">
           <div>{{ _("No species added yet.") }}</div>
-          <a class="mt-5 btn btn-sm btn-green" href="{% url "planner_suggestions" GARDEN %}"><i class="fa fa-seedling mr-1"></i> {{ _("Suggested plants") }}</a>
+          <a class="mt-5 btn btn-sm btn-green" href="{% url "planner_suggestions" GARDEN_ID %}"><i class="fa fa-seedling mr-1"></i> {{ _("Suggested plants") }}</a>
         </div>
       </div>
     {% endif %}
@@ -124,7 +124,7 @@
     <ul class="flex gap-4 list-none p-0">
       <li><a class="btn-blue btn-sm " href="{% url "species" %}"><i class="fa fa-fw fa-leaf"></i> {{ _("Browse plants") }}</a></li>
       <li><a class="btn-blue btn-sm " href="{% url "species_search" %}"><i class="fa fa-fw fa-search"></i> {{ _("Search plants") }}</a></li>
-      <li><a class="btn-blue btn-sm " href="{% url "planner_plants_bulk_add" GARDEN %}"><i class="fa fa-fw fa-plus"></i> {{ _("Bulk add") }}</a></li>
+      <li><a class="btn-blue btn-sm " href="{% url "planner_plants_bulk_add" GARDEN_ID %}"><i class="fa fa-fw fa-plus"></i> {{ _("Bulk add") }}</a></li>
     </ul>
   </div>
 
@@ -133,10 +133,10 @@
     <h3>{{ _("Use our tools") }}</h3>
     <p class="mb-5">{{ _("Get personalised advice for your garden.") }}</p>
     <ul class="flex gap-4 list-none p-0">
-      <li><a class="btn btn-sm btn-green" href="{% url "planner_suggestions" GARDEN %}"><i class="fa fa-seedling mr-1"></i> {{ _("Suggested plants") }}</a></li>
-      <li><a class="btn btn-sm btn-green" href="{% url "planner_score" GARDEN %}"><i class="fa fa-chart-line mr-1"></i> {{ _("View my score") }}</a></li>
-      <li><a class="btn btn-sm btn-green" href="{% url "planner_nurseries" GARDEN %}"><i class="fa fa-seedling mr-1"></i> {{ _("Get plants") }}</a></li>
-      <li><a class="btn btn-sm btn-green" href="{% url "planner_plants_download" GARDEN %}"><i class="fa fa-download mr-1"></i> {{ _("Download plant list") }}</a></li>
+      <li><a class="btn btn-sm btn-green" href="{% url "planner_suggestions" GARDEN_ID %}"><i class="fa fa-seedling mr-1"></i> {{ _("Suggested plants") }}</a></li>
+      <li><a class="btn btn-sm btn-green" href="{% url "planner_score" GARDEN_ID %}"><i class="fa fa-chart-line mr-1"></i> {{ _("View my score") }}</a></li>
+      <li><a class="btn btn-sm btn-green" href="{% url "planner_nurseries" GARDEN_ID %}"><i class="fa fa-seedling mr-1"></i> {{ _("Get plants") }}</a></li>
+      <li><a class="btn btn-sm btn-green" href="{% url "planner_plants_download" GARDEN_ID %}"><i class="fa fa-download mr-1"></i> {{ _("Download plant list") }}</a></li>
     </ul>
   </div>
 

@@ -44,7 +44,7 @@
       </span>
     </div>
 
-    <a href="{{ MY_GARDEN.get_absolute_url }}" class="text-center btn-blue bg-darkshade text-gray-800 hover:opacity-80 my-5">View garden profile →</a>
+    <a href="{{ GARDEN.get_absolute_url }}" class="text-center btn-blue bg-darkshade text-gray-800 hover:opacity-80 my-5">View garden profile →</a>
 
   </div>
 
@@ -94,7 +94,7 @@
   </div>
 </div>
 
-{% elif GARDEN and not "account" in request.GET %}
+{% elif GARDEN_ID and not "account" in request.GET %}
   <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 garden-progress">
     {% with hide_planner_button=True %}
       {% include "_nav.planner.html" %}
@@ -103,7 +103,7 @@
 {% else %}
 <section class="grid grid-cols-1 md:grid-cols-2 mt-10 pt-10 border-t-3 border-gray-100">
   <div class="bg-lightshade p-5 rounded-lg">
-    {% if not GARDEN %}
+    {% if not GARDEN_ID %}
       <h1 class="mb-2 text-xl">{{ _("Create your garden") }}</h1>
     {% else %}
       <h1 class="mb-2 text-xl">{{ _("Create another garden") }}</h1>
@@ -250,7 +250,7 @@
       {% endif %}
     </div>
 
-    <a {% if garden %} href="{% url "planner_location" GARDEN %}" {% endif %} class="{% if not garden %}hidden lg:block{% endif %} lg:col-span-1 relative no-underline {% if garden %} hover:opacity-75{% else %}opacity-40{% endif %}">
+    <a {% if garden %} href="{% url "planner_location" GARDEN_ID %}" {% endif %} class="{% if not garden %}hidden lg:block{% endif %} lg:col-span-1 relative no-underline {% if garden %} hover:opacity-75{% else %}opacity-40{% endif %}">
       <div class="absolute inset-0 rounded-lg bg-white lg:rounded-bl-4xl"></div>
       <div class="relative flex h-full flex-col overflow-hidden rounded-[calc(var(--radius-lg)+1px)] lg:rounded-bl-[calc(2rem+1px)]">
         <img src="/media/planner.location.jpg" alt="" class="h-40 w-full object-cover object-center" />
@@ -267,7 +267,7 @@
       <div class="pointer-events-none absolute inset-0 rounded-lg shadow-sm outline outline-black/5 lg:rounded-bl-4xl"></div>
     </a>
 
-    <a {% if garden %} href="{% url "planner_site" GARDEN %}" {% endif %} class="{% if not garden %}hidden lg:block{% endif %} lg:col-span-1 relative no-underline {% if garden %} hover:opacity-75{% else %}opacity-40{% endif %}">
+    <a {% if garden %} href="{% url "planner_site" GARDEN_ID %}" {% endif %} class="{% if not garden %}hidden lg:block{% endif %} lg:col-span-1 relative no-underline {% if garden %} hover:opacity-75{% else %}opacity-40{% endif %}">
       <div class="absolute inset-0 rounded-lg bg-white"></div>
       <div class="relative flex h-full flex-col overflow-hidden rounded-[calc(var(--radius-lg)+1px)]">
         <img src="/media/planner.soil.jpg" title="Photo by Nicolas Postiglioni: https://www.pexels.com/photo/gray-sands-closeup-photo-943500/" class="h-40 w-full object-cover object-center" />
@@ -284,7 +284,7 @@
       <div class="pointer-events-none absolute inset-0 rounded-lg shadow-sm outline outline-black/5"></div>
     </a>
 
-    <a {% if garden %} href="{% url "planner_target_species" GARDEN %}" {% endif %} class="{% if not garden %}hidden lg:block{% endif %} lg:col-span-1 relative no-underline {% if garden %} hover:opacity-75{% else %}opacity-40{% endif %}">
+    <a {% if garden %} href="{% url "planner_target_species" GARDEN_ID %}" {% endif %} class="{% if not garden %}hidden lg:block{% endif %} lg:col-span-1 relative no-underline {% if garden %} hover:opacity-75{% else %}opacity-40{% endif %}">
       <div class="absolute inset-0 rounded-lg bg-white"></div>
       <div class="relative flex h-full flex-col overflow-hidden rounded-[calc(var(--radius-lg)+1px)]">
         <img src="https://inaturalist-open-data.s3.amazonaws.com/photos/118240906/medium.jpeg" alt="" class="h-40 w-full object-cover object-center" />
@@ -340,7 +340,7 @@
             <p class="mt-2 text-sm text-gray-500">
               {{ _("Find out what species are most appropriate for your garden's conditions.") }}
             </p>
-            <a href="{% url "planner_suggestions" GARDEN %}" class="no-underline hover:underline">{{ _("View species") }} &raquo;</a>
+            <a href="{% url "planner_suggestions" GARDEN_ID %}" class="no-underline hover:underline">{{ _("View species") }} &raquo;</a>
           </div>
         </div>
         <div class="sm:flex lg:block">
@@ -354,7 +354,7 @@
             <p class="mt-2 text-sm text-gray-500">
               {{ _("Check out what your planned garden looks like from a restoration viewpoint.") }}
             </p>
-            <a href="{% url "planner_plants" GARDEN %}" class="no-underline hover:underline">{{ _("View overview") }} &raquo;</a>
+            <a href="{% url "planner_plants" GARDEN_ID %}" class="no-underline hover:underline">{{ _("View overview") }} &raquo;</a>
           </div>
         </div>
         <div class="sm:flex lg:block">
@@ -368,7 +368,7 @@
             <p class="mt-2 text-sm text-gray-500">
               {{ _("Check out a calendar for your planting, maintenance, and monitoring activities.") }}
             </p>
-            <a href="{% url "planner_calendar" GARDEN %}" class="no-underline hover:underline">{{ _("View calendar") }} &raquo;</a>
+            <a href="{% url "planner_calendar" GARDEN_ID %}" class="no-underline hover:underline">{{ _("View calendar") }} &raquo;</a>
           </div>
         </div>
         <div class="sm:flex lg:block">
@@ -382,7 +382,7 @@
             <p class="mt-2 text-sm text-gray-500">
               {{ _("Find out which local nurseries stock indigenous plants.") }}
             </p>
-            <a href="{% url "planner_nurseries" GARDEN %}" class="no-underline hover:underline">{{ _("View nurseries") }} &raquo;</a>
+            <a href="{% url "planner_nurseries" GARDEN_ID %}" class="no-underline hover:underline">{{ _("View nurseries") }} &raquo;</a>
           </div>
         </div>
       </div>
@@ -411,7 +411,7 @@
 <div class="container pl-10 {% if not garden %}opacity-40 cursor-not-allowed{% endif %}">
   <div class="flex gap-4">
 
-    <a href="{% url "planner_plants_present_list" GARDEN %}?view=photos-data" class="flex-1 relative no-underline hover:opacity-75">
+    <a href="{% url "planner_plants_present_list" GARDEN_ID %}?view=photos-data" class="flex-1 relative no-underline hover:opacity-75">
       <div class="absolute inset-0 rounded-lg bg-white lg:rounded-bl-4xl"></div>
       <div class="relative flex h-full flex-col overflow-hidden rounded-[calc(var(--radius-lg)+1px)] lg:rounded-bl-[calc(2rem+1px)]">
         <img src="/media/planner.current.jpg" alt="" class="h-40 object-cover object-center" />
@@ -430,7 +430,7 @@
       <div class="pointer-events-none absolute inset-0 rounded-lg shadow-sm outline outline-black/5 lg:rounded-bl-4xl"></div>
     </a>
 
-    <a href="{% url "planner_plants_future_list" GARDEN %}?view=photos-data" class="flex-1 relative no-underline hover:opacity-75">
+    <a href="{% url "planner_plants_future_list" GARDEN_ID %}?view=photos-data" class="flex-1 relative no-underline hover:opacity-75">
       <div class="absolute inset-0 rounded-lg bg-white"></div>
       <div class="relative flex h-full flex-col overflow-hidden rounded-[calc(var(--radius-lg)+1px)]">
         <img src="/media/planner.future.jpg" alt="" class="h-40 object-cover object-center" />
