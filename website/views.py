@@ -105,9 +105,6 @@ def get_garden(request, id, silent_fail=False):
                 request._set_garden_cookie = True
                 request._garden_uuid = garden.uuid
                 request._garden_id = garden.id
-                request._garden_name = garden.name
-                if garden.published_at:
-                    request._garden_active = garden.get_garden_number
             return garden
     if "garden_id" in request.COOKIES and "garden_uuid" in request.COOKIES:
         garden = Garden.objects_unfiltered.filter(pk=request.COOKIES.get("garden_id"), is_user_created=True, user__isnull=True, uuid=request.COOKIES["garden_uuid"])
@@ -2113,7 +2110,6 @@ def user_logout(request):
 
     response.delete_cookie("garden_uuid")
     response.delete_cookie("garden_id")
-    response.delete_cookie("garden_name")
     return response
 
 def account_create(request):
@@ -2248,10 +2244,6 @@ def event(request, slug):
 def carbon_report(request, id, planner=False):
 
     site = get_site(request)
-
-    if not (garden := get_garden(request, id)):
-        return redirect("planner")
-
     info = Garden.objects_unfiltered.get(pk=id)
     show_garden = True if info.is_active else False
 
@@ -2403,15 +2395,11 @@ def planner(request, id=None):
             is_active = False,
             site = site,
             progress = {"created": True},
+            user = user,
         )
-        garden.user = user
-        garden.save()
 
         response = redirect(reverse("planner_location", args=[garden.id]) + "?new_garden")
-        response.set_cookie("garden_uuid", garden.uuid)
-        response.set_cookie("garden_id", garden.id)
-        response.set_cookie("garden_name", garden.name)
-        response.delete_cookie("garden_active")
+        garden = get_garden(request, garden.id)
         return response
 
     context = {
@@ -3327,7 +3315,6 @@ def planner_activate(request, id):
         )
 
         response = redirect(reverse("planner", args=[garden.id]) + "?success=true")
-        response.set_cookie("garden_active", garden.get_garden_number)
         return response
 
     if "deactivate" in request.GET and garden.published_at:
@@ -3336,7 +3323,6 @@ def planner_activate(request, id):
         garden.progress.pop("joined", None)
         garden.save()
         response = redirect(request.path)
-        response.delete_cookie("garden_active")
         return response
 
     context = {
