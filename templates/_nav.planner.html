@@ -7,9 +7,9 @@
     {% elif PROGRESS.joined %}
       <div><span class="badge-highlight">{{ _("Garden submitted") }}</span></div>
     {% else %}
-      <div><span class="badge-highlight">{{ _("Not yet on the corridor map") }}</span></div>
+      <div><span class="badge-darkshade">{{ _("Not yet on the corridor map") }}</span></div>
     {% endif %}
-    <h2 class="mt-4">{{ garden }}</h2>
+    <h2 class="mt-4">{{ MY_GARDEN }}</h2>
 
     {% if GARDEN_ACTIVE %}
       <p class="opacity-70 mb-4">
@@ -28,23 +28,26 @@
       </p>
     {% endif %}
 
-    <p class="opacity-70">{{ garden.completed_steps }} {{ _(" out of 8 steps completed") }}</p>
+    <p class="opacity-70">{{ MY_GARDEN.completed_steps }} {{ _(" out of 8 steps completed") }}</p>
     <div
       class="h-2 w-full overflow-hidden rounded bg-gray-200 mb-4"
       role="progressbar"
       aria-label="Progress"
-      aria-valuenow="{{ garden.completed_steps }}"
+      aria-valuenow="{{ MY_GARDEN.completed_steps }}"
       aria-valuemin="0"
       aria-valuemax="8"
     >
-      <div class="h-full rounded bg-lime-600" style="width:{% widthratio garden.completed_steps 8 100 %}%"></div>
+      <div class="h-full rounded bg-lime-600" style="width:{% widthratio MY_GARDEN.completed_steps 8 100 %}%"></div>
     </div>
+
       {% if not hide_planner_button %}
-        {% if garden.completed_steps < 8 %}
-          <a href="{% url "planner" GARDEN %}" class="btn-green">Continue planning →</a>
+        {% if MY_GARDEN.completed_steps < 8 %}
+          <a href="{% url "planner" GARDEN %}" class="btn-green my-5">Continue planning →</a>
         {% else %}
-          <a href="{% url "planner" GARDEN %}" class="btn-green">Go to planner →</a>
+          <a href="{% url "planner" GARDEN %}" class="btn-green my-5">Go to planner →</a>
         {% endif %}
+      {% elif PROGRESS.profile %}
+        <a href="{{ MY_GARDEN.get_absolute_url }}" class="btn-blue bg-darkshade text-gray-800 hover:opacity-80 my-5">View garden profile →</a>
       {% endif %}
 
         {% else %}
@@ -70,6 +73,9 @@
               <p class="text-sm leading-relaxed text-slate-500">
                 {{ _("Start a new restoration project or register your existing garden to become part of our corridor!") }}
               </p>
+              {% if not hide_planner_button %}
+                <a href="{% url "planner" GARDEN %}" class="btn-green my-5">Go to planner →</a>
+              {% endif %}
             </div>
           </div>
 

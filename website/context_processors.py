@@ -135,6 +135,8 @@ def site(request):
         "SITE": site,
         "SITES": sites,
 
+        # Let's fix this please, such as mess
+        "MY_GARDEN": garden,
         "GARDEN": garden_id,
         "GARDEN_NAME": garden.name if garden else None,
         "PROGRESS": garden.progress if garden else None,

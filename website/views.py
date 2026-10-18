@@ -119,7 +119,7 @@ def get_garden(request, id, silent_fail=False):
 
     if not silent_fail:
         if id == 0:
-            messages.warning(request, _("Please create your own garden to get started."))
+            pass
         elif not request.user.is_authenticated:
             messages.warning(request, f"Please <a href='/accounts/login/?next={request.path}'>log in</a> to access your saved gardens.")
         else:
@@ -1187,7 +1187,10 @@ def garden(request, id):
     if not show_garden:
         raise Http404("This garden was not found.")
     elif not info.is_active:
-        messages.warning(request, _("This garden is not yet publicly available - this is a preview."))
+        if info.progress.get("joined"):
+            messages.warning(request, _("This garden is currently being reviewed and will be activated shortly. Thanks for being part of our corridor!"))
+        else:
+            messages.warning(request, _("This garden is not yet publicly available - this is a preview."))
 
     try:
         photos = Photo.objects.filter(garden=info).order_by("-date")[:12]
@@ -2009,7 +2012,7 @@ def calendar(request):
 # ACCOUNT FUNCTIONS
 
 def user_login(request):
-    redirect_url = reverse("account_gardens")
+    redirect_url = reverse("planner")
     if request.GET.get("next"):
         redirect_url = request.GET.get("next")
 
@@ -2244,8 +2247,12 @@ def event(request, slug):
 
 def carbon_report(request, id, planner=False):
 
-    info = Garden.objects_unfiltered.get(pk=id)
     site = get_site(request)
+
+    if not (garden := get_garden(request, id)):
+        return redirect("planner")
+
+    info = Garden.objects_unfiltered.get(pk=id)
     show_garden = True if info.is_active else False
 
     if not info.is_active and request.user.is_authenticated:
@@ -2259,7 +2266,10 @@ def carbon_report(request, id, planner=False):
     if not show_garden:
         raise Http404("This garden was not found.")
     elif not info.is_active and not planner:
-        messages.warning(request, _("This garden is not yet publicly available - this is a preview."))
+        if garden.progress.get("joined"):
+            messages.warning(request, _("This garden is currently being reviewed and will be activated shortly. Thanks for being part of our corridor!"))
+        else:
+            messages.warning(request, _("This garden is not yet publicly available - this is a preview."))
 
     info = Page.objects.get(slug="carbon-report", is_active=True, site=site)
 
@@ -2364,6 +2374,11 @@ def planner(request, id=None):
     if "my_garden" in request.POST:
         return redirect(reverse("planner", args=[request.POST["my_garden"]]))
 
+    if "load_garden" in request.GET:
+        # We use a redirect here so that the cookies are refreshed once have the actual garden page open 
+        garden = get_garden(request, request.GET["load_garden"])
+        return redirect(reverse("planner", args=[garden.id]))
+
     if id and not "new" in request.GET:
         garden = get_garden(request, id)
     elif not id and "garden_uuid" in request.COOKIES and not "new" in request.GET:
@@ -2372,17 +2387,25 @@ def planner(request, id=None):
             cookie_garden = cookie_garden[0]
             garden = get_garden(request, cookie_garden.id, silent_fail=True)
 
-    if request.method == "POST" and "garden" in request.POST:
+    if request.method == "POST" and "garden_name" in request.POST:
+        if not request.user.is_authenticated:
+            if User.objects.filter(email=request.POST.get("email")).exists():
+                messages.warning(request, _("You already have an account. Please log in first and then create a new garden."))
+                return redirect(reverse("login"))                             
+            else:
+                user = User.objects.create(first_name=request.POST.get("name"), email=request.POST.get("email"), username=request.POST.get("email"))
+                login(request, user)
+        else:
+            user = request.user
         garden = Garden.objects.create(
-            name = request.POST["garden"],
+            name = request.POST["garden_name"],
             is_user_created = True,
             is_active = False,
             site = site,
             progress = {"created": True},
         )
-        if request.user.is_authenticated:
-            garden.user = request.user
-            garden.save()
+        garden.user = user
+        garden.save()
 
         response = redirect(reverse("planner_location", args=[garden.id]) + "?new_garden")
         response.set_cookie("garden_uuid", garden.uuid)
@@ -2428,11 +2451,8 @@ def planner_location(request, id):
         garden.save()
 
     if "confirm_location" in request.GET:
-        if "new_garden" in request.GET:
-            return redirect(reverse("planner_site", args=[garden.id]) + "?new_garden")
-        else:
-            messages.success(request, _("Your garden location was saved."))
-            return redirect(reverse("planner", args=[garden.id]))
+        messages.success(request, _("Your garden location was saved."))
+        return redirect(reverse("planner", args=[garden.id]))
 
     if request.method == "POST" and request.FILES.get("file"):
         garden.location_file = request.FILES.get("file")
@@ -2463,11 +2483,8 @@ def planner_location(request, id):
 
             garden.progress["location"] = True
             garden.save()
-            if "new_garden" in request.GET:
-                return redirect(reverse("planner_site", args=[garden.id]) + "?new_garden")
-            else:
-                messages.success(request, _("Your garden location was saved."))
-                return redirect(reverse("planner", args=[garden.id]))
+            messages.success(request, _("Your garden location was saved."))
+            return redirect(reverse("planner", args=[garden.id]))
 
     if "lat" in request.GET and "lng" in request.GET:
         lat = float(request.GET.get("lat"))
@@ -2484,14 +2501,9 @@ def planner_location(request, id):
             garden.save()
         except:
             veg = None
-
         garden.save()
-
-        if "new_garden" in request.GET:
-            return redirect(reverse("planner_site", args=[garden.id]) + "?new_garden")
-        else:
-            messages.success(request, _("Your garden location was saved."))
-            return redirect(reverse("planner", args=[garden.id]))
+        messages.success(request, _("Your garden location was saved."))
+        return redirect(reverse("planner", args=[garden.id]))
 
     map_draw_polygon = False
     geom_type = None
@@ -3149,6 +3161,9 @@ def planner_profile(request, id, photos=False):
 
             if error:
                 return redirect(request.get_full_path())
+            else:
+                messages.success(request, _("Your photos have been saved."))
+                return redirect(reverse("planner", args=[garden.id]))
 
         else:
             garden.name = request.POST["name"]
@@ -3159,6 +3174,8 @@ def planner_profile(request, id, photos=False):
             else:
                 garden.progress.pop("profile", None)
             garden.save()
+            messages.success(request, _("Your profile has been saved. You can now preview your profile or add photos first."))
+            return redirect(reverse("planner", args=[garden.id]))
 
     context = {
         "menu": "planner",
@@ -3257,7 +3274,7 @@ def planner_requirements(request, id):
         garden.progress["requirements"] = True
         garden.save()
         messages.success(request, _("Thanks for committing to support our restoration work through your garden."))
-        return redirect(reverse("planner_profile", args=[garden.id]))
+        return redirect(reverse("planner", args=[garden.id]))
 
     page = get_object_or_404(Page, slug="requirements", is_active=True, site=site)
 
@@ -3306,8 +3323,7 @@ def planner_activate(request, id):
             html_message=msg_html,
         )
 
-        messages.success(request, _("Great! Your garden was activated and will be published after review by our team. Give us 1-2 days to review and you will hear from us once it is online!"))
-        response = redirect(reverse("planner", args=[garden.id]))
+        response = redirect(reverse("planner", args=[garden.id]) + "?success=true")
         response.set_cookie("garden_active", garden.get_garden_number)
         return response
 

@@ -6,6 +6,7 @@
 
 @theme {
   --color-lightshade: #faf7f0;
+  --color-darkshade: #c5beae;
   --color-highlight: #e6f0d6;
   --color-dark-highlight: #1f3a2c;
   --color-light-highlight: #3f6f00;
@@ -49,7 +50,7 @@
     @apply mb-6 text-3xl font-bold text-light-highlight;
   }
 
-  main h2 {
+  main h2, .garden-progress h2 {
     @apply mb-4 text-2xl font-bold text-dark-highlight;
   }
 
@@ -236,10 +237,16 @@
       text-light-highlight ring-1 ring-inset ring-highlight/10;
   }
 
+  .badge-darkshade {
+    @apply inline-flex items-center rounded-md
+      bg-darkshade px-2 py-1 text-xs font-medium
+      text-gray-800 ring-1 ring-inset ring-darkshade/10;
+  }
+
   .badge-success {
     @apply inline-flex items-center rounded-md
-      bg-green-50 px-2 py-1 text-xs font-medium
-      text-green-700 ring-1 ring-inset ring-green-600/20;
+      bg-highlight px-2 py-1 text-xs font-medium
+      text-light-highlight ring-1 ring-inset ring-green-600/20;
   }
 
   .badge-danger {
@@ -282,7 +289,7 @@
   }
 
   .alert-warning {
-    @apply border-amber-500 bg-amber-50 text-amber-700;
+    @apply bg-amber-100 text-amber-800;
   }
 
   .alert-danger {
@@ -465,8 +472,7 @@
   }
 
   main .tab.inactive {
-    @apply border-transparent text-gray-500
-      hover:border-gray-300 hover:text-white;
+    @apply border-transparent text-gray-500 hover:border-gray-300 hover:opacity-100;
   }
 
 
@@ -484,7 +490,7 @@
   }
 
   .pre_main .tab.inactive {
-    @apply text-white opacity-70 hover:opacity-100;
+    @apply text-white opacity-70 hover:text-white;
   }
 
 

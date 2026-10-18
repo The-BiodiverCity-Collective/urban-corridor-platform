@@ -2,10 +2,17 @@
 
 {% block head %}
   <style type="text/css">
-  main p{margin-bottom:1em}
-  main #checklist p{margin-bottom:0.5em}
-  main #checklist li{margin-bottom:2em}
-  main #checklist a{color:#333;font-weight:normal}
+    main .garden-progress > div:first-child,
+    main .garden-progress > div:last-child {
+      display: none;
+    }
+    main .garden-progress div:nth-child(3) li:last-child {
+      display: none;
+    }
+
+    main .garden-progress a:has(span[data-state="upcoming"]) {
+      font-weight: bold;
+    }
   </style>
 {% endblock %}
 
@@ -102,10 +109,8 @@
 
 </div>
 
-
-
       {% else %}
-      <p>
+      <p class="alert alert-danger mb-10">
         {{ _("Almost there. Have a look at the parts that are missing and once they are done, you can activate your garden here.") }}
       </p>
 
