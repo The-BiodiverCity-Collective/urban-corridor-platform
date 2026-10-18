@@ -3315,7 +3315,7 @@ def planner_activate(request, id):
             html_message=msg_html,
         )
 
-        response = redirect(reverse("planner", args=[garden.id]) + "?success=true")
+        response = redirect(request.path)
         return response
 
     if "deactivate" in request.GET and garden.published_at:

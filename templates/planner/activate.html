@@ -22,103 +22,155 @@
 
 {% block content %}
 
-  {% include "planner/_nav.progress.html" %}
+{% include "planner/_nav.progress.html" %}
 
-      {% if garden.published_at %}
+{% if garden.published_at %}
+  <div class="flex w-full items-stretch gap-6 mb-10">
 
-        <div class="w-64 h-[350px] p-4 rounded-lg bg-slate-50 border-l-4 border-transparent shadow-md flex flex-col justify-between" style="width:250px; height:350px;">
+    <div class="flex flex-col gap-3 w-1/4 shrink-0 rounded-lg bg-[#FAF7F0] p-6">
+      <div class="text-gray-600 text-sm text-center">{{ garden.published_at|date:"M d, Y" }}</div>
 
-            <div>
+      <div class="flex flex-1 flex-col items-center justify-center gap-3">
+        <svg viewBox="0 0 140 125" class="h-[118px] w-[132px]"
+             fill="none" aria-hidden="true">
+          <path d="M70 96V57" stroke="#49791E" stroke-width="4"
+                stroke-linecap="round"/>
+          <path d="M69 73C48 76 37 60 42 44
+                   C60 45 72 56 69 73Z" fill="#78A936"/>
+          <path d="M70 60C69 39 85 28 102 32
+                   C103 49 89 61 70 60Z" fill="#4D821D"/>
+          <path d="M51 100H89" stroke="#B7C990" stroke-width="3"
+                stroke-linecap="round"/>
+          <path d="M70 12V23M35 25L43 33M105 25L97 33
+                   M23 52H33M107 52H117" stroke="#D7B85E"
+                stroke-width="3" stroke-linecap="round"/>
+          <circle cx="108" cy="77" r="12" fill="#E5EFD7"/>
+          <path d="M102 77L106 81L114 72" stroke="#4D821D"
+                stroke-width="2.5" stroke-linecap="round"
+                stroke-linejoin="round"/>
+        </svg>
 
-              <div class="flex items-center gap-3">
-                <div class="w-12 h-12 flex items-center justify-center rounded-full bg-slate-100">
-                    <i class="fas fa-check text-lime-500 text-xl"></i>
-                </div>
-                <div>
-                  <div class="text-xs text-gray-500">Garden</div>
-                    <div class="font-semibold text-gray-900">{{ GARDEN }}</div>
-                </div>
-              </div>
+        <h2 class="text-center text-xl font-bold text-[#233F30]">
+          It's official!
+        </h2>
+        <p class="text-center text-sm leading-6 text-[#5A5A54]">
+          <strong>{{ garden }}</strong> is now part of the corridor.
+        </p>
 
-              <div class="mt-5">
+        <span class="badge-highlight">
+          ✓ Successfully activated
+        </span>
+      </div>
 
-                  <h3 class="text-lg font-bold text-gray-800">Your garden is part of our corridor</h3>
-                  <p id="sub-3" class="text-sm text-gray-600 mt-2">
-                    You are garden 
-                    <span class="font-mono">#{{ garden.get_garden_number }}</span>
-                    of the Braamfontein Spruit Ecological Corridor!
-                  </p>
+      <a href="{{ garden.get_absolute_url }}" class="text-center btn-blue bg-darkshade text-gray-800 hover:opacity-80 my-5">View garden profile →</a>
 
-              </div>
-            </div>
+    </div>
 
-            <div class="mt-4">
-              <a href="{{ garden.get_absolute_url }}" class="bg-lime-600 hover:bg-lime-700 text-white py-2 rounded-md text-center block no-underline">
-                {{ _("View profile") }}
-              </a>
-              <div class="text-xs text-gray-500 mt-3">
-                If you want to deactivate your profile, <a class="text-gray-700" onclick="javascript:return confirm('{{ _("Are you sure you want to deactivate your profile?") }}')" href="?deactivate">click here</a>.
-              </div>
-            </div>
+    <div class="flex min-w-0 flex-1 flex-col rounded-lg
+                bg-[#F1F3E9] p-10 lg:p-14">
 
+      <div class="flex h-11 w-11 items-center justify-center
+                  rounded-full bg-[#E1EACF] text-[#4D791F]">
+        <svg viewBox="0 0 24 24" class="h-6 w-6" fill="none"
+             stroke="currentColor" stroke-width="1.7"
+             stroke-linecap="round" stroke-linejoin="round"
+             aria-hidden="true">
+          <path d="M12 21V11"/>
+          <path d="M12 13C7 13 4 10 4 5c5 0 8 3 8 8Z"/>
+          <path d="M12 10c0-5 3-7 8-7 0 5-3 8-8 8"/>
+        </svg>
+      </div>
+
+      <div class="my-auto py-10">
+        <h2 class="text-4xl font-bold tracking-tight
+                   text-[#233F30] xl:text-5xl">
+          Thanks for being part of our corridor
+        </h2>
+        <p class="mt-4 text-xl leading-snug text-[#4D791F]">
+          We are working to expand the {{ SITE }} - one garden at a time. And today that garden is yours!
+        </p>
+      </div>
+
+      <div class="border-t border-[#D8DFC9] pt-6">
+
+        {% if not garden.is_active %}
+          <h3 class="text-base font-semibold text-[#233F30]">{{ _("What happens next?") }}</h3>
+          <p class="mt-2 max-w-xl text-sm leading-6 text-[#56574F] mb-5">
+            {{ _("Our team will review your garden profile and activate it in a day or two.") }}
+          </p>
+        {% endif %}
+        <p class="text-sm text-[#56574F]">
+          {{ _("Questions?") }}
+          <a href="mailto:{{ SITE.email }}" class="font-semibold text-[#467900] underline underline-offset-4">{{ SITE.email }}</a>
+        </p>
+
+        <div class="flex justify-end text-xs text-gray-500 mt-6 border-t border-[#D8DFC9] pt-6">
+          If you want to deactivate your profile, 
+          <a class="text-gray-700" onclick="javascript:return confirm('{{ _("Are you sure you want to deactivate your profile?") }}')" href="?deactivate">
+            click here
+          </a>.
         </div>
 
-      {% elif garden.completed_steps == 7 %} 
-
-<div class="bg-lightshade rounded-lg p-4 w-full max-w-[300px] mx-auto">
-    {% if GARDEN.is_active %}
-      <div><span class="badge-highlight">{{ _("Part of our corridor!") }}</span></div>
-    {% else %}
-      <div><span class="badge-highlight">{{ _("Not yet on the corridor map") }}</span></div>
-    {% endif %}
-    <h2 class="mt-4">{{ garden }}</h2>
-
-    {% if GARDEN.is_active %}
-      <p class="opacity-70 mb-4">
-        You are 
-        {% if GARDEN.get_garden_number|length > 1 %}
-        garden <span class="font-mono">#{{ GARDEN.get_garden_number }}</span>
-        {% else %}
-        part
-        {% endif %}
-        of the Braamfontein Spruit Ecological Corridor!
-      </p>
-    {% elif GARDEN_ID %}
-      <p class="opacity-70 mb-4">
-        {{ _("Great work! Your garden is ready to join our corridor. Click the button below to publish your profile and to officially become part of our corridor.") }}
-      </p>
-    {% endif %}
-
-    <p class="opacity-70">{{ garden.completed_steps }} {{ _(" out of 8 steps completed") }}</p>
-    <div
-      class="h-2 w-full overflow-hidden rounded bg-gray-200 mb-4"
-      role="progressbar"
-      aria-label="Progress"
-      aria-valuenow="{{ garden.completed_steps }}"
-      aria-valuemin="0"
-      aria-valuemax="8"
-    >
-      <div class="h-full rounded bg-lime-600" style="width:{% widthratio garden.completed_steps 8 100 %}%"></div>
+      </div>
     </div>
-      <div class="border-t border-gray-300 mt-5 pt-5">
-        <form method="post">
-          <button class="btn-green" type="submit"><i class="fa fa-check-circle"></i> {{ _("Activate your garden") }}</button>
-          {% csrf_token %}
-        </form>
-      </div>
+  </div>
 
-</div>
+{% elif garden.completed_steps == 7 %} 
 
+  <div class="bg-lightshade rounded-lg p-4 w-full max-w-[300px] mx-auto">
+  {% if garden.is_active %}
+    <div><span class="badge-highlight">{{ _("Part of our corridor!") }}</span></div>
+  {% else %}
+    <div><span class="badge-highlight">{{ _("Not yet on the corridor map") }}</span></div>
+  {% endif %}
+  <h2 class="mt-4">{{ garden }}</h2>
+
+  {% if garden.is_active %}
+    <p class="opacity-70 mb-4">
+      You are 
+      {% if garden.get_garden_number|length > 1 %}
+      garden <span class="font-mono">#{{ garden.get_garden_number }}</span>
       {% else %}
-      <p class="alert alert-danger mb-10">
-        {{ _("Almost there. Have a look at the parts that are missing and once they are done, you can activate your garden here.") }}
-      </p>
-
-      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 garden-progress">
-        {% include "_nav.planner.html" %}
-      </div>
-
+      part
       {% endif %}
+      of the Braamfontein Spruit Ecological Corridor!
+    </p>
+  {% else %}
+    <p class="opacity-70 mb-4">
+      {{ _("Great work! Your garden is ready to join our corridor. Click the button below to publish your profile and to officially become part of our corridor.") }}
+    </p>
+  {% endif %}
+
+  <p class="opacity-70">{{ garden.completed_steps }} {{ _(" out of 8 steps completed") }}</p>
+  <div
+    class="h-2 w-full overflow-hidden rounded bg-gray-200 mb-4"
+    role="progressbar"
+    aria-label="Progress"
+    aria-valuenow="{{ garden.completed_steps }}"
+    aria-valuemin="0"
+    aria-valuemax="8"
+  >
+    <div class="h-full rounded bg-lime-600" style="width:{% widthratio garden.completed_steps 8 100 %}%"></div>
+  </div>
+    <div class="border-t border-gray-300 mt-5 pt-5">
+      <form method="post">
+        <button class="btn-green" type="submit"><i class="fa fa-check-circle"></i> {{ _("Activate your garden") }}</button>
+        {% csrf_token %}
+      </form>
+    </div>
+
+  </div>
+
+    {% else %}
+    <p class="alert alert-danger mb-10">
+      {{ _("Almost there. Have a look at the parts that are missing and once they are done, you can activate your garden here.") }}
+    </p>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 garden-progress">
+      {% include "_nav.planner.html" %}
+    </div>
+
+  {% endif %}
 
 {% if request.user.is_staff %}
   <a class="btn-warning btn-edit" href="{% url "controlpanel_page" info.id %}?redirect={{ request.get_full_path }}">
