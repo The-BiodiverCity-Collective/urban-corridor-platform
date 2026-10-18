@@ -8,6 +8,13 @@
   <link rel="stylesheet" href="https://pro.fontawesome.com/releases/v5.14.0/css/all.css" integrity="sha384-VhBcF/php0Z/P5ZxlxaEx1GwqTQVIBu4G4giRWxTKOCjTxsPFETUDdVL5B6vYvOt" crossorigin="anonymous">
   {% if DEBUG %}
     <script src="{% static "js/jquery-3.7.1.min.js" %}"></script>
+
+  <script type="text/javascript">
+  $(function(){
+      $("input").attr("autocomplete", "off");
+  });
+  </script>
+
   {% else %}
     <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
   {% endif %}

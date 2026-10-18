@@ -66,8 +66,8 @@ def site(request):
 
     bg = None
     if site.id == 1:
-        bg = random.randint(1, 7)
-        bg = f"/media/bg/braam/{bg}.jpg?r"
+        bg = random.randint(1, 10)
+        bg = f"/media/bg/braam/{bg}.jpg?rf"
 
 
     steps = [

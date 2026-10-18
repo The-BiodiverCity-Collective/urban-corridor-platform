@@ -785,3 +785,6 @@ nav#topnav img {
   display: inline-block;
   margin-right: 20px;
 }
+ nav#topnav .svgicon {
+   width: 23px;
+ }

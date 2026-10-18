@@ -3692,23 +3692,6 @@ def controlpanel_page(request, id=None):
 @staff_member_required
 def controlpanel_gardens(request):
 
-    if "update_gardens":
-        for each in Garden.objects_unfiltered.all():
-            each.progress["created"] = True
-            if each.geometry:
-                each.progress["location"] = True
-            if each.plants.all():
-                each.progress["plants"] = True
-            if each.photos.all():
-                each.progress["photos"] = True
-            if each.description:
-                each.progress["profile"] = True
-            if each.is_active:
-                each.progress["joined"] = True
-                each.progress["requirements"] = True
-                each.progress["features"] = True
-            each.save()
-
     site = get_site(request)
     view = request.GET.get("view")
     gardens = Garden.objects_unfiltered.filter(site=site).annotate(plants_count=Count("plants"))

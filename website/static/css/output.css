@@ -6108,6 +6108,9 @@ nav#topnav img {
   display: inline-block;
   margin-right: 20px;
 }
+nav#topnav .svgicon {
+  width: 23px;
+}
 @property --tw-translate-x {
   syntax: "*";
   inherits: false;
