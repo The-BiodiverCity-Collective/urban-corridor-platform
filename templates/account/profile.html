@@ -2,44 +2,136 @@
 
 {% block content %}
 
-<div>
-  <div class="px-4 sm:px-0">
-    <h3 class="text-base/7 font-semibold text-gray-900">{{ request.user.first_name }}</h3>
-    <p class="mt-1 max-w-2xl text-sm/6 text-gray-500">{{ _("Your profile") }}</p>
+  <div class="flex items-center gap-4">
+    <div class="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-lime-100 text-lime-800">
+      <i class="fas fa-user text-xl"></i>
+    </div>
+    <div class="min-w-0">
+      <h2 class="text-xl font-bold tracking-tight text-lime-800 mb-1">{{ request.user.first_name }}</h2>
+      <p class="text-sm text-gray-500">{{ _("Your profile") }}</p>
+    </div>
   </div>
-  <div class="mt-6">
-    <dl class="grid grid-cols-1 sm:grid-cols-2">
-      <div class="border-t border-gray-100 px-4 py-6 sm:col-span-1 sm:px-0">
-        <dt class="text-sm/6 font-medium text-gray-900">{{ _("E-mail address") }}</dt>
-        <dd class="mt-1 text-sm/6 text-gray-700 sm:mt-2">{{ request.user.email }}</dd>
+
+  <div class="space-y-8 mt-5">
+    <section>
+      <h3 class="mb-4 text-lg font-semibold text-gray-800">{{ _("Account information") }}</h3>
+      <dl class="grid grid-cols-1 gap-4 sm:grid-cols-2">
+        <div class="rounded-lg border border-gray-200 bg-gray-50 p-4">
+          <dt class="flex items-center gap-2 text-sm font-medium text-gray-500">
+            <i class="fas fa-envelope text-lime-700"></i>
+            {{ _("E-mail address") }}
+          </dt>
+          <dd class="mt-2 break-words text-sm font-semibold text-gray-900">{{ request.user.email }}</dd>
+        </div>
+        <div class="rounded-lg border border-gray-200 bg-gray-50 p-4">
+          <dt class="flex items-center gap-2 text-sm font-medium text-gray-500">
+            <i class="fas fa-clock text-lime-700"></i>
+            {{ _("Last login") }}
+          </dt>
+          <dd class="mt-2 text-sm font-semibold text-gray-900">{{ request.user.last_login }}</dd>
+        </div>
+      </dl>
+    </section>
+
+    <section>
+      <div class="mb-4 flex flex-wrap items-center justify-between gap-3">
+        <div>
+          <h3 class="text-lg font-semibold text-gray-800">{{ _("My gardens") }}</h3>
+          <p class="mt-1 text-sm text-gray-500">{{ _("View and manage your gardens.") }}</p>
+        </div>
+        <span class="inline-flex items-center rounded-full bg-lime-100 px-3 py-1 text-xs font-semibold text-lime-800">
+          {{ gardens|length }} {{ _("gardens") }}
+        </span>
       </div>
-      <div class="border-t border-gray-100 px-4 py-6 sm:col-span-1 sm:px-0">
-        <dt class="text-sm/6 font-medium text-gray-900">{{ _("Last login") }}</dt>
-        <dd class="mt-1 text-sm/6 text-gray-700 sm:mt-2">{{ request.user.last_login }}</dd>
-      </div>
-      <div class="border-t border-gray-100 px-4 py-6 sm:col-span-2 sm:px-0">
-        <dt class="text-sm/6 font-medium text-gray-900">{{ _("Gardens") }}</dt>
-        <dd class="mt-2 text-sm text-gray-900">
-          <ul role="list" class="divide-y divide-gray-100 rounded-md border border-gray-200">
-            {% for each in gardens %}
-            <li class="flex items-center justify-between py-4 pr-5 pl-4 text-sm/6">
-              <div class="flex w-0 flex-1 items-center">
-                <i class="fa fa-shovel"></i>
-                <div class="ml-4 flex min-w-0 flex-1 gap-2">
-                  <span class="truncate font-medium text-gray-900">{{ each }}</span>
-                  <span class="shrink-0 text-gray-400">{{ each.created_at }}</span>
-                </div>
+
+      <ul role="list" class="divide-y divide-gray-100 overflow-hidden rounded-lg border border-gray-200">
+        {% for each in gardens %}
+        <li>
+          <a href="{% url 'planner' each.id %}" class="flex flex-col gap-4 px-4 py-4 transition-colors hover:bg-lime-50/50 focus:bg-lime-50 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-lime-600 sm:flex-row sm:items-center sm:justify-between sm:px-5 no-underline">
+            <div class="flex min-w-0 items-center gap-3">
+              <div class="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-lime-100 text-lime-800">
+                <i class="fas fa-seedling text-lg"></i>
               </div>
-              <div class="ml-4 shrink-0">
-                <a href="{% url "planner" each.id %}" class="font-medium ">{{ _("View garden") }}</a>
+              <div class="min-w-0">
+                <p class="truncate text-sm font-semibold text-gray-900">{{ each }}</p>
+                <p class="mt-1 text-xs text-gray-500">
+                  <i class="far fa-calendar-alt mr-1"></i>
+                  {{ _("Created") }} {{ each.created_at }}
+                </p>
               </div>
-            </li>
-            {% endfor %}
-          </ul>
-        </dd>
+            </div>
+            <span class="btn-green">
+              {{ _("View garden") }}
+              <i class="fas fa-arrow-right text-xs"></i>
+            </span>
+          </a>
+        </li>
+        {% empty %}
+        <li class="px-6 py-10 text-center">
+          <div class="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-gray-100 text-gray-400">
+            <i class="fas fa-seedling text-xl"></i>
+          </div>
+          <p class="mt-3 text-sm font-semibold text-gray-800">{{ _("No gardens yet") }}</p>
+          <p class="mt-1 text-sm text-gray-500">{{ _("Create a garden to start planning your ecological corridor.") }}</p>
+        </li>
+        {% endfor %}
+      </ul>
+    </section>
+
+    <section>
+      <div class="mb-4">
+        <h3 class="text-lg font-semibold text-gray-800">{{ _("Account settings") }}</h3>
+        <p class="mt-1 text-sm text-gray-500">{{ _("Manage your password and personal details.") }}</p>
       </div>
-    </dl>
+
+      <div class="divide-y divide-gray-100 overflow-hidden rounded-lg border border-gray-200">
+        <a href="/accounts/password/" class="flex flex-col gap-3 p-4 transition-colors hover:bg-lime-50/50 focus:bg-lime-50 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-lime-600 sm:flex-row sm:items-center sm:justify-between sm:px-5 no-underline">
+          <div class="flex items-start gap-3">
+            <div class="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-lime-100 text-lime-800">
+              <i class="fas fa-lock"></i>
+            </div>
+            <div>
+              <h4 class="text-sm font-semibold text-gray-900">{{ _("Set a password") }}</h4>
+              <p class="mt-1 max-w-xl text-sm leading-5 text-gray-500 font-normal">{{ _("Your account was created when you created a garden, but it does not have a password yet. Set one to log in without needing a confirmation e-mail every time.") }}</p>
+            </div>
+          </div>
+          <span class="inline-flex shrink-0 items-center gap-2 self-start text-sm font-semibold text-lime-700 sm:self-center">
+            <i class="fas fa-chevron-right"></i>
+          </span>
+        </a>
+
+        <a href="/accounts/edit/" class="flex items-center justify-between gap-4 p-4 transition-colors hover:bg-lime-50/50 focus:bg-lime-50 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-lime-600 sm:px-5 no-underline">
+          <div class="flex items-center gap-3">
+            <div class="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-lime-100 text-lime-800">
+              <i class="fas fa-user-edit"></i>
+            </div>
+            <div>
+              <h4 class="text-sm font-semibold text-gray-900">{{ _("Edit account details") }}</h4>
+              <p class="mt-1 text-sm text-gray-500 font-normal">{{ _("Update your account information.") }}</p>
+            </div>
+          </div>
+          <span class="shrink-0 text-lime-700">
+            <i class="fas fa-chevron-right"></i>
+          </span>
+        </a>
+
+        <a href="/accounts/delete/" class="flex items-center justify-between gap-4 p-4 transition-colors hover:bg-red-50 focus:bg-red-50 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-red-500 sm:px-5 no-underline">
+          <div class="flex items-center gap-3">
+            <div class="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-red-50 text-red-600">
+              <i class="fas fa-user-times"></i>
+            </div>
+            <div>
+              <h4 class="text-sm font-semibold text-gray-900">{{ _("Delete my account") }}</h4>
+              <p class="mt-1 text-sm text-gray-500 font-normal">{{ _("Permanently remove your account.") }}</p>
+            </div>
+          </div>
+          <span class="shrink-0 text-red-600">
+            <i class="fas fa-chevron-right"></i>
+          </span>
+        </a>
+      </div>
+    </section>
+
   </div>
-</div>
 
 {% endblock %}

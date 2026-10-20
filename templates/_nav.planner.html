@@ -114,7 +114,7 @@
         href="{% url "planner_suggestions" GARDEN_ID %}"><i class="fa fa-fw fa-seedling mr-1 text-gray-400"></i> {{ _("Suggested plants") }}</a>
     </li>
     <li>
-      <a class="{% if slug == "nurseries" and menu == "planner" %}text-sky-600{% endif %}" 
+      <a class="{% if slug == "nurseries" and menu == "planner" or slug == "availability" and menu == "planner" or slug == "download" and menu == "planner" %}text-sky-600{% endif %}" 
         href="{% url "planner_nurseries" GARDEN_ID %}"><i class="fa fa-fw fa-hand-holding-seedling mr-1 text-gray-400"></i> {{ _("Get plants") }}</a>
     </li>
     <li><a class="{% if page == "score" and tab != "carbon" %}text-sky-600{% endif %}"
