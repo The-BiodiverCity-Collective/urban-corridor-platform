@@ -118,7 +118,7 @@ def get_garden(request, id, silent_fail=False):
         if id == 0:
             pass
         elif not request.user.is_authenticated:
-            messages.warning(request, f"Please <a href='/accounts/login/?next={request.path}'>log in</a> to access your saved gardens.")
+            messages.warning(request, f"Please <a href='/account/login/?next={request.path}'>log in</a> to access your saved gardens.")
         else:
             messages.warning(request, f"This garden is not found.")
 
@@ -2050,7 +2050,7 @@ def user_reset(request):
         if user:
             token = default_token_generator.make_token(user)
             uid = urlsafe_base64_encode(force_bytes(user.pk))
-            reset_url = f"https://{site.url}/accounts/reset/{uid}/{token}/"
+            reset_url = f"https://{site.url}/account/reset/{uid}/{token}/"
 
             mailcontext = {
                 "reset_url": reset_url,
@@ -2148,6 +2148,31 @@ def account_create(request):
     }
     return render(request, "account/create.html", context)
 
+@login_required
+def account_form(request):
+
+    user = request.user
+    if request.method == "POST":
+
+        email = request.POST.get("email").lower().strip()
+        password = request.POST.get("password")
+        name = request.POST.get("name")
+
+        if User.objects.filter(username=email).exclude(pk=user.id).exists():
+            messages.error(request, _("An account with this e-mail already exists. Enter a different e-mail or log into your other account."))
+        elif email and name:
+            user.email = email
+            if "password" in request.POST:
+                user.set_password(request.POST["password"])
+            user.first_name = name
+            user.save()
+            login(request, user)
+            messages.success(request, _("Information was saved."))
+            return redirect("/account/")
+
+    context = {
+    }
+    return render(request, "account/form.html", context)
 
 @login_required
 def account_gardens(request):

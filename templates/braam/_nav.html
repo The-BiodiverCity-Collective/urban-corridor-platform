@@ -41,7 +41,7 @@
 
       <div class="inline-flex items-center gap-x-1">
       {% if request.user.is_authenticated %}
-        <a href="{% url "planner" %}?account=true" class="btn-green mr-2 text-xs {% if menu == "account" and page == "account" %}text-black{% endif %}">
+        <a href="{% url "account" %}" class="btn-green mr-2 text-xs {% if menu == "account" and page == "account" %}text-black{% endif %}">
           My account
         </a>
         <a href="{% url "logout" %}" class="btn-green-outline text-xs">Sign out</a>

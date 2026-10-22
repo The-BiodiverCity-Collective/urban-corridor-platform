@@ -47,7 +47,7 @@
       <ul role="list" class="divide-y divide-gray-100 overflow-hidden rounded-lg border border-gray-200">
         {% for each in gardens %}
         <li>
-          <a href="{% url 'planner' each.id %}" class="flex flex-col gap-4 px-4 py-4 transition-colors hover:bg-lime-50/50 focus:bg-lime-50 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-lime-600 sm:flex-row sm:items-center sm:justify-between sm:px-5 no-underline">
+          <a href="{% url 'planner' %}?load_garden={{ each.id }}" class="flex flex-col gap-4 px-4 py-4 transition-colors hover:bg-lime-50/50 focus:bg-lime-50 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-lime-600 sm:flex-row sm:items-center sm:justify-between sm:px-5 no-underline">
             <div class="flex min-w-0 items-center gap-3">
               <div class="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-lime-100 text-lime-800">
                 <i class="fas fa-seedling text-lg"></i>
@@ -85,22 +85,25 @@
       </div>
 
       <div class="divide-y divide-gray-100 overflow-hidden rounded-lg border border-gray-200">
-        <a href="/accounts/password/" class="flex flex-col gap-3 p-4 transition-colors hover:bg-lime-50/50 focus:bg-lime-50 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-lime-600 sm:flex-row sm:items-center sm:justify-between sm:px-5 no-underline">
-          <div class="flex items-start gap-3">
-            <div class="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-lime-100 text-lime-800">
-              <i class="fas fa-lock"></i>
-            </div>
-            <div>
-              <h4 class="text-sm font-semibold text-gray-900">{{ _("Set a password") }}</h4>
-              <p class="mt-1 max-w-xl text-sm leading-5 text-gray-500 font-normal">{{ _("Your account was created when you created a garden, but it does not have a password yet. Set one to log in without needing a confirmation e-mail every time.") }}</p>
-            </div>
-          </div>
-          <span class="inline-flex shrink-0 items-center gap-2 self-start text-sm font-semibold text-lime-700 sm:self-center">
-            <i class="fas fa-chevron-right"></i>
-          </span>
-        </a>
 
-        <a href="/accounts/edit/" class="flex items-center justify-between gap-4 p-4 transition-colors hover:bg-lime-50/50 focus:bg-lime-50 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-lime-600 sm:px-5 no-underline">
+        {% if not request.user.password %}
+          <a href="/account/password/" class="flex flex-col gap-3 p-4 transition-colors hover:bg-lime-50/50 focus:bg-lime-50 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-lime-600 sm:flex-row sm:items-center sm:justify-between sm:px-5 no-underline">
+            <div class="flex items-start gap-3">
+              <div class="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-lime-100 text-lime-800">
+                <i class="fas fa-lock"></i>
+              </div>
+              <div>
+                <h4 class="text-sm font-semibold text-gray-900">{{ _("Set a password") }}</h4>
+                <p class="mt-1 max-w-xl text-sm leading-5 text-gray-500 font-normal">{{ _("Your account was created when you created a garden, but it does not have a password yet. Set one to log in without needing a confirmation e-mail every time.") }}</p>
+              </div>
+            </div>
+            <span class="inline-flex shrink-0 items-center gap-2 self-start text-sm font-semibold text-lime-700 sm:self-center">
+              <i class="fas fa-chevron-right"></i>
+            </span>
+          </a>
+        {% endif %}
+
+        <a href="/account/edit/" class="flex items-center justify-between gap-4 p-4 transition-colors hover:bg-lime-50/50 focus:bg-lime-50 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-lime-600 sm:px-5 no-underline">
           <div class="flex items-center gap-3">
             <div class="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-lime-100 text-lime-800">
               <i class="fas fa-user-edit"></i>
@@ -115,7 +118,7 @@
           </span>
         </a>
 
-        <a href="/accounts/delete/" class="flex items-center justify-between gap-4 p-4 transition-colors hover:bg-red-50 focus:bg-red-50 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-red-500 sm:px-5 no-underline">
+        <a hidden href="/account/delete/" class="flex items-center justify-between gap-4 p-4 transition-colors hover:bg-red-50 focus:bg-red-50 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-red-500 sm:px-5 no-underline">
           <div class="flex items-center gap-3">
             <div class="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-red-50 text-red-600">
               <i class="fas fa-user-times"></i>
